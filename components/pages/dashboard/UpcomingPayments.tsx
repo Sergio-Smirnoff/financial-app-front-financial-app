@@ -3,23 +3,25 @@
 import { useUpcomingPayments } from '@/lib/hooks/useDashboard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { MultiCurrencyAmount } from '@/components/shared/MultiCurrencyAmount'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { currentMonthRange } from '@/lib/utils/dates'
 import { CalendarClock, Landmark, CreditCard, CheckCircle2 } from 'lucide-react'
 import type { UpcomingPayment } from '@/types/finances'
 
-interface UpcomingPaymentsProps {
-  currency: string
-}
-
-export function UpcomingPayments({ currency }: UpcomingPaymentsProps) {
+export function UpcomingPayments() {
   const { from, to } = currentMonthRange()
-  const { data: payments, isLoading } = useUpcomingPayments({ currency, from, to })
+  const { data: payments, isLoading } = useUpcomingPayments({ from, to })
 
   const unpaid = payments?.filter((p) => !p.paid) ?? []
   const paid = payments?.filter((p) => p.paid) ?? []
-  const totalDue = unpaid.reduce((sum, p) => sum + p.amount, 0)
+
+  const totalDueByCurrency = unpaid.reduce<Record<string, number>>((acc, p) => {
+    acc[p.currency] = (acc[p.currency] ?? 0) + p.amount
+    return acc
+  }, {})
+  const totalDueItems = Object.entries(totalDueByCurrency).map(([currency, amount]) => ({ currency, amount }))
 
   return (
     <Card>
@@ -29,9 +31,9 @@ export function UpcomingPayments({ currency }: UpcomingPaymentsProps) {
             <CalendarClock className="h-4 w-4" />
             Due This Month
           </CardTitle>
-          {!isLoading && (
+          {!isLoading && totalDueItems.length > 0 && (
             <span className="text-sm font-semibold text-red-600 dark:text-red-400">
-              {formatCurrency(totalDue, currency)} pending
+              <MultiCurrencyAmount items={totalDueItems} /> pending
             </span>
           )}
         </div>
@@ -44,7 +46,7 @@ export function UpcomingPayments({ currency }: UpcomingPaymentsProps) {
         ) : (
           <div className="space-y-2">
             {unpaid.map((p, i) => (
-              <PaymentRow key={`unpaid-${p.sourceId}-${p.type}-${i}`} payment={p} currency={currency} />
+              <PaymentRow key={`unpaid-${p.sourceId}-${p.type}-${i}`} payment={p} />
             ))}
             {paid.length > 0 && (
               <>
@@ -54,7 +56,7 @@ export function UpcomingPayments({ currency }: UpcomingPaymentsProps) {
                   <div className="flex-1 border-t" />
                 </div>
                 {paid.map((p, i) => (
-                  <PaymentRow key={`paid-${p.sourceId}-${p.type}-${i}`} payment={p} currency={currency} />
+                  <PaymentRow key={`paid-${p.sourceId}-${p.type}-${i}`} payment={p} />
                 ))}
               </>
             )}
@@ -65,7 +67,7 @@ export function UpcomingPayments({ currency }: UpcomingPaymentsProps) {
   )
 }
 
-function PaymentRow({ payment, currency }: { payment: UpcomingPayment; currency: string }) {
+function PaymentRow({ payment }: { payment: UpcomingPayment }) {
   const Icon = payment.type === 'LOAN' ? Landmark : CreditCard
 
   return (
@@ -82,7 +84,7 @@ function PaymentRow({ payment, currency }: { payment: UpcomingPayment; currency:
       </div>
       <div className="flex items-center gap-2">
         <span className={`text-sm font-semibold ${payment.paid ? 'text-green-600 line-through' : ''}`}>
-          {formatCurrency(payment.amount, currency)}
+          {formatCurrency(payment.amount, payment.currency)}
         </span>
         <Badge variant={payment.type === 'LOAN' ? 'default' : 'secondary'} className="text-[10px]">
           {payment.type === 'LOAN' ? 'Loan' : 'Card'}

@@ -28,10 +28,6 @@ interface UiState {
   openConfirmDelete: (payload: ConfirmDeletePayload) => void
   closeConfirmDelete: () => void
 
-  // Currency filter (global)
-  currency: string
-  setCurrency: (currency: string) => void
-
   // Sidebar collapsed (mobile)
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
@@ -47,9 +43,6 @@ export const useUiStore = create<UiState>((set) => ({
   confirmDelete: null,
   openConfirmDelete: (payload) => set({ confirmDelete: payload }),
   closeConfirmDelete: () => set({ confirmDelete: null }),
-
-  currency: 'USD',
-  setCurrency: (currency) => set({ currency }),
 
   sidebarOpen: false,
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),

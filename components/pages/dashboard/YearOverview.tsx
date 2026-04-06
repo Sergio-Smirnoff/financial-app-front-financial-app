@@ -1,21 +1,26 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils/currency'
+import { MultiCurrencyAmount } from '@/components/shared/MultiCurrencyAmount'
 import { TrendingUp, TrendingDown, Scale, Wallet } from 'lucide-react'
 import type { SummaryItem } from '@/types/finances'
 
 interface YearOverviewProps {
-  summary: SummaryItem | undefined
-  currency: string
+  summaries: SummaryItem[]
 }
 
-export function YearOverview({ summary, currency }: YearOverviewProps) {
-  const income = summary?.totalIncome ?? 0
-  const expenses = summary?.totalExpense ?? 0
-  const balance = summary?.balance ?? 0
-  const totalDebt = (summary?.totalLoanDebt ?? 0) + (summary?.totalCardExpenseDebt ?? 0)
+export function YearOverview({ summaries }: YearOverviewProps) {
   const year = new Date().getFullYear()
+
+  const incomeItems = summaries.map((s) => ({ amount: s.totalIncome, currency: s.currency }))
+  const expenseItems = summaries.map((s) => ({ amount: s.totalExpense, currency: s.currency }))
+  const balanceItems = summaries.map((s) => ({ amount: s.balance, currency: s.currency }))
+  const debtItems = summaries.map((s) => ({
+    amount: (s.totalLoanDebt ?? 0) + (s.totalCardExpenseDebt ?? 0),
+    currency: s.currency,
+  }))
+
+  const totalBalance = summaries.reduce((sum, s) => sum + s.balance, 0)
 
   return (
     <Card className="border-t-4 border-t-primary">
@@ -29,36 +34,36 @@ export function YearOverview({ summary, currency }: YearOverviewProps) {
               <TrendingUp className="h-4 w-4 text-green-600" />
               Income
             </div>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {formatCurrency(income, currency)}
-            </p>
+            <div className="text-xl font-bold text-green-600 dark:text-green-400">
+              <MultiCurrencyAmount items={incomeItems} />
+            </div>
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <TrendingDown className="h-4 w-4 text-red-600" />
               Expenses
             </div>
-            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-              {formatCurrency(expenses, currency)}
-            </p>
+            <div className="text-xl font-bold text-red-600 dark:text-red-400">
+              <MultiCurrencyAmount items={expenseItems} />
+            </div>
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Scale className="h-4 w-4" />
               Net Balance
             </div>
-            <p className={`text-2xl font-bold ${balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              {formatCurrency(balance, currency)}
-            </p>
+            <div className={`text-xl font-bold ${totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <MultiCurrencyAmount items={balanceItems} />
+            </div>
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <Wallet className="h-4 w-4" />
               Total Debt
             </div>
-            <p className="text-2xl font-bold">
-              {formatCurrency(totalDebt, currency)}
-            </p>
+            <div className="text-xl font-bold">
+              <MultiCurrencyAmount items={debtItems} />
+            </div>
           </div>
         </div>
       </CardContent>

@@ -1,19 +1,9 @@
-const LOCALES: Record<string, string> = {
-  USD: 'en-US',
-  EUR: 'de-DE',
-  ARS: 'es-AR',
-  BRL: 'pt-BR',
-  GBP: 'en-GB',
-}
-
 export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  const locale = LOCALES[currency] ?? 'en-US'
-  return new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency,
+  const formatted = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
+  return `${formatted} ${currency}`
 }
 
 export function formatAmount(amount: number): string {

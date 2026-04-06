@@ -12,10 +12,9 @@ import type { Loan, CardExpense } from '@/types/finances'
 interface ActiveObligationsProps {
   loans: Loan[]
   cardExpenses: CardExpense[]
-  currency: string
 }
 
-export function ActiveObligations({ loans, cardExpenses, currency }: ActiveObligationsProps) {
+export function ActiveObligations({ loans, cardExpenses }: ActiveObligationsProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -39,7 +38,7 @@ export function ActiveObligations({ loans, cardExpenses, currency }: ActiveOblig
               <p className="py-4 text-center text-sm text-muted-foreground">No active loans</p>
             ) : (
               loans.map((loan) => (
-                <LoanRow key={loan.id} loan={loan} currency={currency} />
+                <LoanRow key={loan.id} loan={loan} />
               ))
             )}
           </TabsContent>
@@ -49,7 +48,7 @@ export function ActiveObligations({ loans, cardExpenses, currency }: ActiveOblig
               <p className="py-4 text-center text-sm text-muted-foreground">No active card expenses</p>
             ) : (
               cardExpenses.map((ce) => (
-                <CardExpenseRow key={ce.id} expense={ce} currency={currency} />
+                <CardExpenseRow key={ce.id} expense={ce} />
               ))
             )}
           </TabsContent>
@@ -59,7 +58,7 @@ export function ActiveObligations({ loans, cardExpenses, currency }: ActiveOblig
   )
 }
 
-function LoanRow({ loan, currency }: { loan: Loan; currency: string }) {
+function LoanRow({ loan }: { loan: Loan }) {
   const paidPct = loan.totalInstallments > 0
     ? Math.round((loan.paidInstallments / loan.totalInstallments) * 100)
     : 0
@@ -70,7 +69,10 @@ function LoanRow({ loan, currency }: { loan: Loan; currency: string }) {
     <div className="rounded-lg border p-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
-          <p className="text-sm font-medium">{loan.description}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium">{loan.description}</p>
+            <Badge variant="outline" className="text-[10px]">{loan.currency}</Badge>
+          </div>
           {loan.entity && (
             <p className="text-xs text-muted-foreground">{loan.entity}</p>
           )}
@@ -83,8 +85,8 @@ function LoanRow({ loan, currency }: { loan: Loan; currency: string }) {
         <Progress value={paidPct} className="h-2" />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{formatCurrency(loan.installmentAmount, currency)}/mo</span>
-        <span>{remaining} left &middot; {formatCurrency(remainingAmount, currency)} remaining</span>
+        <span>{formatCurrency(loan.installmentAmount, loan.currency)}/mo</span>
+        <span>{remaining} left &middot; {formatCurrency(remainingAmount, loan.currency)} remaining</span>
       </div>
       {loan.nextPaymentDate && (
         <p className="mt-1 text-xs text-muted-foreground">
@@ -95,7 +97,7 @@ function LoanRow({ loan, currency }: { loan: Loan; currency: string }) {
   )
 }
 
-function CardExpenseRow({ expense, currency }: { expense: CardExpense; currency: string }) {
+function CardExpenseRow({ expense }: { expense: CardExpense }) {
   const paid = expense.totalInstallments - expense.remainingInstallments
   const paidPct = expense.totalInstallments > 0
     ? Math.round((paid / expense.totalInstallments) * 100)
@@ -106,7 +108,10 @@ function CardExpenseRow({ expense, currency }: { expense: CardExpense; currency:
     <div className="rounded-lg border p-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
-          <p className="text-sm font-medium">{expense.description}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-medium">{expense.description}</p>
+            <Badge variant="outline" className="text-[10px]">{expense.currency}</Badge>
+          </div>
         </div>
         <Badge variant={paidPct >= 75 ? 'default' : 'secondary'} className="text-xs">
           {paid}/{expense.totalInstallments}
@@ -116,8 +121,8 @@ function CardExpenseRow({ expense, currency }: { expense: CardExpense; currency:
         <Progress value={paidPct} className="h-2" />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{formatCurrency(expense.installmentAmount, currency)}/mo</span>
-        <span>{expense.remainingInstallments} left &middot; {formatCurrency(remainingAmount, currency)} remaining</span>
+        <span>{formatCurrency(expense.installmentAmount, expense.currency)}/mo</span>
+        <span>{expense.remainingInstallments} left &middot; {formatCurrency(remainingAmount, expense.currency)} remaining</span>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
         Next: {formatDate(expense.nextDueDate)}

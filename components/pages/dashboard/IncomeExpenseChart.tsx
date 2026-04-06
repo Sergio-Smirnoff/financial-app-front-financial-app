@@ -1,10 +1,18 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useQueries } from '@tanstack/react-query'
 import { transactionsApi } from '@/lib/api/transactions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { formatCurrency } from '@/lib/utils/currency'
+import { CURRENCIES } from '@/lib/utils/currency'
 import { prevMonthRange, currentMonthRange } from '@/lib/utils/dates'
 import { format, subMonths } from 'date-fns'
 import {
@@ -17,11 +25,9 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-interface IncomeExpenseChartProps {
-  currency: string
-}
+export function IncomeExpenseChart() {
+  const [chartCurrency, setChartCurrency] = useState<string>('USD')
 
-export function IncomeExpenseChart({ currency }: IncomeExpenseChartProps) {
   const months = useMemo(() => {
     const result = []
     for (let i = 5; i >= 1; i--) {
@@ -32,9 +38,9 @@ export function IncomeExpenseChart({ currency }: IncomeExpenseChartProps) {
   }, [])
 
   const queries = useQueries({
-    queries: months.map((range, i) => ({
-      queryKey: ['transactions', 'summary', { currency, dateFrom: range.from, dateTo: range.to }],
-      queryFn: () => transactionsApi.getSummary({ currency, dateFrom: range.from, dateTo: range.to }),
+    queries: months.map((range) => ({
+      queryKey: ['transactions', 'summary', { currency: chartCurrency, dateFrom: range.from, dateTo: range.to }],
+      queryFn: () => transactionsApi.getSummary({ currency: chartCurrency, dateFrom: range.from, dateTo: range.to }),
     })),
   })
 
@@ -56,7 +62,21 @@ export function IncomeExpenseChart({ currency }: IncomeExpenseChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm font-medium">Income vs Expenses (Last 6 Months)</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium">Income vs Expenses (Last 6 Months)</CardTitle>
+          <Select value={chartCurrency} onValueChange={setChartCurrency}>
+            <SelectTrigger className="w-24 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {CURRENCIES.map((c) => (
+                <SelectItem key={c} value={c} className="text-xs">
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -69,7 +89,7 @@ export function IncomeExpenseChart({ currency }: IncomeExpenseChartProps) {
               <XAxis dataKey="month" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCompact(v)} />
               <Tooltip
-                formatter={(value) => formatCurrency(Number(value), currency)}
+                formatter={(value) => formatCurrency(Number(value), chartCurrency)}
                 contentStyle={{ borderRadius: '8px', fontSize: '13px' }}
               />
               <Legend />

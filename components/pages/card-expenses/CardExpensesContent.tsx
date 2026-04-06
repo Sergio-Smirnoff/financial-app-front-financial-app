@@ -12,15 +12,23 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Plus, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { CardExpense } from '@/types/finances'
 
 export function CardExpensesContent() {
-  const { currency, openConfirmDelete } = useUiStore()
-  const { data: expenses, isLoading, isError } = useCardExpenses({ currency })
+  const { openConfirmDelete } = useUiStore()
+  const [currencyFilter, setCurrencyFilter] = useState<string | undefined>(undefined)
+  const { data: expenses, isLoading, isError } = useCardExpenses({ currency: currencyFilter })
   const deleteExpense = useDeleteCardExpense()
   const payInstallment = usePayCardInstallment()
   const [formOpen, setFormOpen] = useState(false)
@@ -53,7 +61,24 @@ export function CardExpensesContent() {
 
   return (
     <div className="space-y-6 max-w-2xl">
-      <div className="flex justify-end">
+      <div className="flex items-center gap-3">
+        <Select
+          value={currencyFilter ?? 'ALL'}
+          onValueChange={(v) => setCurrencyFilter(v === 'ALL' ? undefined : v)}
+        >
+          <SelectTrigger className="w-36 h-8 text-xs">
+            <SelectValue placeholder="Currency" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All currencies</SelectItem>
+            {CURRENCIES.map((c) => (
+              <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <div className="flex-1" />
+
         <Button size="sm" onClick={() => setFormOpen(true)}>
           <Plus className="mr-1 h-4 w-4" /> New card expense
         </Button>
@@ -135,6 +160,7 @@ function ExpenseCard({
               <Badge variant={expense.active ? 'default' : 'secondary'} className="text-xs">
                 {expense.active ? 'Active' : 'Paid'}
               </Badge>
+              <Badge variant="outline" className="text-[10px]">{expense.currency}</Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               {formatCurrency(expense.totalAmount, expense.currency)} · {expense.totalInstallments} installments · Card {expense.cardId}

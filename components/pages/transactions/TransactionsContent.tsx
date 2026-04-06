@@ -27,18 +27,19 @@ import {
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Transaction, TransactionFilters } from '@/types/finances'
 
 export function TransactionsContent() {
-  const { currency, openConfirmDelete } = useUiStore()
-  const [filters, setFilters] = useState<TransactionFilters>({ page: 0, size: 20, currency })
+  const { openConfirmDelete } = useUiStore()
+  const [currencyFilter, setCurrencyFilter] = useState<string | undefined>(undefined)
+  const [filters, setFilters] = useState<TransactionFilters>({ page: 0, size: 20 })
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState<Transaction | null>(null)
 
-  const { data, isLoading, isError } = useTransactions({ ...filters, currency })
+  const { data, isLoading, isError } = useTransactions({ ...filters, currency: currencyFilter })
   const deleteMutation = useDeleteTransaction()
 
   const handleDelete = (tx: Transaction) => {
@@ -81,6 +82,24 @@ export function TransactionsContent() {
           </SelectContent>
         </Select>
 
+        <Select
+          value={currencyFilter ?? 'ALL'}
+          onValueChange={(v) => {
+            setCurrencyFilter(v === 'ALL' ? undefined : v)
+            setFilters((f) => ({ ...f, page: 0 }))
+          }}
+        >
+          <SelectTrigger className="w-36 h-8 text-xs">
+            <SelectValue placeholder="Currency" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All currencies</SelectItem>
+            {CURRENCIES.map((c) => (
+              <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <div className="flex-1" />
 
         <Button size="sm" onClick={() => setFormOpen(true)}>
@@ -102,6 +121,7 @@ export function TransactionsContent() {
                   <TableHead>Description</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Type</TableHead>
+                  <TableHead>Currency</TableHead>
                   <TableHead className="text-right">Amount</TableHead>
                   <TableHead className="w-20" />
                 </TableRow>
@@ -109,7 +129,7 @@ export function TransactionsContent() {
               <TableBody>
                 {data.content.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       No transactions found
                     </TableCell>
                   </TableRow>
@@ -125,6 +145,9 @@ export function TransactionsContent() {
                         <Badge variant={tx.type === 'INCOME' ? 'default' : 'destructive'} className="text-xs">
                           {tx.type}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs">{tx.currency}</Badge>
                       </TableCell>
                       <TableCell className="text-right font-medium">
                         <span className={tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>

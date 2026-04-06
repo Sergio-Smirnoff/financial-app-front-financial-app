@@ -5,6 +5,7 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { PortfolioSummaryCard } from './PortfolioSummaryCard'
 import { AllocationChart } from './AllocationChart'
+import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 
 export function InvestmentsDashboard() {
   const { data: summary, isLoading, isError } = usePortfolioSummary()
@@ -26,6 +27,8 @@ export function InvestmentsDashboard() {
           <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
         )}
       </div>
+
+      <HoldingTypeBreakdown />
     </div>
   )
 }
