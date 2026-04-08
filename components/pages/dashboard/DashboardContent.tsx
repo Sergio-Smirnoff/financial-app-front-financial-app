@@ -11,10 +11,12 @@ import { ActiveObligations } from './ActiveObligations'
 import { UpcomingPayments } from './UpcomingPayments'
 import { IncomeExpenseChart } from './IncomeExpenseChart'
 import { currentMonthRange, currentYearRange } from '@/lib/utils/dates'
+import { getUserFromCookie } from '@/lib/auth'
 
 export function DashboardContent() {
   const { from: monthFrom, to: monthTo } = currentMonthRange()
   const { from: yearFrom, to: yearTo } = currentYearRange()
+  const user = getUserFromCookie()
 
   const ytdSummary = useTransactionSummary({ dateFrom: yearFrom, dateTo: yearTo })
   const monthSummary = useTransactionSummary({ dateFrom: monthFrom, dateTo: monthTo })
@@ -34,6 +36,7 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
+      <h1 className="text-3xl">Welcome back, <span className="font-bold">{user?.name}</span>!</h1>
       {/* Year-to-Date overview — all currencies */}
       <YearOverview summaries={ytdSummary.data ?? []} />
 

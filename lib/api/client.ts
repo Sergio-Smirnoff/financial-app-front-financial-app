@@ -1,5 +1,7 @@
+import { getCsrfToken } from '@/lib/auth'
+import { refreshToken } from '@/lib/api/auth'
+
 const BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:8080'
-const DEV_USER_ID = process.env.NEXT_PUBLIC_DEV_USER_ID ?? '1'
 
 export class ApiError extends Error {
   constructor(
@@ -12,14 +14,48 @@ export class ApiError extends Error {
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((options?.headers as Record<string, string>) ?? {}),
+  }
+
+  // Add CSRF token for state-changing methods
+  const method = options?.method?.toUpperCase() ?? 'GET'
+  if (method !== 'GET' && method !== 'HEAD') {
+    const csrf = getCsrfToken()
+    if (csrf) {
+      headers['X-XSRF-TOKEN'] = csrf
+    }
+  }
+
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-User-Id': DEV_USER_ID,
-      ...options?.headers,
-    },
+    headers,
+    credentials: 'include',
   })
+
+  // On 401, try refresh and retry once
+  if (res.status === 401) {
+    try {
+      await refreshToken()
+      const retryRes = await fetch(`${BASE_URL}${path}`, {
+        ...options,
+        headers,
+        credentials: 'include',
+      })
+      const retryBody = await retryRes.json()
+      if (!retryRes.ok || !retryBody.success) {
+        throw new ApiError(retryBody.message ?? 'Request failed', retryRes.status)
+      }
+      return retryBody.data as T
+    } catch {
+      // Refresh failed — redirect to login
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login'
+      }
+      throw new ApiError('Session expired', 401)
+    }
+  }
 
   const body = await res.json()
 

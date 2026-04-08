@@ -1,9 +1,13 @@
 'use client'
 
-import { Menu } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from './ThemeToggle'
 import { useUiStore } from '@/lib/store/ui.store'
+import { getUserFromCookie } from '@/lib/auth'
+import { logout } from '@/lib/api/auth'
 
 interface HeaderProps {
   title: string
@@ -11,6 +15,17 @@ interface HeaderProps {
 
 export function Header({ title }: HeaderProps) {
   const { toggleSidebar } = useUiStore()
+  const router = useRouter()
+  const [user, setUser] = useState<ReturnType<typeof getUserFromCookie>>(null)
+
+  useEffect(() => {
+    setUser(getUserFromCookie())
+  }, [])
+
+  async function handleLogout() {
+    await logout()
+    router.push('/login')
+  }
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background px-4">
@@ -26,7 +41,17 @@ export function Header({ title }: HeaderProps) {
 
       <h1 className="flex-1 text-base font-semibold">{title}</h1>
 
+      {user && (
+        <span className="hidden text-sm text-muted-foreground sm:inline">
+          {user.name}
+        </span>
+      )}
+
       <ThemeToggle />
+
+      <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Logout">
+        <LogOut className="h-4 w-4" />
+      </Button>
     </header>
   )
 }

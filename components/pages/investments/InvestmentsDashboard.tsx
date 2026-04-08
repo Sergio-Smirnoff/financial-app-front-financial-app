@@ -26,9 +26,8 @@ export function InvestmentsDashboard() {
         {summary.breakdownUsd.length > 0 && (
           <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
         )}
+        <HoldingTypeBreakdown />
       </div>
-
-      <HoldingTypeBreakdown />
     </div>
   )
 }
