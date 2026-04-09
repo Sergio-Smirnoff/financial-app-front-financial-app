@@ -6,7 +6,7 @@ export default function InvestmentsPage() {
     <>
       <Header title="Investments" />
       <main className="flex-1 overflow-auto p-4">
-        <InvestmentsLayout defaultTab="dashboard" />
+        <InvestmentsLayout />
       </main>
     </>
   )
