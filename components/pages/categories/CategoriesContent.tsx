@@ -8,11 +8,10 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Category } from '@/types/finances'
+import { getCategoryIcon } from '@/lib/utils/category-utils'
 
 export function CategoriesContent() {
   const { openConfirmDelete } = useUiStore()
@@ -25,6 +24,14 @@ export function CategoriesContent() {
   const [newCategoryName, setNewCategoryName] = useState('')
   const [expanded, setExpanded] = useState<Set<number>>(new Set())
   const [subInput, setSubInput] = useState<Record<number, string>>({})
+
+  const toggleExpand = (id: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
   const handleCreateCategory = () => {
     if (!newCategoryName.trim()) return
@@ -62,21 +69,12 @@ export function CategoriesContent() {
     })
   }
 
-  const toggleExpand = (id: number) => {
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage message="Failed to load categories." />
 
   return (
-    <div className="space-y-4 max-w-xl">
-      {/* Create category */}
-      <div className="flex gap-2">
+    <div className="h-full flex flex-col">
+      <div className="flex gap-2 w-full">
         <Input
           placeholder="New category name"
           value={newCategoryName}
@@ -88,43 +86,48 @@ export function CategoriesContent() {
         </Button>
       </div>
 
-      {/* Category tree */}
-      <div className="space-y-2">
-        {categories?.map((cat) => {
-          const subcategories = cat.subcategories ?? []
-          return (
-            <Card key={cat.id}>
-              <CardContent className="p-3">
-                <div className="flex items-center gap-2">
-                  <button
-                    className="flex items-center gap-1 text-sm font-medium flex-1 text-left"
-                    onClick={() => toggleExpand(cat.id)}
-                  >
-                    {expanded.has(cat.id) ? (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    )}
-                    {cat.name}
-                    <Badge variant="secondary" className="ml-1 text-xs">
-                      {subcategories.length}
-                    </Badge>
-                  </button>
+      <div className="flex-1 overflow-auto mt-4">
+        <div className="space-y-2 w-full">
+          {categories?.map((cat) => {
+            const subcategories = cat.subcategories ?? []
+            const isExpanded = expanded.has(cat.id)
+
+            return (
+              <div key={cat.id} className="border rounded-lg overflow-hidden bg-card">
+                <div
+                  className="flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors"
+                  onClick={() => toggleExpand(cat.id)}
+                >
+                  {isExpanded ? (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span className="text-lg">{getCategoryIcon(cat.name)}</span>
+                  <span className="font-medium">{cat.name}</span>
+                  <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground text-xs flex items-center justify-center font-medium">
+                    {subcategories.length}
+                  </div>
+                  <span className="text-sm text-muted-foreground">subcategorías</span>
+                  <div className="flex-1" />
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-destructive"
-                    onClick={() => handleDeleteCategory(cat)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteCategory(cat)
+                    }}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
                 </div>
 
-                {expanded.has(cat.id) && (
-                  <div className="mt-2 ml-5 space-y-1">
+                {isExpanded && (
+                  <div className="border-t p-3 bg-muted/30 space-y-1">
                     {subcategories.map((sub) => (
-                      <div key={sub.id} className="flex items-center gap-2 py-0.5">
-                        <span className="flex-1 text-sm text-muted-foreground">{sub.name}</span>
+                      <div key={sub.id} className="flex items-center py-1 px-2 rounded hover:bg-accent/50">
+                        <span className="text-sm text-muted-foreground flex-1">{sub.name}</span>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -146,29 +149,35 @@ export function CategoriesContent() {
                       </div>
                     ))}
 
-                    {/* Add subcategory inline */}
-                    <div className="flex gap-2 pt-1">
+                    <div className="flex gap-2 pt-2">
                       <Input
-                        className="h-7 text-xs"
+                        className="h-8 text-sm"
                         placeholder="New subcategory…"
                         value={subInput[cat.id] ?? ''}
                         onChange={(e) => setSubInput((s) => ({ ...s, [cat.id]: e.target.value }))}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCreateSubcategory(cat.id)}
+                        onKeyDown={(e) => {
+                          e.stopPropagation()
+                          if (e.key === 'Enter') handleCreateSubcategory(cat.id)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
                       />
-                      <Button size="sm" className="h-7 px-2" onClick={() => handleCreateSubcategory(cat.id)}>
-                        <Plus className="h-3 w-3" />
+                      <Button size="sm" className="h-8" onClick={(e) => {
+                        e.stopPropagation()
+                        handleCreateSubcategory(cat.id)
+                      }}>
+                        <Plus className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          )
-        })}
+              </div>
+            )
+          })}
 
-        {categories?.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Create one above.</p>
-        )}
+          {categories?.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Create one above.</p>
+          )}
+        </div>
       </div>
 
       <ConfirmDialog />

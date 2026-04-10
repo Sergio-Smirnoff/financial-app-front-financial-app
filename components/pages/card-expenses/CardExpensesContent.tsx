@@ -60,8 +60,8 @@ export function CardExpensesContent() {
   const inactive = expenses?.filter((e) => !e.active) ?? []
 
   return (
-    <div className="space-y-6 max-w-2xl">
-      <div className="flex items-center gap-3">
+    <div className="space-y-6 h-full flex flex-col overflow-hidden">
+      <div className="flex items-center gap-3 shrink-0">
         <Select
           value={currencyFilter ?? 'ALL'}
           onValueChange={(v) => setCurrencyFilter(v === 'ALL' ? undefined : v)}
@@ -88,7 +88,8 @@ export function CardExpensesContent() {
         <p className="text-sm text-muted-foreground text-center py-8">No card expenses yet.</p>
       )}
 
-      {active.length > 0 && (
+      <div className="flex-1 overflow-auto space-y-6">
+        {active.length > 0 && (
         <section>
           <h2 className="text-sm font-medium text-muted-foreground mb-2">Active</h2>
           <div className="space-y-3">
@@ -105,22 +106,23 @@ export function CardExpensesContent() {
         </section>
       )}
 
-      {inactive.length > 0 && (
-        <section>
-          <h2 className="text-sm font-medium text-muted-foreground mb-2">Completed</h2>
-          <div className="space-y-3">
-            {inactive.map((exp) => (
-              <ExpenseCard
-                key={exp.id}
-                expense={exp}
-                onDelete={() => handleDelete(exp)}
-                onPay={() => handlePay(exp)}
-                payPending={payInstallment.isPending}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+        {inactive.length > 0 && (
+          <section>
+            <h2 className="text-sm font-medium text-muted-foreground mb-2">Completed</h2>
+            <div className="space-y-3">
+              {inactive.map((exp) => (
+                <ExpenseCard
+                  key={exp.id}
+                  expense={exp}
+                  onDelete={() => handleDelete(exp)}
+                  onPay={() => handlePay(exp)}
+                  payPending={payInstallment.isPending}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="sm:max-w-md">

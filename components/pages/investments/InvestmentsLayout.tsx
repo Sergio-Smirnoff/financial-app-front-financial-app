@@ -9,17 +9,17 @@ export function InvestmentsLayout() {
   const [tab, setTab] = useState<string>('dashboard')
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="space-y-4">
-      <TabsList>
+    <Tabs value={tab} onValueChange={setTab} className="space-y-4 h-full flex flex-col overflow-hidden">
+      <TabsList className="shrink-0">
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
         <TabsTrigger value="holdings">Holdings</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="dashboard">
+      <TabsContent value="dashboard" className="flex-1 overflow-auto">
         <InvestmentsDashboard />
       </TabsContent>
 
-      <TabsContent value="holdings">
+      <TabsContent value="holdings" className="flex-1 overflow-auto">
         <HoldingsContent />
       </TabsContent>
     </Tabs>

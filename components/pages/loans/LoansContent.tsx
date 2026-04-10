@@ -50,8 +50,8 @@ export function LoansContent() {
   if (isError) return <ErrorMessage message="Failed to load loans." />
 
   return (
-    <div className="space-y-4 max-w-2xl">
-      <div className="flex items-center gap-3">
+    <div className="space-y-4 h-full flex flex-col overflow-hidden">
+      <div className="flex items-center gap-3 shrink-0">
         <Select
           value={currencyFilter ?? 'ALL'}
           onValueChange={(v) => setCurrencyFilter(v === 'ALL' ? undefined : v)}
@@ -78,7 +78,7 @@ export function LoansContent() {
         <p className="text-sm text-muted-foreground text-center py-8">No loans yet.</p>
       )}
 
-      <div className="space-y-3">
+      <div className="flex-1 overflow-auto space-y-3">
         {loans?.map((loan) => (
           <LoanCard
             key={loan.id}
