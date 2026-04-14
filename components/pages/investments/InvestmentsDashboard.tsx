@@ -7,8 +7,12 @@ import { PortfolioSummaryCard } from './PortfolioSummaryCard'
 import { AllocationChart } from './AllocationChart'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 
-export function InvestmentsDashboard() {
-  const { data: summary, isLoading, isError } = usePortfolioSummary()
+interface InvestmentsDashboardProps {
+  enabled?: boolean
+}
+
+export function InvestmentsDashboard({ enabled = true }: InvestmentsDashboardProps) {
+  const { data: summary, isLoading, isError } = usePortfolioSummary({ enabled })
 
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage message="Failed to load portfolio summary." />

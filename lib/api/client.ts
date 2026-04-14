@@ -3,6 +3,9 @@ import { refreshToken } from '@/lib/api/auth'
 
 const BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:8080'
 
+// Shared in-flight promise so concurrent 401s only trigger one refresh
+let refreshing: Promise<boolean> | null = null
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -34,27 +37,27 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     credentials: 'include',
   })
 
-  // On 401, try refresh and retry once
+  // On 401, try refresh once — mutex ensures only one refresh runs at a time
   if (res.status === 401) {
     try {
-      await refreshToken()
-      const retryRes = await fetch(`${BASE_URL}${path}`, {
-        ...options,
-        headers,
-        credentials: 'include',
-      })
-      const retryBody = await retryRes.json()
-      if (!retryRes.ok || !retryBody.success) {
-        throw new ApiError(retryBody.message ?? 'Request failed', retryRes.status)
+      if (!refreshing) {
+        refreshing = refreshToken()
+          .then(() => true)
+          .catch(() => false)
+          .finally(() => { refreshing = null })
       }
-      return retryBody.data as T
+      const ok = await refreshing
+      if (ok) {
+        return apiFetch<T>(path, options)
+      }
     } catch {
-      // Refresh failed — redirect to login
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login'
-      }
-      throw new ApiError('Session expired', 401)
+      // fall through to redirect
     }
+    // Refresh failed — redirect to login
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+    }
+    throw new ApiError('Session expired', 401)
   }
 
   const body = await res.json()

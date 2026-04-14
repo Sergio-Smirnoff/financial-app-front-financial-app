@@ -13,5 +13,5 @@ export function formatAmount(amount: number): string {
   }).format(amount)
 }
 
-export const CURRENCIES = ['USD', 'EUR', 'ARS', 'BRL', 'GBP'] as const
+export const CURRENCIES = ['ARS', 'USD'] as const
 export type CurrencyCode = (typeof CURRENCIES)[number]

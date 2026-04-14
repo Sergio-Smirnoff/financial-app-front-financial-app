@@ -9,17 +9,19 @@ export function useHoldings() {
   })
 }
 
-export function usePortfolioSummary() {
+export function usePortfolioSummary(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['portfolio', 'summary'],
     queryFn: () => investmentsApi.getPortfolioSummary(),
+    enabled: options?.enabled ?? true,
   })
 }
 
-export function usePortfolioHoldings() {
+export function usePortfolioHoldings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['portfolio', 'holdings'],
     queryFn: () => investmentsApi.getPortfolioHoldings(),
+    enabled: options?.enabled ?? true,
   })
 }
 

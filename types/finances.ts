@@ -1,3 +1,11 @@
+export interface SpringPage<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  size: number
+  number: number
+}
+
 export type TransactionType = 'INCOME' | 'EXPENSE'
 export type CategoryType = 'INCOME' | 'EXPENSE' | 'BOTH'
 

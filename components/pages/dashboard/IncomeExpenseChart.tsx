@@ -38,10 +38,24 @@ export function IncomeExpenseChart() {
   }, [])
 
   const queries = useQueries({
-    queries: months.map((range) => ({
-      queryKey: ['transactions', 'summary', { currency: chartCurrency, dateFrom: range.from, dateTo: range.to }],
-      queryFn: () => transactionsApi.getSummary({ currency: chartCurrency, dateFrom: range.from, dateTo: range.to }),
-    })),
+    queries: months.map((range, i) => {
+      const now = new Date()
+      const currentMonth = now.getMonth()
+      const currentYear = now.getFullYear()
+      // months array: index 0..4 = past months, index 5 = current month
+      const isPast = i < 5
+      // Double-check via date: any range that ends before the start of the current month
+      const rangeDate = new Date(range.from)
+      const isPastByDate =
+        rangeDate.getFullYear() < currentYear ||
+        (rangeDate.getFullYear() === currentYear && rangeDate.getMonth() < currentMonth)
+
+      return {
+        queryKey: ['transactions', 'summary', { currency: chartCurrency, dateFrom: range.from, dateTo: range.to }],
+        queryFn: () => transactionsApi.getSummary({ currency: chartCurrency, dateFrom: range.from, dateTo: range.to }),
+        staleTime: (isPast && isPastByDate) ? Infinity : 60_000,
+      }
+    }),
   })
 
   const isLoading = queries.some((q) => q.isLoading)

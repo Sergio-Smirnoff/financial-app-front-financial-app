@@ -9,6 +9,7 @@ import {
   Landmark,
   CreditCard,
   TrendingUp,
+  Settings,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { label: 'Loans', href: '/loans', icon: Landmark },
   { label: 'Card Expenses', href: '/card-expenses', icon: CreditCard },
   { label: 'Investments', href: '/investments', icon: TrendingUp },
+  { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
 function NavLink({ item, onClick }: { item: (typeof NAV_ITEMS)[number]; onClick?: () => void }) {

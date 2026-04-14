@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Menu, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from './ThemeToggle'
+import { NotificationBell } from './NotificationBell'
 import { useUiStore } from '@/lib/store/ui.store'
 import { getUserFromCookie } from '@/lib/auth'
 import { logout } from '@/lib/api/auth'
@@ -46,6 +47,8 @@ export function Header({ title }: HeaderProps) {
           {user.name}
         </span>
       )}
+
+      <NotificationBell />
 
       <ThemeToggle />
 

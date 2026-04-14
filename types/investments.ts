@@ -9,6 +9,8 @@ export interface Holding {
   quantity: number
   avgPurchasePrice: number
   currency: string
+  notifyGainThresholdPct: number | null
+  notifyLossThresholdPct: number | null
   createdAt: string
   updatedAt: string
 }
@@ -45,6 +47,8 @@ export interface CreateHoldingRequest {
   quantity: number
   avgPurchasePrice: number
   currency: string
+  notifyGainThresholdPct?: number
+  notifyLossThresholdPct?: number
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest

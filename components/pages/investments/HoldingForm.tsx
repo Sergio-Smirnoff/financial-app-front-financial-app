@@ -40,6 +40,8 @@ const schema = z.object({
   quantity: z.number({ error: 'Required' }).positive('Must be positive'),
   avgPurchasePrice: z.number({ error: 'Required' }).min(0, 'Must be zero or positive'),
   currency: z.enum(CURRENCIES),
+  notifyGainThresholdPct: z.number().positive('Must be positive').max(1000).optional().nullable(),
+  notifyLossThresholdPct: z.number().positive('Must be positive').max(1000).optional().nullable(),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -63,6 +65,8 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
       quantity: holding?.quantity ?? undefined,
       avgPurchasePrice: holding?.avgPurchasePrice ?? undefined,
       currency: (holding?.currency as 'ARS' | 'USD') ?? 'ARS',
+      notifyGainThresholdPct: holding?.notifyGainThresholdPct ?? null,
+      notifyLossThresholdPct: holding?.notifyLossThresholdPct ?? null,
     },
   })
 
@@ -193,6 +197,56 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             </FormItem>
           )}
         />
+
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-muted-foreground">Notifications (optional)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="notifyGainThresholdPct"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Alert on gain %</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g. 10"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === '' ? null : e.target.valueAsNumber)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="notifyLossThresholdPct"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Alert on loss %</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="e.g. 10"
+                      value={field.value ?? ''}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === '' ? null : e.target.valueAsNumber)
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
         <Button type="submit" className="w-full" disabled={isPending}>
           {isPending ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update holding' : 'Create holding')}

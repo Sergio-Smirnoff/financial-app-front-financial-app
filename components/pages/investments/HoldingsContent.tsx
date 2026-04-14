@@ -22,9 +22,13 @@ const ASSET_TYPE_LABELS: Record<AssetType, string> = {
   FCI: 'Mutual Funds (FCI)',
 }
 
-export function HoldingsContent() {
+interface HoldingsContentProps {
+  enabled?: boolean
+}
+
+export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
   const { openConfirmDelete } = useUiStore()
-  const { data: holdings, isLoading, isError } = usePortfolioHoldings()
+  const { data: holdings, isLoading, isError } = usePortfolioHoldings({ enabled })
   const deleteHolding = useDeleteHolding()
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)

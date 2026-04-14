@@ -1,15 +1,16 @@
 import { api } from './client'
-import type { Loan, LoanInstallment, CreateLoanRequest } from '@/types/finances'
+import type { Loan, LoanInstallment, CreateLoanRequest, SpringPage } from '@/types/finances'
 
 const BASE = '/api/v1/finances/loans'
 
 export const loansApi = {
-  getAll: (filters: { active?: boolean; currency?: string } = {}) => {
+  getAll: async (filters: { active?: boolean; currency?: string } = {}): Promise<Loan[]> => {
     const params = new URLSearchParams()
     if (filters.active !== undefined) params.set('active', String(filters.active))
     if (filters.currency) params.set('currency', filters.currency)
     const qs = params.toString()
-    return api.get<Loan[]>(`${BASE}${qs ? `?${qs}` : ''}`)
+    const page = await api.get<SpringPage<Loan>>(`${BASE}${qs ? `?${qs}` : ''}`)
+    return page.content
   },
 
   create: (data: CreateLoanRequest) =>
