@@ -71,7 +71,12 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   })
 
   const onSubmit = (values: FormValues) => {
-    const data = { ...values, ticker: values.ticker.toUpperCase() }
+    const data = {
+      ...values,
+      ticker: values.ticker.toUpperCase(),
+      notifyGainThresholdPct: values.notifyGainThresholdPct ?? undefined,
+      notifyLossThresholdPct: values.notifyLossThresholdPct ?? undefined,
+    }
 
     if (isEditing) {
       updateHolding.mutate(
