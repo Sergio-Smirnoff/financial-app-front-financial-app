@@ -18,9 +18,10 @@ interface HoldingTableProps {
   holdings: HoldingWithPrice[]
   onEdit: (holding: HoldingWithPrice) => void
   onDelete: (holding: HoldingWithPrice) => void
+  onViewDetail: (holding: HoldingWithPrice) => void
 }
 
-export function HoldingTable({ holdings, onEdit, onDelete }: HoldingTableProps) {
+export function HoldingTable({ holdings, onEdit, onDelete, onViewDetail }: HoldingTableProps) {
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -40,7 +41,14 @@ export function HoldingTable({ holdings, onEdit, onDelete }: HoldingTableProps) 
         <TableBody>
           {holdings.map((h) => (
             <TableRow key={h.id}>
-              <TableCell className="font-medium">{h.ticker}</TableCell>
+              <TableCell className="font-medium">
+                <button
+                  onClick={() => onViewDetail(h)}
+                  className="hover:underline cursor-pointer text-left"
+                >
+                  {h.ticker}
+                </button>
+              </TableCell>
               <TableCell className="hidden sm:table-cell text-muted-foreground">{h.name}</TableCell>
               <TableCell className="text-right">{formatAmount(h.quantity)}</TableCell>
               <TableCell className="text-right hidden md:table-cell">

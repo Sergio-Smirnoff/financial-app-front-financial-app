@@ -3,6 +3,7 @@ import type {
   Holding,
   HoldingWithPrice,
   PortfolioSummary,
+  PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
 } from '@/types/investments'
@@ -27,4 +28,12 @@ export const investmentsApi = {
 
   getPortfolioHoldings: () =>
     api.get<HoldingWithPrice[]>(`${BASE}/portfolio/holdings`),
+
+  getPriceHistory: (ticker: string, from?: string, to?: string) => {
+    const params = new URLSearchParams()
+    if (from) params.set('from', from)
+    if (to) params.set('to', to)
+    const query = params.toString() ? `?${params}` : ''
+    return api.get<PriceHistory[]>(`${BASE}/prices/history/${ticker}${query}`)
+  },
 }

@@ -20,6 +20,20 @@ export interface HoldingWithPrice extends Holding {
   currentValue: number | null
   plAmount: number | null
   plPercent: number | null
+  lastGainNotifiedAt: string | null
+  lastLossNotifiedAt: string | null
+}
+
+export interface PriceHistory {
+  ticker: string
+  lastPrice: number
+  openPrice: number | null
+  highPrice: number | null
+  lowPrice: number | null
+  volume: number | null
+  dailyVariation: number | null
+  currency: string
+  pricedAt: string
 }
 
 export interface AllocationBreakdown {

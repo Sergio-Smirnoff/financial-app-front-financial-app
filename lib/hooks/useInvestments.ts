@@ -2,6 +2,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { investmentsApi } from '@/lib/api/investments'
 import type { CreateHoldingRequest, UpdateHoldingRequest } from '@/types/investments'
 
+export function usePriceHistory(ticker: string, from?: string, to?: string) {
+  return useQuery({
+    queryKey: ['priceHistory', ticker, from, to],
+    queryFn: () => investmentsApi.getPriceHistory(ticker, from, to),
+    enabled: !!ticker,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
 export function useHoldings() {
   return useQuery({
     queryKey: ['holdings'],

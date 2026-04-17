@@ -4,11 +4,13 @@ import dynamic from 'next/dynamic'
 import { useTransactionSummary } from '@/lib/hooks/useTransactions'
 import { useLoans } from '@/lib/hooks/useLoans'
 import { useCardExpenses } from '@/lib/hooks/useCardExpenses'
+import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { YearOverview } from './YearOverview'
 import { MonthSummary } from './MonthSummary'
 import { ActiveObligations } from './ActiveObligations'
 import { UpcomingPayments } from './UpcomingPayments'
+import { TopMovers } from './TopMovers'
 
 const IncomeExpenseChart = dynamic(
   () => import('./IncomeExpenseChart').then((m) => ({ default: m.IncomeExpenseChart })),
@@ -26,6 +28,7 @@ export function DashboardContent() {
   const monthSummary = useTransactionSummary({ dateFrom: monthFrom, dateTo: monthTo })
   const loans = useLoans({ active: true })
   const cardExpenses = useCardExpenses({ active: true })
+  const { data: portfolioHoldings = [] } = usePortfolioHoldings()
 
   if (ytdSummary.isError || monthSummary.isError) {
     return <ErrorMessage message="Failed to load dashboard data." />
@@ -71,6 +74,8 @@ export function DashboardContent() {
 
       {/* Income vs Expenses chart — at the bottom, with local currency picker */}
       <IncomeExpenseChart />
+
+      <TopMovers holdings={portfolioHoldings} />
     </div>
   )
 }

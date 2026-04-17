@@ -8,6 +8,7 @@ import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
+import { HoldingDetailDialog } from './HoldingDetailDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
@@ -32,6 +33,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
   const deleteHolding = useDeleteHolding()
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)
+  const [detailHolding, setDetailHolding] = useState<HoldingWithPrice | null>(null)
 
   const handleDelete = (holding: HoldingWithPrice) => {
     openConfirmDelete({
@@ -86,6 +88,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
           holdings={group.items}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onViewDetail={setDetailHolding}
         />
       ))}
 
@@ -102,6 +105,12 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
       </Dialog>
 
       <ConfirmDialog />
+
+      <HoldingDetailDialog
+        holding={detailHolding}
+        open={detailHolding !== null}
+        onClose={() => setDetailHolding(null)}
+      />
     </div>
   )
 }
