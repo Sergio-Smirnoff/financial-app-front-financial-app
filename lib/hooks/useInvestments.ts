@@ -8,6 +8,7 @@ export function usePriceHistory(ticker: string, from?: string, to?: string) {
     queryFn: () => investmentsApi.getPriceHistory(ticker, from, to),
     enabled: !!ticker,
     staleTime: 5 * 60 * 1000,
+    retry: false,
   })
 }
 

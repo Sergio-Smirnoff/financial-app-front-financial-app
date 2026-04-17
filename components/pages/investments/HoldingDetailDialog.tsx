@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { format, subWeeks, subMonths } from 'date-fns'
 import {
   LineChart,
@@ -89,9 +89,9 @@ interface Props {
 
 export function HoldingDetailDialog({ holding, open, onClose }: Props) {
   const [range, setRange] = useState<Range>('1M')
-  const { from, to } = getRangeDates(range)
+  const { from, to } = useMemo(() => getRangeDates(range), [range])
 
-  const { data: history = [], isLoading } = usePriceHistory(
+  const { data: history = [], isLoading, isError } = usePriceHistory(
     holding?.ticker ?? '',
     from,
     to,
@@ -169,6 +169,7 @@ export function HoldingDetailDialog({ holding, open, onClose }: Props) {
           {RANGES.map((r) => (
             <button
               key={r}
+              type="button"
               onClick={() => setRange(r)}
               className={`px-3 py-1 text-xs rounded-md border transition-colors ${
                 range === r
@@ -186,6 +187,10 @@ export function HoldingDetailDialog({ holding, open, onClose }: Props) {
           {isLoading ? (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
               Loading…
+            </div>
+          ) : isError ? (
+            <div className="flex items-center justify-center h-full text-sm text-muted-foreground text-center px-4">
+              Could not load price history. Try again in a moment.
             </div>
           ) : chartData.length < 2 ? (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground text-center px-4">
@@ -205,6 +210,8 @@ export function HoldingDetailDialog({ holding, open, onClose }: Props) {
                   tickLine={false}
                   width={65}
                   tickFormatter={(v) => v.toLocaleString()}
+                  domain={['auto', 'auto']}
+                  scale="linear"
                 />
                 <Tooltip
                   formatter={(v) => [
