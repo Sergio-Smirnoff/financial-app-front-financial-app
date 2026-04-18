@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
+  Building2,
   ArrowLeftRight,
   Tag,
   Landmark,
@@ -18,6 +19,7 @@ import { Button } from '@/components/ui/button'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { label: 'Banks', href: '/banks', icon: Building2 },
   { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
   { label: 'Categories', href: '/categories', icon: Tag },
   { label: 'Loans', href: '/loans', icon: Landmark },
