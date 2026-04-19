@@ -1,52 +1,52 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { loansApi } from '@/lib/api/loans'
-import type { CreateLoanRequest } from '@/types/finances'
+import type { LoanRequest } from '@/types/loans'
 
-export function useLoans(filters: { active?: boolean; currency?: string } = {}) {
+const QK = {
+  all: ['loans'] as const,
+  byAccount: (accountId: number) => ['loans', { accountId }] as const,
+  installments: (loanId: number) => ['loans', loanId, 'installments'] as const,
+}
+
+export function useLoans(accountId?: number) {
   return useQuery({
-    queryKey: ['loans', filters],
-    queryFn: () => loansApi.getAll(filters),
+    queryKey: accountId ? QK.byAccount(accountId) : QK.all,
+    queryFn: () => loansApi.list(accountId),
+  })
+}
+
+export function useCreateLoan() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: LoanRequest) => loansApi.create(data),
+    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
+  })
+}
+
+export function useDeleteLoan() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => loansApi.delete(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
   })
 }
 
 export function useLoanInstallments(loanId: number) {
   return useQuery({
-    queryKey: ['loans', loanId, 'installments'],
-    queryFn: () => loansApi.getInstallments(loanId),
-    enabled: !!loanId,
-  })
-}
-
-export function useCreateLoan() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (data: CreateLoanRequest) => loansApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['loans'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-    },
-  })
-}
-
-export function useDeleteLoan() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (id: number) => loansApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['loans'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-    },
+    queryKey: QK.installments(loanId),
+    queryFn: () => loansApi.listInstallments(loanId),
+    enabled: loanId > 0,
   })
 }
 
 export function usePayLoanInstallment() {
-  const queryClient = useQueryClient()
+  const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ loanId, installmentId }: { loanId: number; installmentId: number }) =>
-      loansApi.payInstallment(loanId, installmentId),
-    onSuccess: (_data, { loanId }) => {
-      queryClient.invalidateQueries({ queryKey: ['loans', loanId, 'installments'] })
-      queryClient.invalidateQueries({ queryKey: ['loans'] })
+    mutationFn: (vars: { loanId: number; installmentId: number; paidDate?: string }) =>
+      loansApi.payInstallment(vars.loanId, vars.installmentId, vars.paidDate),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: QK.installments(vars.loanId) })
+      qc.invalidateQueries({ queryKey: QK.all })
     },
   })
 }

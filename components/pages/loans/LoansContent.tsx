@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useLoans, useDeleteLoan, useLoanInstallments, usePayLoanInstallment } from '@/lib/hooks/useLoans'
 import { useUiStore } from '@/lib/store/ui.store'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -20,15 +21,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronDown } from 'lucide-react'
-import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
-import type { Loan } from '@/types/finances'
+import type { Loan } from '@/types/loans'
 
 export function LoansContent() {
   const { openConfirmDelete } = useUiStore()
-  const [currencyFilter, setCurrencyFilter] = useState<string | undefined>(undefined)
-  const { data: loans, isLoading, isError } = useLoans({ currency: currencyFilter })
+  const { banks } = useBanks()
+  const [accountId, setAccountId] = useState<number | undefined>(undefined)
+  const { data: loans, isLoading, isError } = useLoans(accountId)
   const deleteLoan = useDeleteLoan()
   const [formOpen, setFormOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -36,7 +38,7 @@ export function LoansContent() {
   const handleDelete = (loan: Loan) => {
     openConfirmDelete({
       title: 'Delete loan',
-      description: `Delete "${loan.description}"? This action cannot be undone.`,
+      description: `Delete "${loan.name}"? This action cannot be undone.`,
       onConfirm: () => {
         deleteLoan.mutate(loan.id, {
           onSuccess: () => toast.success('Loan deleted'),
@@ -49,20 +51,24 @@ export function LoansContent() {
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage message="Failed to load loans." />
 
+  const allAccounts = banks.flatMap(b => b.accounts.map(a => ({ ...a, bankName: b.name })))
+
   return (
     <div className="space-y-4 h-full flex flex-col overflow-hidden">
       <div className="flex items-center gap-3 shrink-0">
         <Select
-          value={currencyFilter ?? 'ALL'}
-          onValueChange={(v) => setCurrencyFilter(v === 'ALL' ? undefined : v)}
+          value={accountId?.toString() ?? 'ALL'}
+          onValueChange={(v) => setAccountId(v === 'ALL' ? undefined : parseInt(v))}
         >
-          <SelectTrigger className="w-36 h-8 text-xs">
-            <SelectValue placeholder="Currency" />
+          <SelectTrigger className="w-48 h-8 text-xs">
+            <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All currencies</SelectItem>
-            {CURRENCIES.map((c) => (
-              <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
+            <SelectItem value="ALL">All accounts</SelectItem>
+            {allAccounts.map((a) => (
+              <SelectItem key={a.id} value={a.id.toString()} className="text-xs">
+                {a.bankName} - {a.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -126,15 +132,15 @@ function LoanCard({
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <CardTitle className="text-sm font-medium">{loan.description}</CardTitle>
+              <CardTitle className="text-sm font-medium">{loan.name}</CardTitle>
               <Badge variant={loan.active ? 'default' : 'secondary'} className="text-xs">
-                {loan.active ? 'Active' : 'Paid'}
+                {loan.active ? 'Active' : 'Closed'}
               </Badge>
               <Badge variant="outline" className="text-[10px]">{loan.currency}</Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {formatCurrency(loan.totalAmount, loan.currency)} · {loan.totalInstallments} installments
-              {loan.nextPaymentDate && ` · Next: ${formatDate(loan.nextPaymentDate)}`}
+              Principal: {formatCurrency(loan.principal, loan.currency)} · {loan.totalInstallments} installments
+              {loan.interestRate > 0 && ` · Int: ${loan.interestRate}%`}
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">

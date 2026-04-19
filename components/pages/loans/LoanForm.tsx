@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateLoan } from '@/lib/hooks/useLoans'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -22,33 +23,31 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { CURRENCIES } from '@/lib/utils/currency'
 
 const schema = z.object({
-  description: z.string().min(1, 'Required'),
-  entity: z.string().optional(),
-  totalAmount: z.number({ error: 'Required' }).positive('Must be positive'),
-  currency: z.string().min(1, 'Required'),
+  accountId: z.coerce.number({ error: 'Required' }).positive('Required'),
+  name: z.string().min(1, 'Required'),
+  principal: z.number({ error: 'Required' }).positive('Must be positive'),
+  interestRate: z.number({ error: 'Required' }).min(0, 'Min 0'),
   totalInstallments: z.number({ error: 'Required' }).int().min(1, 'Min 1'),
-  installmentAmount: z.number({ error: 'Required' }).positive('Must be positive'),
-  firstPaymentDate: z.string().min(1, 'Required'),
+  startDate: z.string().min(1, 'Required'),
 })
 
 type FormValues = z.infer<typeof schema>
 
 export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
+  const { banks } = useBanks()
   const createLoan = useCreateLoan()
 
   const form = useForm<FormValues, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      description: '',
-      entity: '',
-      totalAmount: undefined,
-      currency: 'USD',
+      accountId: undefined,
+      name: '',
+      principal: undefined,
+      interestRate: 0,
       totalInstallments: 12,
-      installmentAmount: undefined,
-      firstPaymentDate: new Date().toISOString().slice(0, 10),
+      startDate: new Date().toISOString().slice(0, 10),
     },
   })
 
@@ -59,16 +58,27 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
     })
   }
 
+  const allAccounts = banks.flatMap(b => b.accounts.map(a => ({ ...a, bankName: b.name })))
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="description"
+          name="accountId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Car loan" /></FormControl>
+              <FormLabel>Account</FormLabel>
+              <Select value={field.value?.toString()} onValueChange={(v) => field.onChange(parseInt(v))}>
+                <FormControl><SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
+                <SelectContent>
+                  {allAccounts.map((a) => (
+                    <SelectItem key={a.id} value={a.id.toString()}>
+                      {a.bankName} - {a.name} ({a.currency})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -76,11 +86,11 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
 
         <FormField
           control={form.control}
-          name="entity"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Entity / bank (optional)</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Banco Nacional" /></FormControl>
+              <FormLabel>Loan Name</FormLabel>
+              <FormControl><Input {...field} placeholder="e.g. Car loan" /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -89,10 +99,10 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
         <div className="grid grid-cols-2 gap-3">
           <FormField
             control={form.control}
-            name="totalAmount"
+            name="principal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total amount</FormLabel>
+                <FormLabel>Principal Amount</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -108,16 +118,19 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
           />
           <FormField
             control={form.control}
-            name="currency"
+            name="interestRate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                  <SelectContent>
-                    {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <FormLabel>Interest Rate (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -130,7 +143,7 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
             name="totalInstallments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Installments</FormLabel>
+                <FormLabel>Total Installments</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -145,36 +158,16 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
           />
           <FormField
             control={form.control}
-            name="installmentAmount"
+            name="startDate"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount / installment</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
-                  />
-                </FormControl>
+                <FormLabel>Start Date</FormLabel>
+                <FormControl><Input type="date" {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="firstPaymentDate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First payment date</FormLabel>
-              <FormControl><Input type="date" {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <Button type="submit" className="w-full" disabled={createLoan.isPending}>
           {createLoan.isPending ? 'Creating…' : 'Create loan'}

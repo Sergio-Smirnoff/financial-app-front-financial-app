@@ -1,27 +1,22 @@
 import { api } from './client'
-import type { Loan, LoanInstallment, CreateLoanRequest, SpringPage } from '@/types/finances'
-
-const BASE = '/api/v1/finances/loans'
+import type { Loan, LoanInstallment, LoanRequest } from '@/types/loans'
 
 export const loansApi = {
-  getAll: async (filters: { active?: boolean; currency?: string } = {}): Promise<Loan[]> => {
-    const params = new URLSearchParams()
-    if (filters.active !== undefined) params.set('active', String(filters.active))
-    if (filters.currency) params.set('currency', filters.currency)
-    const qs = params.toString()
-    const page = await api.get<SpringPage<Loan>>(`${BASE}${qs ? `?${qs}` : ''}`)
-    return page.content
-  },
-
-  create: (data: CreateLoanRequest) =>
-    api.post<Loan>(BASE, data),
-
+  list: (accountId?: number) =>
+    api.get<Loan[]>('/api/v1/banks/loans' + (accountId ? `?accountId=${accountId}` : '')),
+  
+  create: (data: LoanRequest) =>
+    api.post<Loan>('/api/v1/banks/loans', data),
+  
   delete: (id: number) =>
-    api.delete<void>(`${BASE}/${id}`),
+    api.delete<void>(`/api/v1/banks/loans/${id}`),
 
-  getInstallments: (loanId: number) =>
-    api.get<LoanInstallment[]>(`${BASE}/${loanId}/installments`),
+  listInstallments: (loanId: number) =>
+    api.get<LoanInstallment[]>(`/api/v1/banks/loans/${loanId}/installments`),
 
-  payInstallment: (loanId: number, installmentId: number) =>
-    api.put<LoanInstallment>(`${BASE}/${loanId}/installments/${installmentId}/pay`, {}),
+  payInstallment: (loanId: number, installmentId: number, paidDate?: string) =>
+    api.post<LoanInstallment>(
+      `/api/v1/banks/loans/${loanId}/installments/${installmentId}/pay` + (paidDate ? `?paidDate=${paidDate}` : ''),
+      {}
+    ),
 }
