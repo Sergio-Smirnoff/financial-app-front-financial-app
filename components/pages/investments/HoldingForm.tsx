@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateHolding, useUpdateHolding } from '@/lib/hooks/useInvestments'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -34,6 +35,7 @@ const ASSET_TYPES = [
 const CURRENCIES = ['ARS', 'USD'] as const
 
 const schema = z.object({
+  bankAccountId: z.number().optional().nullable(),
   ticker: z.string().min(1, 'Required').max(20),
   name: z.string().min(1, 'Required').max(100),
   assetType: z.enum(['STOCK', 'BOND', 'CEDEAR', 'FCI']),
@@ -52,6 +54,7 @@ interface HoldingFormProps {
 }
 
 export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
+  const { banks } = useBanks()
   const createHolding = useCreateHolding()
   const updateHolding = useUpdateHolding()
   const isEditing = !!holding
@@ -59,6 +62,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   const form = useForm<FormValues, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
+      bankAccountId: holding?.bankAccountId ?? null,
       ticker: holding?.ticker ?? '',
       name: holding?.name ?? '',
       assetType: holding?.assetType ?? 'STOCK',
@@ -69,6 +73,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
       notifyLossThresholdPct: holding?.notifyLossThresholdPct ?? null,
     },
   })
+
+  const selectedCurrency = form.watch('currency')
+  const investmentAccounts = banks.flatMap(b => 
+    b.accounts
+      .filter(a => a.type === 'INVESTMENT' && a.currency === selectedCurrency)
+      .map(a => ({ ...a, bankName: b.name }))
+  )
 
   const onSubmit = (values: FormValues) => {
     const data = {
@@ -99,6 +110,31 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="bankAccountId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Linked Bank Account (Investment type only)</FormLabel>
+              <Select 
+                value={field.value?.toString() ?? 'none'} 
+                onValueChange={(v) => field.onChange(v === 'none' ? null : parseInt(v))}
+              >
+                <FormControl><SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
+                <SelectContent>
+                  <SelectItem value="none">Not linked</SelectItem>
+                  {investmentAccounts.map((a) => (
+                    <SelectItem key={a.id} value={a.id.toString()}>
+                      {a.bankName} - {a.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-3">
           <FormField
             control={form.control}
