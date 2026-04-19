@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateLoan } from '@/lib/hooks/useLoans'
@@ -25,11 +25,11 @@ import {
 import { toast } from 'sonner'
 
 const schema = z.object({
-  accountId: z.coerce.number({ error: 'Required' }).positive('Required'),
+  accountId: z.number().positive('Required'),
   name: z.string().min(1, 'Required'),
-  principal: z.number({ error: 'Required' }).positive('Must be positive'),
-  interestRate: z.number({ error: 'Required' }).min(0, 'Min 0'),
-  totalInstallments: z.number({ error: 'Required' }).int().min(1, 'Min 1'),
+  principal: z.number().positive('Must be positive'),
+  interestRate: z.number().min(0, 'Min 0'),
+  totalInstallments: z.number().int().min(1, 'Min 1'),
   startDate: z.string().min(1, 'Required'),
 })
 
@@ -39,19 +39,19 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
   const { banks } = useBanks()
   const createLoan = useCreateLoan()
 
-  const form = useForm<FormValues, unknown, FormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      accountId: undefined,
+      accountId: 0,
       name: '',
-      principal: undefined,
+      principal: 0,
       interestRate: 0,
       totalInstallments: 12,
       startDate: new Date().toISOString().slice(0, 10),
     },
   })
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = (values) => {
     createLoan.mutate(values, {
       onSuccess: () => { toast.success('Loan created'); onSuccess() },
       onError: () => toast.error('Failed to create loan'),
@@ -69,7 +69,7 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Account</FormLabel>
-              <Select value={field.value?.toString()} onValueChange={(v) => field.onChange(parseInt(v))}>
+              <Select value={field.value > 0 ? field.value.toString() : ''} onValueChange={(v) => field.onChange(parseInt(v))}>
                 <FormControl><SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
                 <SelectContent>
                   {allAccounts.map((a) => (
@@ -108,8 +108,7 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
                     type="number"
                     step="0.01"
                     min="0"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                    {...form.register('principal', { valueAsNumber: true })}
                   />
                 </FormControl>
                 <FormMessage />
@@ -127,8 +126,7 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
                     type="number"
                     step="0.1"
                     min="0"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber ?? 0)}
+                    {...form.register('interestRate', { valueAsNumber: true })}
                   />
                 </FormControl>
                 <FormMessage />
@@ -148,8 +146,7 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     type="number"
                     min="1"
-                    value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                    {...form.register('totalInstallments', { valueAsNumber: true })}
                   />
                 </FormControl>
                 <FormMessage />

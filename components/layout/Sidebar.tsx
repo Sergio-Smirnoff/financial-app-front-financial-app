@@ -8,7 +8,6 @@ import {
   ArrowLeftRight,
   Tag,
   Landmark,
-  CreditCard,
   TrendingUp,
   Settings,
   X,
@@ -23,7 +22,6 @@ const NAV_ITEMS = [
   { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
   { label: 'Categories', href: '/categories', icon: Tag },
   { label: 'Loans', href: '/loans', icon: Landmark },
-  { label: 'Card Expenses', href: '/card-expenses', icon: CreditCard },
   { label: 'Investments', href: '/investments', icon: TrendingUp },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]

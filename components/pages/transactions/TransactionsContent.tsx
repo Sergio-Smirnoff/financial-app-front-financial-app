@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTransactions, useDeleteTransaction } from '@/lib/hooks/useTransactions'
 import { useCategories } from '@/lib/hooks/useCategories'
 import { useUiStore } from '@/lib/store/ui.store'
@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { TransactionForm } from './TransactionForm'
+import { TransferDialog } from './TransferDialog'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -26,7 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, ArrowRightLeft } from 'lucide-react'
 import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
@@ -34,13 +36,25 @@ import type { Transaction, TransactionFilters } from '@/types/finances'
 
 export function TransactionsContent() {
   const { openConfirmDelete } = useUiStore()
+  const { banks } = useBanks()
   const [currencyFilter, setCurrencyFilter] = useState<string | undefined>(undefined)
   const [filters, setFilters] = useState<TransactionFilters>({ page: 0, size: 20 })
   const [formOpen, setFormOpen] = useState(false)
+  const [transferOpen, setTransferOpen] = useState(false)
   const [editing, setEditing] = useState<Transaction | null>(null)
 
-  const { data, isLoading, isError } = useTransactions({ ...filters, currency: currencyFilter })
+  const { data, isLoading, isError, refetch } = useTransactions({ ...filters, currency: currencyFilter })
   const deleteMutation = useDeleteTransaction()
+
+  const allAccounts = useMemo(() => {
+    return banks?.flatMap(bank => bank.accounts) ?? []
+  }, [banks])
+
+  const getAccountName = (accountId: number | null) => {
+    if (!accountId) return 'Cash'
+    const account = allAccounts.find(a => a.id === accountId)
+    return account ? account.name : 'Unknown Account'
+  }
 
   const handleDelete = (tx: Transaction) => {
     openConfirmDelete({
@@ -100,12 +114,36 @@ export function TransactionsContent() {
           </SelectContent>
         </Select>
 
+        <Select
+          value={filters.accountId?.toString() ?? 'ALL'}
+          onValueChange={(v) => setFilters((f) => ({ ...f, accountId: v === 'ALL' ? undefined : (v === 'CASH' ? 0 : Number(v)), page: 0 }))}
+        >
+          <SelectTrigger className="w-40 h-8 text-xs">
+            <SelectValue placeholder="Account" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All accounts</SelectItem>
+            <SelectItem value="CASH">Cash</SelectItem>
+            {allAccounts.map((acc) => (
+              <SelectItem key={acc.id} value={acc.id.toString()} className="text-xs">
+                {acc.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <div className="flex-1" />
 
-        <Button size="sm" onClick={() => setFormOpen(true)}>
-          <Plus className="mr-1 h-4 w-4" />
-          New transaction
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+            <ArrowRightLeft className="mr-1 h-4 w-4" />
+            Transfer
+          </Button>
+          <Button size="sm" onClick={() => setFormOpen(true)}>
+            <Plus className="mr-1 h-4 w-4" />
+            New transaction
+          </Button>
+        </div>
       </div>
 
       {isLoading && <LoadingSpinner />}
@@ -119,6 +157,7 @@ export function TransactionsContent() {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Description</TableHead>
+                  <TableHead>Account</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Currency</TableHead>
@@ -129,7 +168,7 @@ export function TransactionsContent() {
               <TableBody>
                 {data.content.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                       No transactions found
                     </TableCell>
                   </TableRow>
@@ -138,6 +177,9 @@ export function TransactionsContent() {
                     <TableRow key={tx.id}>
                       <TableCell className="text-sm">{formatDate(tx.date)}</TableCell>
                       <TableCell className="text-sm">{tx.description}</TableCell>
+                      <TableCell className="text-sm font-medium text-muted-foreground">
+                        {getAccountName(tx.accountId)}
+                      </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {tx.categoryName ?? '—'}
                       </TableCell>
@@ -197,6 +239,12 @@ export function TransactionsContent() {
           />
         </DialogContent>
       </Dialog>
+
+      <TransferDialog
+        open={transferOpen}
+        onOpenChange={setTransferOpen}
+        onSuccess={() => refetch()}
+      />
 
       <ConfirmDialog />
     </div>

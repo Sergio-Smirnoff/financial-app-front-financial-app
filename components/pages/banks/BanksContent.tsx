@@ -6,8 +6,7 @@ import { BankCard } from "./BankCard";
 import { BankFormDialog } from "./BankFormDialog";
 import { AccountFormDialog } from "./AccountFormDialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, LayoutGrid, List } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Plus, Building2 } from "lucide-react";
 import { BankResponse, AccountResponse } from "@/types/banks";
 
 export function BanksContent() {
@@ -58,7 +57,7 @@ export function BanksContent() {
       {isLoading ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-[280px] w-full rounded-xl" />
+            <div key={i} className="h-[280px] w-full rounded-xl animate-pulse bg-muted" />
           ))}
         </div>
       ) : banks.length === 0 ? (
@@ -77,7 +76,7 @@ export function BanksContent() {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {banks.map((bank) => (
+          {banks.map((bank: BankResponse) => (
             <BankCard 
               key={bank.id} 
               bank={bank} 

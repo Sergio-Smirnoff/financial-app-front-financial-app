@@ -1,132 +1,62 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils/currency'
-import { formatDate } from '@/lib/utils/dates'
-import { Landmark, CreditCard } from 'lucide-react'
-import type { Loan, CardExpense } from '@/types/finances'
+import type { Loan } from '@/types/loans'
 
 interface ActiveObligationsProps {
   loans: Loan[]
-  cardExpenses: CardExpense[]
 }
 
-export function ActiveObligations({ loans, cardExpenses }: ActiveObligationsProps) {
+export function ActiveObligations({ loans }: ActiveObligationsProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium">Active Obligations</CardTitle>
+        <CardTitle className="text-sm font-medium">Active Obligations — Loans</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="loans">
-          <TabsList className="mb-4 w-full">
-            <TabsTrigger value="loans" className="flex-1 gap-1.5">
-              <Landmark className="h-3.5 w-3.5" />
-              Loans ({loans.length})
-            </TabsTrigger>
-            <TabsTrigger value="card-expenses" className="flex-1 gap-1.5">
-              <CreditCard className="h-3.5 w-3.5" />
-              Card Expenses ({cardExpenses.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="loans" className="space-y-3">
-            {loans.length === 0 ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">No active loans</p>
-            ) : (
-              loans.map((loan) => (
-                <LoanRow key={loan.id} loan={loan} />
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="card-expenses" className="space-y-3">
-            {cardExpenses.length === 0 ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">No active card expenses</p>
-            ) : (
-              cardExpenses.map((ce) => (
-                <CardExpenseRow key={ce.id} expense={ce} />
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
+        <div className="space-y-3">
+          {loans.length === 0 ? (
+            <p className="py-4 text-center text-sm text-muted-foreground">No active loans</p>
+          ) : (
+            loans.map((loan) => (
+              <LoanRow key={loan.id} loan={loan} />
+            ))
+          )}
+        </div>
       </CardContent>
     </Card>
   )
 }
 
 function LoanRow({ loan }: { loan: Loan }) {
-  const paidPct = loan.totalInstallments > 0
-    ? Math.round((loan.paidInstallments / loan.totalInstallments) * 100)
+  const paidInstallments = loan.totalInstallments - loan.remainingInstallments
+  const progress = loan.totalInstallments > 0
+    ? Math.round((paidInstallments / loan.totalInstallments) * 100)
     : 0
-  const remaining = loan.totalInstallments - loan.paidInstallments
-  const remainingAmount = remaining * loan.installmentAmount
 
   return (
     <div className="rounded-lg border p-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-medium">{loan.description}</p>
+            <p className="text-sm font-medium">{loan.name}</p>
             <Badge variant="outline" className="text-[10px]">{loan.currency}</Badge>
           </div>
-          {loan.entity && (
-            <p className="text-xs text-muted-foreground">{loan.entity}</p>
-          )}
         </div>
-        <Badge variant={paidPct >= 75 ? 'default' : 'secondary'} className="text-xs">
-          {loan.paidInstallments}/{loan.totalInstallments}
+        <Badge variant={progress >= 75 ? 'default' : 'secondary'} className="text-xs">
+          {paidInstallments}/{loan.totalInstallments}
         </Badge>
       </div>
       <div className="mt-2.5">
-        <Progress value={paidPct} className="h-2" />
+        <Progress value={progress} className="h-2" />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{formatCurrency(loan.installmentAmount, loan.currency)}/mo</span>
-        <span>{remaining} left &middot; {formatCurrency(remainingAmount, loan.currency)} remaining</span>
+        <span>Principal: {formatCurrency(loan.principal, loan.currency)}</span>
+        <span>{loan.remainingInstallments} installments left</span>
       </div>
-      {loan.nextPaymentDate && (
-        <p className="mt-1 text-xs text-muted-foreground">
-          Next: {formatDate(loan.nextPaymentDate)}
-        </p>
-      )}
-    </div>
-  )
-}
-
-function CardExpenseRow({ expense }: { expense: CardExpense }) {
-  const paid = expense.totalInstallments - expense.remainingInstallments
-  const paidPct = expense.totalInstallments > 0
-    ? Math.round((paid / expense.totalInstallments) * 100)
-    : 0
-  const remainingAmount = expense.remainingInstallments * expense.installmentAmount
-
-  return (
-    <div className="rounded-lg border p-3">
-      <div className="flex items-start justify-between">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-medium">{expense.description}</p>
-            <Badge variant="outline" className="text-[10px]">{expense.currency}</Badge>
-          </div>
-        </div>
-        <Badge variant={paidPct >= 75 ? 'default' : 'secondary'} className="text-xs">
-          {paid}/{expense.totalInstallments}
-        </Badge>
-      </div>
-      <div className="mt-2.5">
-        <Progress value={paidPct} className="h-2" />
-      </div>
-      <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{formatCurrency(expense.installmentAmount, expense.currency)}/mo</span>
-        <span>{expense.remainingInstallments} left &middot; {formatCurrency(remainingAmount, expense.currency)} remaining</span>
-      </div>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Next: {formatDate(expense.nextDueDate)}
-      </p>
     </div>
   )
 }

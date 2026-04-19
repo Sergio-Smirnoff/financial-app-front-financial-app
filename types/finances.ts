@@ -21,12 +21,15 @@ export interface Transaction {
   date: string
   createdAt: string
   updatedAt: string
+  accountId: number | null
+  transferGroupId: string | null
 }
 
 export interface TransactionFilters {
   type?: TransactionType
   categoryId?: number
   currency?: string
+  accountId?: number
   dateFrom?: string
   dateTo?: string
   page?: number
@@ -35,6 +38,7 @@ export interface TransactionFilters {
 
 export interface SummaryFilters {
   currency?: string
+  accountId?: number
   dateFrom?: string
   dateTo?: string
 }
@@ -71,6 +75,8 @@ export interface Loan {
   active: boolean
   createdAt: string
   updatedAt: string
+  accountId: number | null
+  transferGroupId: string | null
 }
 
 export interface LoanInstallment {
@@ -83,22 +89,8 @@ export interface LoanInstallment {
   paidDate: string | null
   createdAt: string
   updatedAt: string
-}
-
-export interface CardExpense {
-  id: number
-  userId: number
-  cardId: number
-  description: string
-  totalAmount: number
-  currency: string
-  totalInstallments: number
-  remainingInstallments: number
-  installmentAmount: number
-  nextDueDate: string
-  active: boolean
-  createdAt: string
-  updatedAt: string
+  accountId: number | null
+  transferGroupId: string | null
 }
 
 export interface UpcomingPayment {
@@ -168,12 +160,11 @@ export interface CreateLoanRequest {
   firstPaymentDate: string
 }
 
-export interface CreateCardExpenseRequest {
-  cardId: number
-  description: string
-  totalAmount: number
+export interface TransferRequest {
+  fromAccountId: number
+  toAccountId: number
+  amount: number
   currency: string
-  totalInstallments: number
-  installmentAmount: number
-  nextDueDate: string
+  description?: string
+  date: string
 }

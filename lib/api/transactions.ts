@@ -6,6 +6,7 @@ import type {
   SummaryFilters,
   SummaryItem,
   CreateTransactionRequest,
+  TransferRequest,
 } from '@/types/finances'
 
 const BASE = '/api/v1/finances/transactions'
@@ -36,6 +37,9 @@ export const transactionsApi = {
 
   delete: (id: number) =>
     api.delete<void>(`${BASE}/${id}`),
+
+  transfer: (data: TransferRequest) =>
+    api.post<void>(`${BASE}/transfer`, data),
 
   getSummary: (filters: SummaryFilters = {}) =>
     api.get<SummaryItem[]>(`${BASE}/summary${buildParams(filters as Record<string, unknown>)}`),

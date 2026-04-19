@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic'
 import { useTransactionSummary } from '@/lib/hooks/useTransactions'
 import { useLoans } from '@/lib/hooks/useLoans'
-import { useCardExpenses } from '@/lib/hooks/useCardExpenses'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { YearOverview } from './YearOverview'
 import { MonthSummary } from './MonthSummary'
@@ -24,14 +23,13 @@ export function DashboardContent() {
 
   const ytdSummary = useTransactionSummary({ dateFrom: yearFrom, dateTo: yearTo })
   const monthSummary = useTransactionSummary({ dateFrom: monthFrom, dateTo: monthTo })
-  const loans = useLoans({ active: true })
-  const cardExpenses = useCardExpenses({ active: true })
+  const loans = useLoans()
+
   if (ytdSummary.isError || monthSummary.isError) {
     return <ErrorMessage message="Failed to load dashboard data." />
   }
 
-  const activeLoanCount = loans.data?.length ?? 0
-  const activeCardCount = cardExpenses.data?.length ?? 0
+  const activeLoanCount = loans.data?.filter(l => l.active).length ?? 0
 
   return (
     <div className="space-y-6">
@@ -51,18 +49,17 @@ export function DashboardContent() {
         <MonthSummary
           summaries={monthSummary.data ?? []}
           loanCount={activeLoanCount}
-          cardExpenseCount={activeCardCount}
+          cardExpenseCount={0}
         />
       )}
 
       {/* Active obligations + Upcoming payments */}
       <div className="grid gap-6 lg:grid-cols-2">
-        {loans.isLoading || cardExpenses.isLoading ? (
+        {loans.isLoading ? (
           <div className="animate-pulse h-48 rounded-lg bg-muted" />
         ) : (
           <ActiveObligations
-            loans={loans.data ?? []}
-            cardExpenses={cardExpenses.data ?? []}
+            loans={loans.data?.filter(l => l.active) ?? []}
           />
         )}
         <UpcomingPayments />

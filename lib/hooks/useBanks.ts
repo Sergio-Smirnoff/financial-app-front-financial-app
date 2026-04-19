@@ -8,7 +8,7 @@ export const useBanks = () => {
 
   const banksQuery = useQuery({
     queryKey: ['banks'],
-    queryFn: () => banksApi.list().then(res => res.data),
+    queryFn: () => banksApi.list(),
   });
 
   const createBankMutation = useMutation({

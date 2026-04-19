@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { transactionsApi } from '@/lib/api/transactions'
-import type { TransactionFilters, SummaryFilters, CreateTransactionRequest } from '@/types/finances'
+import type { TransactionFilters, SummaryFilters, CreateTransactionRequest,
+  TransferRequest
+} from '@/types/finances'
 
 export function useTransactions(filters: TransactionFilters = {}) {
   return useQuery({
@@ -54,6 +56,18 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+  })
+}
+
+export function useTransfer() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: TransferRequest) => transactionsApi.transfer(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }

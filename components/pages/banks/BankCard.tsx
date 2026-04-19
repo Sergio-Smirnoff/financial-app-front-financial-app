@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { BankResponse } from "@/types/banks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Building2, Trash2, Pencil } from "lucide-react";
+import { Plus, Building2, Trash2, Pencil, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils/currency";
+import { CardList } from "./CardList";
 
 interface BankCardProps {
   bank: BankResponse;
@@ -24,6 +26,8 @@ export function BankCard({
   onEditAccount,
   onDeleteAccount
 }: BankCardProps) {
+  const [expandedAccountId, setExpandedAccountId] = useState<number | null>(null);
+
   return (
     <Card className="overflow-hidden border-zinc-200 shadow-sm transition-all hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-zinc-50/50 pb-4">
@@ -62,29 +66,47 @@ export function BankCard({
             </div>
           ) : (
             bank.accounts.map((account) => (
-              <div key={account.id} className="group flex items-center justify-between p-4 transition-colors hover:bg-zinc-50/50">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{account.name}</span>
-                    <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal uppercase">
-                      {account.type.toLowerCase()}
-                    </Badge>
+              <div key={account.id} className="flex flex-col">
+                <div 
+                  className="group flex items-center justify-between p-4 transition-colors hover:bg-zinc-50/50 cursor-pointer"
+                  onClick={() => setExpandedAccountId(expandedAccountId === account.id ? null : account.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    {expandedAccountId === account.id ? (
+                      <ChevronUp className="h-4 w-4 text-zinc-400" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 text-zinc-400" />
+                    )}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{account.name}</span>
+                        <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal uppercase">
+                          {account.type.toLowerCase()}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-zinc-500">{account.currency}</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-zinc-500">{account.currency}</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold">
-                    {formatCurrency(account.balance, account.currency)}
-                  </span>
-                  <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400" onClick={() => onEditAccount(bank.id, account)}>
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-red-600" onClick={() => onDeleteAccount(account.id)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(account.balance, account.currency)}
+                    </span>
+                    <div 
+                      className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400" onClick={() => onEditAccount(bank.id, account)}>
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-zinc-400 hover:text-red-600" onClick={() => onDeleteAccount(account.id)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
+                {expandedAccountId === account.id && (
+                  <CardList accountId={account.id} />
+                )}
               </div>
             ))
           )}

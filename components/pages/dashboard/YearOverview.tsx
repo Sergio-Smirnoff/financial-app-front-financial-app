@@ -16,7 +16,7 @@ export function YearOverview({ summaries }: YearOverviewProps) {
   const expenseItems = summaries.map((s) => ({ amount: s.totalExpense, currency: s.currency }))
   const balanceItems = summaries.map((s) => ({ amount: s.balance, currency: s.currency }))
   const debtItems = summaries.map((s) => ({
-    amount: (s.totalLoanDebt ?? 0) + (s.totalCardExpenseDebt ?? 0),
+    amount: s.totalLoanDebt ?? 0,
     currency: s.currency,
   }))
 
