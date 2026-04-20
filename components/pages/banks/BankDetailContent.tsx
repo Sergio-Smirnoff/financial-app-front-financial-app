@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useBank, useAccounts } from "@/lib/hooks/useBanks";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History, Bell, Trash2 } from "lucide-react";
+import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History, Bell, Trash2, Search, X } from "lucide-react";
 import { AccountResponse } from "@/types/banks";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
@@ -21,6 +21,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLatestNotifications } from "@/lib/hooks/useNotifications";
 import { useUiStore } from "@/lib/store/ui.store";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface Props { bankId: number }
 
@@ -43,6 +47,32 @@ export function BankDetailContent({ bankId }: Props) {
   const [activeAccountId, setActiveAccountId] = useState<number | null>(null);
   const [activeAccountName, setActiveAccountName] = useState<string>('');
   const [activeCurrency, setActiveCurrency] = useState<string>('USD');
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCurrency, setFilterCurrency] = useState('ALL');
+  const [filterType, setFilterType] = useState('ALL');
+  const [hideEmptyAccounts, setHideEmptyAccounts] = useState(false);
+
+  const filteredAccounts = useMemo(() => {
+    if (!bank?.accounts) return [];
+    return bank.accounts.filter((account) => {
+      const matchesSearch = account.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCurrency = filterCurrency === 'ALL' || account.currency === filterCurrency;
+      const matchesType = filterType === 'ALL' || account.type === filterType;
+      const matchesEmpty = !hideEmptyAccounts || account.balance !== 0;
+      return matchesSearch && matchesCurrency && matchesType && matchesEmpty;
+    });
+  }, [bank?.accounts, searchQuery, filterCurrency, filterType, hideEmptyAccounts]);
+
+  const uniqueCurrencies = useMemo(() => {
+    if (!bank?.accounts) return [];
+    return Array.from(new Set(bank.accounts.map(a => a.currency))).sort();
+  }, [bank?.accounts]);
+
+  const uniqueTypes = useMemo(() => {
+    if (!bank?.accounts) return [];
+    return Array.from(new Set(bank.accounts.map(a => a.type))).sort();
+  }, [bank?.accounts]);
 
   const hasAlerts = useMemo(() => {
     if (!notifications) return false;
@@ -141,17 +171,97 @@ export function BankDetailContent({ bankId }: Props) {
       <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-8 pb-12">
         {/* Accounts Section */}
         <section className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400 px-1">Accounts</h2>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Accounts</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="relative w-full md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <Input 
+                  placeholder="Search accounts..." 
+                  className="pl-9 h-9 rounded-xl border-zinc-200"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              
+              <Select value={filterCurrency} onValueChange={setFilterCurrency}>
+                <SelectTrigger className="w-[100px] h-9 rounded-xl border-zinc-200 text-xs font-semibold">
+                  <SelectValue placeholder="Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Currencies</SelectItem>
+                  {uniqueCurrencies.map(c => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[120px] h-9 rounded-xl border-zinc-200 text-xs font-semibold">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All Types</SelectItem>
+                  {uniqueTypes.map(t => (
+                    <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 px-3 h-9 rounded-xl">
+                <Switch 
+                  id="hide-empty" 
+                  checked={hideEmptyAccounts}
+                  onCheckedChange={setHideEmptyAccounts}
+                />
+                <Label htmlFor="hide-empty" className="text-[10px] font-bold uppercase text-zinc-500 cursor-pointer">Hide Empty</Label>
+              </div>
+
+              {(searchQuery || filterCurrency !== 'ALL' || filterType !== 'ALL' || hideEmptyAccounts) && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 rounded-xl text-zinc-400 hover:text-zinc-900"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilterCurrency('ALL');
+                    setFilterType('ALL');
+                    setHideEmptyAccounts(false);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
           <div className="grid grid-cols-1 gap-4">
-            {bank.accounts.length === 0 ? (
+            {filteredAccounts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-3xl bg-zinc-50/50">
                 <Wallet className="h-10 w-10 text-zinc-300 mb-3" />
-                <p className="text-base font-medium text-zinc-900">No accounts yet</p>
-                <Button onClick={handleAddAccount} variant="outline" size="sm" className="mt-4">Create account</Button>
+                <p className="text-base font-medium text-zinc-900">
+                  {bank.accounts.length === 0 ? "No accounts yet" : "No accounts match your filters"}
+                </p>
+                {bank.accounts.length === 0 ? (
+                  <Button onClick={handleAddAccount} variant="outline" size="sm" className="mt-4">Create account</Button>
+                ) : (
+                  <Button 
+                    onClick={() => {
+                      setSearchQuery('');
+                      setFilterCurrency('ALL');
+                      setFilterType('ALL');
+                      setHideEmptyAccounts(false);
+                    }} 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-4 text-zinc-500 hover:text-zinc-900"
+                  >
+                    Clear filters
+                  </Button>
+                )}
               </div>
             ) : (
               <>
-                {bank.accounts.map((account) => (
+                {filteredAccounts.map((account) => (
                   <div key={account.id} className="bg-white border rounded-3xl shadow-sm overflow-hidden flex flex-col">
                     <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
