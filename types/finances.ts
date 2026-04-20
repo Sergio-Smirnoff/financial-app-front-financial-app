@@ -134,6 +134,7 @@ export interface CreateTransactionRequest {
   amount: number
   currency: string
   categoryId: number
+  accountId?: number
   description?: string
   date: string
 }
