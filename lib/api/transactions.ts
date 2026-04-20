@@ -29,6 +29,9 @@ export const transactionsApi = {
   getById: (id: number) =>
     api.get<Transaction>(`${BASE}/${id}`),
 
+  getByAccount: (accountId: number) =>
+    api.get<Transaction[]>(`${BASE}/account/${accountId}`),
+
   create: (data: CreateTransactionRequest) =>
     api.post<Transaction>(BASE, data),
 

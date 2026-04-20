@@ -30,7 +30,7 @@ import { CURRENCIES } from '@/lib/utils/currency'
 const schema = z.object({
   fromAccountId: z.number().min(1, 'Required'),
   toAccountId: z.number().min(1, 'Required'),
-  amount: z.number().positive('Must be positive'),
+  amount: z.number({ required_error: 'Required' }).positive('Must be positive'),
   currency: z.string().min(1, 'Required'),
   date: z.string().min(1, 'Required'),
   description: z.string().optional(),
@@ -67,6 +67,14 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
       description: 'Transfer between accounts',
     },
   })
+
+  const fromAccountId = form.watch('fromAccountId');
+  const fromAccount = useMemo(() => allAccounts.find(a => a.id === fromAccountId), [allAccounts, fromAccountId]);
+
+  const targetAccounts = useMemo(() => {
+    if (!fromAccount) return [];
+    return allAccounts.filter(a => a.id !== fromAccountId && a.currency === fromAccount.currency);
+  }, [allAccounts, fromAccount, fromAccountId]);
 
   useEffect(() => {
     if (open && defaultFromAccountId) {
@@ -109,7 +117,10 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                         const val = Number(v);
                         field.onChange(val);
                         const acc = allAccounts.find(a => a.id === val);
-                        if (acc) form.setValue('currency', acc.currency);
+                        if (acc) {
+                            form.setValue('currency', acc.currency);
+                            form.setValue('toAccountId', 0); // reset target
+                        }
                     }} 
                     value={field.value > 0 ? field.value.toString() : undefined}
                   >
@@ -136,18 +147,19 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
               name="toAccountId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>To Account</FormLabel>
+                  <FormLabel>To Account (Same currency only)</FormLabel>
                   <Select 
                     onValueChange={(v) => field.onChange(Number(v))} 
                     value={field.value > 0 ? field.value.toString() : undefined}
+                    disabled={!fromAccountId}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select destination account" />
+                        <SelectValue placeholder={!fromAccountId ? "Select from account first" : "Select destination account"} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {allAccounts.map((acc) => (
+                      {targetAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id.toString()}>
                           {acc.bankName} - {acc.name} ({acc.currency})
                         </SelectItem>
@@ -171,7 +183,8 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                         type="number"
                         step="0.01"
                         min="0"
-                        {...form.register('amount', { valueAsNumber: true })}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
                       />
                     </FormControl>
                     <FormMessage />

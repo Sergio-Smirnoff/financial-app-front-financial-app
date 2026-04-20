@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Building2, Trash2, Pencil, Bell, CreditCard, Landmark, Wallet } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/currency";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 import { useLatestNotifications } from "@/lib/hooks/useNotifications";
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 interface BankCardProps {
   bank: BankResponse;
@@ -21,6 +21,7 @@ export function BankCard({
   onEdit, 
   onDelete
 }: BankCardProps) {
+  const router = useRouter();
   const { data: notifications } = useLatestNotifications();
 
   const hasAlerts = useMemo(() => {
@@ -35,11 +36,16 @@ export function BankCard({
     });
   }, [notifications, bank.id]);
 
+  const handleCardClick = () => {
+    router.push(`/banks/${bank.id}`);
+  };
+
   return (
-    <Card className="group relative overflow-hidden border-zinc-200 shadow-sm transition-all hover:shadow-md cursor-pointer h-full flex flex-col">
-      <Link href={`/banks/${bank.id}`} className="absolute inset-0 z-0" />
-      
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-zinc-50/50 pb-4 relative z-10">
+    <Card 
+      onClick={handleCardClick}
+      className="group relative overflow-hidden border-zinc-200 shadow-sm transition-all hover:shadow-md cursor-pointer h-full flex flex-col hover:border-primary/50"
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-zinc-50/50 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white border shadow-sm group-hover:scale-105 transition-transform">
             {bank.logoUrl ? (
@@ -50,17 +56,32 @@ export function BankCard({
           </div>
           <CardTitle className="text-xl font-bold">{bank.name}</CardTitle>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500" onClick={(e) => { e.preventDefault(); onEdit(bank); }}>
+        <div className="flex items-center gap-1">
+          {/* Notification bell moved here */}
+          <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors mr-1 ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-300'}`}>
+            <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
+          </div>
+
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-zinc-500 hover:bg-zinc-200/50" 
+            onClick={(e) => { e.stopPropagation(); onEdit(bank); }}
+          >
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-zinc-500 hover:text-red-600" onClick={(e) => { e.preventDefault(); onDelete(bank.id); }}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 text-zinc-500 hover:text-red-600 hover:bg-red-50" 
+            onClick={(e) => { e.stopPropagation(); onDelete(bank.id); }}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 flex-1 flex flex-col justify-between relative z-10">
+      <CardContent className="p-6 flex-1 flex flex-col justify-between">
         <div className="space-y-4">
           {/* Summary Totals */}
           <div className="space-y-1.5">
@@ -98,15 +119,10 @@ export function BankCard({
           </div>
         </div>
 
-        {/* Footer info & Notification Bell */}
         <div className="mt-4 flex items-center justify-between">
           <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal text-zinc-500">
             {bank.accountsCount === 1 ? '1 account' : `${bank.accountsCount} accounts`}
           </Badge>
-          
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-300'}`}>
-            <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
-          </div>
         </div>
       </CardContent>
     </Card>

@@ -11,6 +11,14 @@ export function useTransactions(filters: TransactionFilters = {}) {
   })
 }
 
+export function useAccountTransactions(accountId: number) {
+  return useQuery({
+    queryKey: ['transactions', 'account', accountId],
+    queryFn: () => transactionsApi.getByAccount(accountId),
+    enabled: !!accountId,
+  })
+}
+
 export function useTransaction(id: number) {
   return useQuery({
     queryKey: ['transactions', id],
@@ -33,6 +41,7 @@ export function useCreateTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }
@@ -45,6 +54,7 @@ export function useUpdateTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }
@@ -56,6 +66,7 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }

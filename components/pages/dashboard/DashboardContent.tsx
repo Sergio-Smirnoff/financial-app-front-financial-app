@@ -8,6 +8,7 @@ import { YearOverview } from './YearOverview'
 import { MonthSummary } from './MonthSummary'
 import { ActiveObligations } from './ActiveObligations'
 import { UpcomingPayments } from './UpcomingPayments'
+import { useState, useEffect } from 'react'
 
 const IncomeExpenseChart = dynamic(
   () => import('./IncomeExpenseChart').then((m) => ({ default: m.IncomeExpenseChart })),
@@ -19,7 +20,12 @@ import { getUserFromCookie } from '@/lib/auth'
 export function DashboardContent() {
   const { from: monthFrom, to: monthTo } = currentMonthRange()
   const { from: yearFrom, to: yearTo } = currentYearRange()
-  const user = getUserFromCookie()
+  const [userName, setUserName] = useState<string>('')
+
+  useEffect(() => {
+    const user = getUserFromCookie()
+    if (user?.name) setUserName(user.name)
+  }, [])
 
   const ytdSummary = useTransactionSummary({ dateFrom: yearFrom, dateTo: yearTo })
   const monthSummary = useTransactionSummary({ dateFrom: monthFrom, dateTo: monthTo })
@@ -33,7 +39,7 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl">Welcome back, <span className="font-bold">{user?.name}</span>!</h1>
+      <h1 className="text-3xl">Welcome back, <span className="font-bold">{userName}</span>!</h1>
 
       {/* Year-to-Date overview — all currencies */}
       {ytdSummary.isLoading ? (
