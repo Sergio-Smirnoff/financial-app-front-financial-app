@@ -136,11 +136,6 @@ export function BankDetailContent({ bankId }: Props) {
             </div>
           </div>
         </div>
-        
-        <Button onClick={handleAddAccount} className="gap-2">
-          <Plus className="h-4 w-4" />
-          <span>Add Account</span>
-        </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-6 pb-12">
