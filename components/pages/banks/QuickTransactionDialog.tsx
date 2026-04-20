@@ -24,7 +24,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { useCategories } from '@/lib/hooks/useCategories'
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 
 const schema = z.object({
   accountId: z.number().min(1),
@@ -58,23 +58,45 @@ export function QuickTransactionDialog({
   const createMutation = useCreateTransaction()
   const { data: categories } = useCategories()
 
-  const flatSubcategories = useMemo(() => {
-    return categories?.flatMap(c => c.subcategories?.map(s => ({ ...s, parentName: c.name })) || [])
-      .filter(s => s.type === type || s.type === 'BOTH') || []
+  const [parentCategoryId, setParentCategoryId] = useState<number | undefined>(undefined)
+
+  const filteredCategories = useMemo(() => {
+    return categories?.filter(c => c.type === type || c.type === 'BOTH') || []
   }, [categories, type])
+
+  const subcategories = useMemo(() => {
+    if (!parentCategoryId || !categories) return []
+    return categories.find((c) => c.id === parentCategoryId)?.subcategories
+      ?.filter(s => s.type === type || s.type === 'BOTH') ?? []
+  }, [parentCategoryId, categories, type])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    values: {
+    defaultValues: {
       accountId,
       currency,
       type,
-      amount: 0,
-      categoryId: 0,
+      amount: undefined,
+      categoryId: undefined,
       description: '',
       date: new Date().toISOString().slice(0, 10),
     }
   })
+
+  useEffect(() => {
+    if (open) {
+        setParentCategoryId(undefined);
+        form.reset({
+            accountId,
+            currency,
+            type,
+            amount: undefined,
+            categoryId: undefined,
+            description: '',
+            date: new Date().toISOString().slice(0, 10),
+        });
+    }
+  }, [open, accountId, currency, type, form]);
 
   const onSubmit = (values: FormValues) => {
     createMutation.mutate(values, {
@@ -123,29 +145,50 @@ export function QuickTransactionDialog({
               </FormItem>
             </div>
 
-            <FormField
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select 
-                    onValueChange={(v) => field.onChange(Number(v))} 
-                    value={field.value > 0 ? field.value.toString() : undefined}
-                  >
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger></FormControl>
-                    <SelectContent>
-                      {flatSubcategories.map((s) => (
-                        <SelectItem key={s.id} value={s.id.toString()}>
-                          {s.parentName} / {s.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select
+                  value={parentCategoryId?.toString() ?? ''}
+                  onValueChange={(v) => {
+                    setParentCategoryId(v ? Number(v) : undefined)
+                    form.setValue('categoryId', undefined as any)
+                  }}
+                >
+                  <FormControl><SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger></FormControl>
+                  <SelectContent>
+                    {filteredCategories.map((c) => (
+                      <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subcategory</FormLabel>
+                    <Select 
+                      onValueChange={(v) => field.onChange(Number(v))} 
+                      value={field.value?.toString() ?? ''}
+                      disabled={!parentCategoryId}
+                    >
+                      <FormControl><SelectTrigger><SelectValue placeholder={parentCategoryId ? 'Select subcategory' : 'Select a category first'} /></SelectTrigger></FormControl>
+                      <SelectContent className="max-h-[300px]">
+                        {subcategories.map((s) => (
+                          <SelectItem key={s.id} value={s.id.toString()}>
+                            {s.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
