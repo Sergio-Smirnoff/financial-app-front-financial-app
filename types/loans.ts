@@ -28,6 +28,7 @@ export interface LoanInstallment {
 
 export interface LoanRequest {
   bankId: number
+  destinationAccountId: number
   name: string
   principal: number
   interestRate: number
