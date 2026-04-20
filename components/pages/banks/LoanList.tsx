@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useLoans, useLoanInstallments, usePayLoanInstallment } from '@/lib/hooks/useLoans'
@@ -105,7 +105,7 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
   const { data: installments, isLoading } = useLoanInstallments(loanId)
   const { data: bank } = useBank(bankId)
   const payInstallment = usePayLoanInstallment()
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
+  const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
 
   const availableAccounts = useMemo(() => {
     return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
@@ -115,63 +115,66 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
 
   return (
     <div className="space-y-1">
-      {installments?.map((inst) => (
-        <div key={inst.id} className={`flex items-center gap-4 py-2 px-3 rounded-lg transition-colors ${inst.paid ? 'bg-zinc-50/50' : 'hover:bg-zinc-50'}`}>
-          <div className={`h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-bold ${inst.paid ? 'bg-zinc-100 text-zinc-400' : 'bg-primary/10 text-primary'}`}>
-            {inst.installmentNumber}
-          </div>
-          
-          <div className="flex-1 flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-zinc-500">
-                <Calendar className="h-3 w-3" />
-                <span className="text-xs font-medium">{formatDate(inst.dueDate)}</span>
+      {installments?.map((inst) => {
+        const selectedAccountId = selectedAccounts[inst.id];
+        return (
+          <div key={inst.id} className={`flex items-center gap-4 py-2 px-3 rounded-lg transition-colors ${inst.paid ? 'bg-zinc-50/50' : 'hover:bg-zinc-50'}`}>
+            <div className={`h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-bold ${inst.paid ? 'bg-zinc-100 text-zinc-400' : 'bg-primary/10 text-primary'}`}>
+              {inst.installmentNumber}
+            </div>
+            
+            <div className="flex-1 flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-zinc-500">
+                  <Calendar className="h-3 w-3" />
+                  <span className="text-xs font-medium">{formatDate(inst.dueDate)}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <span className={`text-sm font-bold ${inst.paid ? 'text-zinc-400' : 'text-zinc-900'}`}>
+                  {formatCurrency(inst.amount, currency)}
+              </span>
+              
+              {inst.paid ? (
+                  <Badge variant="secondary" className="h-6 px-2 text-[10px] font-bold bg-green-50 text-green-700 border-green-100 uppercase">
+                      Paid
+                  </Badge>
+              ) : (
+                  <div className="flex items-center gap-2">
+                      <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
+                          <SelectTrigger className="h-7 w-[140px] text-[10px] font-bold">
+                              <SelectValue placeholder="Select account" />
+                          </SelectTrigger>
+                          <SelectContent>
+                              {availableAccounts.map(a => (
+                                  <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
+                                      {a.name} ({formatCurrency(a.balance, a.currency)})
+                                  </SelectItem>
+                              ))}
+                          </SelectContent>
+                      </Select>
+                      <Button
+                          size="sm"
+                          className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
+                          disabled={payInstallment.isPending || !selectedAccountId}
+                          onClick={() => {
+                              payInstallment.mutate(
+                                  { loanId, installmentId: inst.id, accountId: selectedAccountId! },
+                                  {
+                                      onSuccess: () => toast.success('Installment paid'),
+                                      onError: (e) => toast.error(e.message || 'Payment failed')
+                                  }
+                              )
+                          }}
+                      >
+                          Pay
+                      </Button>
+                  </div>
+              )}
             </div>
           </div>
-
-          <div className="flex items-center gap-4">
-            <span className={`text-sm font-bold ${inst.paid ? 'text-zinc-400' : 'text-zinc-900'}`}>
-                {formatCurrency(inst.amount, currency)}
-            </span>
-            
-            {inst.paid ? (
-                <Badge variant="secondary" className="h-6 px-2 text-[10px] font-bold bg-green-50 text-green-700 border-green-100 uppercase">
-                    Paid
-                </Badge>
-            ) : (
-                <div className="flex items-center gap-2">
-                    <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
-                        <SelectTrigger className="h-7 w-[140px] text-[10px] font-bold">
-                            <SelectValue placeholder="Select account" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {availableAccounts.map(a => (
-                                <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
-                                    {a.name} ({formatCurrency(a.balance, a.currency)})
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Button
-                        size="sm"
-                        className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
-                        disabled={payInstallment.isPending || !selectedAccountId}
-                        onClick={() => {
-                            payInstallment.mutate(
-                                { loanId, installmentId: inst.id, accountId: selectedAccountId! },
-                                {
-                                    onSuccess: () => toast.success('Installment paid'),
-                                    onError: (e) => toast.error(e.message || 'Payment failed')
-                                }
-                            )
-                        }}
-                    >
-                        Pay
-                    </Button>
-                </div>
-            )}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   )
 }

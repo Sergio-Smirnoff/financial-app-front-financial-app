@@ -30,7 +30,7 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
   const markPaid = useMarkInstallmentPaid(card?.id ?? 0)
   const [expandedPurchases, setExpandedPurchases] = useState<Record<string, boolean>>({})
   const [expenseOpen, setExpenseOpen] = useState(false)
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
+  const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
 
   const getAvailableAccounts = (currency: string) => {
     return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
@@ -165,7 +165,7 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
                                             <Badge variant="outline" className="text-[10px] bg-white">Paid {formatDate(inst.paidDate!)}</Badge>
                                         ) : (
                                             <div className="flex items-center gap-2">
-                                                <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
+                                                <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
                                                     <SelectTrigger className="h-7 w-[130px] text-[10px] font-bold">
                                                         <SelectValue placeholder="Select account" />
                                                     </SelectTrigger>
@@ -181,9 +181,9 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
                                                     size="sm"
                                                     variant="outline"
                                                     className="h-7 text-xs px-3"
-                                                    disabled={markPaid.isPending || !selectedAccountId}
+                                                    disabled={markPaid.isPending || !selectedAccounts[inst.id]}
                                                     onClick={() => markPaid.mutate(
-                                                        { installmentId: inst.id, accountId: selectedAccountId! },
+                                                        { installmentId: inst.id, accountId: selectedAccounts[inst.id]! },
                                                         {
                                                             onSuccess: () => toast.success('Installment paid'),
                                                             onError: (e) => toast.error(e.message || 'Payment failed')
