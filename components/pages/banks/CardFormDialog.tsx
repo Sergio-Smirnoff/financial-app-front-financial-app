@@ -34,6 +34,7 @@ export function CardFormDialog({ open, onOpenChange, accountId, card }: Props) {
   const isEditing = !!card
   const createMutation = useCreateCard()
   const updateMutation = useUpdateCard()
+  const isPending = createMutation.isPending || updateMutation.isPending
 
   const { register, handleSubmit, formState, reset, setValue, watch } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -161,8 +162,8 @@ export function CardFormDialog({ open, onOpenChange, accountId, card }: Props) {
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Saving…' : 'Save'}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? 'Saving…' : 'Save'}
             </Button>
           </DialogFooter>
         </form>
