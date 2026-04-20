@@ -88,6 +88,9 @@ export const useAccounts = () => {
       queryClient.invalidateQueries({ queryKey: ['banks'] });
       toast.success('Account deleted successfully');
     },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete account');
+    },
   });
 
   return {
