@@ -16,6 +16,7 @@ import { AccountFormDialog } from "./AccountFormDialog";
 import { TransferDialog } from "../transactions/TransferDialog";
 import { QuickTransactionDialog } from "./QuickTransactionDialog";
 import { TransactionHistoryDialog } from "./TransactionHistoryDialog";
+import { BankNotificationDialog } from "./BankNotificationDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLatestNotifications } from "@/lib/hooks/useNotifications";
 import { useUiStore } from "@/lib/store/ui.store";
@@ -36,6 +37,7 @@ export function BankDetailContent({ bankId }: Props) {
   const [transferOpen, setTransferOpen] = useState(false);
   const [quickTxOpen, setQuickTxOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [bankNotifOpen, setBankNotifOpen] = useState(false);
   
   const [quickTxType, setQuickTxType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
   const [activeAccountId, setActiveAccountId] = useState<number | null>(null);
@@ -123,9 +125,12 @@ export function BankDetailContent({ bankId }: Props) {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{bank.name}</h1>
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-200'}`}>
+                <button 
+                    onClick={() => setBankNotifOpen(true)}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-zinc-100 ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-400'}`}
+                >
                     <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
-                </div>
+                </button>
               </div>
               <p className="text-sm text-zinc-500">Manage accounts, cards and loans</p>
             </div>
@@ -261,6 +266,13 @@ export function BankDetailContent({ bankId }: Props) {
         accountId={activeAccountId ?? 0}
         accountName={activeAccountName}
         currency={activeCurrency}
+      />
+
+      <BankNotificationDialog
+        open={bankNotifOpen}
+        onOpenChange={setBankNotifOpen}
+        bankId={bankId}
+        bankName={bank.name}
       />
 
       <ConfirmDialog />
