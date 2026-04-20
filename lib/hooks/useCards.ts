@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { cardsApi } from '@/lib/api/cards'
 import type { CardExpenseCreateRequest, CardRequest } from '@/types/cards'
+import { toast } from 'sonner'
 
 const QK = {
   all: ['cards'] as const,
@@ -20,7 +21,27 @@ export function useCreateCard() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: CardRequest) => cardsApi.create(body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.all });
+        toast.success('Card created successfully');
+    },
+    onError: (error: any) => {
+        toast.error(error.message || 'Failed to create card');
+    },
+  })
+}
+
+export function useUpdateCard() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (vars: { id: number; body: CardRequest }) => cardsApi.update(vars.id, vars.body),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.all });
+        toast.success('Card updated successfully');
+    },
+    onError: (error: any) => {
+        toast.error(error.message || 'Failed to update card');
+    },
   })
 }
 
@@ -28,7 +49,13 @@ export function useDeleteCard() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number) => cardsApi.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.all });
+        toast.success('Card deleted successfully');
+    },
+    onError: (error: any) => {
+        toast.error(error.message || 'Failed to delete card');
+    },
   })
 }
 

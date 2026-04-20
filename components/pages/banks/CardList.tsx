@@ -4,16 +4,15 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCards, useDeleteCard } from '@/lib/hooks/useCards'
 import { CardFormDialog } from './CardFormDialog'
-import { CardExpenseDialog } from './CardExpenseDialog'
-import { CardInstallmentsDialog } from './CardInstallmentsDialog'
-import { MoreVertical, Plus, ListFilter, Trash2 } from 'lucide-react'
+import { CardDetailDialog } from './CardDetailDialog'
+import { MoreVertical, Plus, Pencil, Trash2 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
+import type { Card } from '@/types/cards'
 
 interface Props { accountId: number }
 
@@ -21,14 +20,14 @@ export function CardList({ accountId }: Props) {
   const { data, isLoading } = useCards(accountId)
   const del = useDeleteCard()
   const [creatingOpen, setCreatingOpen] = useState(false)
-  const [expenseCardId, setExpenseCardId] = useState<number | null>(null)
-  const [viewingCardId, setViewingCardId] = useState<number | null>(null)
+  const [editingCard, setEditingCard] = useState<Card | null>(null)
+  const [viewingCard, setViewingCard] = useState<Card | null>(null)
 
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Cards</h4>
-        <Button size="sm" variant="outline" className="h-8 gap-2 text-xs font-bold" onClick={() => setCreatingOpen(true)}>
+        <Button size="sm" variant="outline" className="h-8 gap-2 text-xs font-bold" onClick={() => { setEditingCard(null); setCreatingOpen(true); }}>
             <Plus className="h-3.5 w-3.5" /> Add Card
         </Button>
       </div>
@@ -42,9 +41,10 @@ export function CardList({ accountId }: Props) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {data.map((c) => (
-            <div 
-                key={c.id} 
-                className={`relative aspect-[1.58/1] rounded-2xl p-5 text-white shadow-xl overflow-hidden group transition-transform hover:scale-[1.02] active:scale-[0.98] ${getCardGradient(c.brand)}`}
+            <div
+                key={c.id}
+                onClick={() => setViewingCard(c)}
+                className={`relative aspect-[1.58/1] rounded-2xl p-5 text-white shadow-xl overflow-hidden group transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-2xl ${getCardGradient(c.brand)}`}
             >
               {/* Card Chip Simulation */}
               <div className="w-10 h-8 bg-yellow-400/80 rounded-md mb-4 relative overflow-hidden">
@@ -71,7 +71,7 @@ export function CardList({ accountId }: Props) {
               </div>
 
               {/* Actions Dropdown */}
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20 rounded-full">
@@ -79,18 +79,13 @@ export function CardList({ accountId }: Props) {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem 
-                            disabled={c.behavior === 'INSTANT_PAYMENT'} 
-                            onClick={() => setExpenseCardId(c.id)}
+                        <DropdownMenuItem
+                            onClick={() => setEditingCard(c)}
                             className="gap-2"
                         >
-                            <Plus className="h-4 w-4" /> Add Expense
+                            <Pencil className="h-4 w-4" /> Edit Card
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setViewingCardId(c.id)} className="gap-2">
-                            <ListFilter className="h-4 w-4" /> View Installments
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                             className="text-red-600 gap-2"
                             onClick={() => { if (confirm(`Delete card ending in ${c.last4Digits}?`)) del.mutate(c.id) }}
                         >
@@ -104,13 +99,20 @@ export function CardList({ accountId }: Props) {
         </div>
       )}
 
-      <CardFormDialog open={creatingOpen} onOpenChange={setCreatingOpen} accountId={accountId} />
-      <CardExpenseDialog cardId={expenseCardId ?? 0} open={expenseCardId != null} onOpenChange={(o) => !o && setExpenseCardId(null)} />
-      <CardInstallmentsDialog cardId={viewingCardId} open={viewingCardId != null} onOpenChange={(o) => !o && setViewingCardId(null)} />
+      <CardFormDialog
+        open={creatingOpen || !!editingCard}
+        onOpenChange={(o) => { if (!o) { setCreatingOpen(false); setEditingCard(null); } }}
+        accountId={accountId}
+        card={editingCard}
+      />
+      <CardDetailDialog
+        card={viewingCard}
+        open={viewingCard != null}
+        onOpenChange={(o) => !o && setViewingCard(null)}
+      />
     </div>
   )
 }
-
 function getCardGradient(brand: string) {
     switch (brand) {
         case 'VISA':

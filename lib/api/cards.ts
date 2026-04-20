@@ -11,6 +11,7 @@ export const cardsApi = {
     api.get<Card[]>('/api/v1/banks/cards' + (accountId ? `?accountId=${accountId}` : '')),
   get: (id: number) => api.get<Card>(`/api/v1/banks/cards/${id}`),
   create: (body: CardRequest) => api.post<Card>('/api/v1/banks/cards', body),
+  update: (id: number, body: CardRequest) => api.put<Card>(`/api/v1/banks/cards/${id}`, body),
   delete: (id: number) => api.delete<void>(`/api/v1/banks/cards/${id}`),
 
   listInstallments: (cardId: number) =>
