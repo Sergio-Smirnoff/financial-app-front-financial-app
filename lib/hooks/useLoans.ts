@@ -47,6 +47,7 @@ export function usePayLoanInstallment() {
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: QK.installments(vars.loanId) })
       qc.invalidateQueries({ queryKey: QK.all })
+      qc.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }
