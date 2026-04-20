@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useBank, useAccounts } from "@/lib/hooks/useBanks";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History } from "lucide-react";
+import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History, Bell, Trash2 } from "lucide-react";
 import { AccountResponse } from "@/types/banks";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
@@ -15,32 +15,57 @@ import { LoanList } from "./LoanList";
 import { AccountFormDialog } from "./AccountFormDialog";
 import { TransferDialog } from "../transactions/TransferDialog";
 import { QuickTransactionDialog } from "./QuickTransactionDialog";
+import { TransactionHistoryDialog } from "./TransactionHistoryDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLatestNotifications } from "@/lib/hooks/useNotifications";
+import { useUiStore } from "@/lib/store/ui.store";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 
 interface Props { bankId: number }
 
 export function BankDetailContent({ bankId }: Props) {
+  const queryClient = useQueryClient();
   const { data: bank, isLoading, isError } = useBank(bankId);
-  const { createAccount, updateAccount } = useAccounts();
+  const { createAccount, updateAccount, deleteAccount } = useAccounts();
+  const { openConfirmDelete } = useUiStore();
+  const { data: notifications } = useLatestNotifications();
   
   const [accDialogOpen, setAccDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<AccountResponse | null>(null);
   
   const [transferOpen, setTransferOpen] = useState(false);
   const [quickTxOpen, setQuickTxOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  
   const [quickTxType, setQuickTxType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
   const [activeAccountId, setActiveAccountId] = useState<number | null>(null);
+  const [activeAccountName, setActiveAccountName] = useState<string>('');
   const [activeCurrency, setActiveCurrency] = useState<string>('USD');
+
+  const hasAlerts = useMemo(() => {
+    if (!notifications) return false;
+    return notifications.some(n => {
+      try {
+        const metadata = n.metadata ? JSON.parse(n.metadata) : {};
+        return metadata.bankId === bankId && !n.read;
+      } catch (e) {
+        return false;
+      }
+    });
+  }, [notifications, bankId]);
 
   if (isLoading) return <LoadingSpinner />;
   if (isError || !bank) return <ErrorMessage message="Bank not found" />;
 
-  const handleAddAccount = () => {
-    setSelectedAccount(null);
-    setAccDialogOpen(true);
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['banks', bankId] });
+    if (activeAccountId) {
+        queryClient.invalidateQueries({ queryKey: ['transactions', 'account', activeAccountId] });
+    }
   };
 
-  const handleEditAccount = (account: AccountResponse) => {
-    setSelectedAccount(account);
+  const handleAddAccount = () => {
+    setSelectedAccount(null);
     setAccDialogOpen(true);
   };
 
@@ -54,6 +79,28 @@ export function BankDetailContent({ bankId }: Props) {
     setActiveCurrency(currency);
     setQuickTxType(type);
     setQuickTxOpen(true);
+  };
+
+  const openHistory = (account: AccountResponse) => {
+    setActiveAccountId(account.id);
+    setActiveAccountName(account.name);
+    setActiveCurrency(account.currency);
+    setHistoryOpen(true);
+  };
+
+  const handleDeleteAccount = (account: AccountResponse) => {
+    openConfirmDelete({
+      title: 'Delete account',
+      description: `Delete "${account.name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          await deleteAccount(account.id);
+          handleRefresh();
+        } catch (e) {
+          // Error handled by mutation toast
+        }
+      },
+    });
   };
 
   return (
@@ -74,7 +121,12 @@ export function BankDetailContent({ bankId }: Props) {
                 )}
             </div>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{bank.name}</h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{bank.name}</h1>
+                <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-200'}`}>
+                    <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
+                </div>
+              </div>
               <p className="text-sm text-zinc-500">Manage accounts, cards and loans</p>
             </div>
           </div>
@@ -131,21 +183,32 @@ export function BankDetailContent({ bankId }: Props) {
                     <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}>
                         <MinusCircle className="h-3.5 w-3.5" /> Withdraw
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History">
+                    <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History" onClick={() => openHistory(account)}>
                         <History className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-9 w-9 text-zinc-400 hover:text-red-600" 
+                        title="Delete Account" 
+                        onClick={() => handleDeleteAccount(account)}
+                    >
+                        <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 divide-x divide-zinc-100">
-                <div className="p-0">
-                    <CardList accountId={account.id} />
+              {account.type !== 'INVESTMENT' && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 divide-x divide-zinc-100">
+                    <div className="p-0">
+                        <CardList accountId={account.id} />
+                    </div>
+                    <div className="p-0 bg-zinc-50/10">
+                        <LoanList accountId={account.id} />
+                    </div>
                 </div>
-                <div className="p-0 bg-zinc-50/10">
-                    <LoanList accountId={account.id} />
-                </div>
-              </div>
+              )}
             </div>
           ))
         )}
@@ -172,24 +235,35 @@ export function BankDetailContent({ bankId }: Props) {
           } else {
             await createAccount(data);
           }
+          handleRefresh();
         }}
       />
 
       <TransferDialog 
         open={transferOpen} 
         onOpenChange={setTransferOpen} 
-        onSuccess={() => {}} 
+        onSuccess={handleRefresh} 
         defaultFromAccountId={activeAccountId}
       />
 
       <QuickTransactionDialog 
         open={quickTxOpen}
         onOpenChange={setQuickTxOpen}
-        onSuccess={() => {}}
+        onSuccess={handleRefresh}
         accountId={activeAccountId ?? 0}
         currency={activeCurrency}
         type={quickTxType}
       />
+
+      <TransactionHistoryDialog 
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        accountId={activeAccountId ?? 0}
+        accountName={activeAccountName}
+        currency={activeCurrency}
+      />
+
+      <ConfirmDialog />
     </div>
   );
 }
