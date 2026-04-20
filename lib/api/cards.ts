@@ -7,8 +7,8 @@ import type {
 } from '@/types/cards'
 
 export const cardsApi = {
-  list: (accountId?: number) =>
-    api.get<Card[]>('/api/v1/banks/cards' + (accountId ? `?accountId=${accountId}` : '')),
+  list: (bankId?: number) =>
+    api.get<Card[]>('/api/v1/banks/cards' + (bankId ? `?bankId=${bankId}` : '')),
   get: (id: number) => api.get<Card>(`/api/v1/banks/cards/${id}`),
   create: (body: CardRequest) => api.post<Card>('/api/v1/banks/cards', body),
   update: (id: number, body: CardRequest) => api.put<Card>(`/api/v1/banks/cards/${id}`, body),
@@ -18,10 +18,10 @@ export const cardsApi = {
     api.get<CardInstallment[]>(`/api/v1/banks/cards/${cardId}/installments`),
   createExpense: (cardId: number, body: CardExpenseCreateRequest) =>
     api.post<CardInstallment[]>(`/api/v1/banks/cards/${cardId}/installments`, body),
-  markPaid: (cardId: number, installmentId: number, paidDate?: string) =>
+  markPaid: (cardId: number, installmentId: number, accountId: number, paidDate?: string) =>
     api.post<CardInstallment>(
-      `/api/v1/banks/cards/${cardId}/installments/${installmentId}/pay`
-        + (paidDate ? `?paidDate=${paidDate}` : ''),
+      `/api/v1/banks/cards/${cardId}/installments/${installmentId}/pay?accountId=${accountId}`
+        + (paidDate ? `&paidDate=${paidDate}` : ''),
       {},
     ),
 }

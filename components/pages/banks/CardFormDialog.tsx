@@ -26,11 +26,11 @@ type FormValues = z.infer<typeof schema>
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  accountId: number
+  bankId: number
   card?: Card | null
 }
 
-export function CardFormDialog({ open, onOpenChange, accountId, card }: Props) {
+export function CardFormDialog({ open, onOpenChange, bankId, card }: Props) {
   const isEditing = !!card
   const createMutation = useCreateCard()
   const updateMutation = useUpdateCard()
@@ -78,9 +78,9 @@ export function CardFormDialog({ open, onOpenChange, accountId, card }: Props) {
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
     if (isEditing) {
-        await updateMutation.mutateAsync({ id: card!.id, body: { accountId, ...values } })
+        await updateMutation.mutateAsync({ id: card!.id, body: { bankId, ...values } })
     } else {
-        await createMutation.mutateAsync({ accountId, ...values })
+        await createMutation.mutateAsync({ bankId, ...values })
     }
     onOpenChange(false)
   }

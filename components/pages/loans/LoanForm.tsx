@@ -4,7 +4,6 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateLoan } from '@/lib/hooks/useLoans'
-import { useBanks } from '@/lib/hooks/useBanks'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -15,17 +14,10 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { toast } from 'sonner'
 
 const schema = z.object({
-  accountId: z.number().positive('Required'),
+  bankId: z.number().positive('Required'),
   name: z.string().min(1, 'Required'),
   principal: z.number().positive('Must be positive'),
   interestRate: z.number().min(0, 'Min 0'),
@@ -35,14 +27,13 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
-  const { banks } = useBanks()
+export function LoanForm({ bankId, onSuccess }: { bankId: number, onSuccess: () => void }) {
   const createLoan = useCreateLoan()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      accountId: 0,
+      bankId,
       name: '',
       principal: 0,
       interestRate: 0,
@@ -58,32 +49,9 @@ export function LoanForm({ onSuccess }: { onSuccess: () => void }) {
     })
   }
 
-  const allAccounts = banks.flatMap(b => b.accounts.map(a => ({ ...a, bankName: b.name })))
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="accountId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Account</FormLabel>
-              <Select value={field.value > 0 ? field.value.toString() : ''} onValueChange={(v) => field.onChange(parseInt(v))}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
-                <SelectContent>
-                  {allAccounts.map((a) => (
-                    <SelectItem key={a.id} value={a.id.toString()}>
-                      {a.bankName} - {a.name} ({a.currency})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="name"

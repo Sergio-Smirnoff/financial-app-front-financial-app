@@ -4,7 +4,7 @@ export type CardBehavior = 'INSTANT_PAYMENT' | 'INSTALLMENTS'
 
 export interface Card {
   id: number
-  accountId: number
+  bankId: number
   userId: number
   displayName: string
   brand: CardBrand
@@ -19,7 +19,7 @@ export interface Card {
 }
 
 export interface CardRequest {
-  accountId: number
+  bankId: number
   brand: CardBrand
   cardType: CardType
   behavior: CardBehavior

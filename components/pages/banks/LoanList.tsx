@@ -4,17 +4,25 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useLoans, useLoanInstallments, usePayLoanInstallment } from '@/lib/hooks/useLoans'
+import { useBank } from '@/lib/hooks/useBanks'
 import { ChevronDown, Plus, CreditCard, Calendar } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { LoanForm } from '../loans/LoanForm'
 
-interface Props { accountId: number }
+interface Props { bankId: number }
 
-export function LoanList({ accountId }: Props) {
-  const { data: loans, isLoading } = useLoans(accountId)
+export function LoanList({ bankId }: Props) {
+  const { data: loans, isLoading } = useLoans(bankId)
   const [creatingOpen, setCreatingOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
 
@@ -74,7 +82,7 @@ export function LoanList({ accountId }: Props) {
               {expandedId === loan.id && (
                 <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-300">
                   <div className="pt-4 border-t border-zinc-100">
-                    <LoanInstallmentSubList loanId={loan.id} currency={loan.currency} />
+                    <LoanInstallmentSubList loanId={loan.id} currency={loan.currency} bankId={bankId} />
                   </div>
                 </div>
               )}
@@ -86,16 +94,22 @@ export function LoanList({ accountId }: Props) {
       <Dialog open={creatingOpen} onOpenChange={setCreatingOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
-          <LoanForm onSuccess={() => setCreatingOpen(false)} />
+          <LoanForm bankId={bankId} onSuccess={() => setCreatingOpen(false)} />
         </DialogContent>
       </Dialog>
     </div>
   )
 }
 
-function LoanInstallmentSubList({ loanId, currency }: { loanId: number, currency: string }) {
+function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, currency: string, bankId: number }) {
   const { data: installments, isLoading } = useLoanInstallments(loanId)
+  const { data: bank } = useBank(bankId)
   const payInstallment = usePayLoanInstallment()
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
+
+  const availableAccounts = useMemo(() => {
+    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+  }, [bank, currency])
 
   if (isLoading) return <div className="py-4 flex justify-center"><LoadingSpinner size="sm" /></div>
 
@@ -124,22 +138,36 @@ function LoanInstallmentSubList({ loanId, currency }: { loanId: number, currency
                     Paid
                 </Badge>
             ) : (
-                <Button
-                size="sm"
-                className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
-                disabled={payInstallment.isPending}
-                onClick={() => {
-                    payInstallment.mutate(
-                        { loanId, installmentId: inst.id },
-                        {
-                            onSuccess: () => toast.success('Installment paid'),
-                            onError: () => toast.error('Payment failed')
-                        }
-                    )
-                }}
-                >
-                Pay Now
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
+                        <SelectTrigger className="h-7 w-[140px] text-[10px] font-bold">
+                            <SelectValue placeholder="Select account" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableAccounts.map(a => (
+                                <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
+                                    {a.name} ({formatCurrency(a.balance, a.currency)})
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Button
+                        size="sm"
+                        className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
+                        disabled={payInstallment.isPending || !selectedAccountId}
+                        onClick={() => {
+                            payInstallment.mutate(
+                                { loanId, installmentId: inst.id, accountId: selectedAccountId! },
+                                {
+                                    onSuccess: () => toast.success('Installment paid'),
+                                    onError: (e) => toast.error(e.message || 'Payment failed')
+                                }
+                            )
+                        }}
+                    >
+                        Pay
+                    </Button>
+                </div>
             )}
           </div>
         </div>

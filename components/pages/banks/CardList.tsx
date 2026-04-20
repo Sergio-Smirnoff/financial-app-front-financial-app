@@ -14,10 +14,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import type { Card } from '@/types/cards'
 
-interface Props { accountId: number }
+interface Props { bankId: number }
 
-export function CardList({ accountId }: Props) {
-  const { data, isLoading } = useCards(accountId)
+export function CardList({ bankId }: Props) {
+  const { data, isLoading } = useCards(bankId)
   const del = useDeleteCard()
   const [creatingOpen, setCreatingOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<Card | null>(null)
@@ -102,13 +102,14 @@ export function CardList({ accountId }: Props) {
       <CardFormDialog
         open={creatingOpen || !!editingCard}
         onOpenChange={(o) => { if (!o) { setCreatingOpen(false); setEditingCard(null); } }}
-        accountId={accountId}
+        bankId={bankId}
         card={editingCard}
       />
       <CardDetailDialog
         card={viewingCard}
         open={viewingCard != null}
         onOpenChange={(o) => !o && setViewingCard(null)}
+        bankId={bankId}
       />
     </div>
   )

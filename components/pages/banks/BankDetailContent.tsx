@@ -138,90 +138,93 @@ export function BankDetailContent({ bankId }: Props) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-6 pb-12">
-        {bank.accounts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed rounded-3xl bg-zinc-50/50">
-            <Wallet className="h-12 w-12 text-zinc-300 mb-4" />
-            <p className="text-lg font-medium text-zinc-900">No accounts yet</p>
-            <p className="text-sm text-zinc-500 mb-6">Create your first account in this bank to start tracking transactions.</p>
-            <Button onClick={handleAddAccount} variant="outline">Create account</Button>
-          </div>
-        ) : (
-          bank.accounts.map((account) => (
-            <div key={account.id} className="bg-white border rounded-3xl shadow-sm overflow-hidden flex flex-col">
-              <div className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b bg-zinc-50/30">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-white border flex items-center justify-center shadow-sm">
-                    <Wallet className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-lg text-zinc-900">{account.name}</h3>
-                        <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 h-5">
-                            {account.type}
-                        </Badge>
-                    </div>
-                    <p className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">{account.currency}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <p className="text-xs text-zinc-400 font-semibold uppercase tracking-tighter">Available Balance</p>
-                    <p className="text-2xl font-black text-zinc-900">
-                        {formatCurrency(account.balance, account.currency)}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold" onClick={() => openTransfer(account.id)}>
-                        <ArrowLeftRight className="h-3.5 w-3.5" /> Transfer
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-green-600 hover:text-green-700" onClick={() => openQuickTx(account.id, account.currency, 'INCOME')}>
-                        <PlusCircle className="h-3.5 w-3.5" /> Deposit
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}>
-                        <MinusCircle className="h-3.5 w-3.5" /> Withdraw
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History" onClick={() => openHistory(account)}>
-                        <History className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-9 w-9 text-zinc-400 hover:text-red-600" 
-                        title="Delete Account" 
-                        onClick={() => handleDeleteAccount(account)}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+      <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-8 pb-12">
+        {/* Accounts Section */}
+        <section className="space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400 px-1">Accounts</h2>
+          <div className="grid grid-cols-1 gap-4">
+            {bank.accounts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-3xl bg-zinc-50/50">
+                <Wallet className="h-10 w-10 text-zinc-300 mb-3" />
+                <p className="text-base font-medium text-zinc-900">No accounts yet</p>
+                <Button onClick={handleAddAccount} variant="outline" size="sm" className="mt-4">Create account</Button>
               </div>
+            ) : (
+              <>
+                {bank.accounts.map((account) => (
+                  <div key={account.id} className="bg-white border rounded-3xl shadow-sm overflow-hidden flex flex-col">
+                    <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-full bg-white border flex items-center justify-center shadow-sm">
+                          <Wallet className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-lg text-zinc-900">{account.name}</h3>
+                              <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 h-5">
+                                  {account.type}
+                              </Badge>
+                          </div>
+                          <p className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">{account.currency}</p>
+                        </div>
+                      </div>
 
-              {account.type !== 'INVESTMENT' && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 divide-x divide-zinc-100">
-                    <div className="p-0">
-                        <CardList accountId={account.id} />
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="text-xs text-zinc-400 font-semibold uppercase tracking-tighter">Available Balance</p>
+                          <p className="text-2xl font-black text-zinc-900">
+                              {formatCurrency(account.balance, account.currency)}
+                          </p>
+                        </div>
+                        
+                        <div className="flex items-center gap-1">
+                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold" onClick={() => openTransfer(account.id)}>
+                              <ArrowLeftRight className="h-3.5 w-3.5" /> Transfer
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-green-600 hover:text-green-700" onClick={() => openQuickTx(account.id, account.currency, 'INCOME')}>
+                              <PlusCircle className="h-3.5 w-3.5" /> Deposit
+                          </Button>
+                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}>
+                              <MinusCircle className="h-3.5 w-3.5" /> Withdraw
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History" onClick={() => openHistory(account)}>
+                              <History className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-9 w-9 text-zinc-400 hover:text-red-600" 
+                              title="Delete Account" 
+                              onClick={() => handleDeleteAccount(account)}
+                          >
+                              <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-0 bg-zinc-50/10">
-                        <LoanList accountId={account.id} />
-                    </div>
-                </div>
-              )}
-            </div>
-          ))
-        )}
+                  </div>
+                ))}
+                <Button 
+                    variant="ghost" 
+                    className="w-full h-12 border-2 border-dashed rounded-3xl text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 gap-2 font-semibold"
+                    onClick={handleAddAccount}
+                >
+                    <Plus className="h-4 w-4" /> Add another account
+                </Button>
+              </>
+            )}
+          </div>
+        </section>
 
-        {bank.accounts.length > 0 && (
-            <Button 
-                variant="ghost" 
-                className="w-full h-16 border-2 border-dashed rounded-3xl text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 gap-2 font-semibold"
-                onClick={handleAddAccount}
-            >
-                <Plus className="h-5 w-5" /> Add another account
-            </Button>
-        )}
+        {/* Cards and Loans Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <section className="bg-white border rounded-3xl shadow-sm overflow-hidden">
+            <CardList bankId={bankId} />
+          </section>
+          <section className="bg-zinc-50/10 border rounded-3xl shadow-sm overflow-hidden">
+            <LoanList bankId={bankId} />
+          </section>
+        </div>
       </div>
 
       <AccountFormDialog 

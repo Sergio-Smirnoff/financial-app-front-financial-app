@@ -10,10 +10,10 @@ const QK = {
   installments: (cardId: number) => ['cards', cardId, 'installments'] as const,
 }
 
-export function useCards(accountId?: number) {
+export function useCards(bankId?: number) {
   return useQuery({
-    queryKey: accountId ? QK.byAccount(accountId) : QK.all,
-    queryFn: () => cardsApi.list(accountId),
+    queryKey: bankId ? QK.byAccount(bankId) : QK.all,
+    queryFn: () => cardsApi.list(bankId),
   })
 }
 
@@ -21,8 +21,9 @@ export function useCreateCard() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (body: CardRequest) => cardsApi.create(body),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
         qc.invalidateQueries({ queryKey: QK.all });
+        qc.invalidateQueries({ queryKey: ['banks'] });
         toast.success('Card created successfully');
     },
     onError: (error: any) => {
@@ -35,8 +36,9 @@ export function useUpdateCard() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (vars: { id: number; body: CardRequest }) => cardsApi.update(vars.id, vars.body),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
         qc.invalidateQueries({ queryKey: QK.all });
+        qc.invalidateQueries({ queryKey: ['banks'] });
         toast.success('Card updated successfully');
     },
     onError: (error: any) => {
@@ -51,6 +53,7 @@ export function useDeleteCard() {
     mutationFn: (id: number) => cardsApi.delete(id),
     onSuccess: () => {
         qc.invalidateQueries({ queryKey: QK.all });
+        qc.invalidateQueries({ queryKey: ['banks'] });
         toast.success('Card deleted successfully');
     },
     onError: (error: any) => {
@@ -78,8 +81,11 @@ export function useCreateCardExpense(cardId: number) {
 export function useMarkInstallmentPaid(cardId: number) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (vars: { installmentId: number; paidDate?: string }) =>
-      cardsApi.markPaid(cardId, vars.installmentId, vars.paidDate),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK.installments(cardId) }),
+    mutationFn: (vars: { installmentId: number; accountId: number; paidDate?: string }) =>
+      cardsApi.markPaid(cardId, vars.installmentId, vars.accountId, vars.paidDate),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.installments(cardId) });
+        qc.invalidateQueries({ queryKey: ['banks'] });
+    },
   })
 }

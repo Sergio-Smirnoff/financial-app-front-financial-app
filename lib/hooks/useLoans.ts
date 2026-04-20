@@ -8,10 +8,10 @@ const QK = {
   installments: (loanId: number) => ['loans', loanId, 'installments'] as const,
 }
 
-export function useLoans(accountId?: number) {
+export function useLoans(bankId?: number) {
   return useQuery({
-    queryKey: accountId ? QK.byAccount(accountId) : QK.all,
-    queryFn: () => loansApi.list(accountId),
+    queryKey: bankId ? QK.byAccount(bankId) : QK.all,
+    queryFn: () => loansApi.list(bankId),
   })
 }
 
@@ -19,7 +19,10 @@ export function useCreateLoan() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: LoanRequest) => loansApi.create(data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.all });
+        qc.invalidateQueries({ queryKey: ['banks'] });
+    },
   })
 }
 
@@ -27,7 +30,10 @@ export function useDeleteLoan() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number) => loansApi.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK.all }),
+    onSuccess: () => {
+        qc.invalidateQueries({ queryKey: QK.all });
+        qc.invalidateQueries({ queryKey: ['banks'] });
+    },
   })
 }
 
@@ -42,8 +48,8 @@ export function useLoanInstallments(loanId: number) {
 export function usePayLoanInstallment() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (vars: { loanId: number; installmentId: number; paidDate?: string }) =>
-      loansApi.payInstallment(vars.loanId, vars.installmentId, vars.paidDate),
+    mutationFn: (vars: { loanId: number; installmentId: number; accountId: number; paidDate?: string }) =>
+      loansApi.payInstallment(vars.loanId, vars.installmentId, vars.accountId, vars.paidDate),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: QK.installments(vars.loanId) })
       qc.invalidateQueries({ queryKey: QK.all })

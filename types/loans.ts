@@ -1,6 +1,6 @@
 export interface Loan {
   id: number
-  accountId: number
+  bankId: number
   userId: number
   name: string
   principal: number
@@ -27,7 +27,7 @@ export interface LoanInstallment {
 }
 
 export interface LoanRequest {
-  accountId: number
+  bankId: number
   name: string
   principal: number
   interestRate: number

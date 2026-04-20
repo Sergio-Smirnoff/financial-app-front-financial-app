@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useCardInstallments, useMarkInstallmentPaid } from '@/lib/hooks/useCards'
+import { useBank } from '@/lib/hooks/useBanks'
 import { Badge } from '@/components/ui/badge'
 import { CardInstallment, Card } from '@/types/cards'
 import { formatCurrency } from '@/lib/utils/currency'
@@ -11,15 +12,29 @@ import { formatDate } from '@/lib/utils/dates'
 import { ChevronDown, ChevronRight, CreditCard, Plus, CalendarClock } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { CardExpenseDialog } from './CardExpenseDialog'
+import { toast } from 'sonner'
 
-interface Props { card: Card | null; open: boolean; onOpenChange: (o: boolean) => void }
+interface Props { card: Card | null; open: boolean; onOpenChange: (o: boolean) => void; bankId: number }
 
-export function CardDetailDialog({ card, open, onOpenChange }: Props) {
+export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
   const { data: installments, isLoading } = useCardInstallments(open ? card?.id ?? null : null)
+  const { data: bank } = useBank(bankId)
   const markPaid = useMarkInstallmentPaid(card?.id ?? 0)
   const [expandedPurchases, setExpandedPurchases] = useState<Record<string, boolean>>({})
   const [expenseOpen, setExpenseOpen] = useState(false)
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
+
+  const getAvailableAccounts = (currency: string) => {
+    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+  }
 
   const purchases = useMemo(() => {
     if (!installments) return []
@@ -149,15 +164,35 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                                         {inst.paid ? (
                                             <Badge variant="outline" className="text-[10px] bg-white">Paid {formatDate(inst.paidDate!)}</Badge>
                                         ) : (
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-7 text-xs px-3"
-                                                disabled={markPaid.isPending}
-                                                onClick={() => markPaid.mutate({ installmentId: inst.id })}
-                                            >
-                                                Pay
-                                            </Button>
+                                            <div className="flex items-center gap-2">
+                                                <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
+                                                    <SelectTrigger className="h-7 w-[130px] text-[10px] font-bold">
+                                                        <SelectValue placeholder="Select account" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {getAvailableAccounts(inst.currency).map(a => (
+                                                            <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
+                                                                {a.name} ({formatCurrency(a.balance, a.currency)})
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-7 text-xs px-3"
+                                                    disabled={markPaid.isPending || !selectedAccountId}
+                                                    onClick={() => markPaid.mutate(
+                                                        { installmentId: inst.id, accountId: selectedAccountId! },
+                                                        {
+                                                            onSuccess: () => toast.success('Installment paid'),
+                                                            onError: (e) => toast.error(e.message || 'Payment failed')
+                                                        }
+                                                    )}
+                                                >
+                                                    Pay
+                                                </Button>
+                                            </div>
                                         )}
                                     </div>
                                 ))}
