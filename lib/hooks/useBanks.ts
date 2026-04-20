@@ -37,6 +37,9 @@ export const useBanks = () => {
       queryClient.invalidateQueries({ queryKey: ['banks'] });
       toast.success('Bank deleted successfully');
     },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to delete bank');
+    },
   });
 
   return {
