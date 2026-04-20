@@ -48,6 +48,14 @@ export const useBanks = () => {
   };
 };
 
+export const useBank = (id: number) => {
+  return useQuery({
+    queryKey: ['banks', id],
+    queryFn: () => banksApi.get(id),
+    enabled: !!id,
+  });
+};
+
 export const useAccounts = () => {
   const queryClient = useQueryClient();
 

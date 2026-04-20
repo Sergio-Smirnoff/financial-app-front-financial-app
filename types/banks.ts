@@ -19,6 +19,10 @@ export interface BankResponse {
   name: string;
   logoUrl?: string;
   accounts: AccountResponse[];
+  totalBalances: Record<string, number>;
+  accountsCount: number;
+  cardsCount: number;
+  loansCount: number;
   createdAt: string;
   updatedAt: string;
 }

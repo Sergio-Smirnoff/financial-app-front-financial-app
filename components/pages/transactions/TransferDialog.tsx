@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -45,9 +45,10 @@ interface TransferDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess: () => void
+  defaultFromAccountId?: number | null
 }
 
-export function TransferDialog({ open, onOpenChange, onSuccess }: TransferDialogProps) {
+export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccountId }: TransferDialogProps) {
   const transferMutation = useTransfer()
   const { banks } = useBanks()
 
@@ -58,14 +59,22 @@ export function TransferDialog({ open, onOpenChange, onSuccess }: TransferDialog
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      fromAccountId: 0,
+      fromAccountId: defaultFromAccountId ?? 0,
       toAccountId: 0,
-      amount: 0,
+      amount: undefined,
       currency: 'USD',
       date: new Date().toISOString().slice(0, 10),
       description: 'Transfer between accounts',
     },
   })
+
+  useEffect(() => {
+    if (open && defaultFromAccountId) {
+      form.setValue('fromAccountId', defaultFromAccountId);
+      const acc = allAccounts.find(a => a.id === defaultFromAccountId);
+      if (acc) form.setValue('currency', acc.currency);
+    }
+  }, [open, defaultFromAccountId, allAccounts, form]);
 
   const onSubmit = (values: FormValues) => {
     transferMutation.mutate(values, {
@@ -96,7 +105,12 @@ export function TransferDialog({ open, onOpenChange, onSuccess }: TransferDialog
                 <FormItem>
                   <FormLabel>From Account</FormLabel>
                   <Select 
-                    onValueChange={(v) => field.onChange(Number(v))} 
+                    onValueChange={(v) => {
+                        const val = Number(v);
+                        field.onChange(val);
+                        const acc = allAccounts.find(a => a.id === val);
+                        if (acc) form.setValue('currency', acc.currency);
+                    }} 
                     value={field.value > 0 ? field.value.toString() : undefined}
                   >
                     <FormControl>
@@ -170,7 +184,7 @@ export function TransferDialog({ open, onOpenChange, onSuccess }: TransferDialog
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Currency</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select value={field.value} onValueChange={field.onChange} disabled>
                       <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
