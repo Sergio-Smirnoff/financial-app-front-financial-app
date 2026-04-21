@@ -29,7 +29,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.currency === holding?.currency && a.type !== 'INVESTMENT') || []
+    return bank?.accounts.filter(a => a.currency.toUpperCase() === holding?.currency.toUpperCase() && a.type !== 'INVESTMENT') || []
   }, [bank, holding])
 
   const liquidationValue = useMemo(() => {
@@ -63,7 +63,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
           <DialogTitle>Sell Holding: {holding.ticker}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="rounded-xl bg-zinc-50 p-4 space-y-2 border">
+          <div className="rounded-xl bg-zinc-50 p-4 space-y-2 border min-h-[120px] flex flex-col justify-center">
             <div className="flex justify-between text-sm">
                 <span className="text-zinc-500">Quantity to sell:</span>
                 <span className="font-bold">{holding.quantity}</span>
@@ -73,7 +73,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
                 <span className="font-bold">{formatCurrency(holding.currentPrice ?? holding.avgPurchasePrice, holding.currency)}</span>
             </div>
             <div className="flex justify-between items-center pt-2 border-t mt-2">
-                <span className="text-sm font-bold">Estimated Liquidation:</span>
+                <span className="text-sm font-bold text-zinc-900">Estimated Liquidation:</span>
                 <span className="text-lg font-black text-primary">{formatCurrency(liquidationValue, holding.currency)}</span>
             </div>
           </div>
