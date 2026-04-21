@@ -1,10 +1,11 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateHolding, useUpdateHolding } from '@/lib/hooks/useInvestments'
 import { useBanks } from '@/lib/hooks/useBanks'
+import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {

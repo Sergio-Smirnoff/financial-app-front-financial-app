@@ -59,7 +59,7 @@ export interface PortfolioSummary {
 export interface CreateHoldingRequest {
   bankId: number
   bankAccountId: number
-  fundingAccountId?: number
+  fundingAccountId: number
   ticker: string
   name: string
   assetType: AssetType
