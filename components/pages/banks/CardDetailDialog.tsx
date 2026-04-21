@@ -95,8 +95,8 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
-          <div className="p-6 bg-zinc-50 border-b">
+        <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0 overflow-hidden">
+          <div className="p-6 bg-zinc-50 border-b shrink-0">
             <DialogHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -166,8 +166,11 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
-                                                    <SelectTrigger className="h-7 w-[130px] text-[10px] font-bold">
-                                                        <SelectValue placeholder="Select account" />
+                                                    <SelectTrigger 
+                                                        className="h-7 w-[130px] text-[10px] font-bold"
+                                                        disabled={getAvailableAccounts(inst.currency).length === 0}
+                                                    >
+                                                        <SelectValue placeholder={getAvailableAccounts(inst.currency).length > 0 ? "Select account" : "No available accounts"} />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {getAvailableAccounts(inst.currency).map(a => (

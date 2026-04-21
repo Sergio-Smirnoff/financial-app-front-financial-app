@@ -142,11 +142,13 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
               ) : (
                   <div className="flex items-center gap-2">
                       <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
-                          <SelectTrigger className="h-7 w-[140px] text-[10px] font-bold">
-                              <SelectValue placeholder="Select account" />
+                          <SelectTrigger 
+                              className="h-7 w-[140px] text-[10px] font-bold"
+                              disabled={availableAccounts.length === 0}
+                          >
+                              <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No available accounts"} />
                           </SelectTrigger>
-                          <SelectContent>
-                              {availableAccounts.map(a => (
+                          <SelectContent>                              {availableAccounts.map(a => (
                                   <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
                                       {a.name} ({formatCurrency(a.balance, a.currency)})
                                   </SelectItem>
@@ -156,10 +158,10 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
                       <Button
                           size="sm"
                           className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
-                          disabled={payInstallment.isPending || !selectedAccountId}
+                          disabled={payInstallment.isPending || !selectedAccounts[inst.id]}
                           onClick={() => {
                               payInstallment.mutate(
-                                  { loanId, installmentId: inst.id, accountId: selectedAccountId! },
+                                  { loanId, installmentId: inst.id, accountId: selectedAccounts[inst.id]! },
                                   {
                                       onSuccess: () => toast.success('Installment paid'),
                                       onError: (e) => toast.error(e.message || 'Payment failed')
@@ -168,8 +170,7 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
                           }}
                       >
                           Pay
-                      </Button>
-                  </div>
+                      </Button>                  </div>
               )}
             </div>
           </div>

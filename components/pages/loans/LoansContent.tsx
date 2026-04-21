@@ -120,7 +120,13 @@ function LoanCard({
   onDelete: () => void
 }) {
   const { data: installments, isLoading } = useLoanInstallments(expanded ? loan.id : 0)
+  const { data: bank } = useBank(loan.bankId)
   const payInstallment = usePayLoanInstallment()
+  const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
+
+  const availableAccounts = useMemo(() => {
+    return bank?.accounts.filter(a => a.currency === loan.currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+  }, [bank, loan.currency])
 
   const paidCount = installments?.filter((i) => i.paid).length ?? 0
   const totalCount = installments?.length ?? loan.totalInstallments
@@ -169,34 +175,54 @@ function LoanCard({
             <LoadingSpinner size="sm" />
           ) : (
             <div className="space-y-1 mt-2">
-              {installments?.map((inst) => (
-                <div key={inst.id} className="flex items-center gap-3 py-1 border-t text-sm">
-                  <span className="w-6 text-xs text-muted-foreground text-center">{inst.installmentNumber}</span>
-                  <span className="flex-1 text-muted-foreground">{formatDate(inst.dueDate)}</span>
-                  <span className="font-medium">{formatCurrency(inst.amount, loan.currency)}</span>
-                  {inst.paid ? (
-                    <Badge variant="secondary" className="text-xs w-16 justify-center">Paid</Badge>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-6 text-xs px-2"
-                      disabled={payInstallment.isPending}
-                      onClick={() =>
-                        payInstallment.mutate(
-                          { loanId: loan.id, installmentId: inst.id },
-                          {
-                            onSuccess: () => toast.success('Installment paid'),
-                            onError: () => toast.error('Failed to pay installment'),
-                          },
-                        )
-                      }
-                    >
-                      Pay
-                    </Button>
-                  )}
-                </div>
-              ))}
+              {installments?.map((inst) => {
+                const selectedAccountId = selectedAccounts[inst.id];
+                return (
+                  <div key={inst.id} className="flex items-center gap-3 py-1 border-t text-sm">
+                    <span className="w-6 text-xs text-muted-foreground text-center">{inst.installmentNumber}</span>
+                    <span className="flex-1 text-muted-foreground">{formatDate(inst.dueDate)}</span>
+                    <span className="font-medium">{formatCurrency(inst.amount, loan.currency)}</span>
+                    {inst.paid ? (
+                      <Badge variant="secondary" className="text-xs w-16 justify-center">Paid</Badge>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
+                          <SelectTrigger 
+                            className="h-7 w-[130px] text-[10px] font-bold"
+                            disabled={availableAccounts.length === 0}
+                          >
+                            <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No available accounts"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableAccounts.map(a => (
+                              <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
+                                {a.name} ({formatCurrency(a.balance, a.currency)})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 text-xs px-2"
+                          disabled={payInstallment.isPending || !selectedAccountId}
+                          onClick={() =>
+                            payInstallment.mutate(
+                              { loanId: loan.id, installmentId: inst.id, accountId: selectedAccountId! },
+                              {
+                                onSuccess: () => toast.success('Installment paid'),
+                                onError: (e) => toast.error(e.message || 'Failed to pay installment'),
+                              },
+                            )
+                          }
+                        >
+                          Pay
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>
