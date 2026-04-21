@@ -21,7 +21,7 @@ interface HoldingTableProps {
   onViewDetail: (holding: HoldingWithPrice) => void
 }
 
-export function HoldingTable({ holdings, onEdit, onDelete, onViewDetail }: HoldingTableProps) {
+export function HoldingTable({ holdings, onEdit, onSell, onViewDetail }: HoldingTableProps) {
   return (
     <div className="overflow-x-auto">
       <Table>

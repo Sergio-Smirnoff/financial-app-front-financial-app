@@ -125,11 +125,18 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                     <FormLabel>Currency</FormLabel>
                     <Select value={field.value} onValueChange={(v) => {
                         field.onChange(v);
-                        form.setValue('bankId', undefined as any);
-                        form.setValue('bankAccountId', undefined as any);
+                        const bank = banks.find(b => b.id === selectedBankId);
+                        if (bank) {
+                            const invAccs = bank.accounts.filter(a => a.type === 'INVESTMENT' && a.currency === v) || [];
+                            if (invAccs.length === 1) {
+                                form.setValue('bankAccountId', invAccs[0].id);
+                            } else {
+                                form.setValue('bankAccountId', undefined as any);
+                            }
+                        }
                         form.setValue('fundingAccountId', undefined as any);
                     }}>
-                        <FormControl><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger></FormControl>
+                        <FormControl><SelectTrigger className="rounded-xl w-full"><SelectValue /></SelectTrigger></FormControl>
                         <SelectContent className="rounded-xl">
                             {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                         </SelectContent>
@@ -161,7 +168,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                                 form.setValue('fundingAccountId', undefined as any);
                             }}
                         >
-                            <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                            <FormControl><SelectTrigger className="rounded-xl w-full"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
                             <SelectContent className="rounded-xl">
                                 {banks.map((b) => (
                                     <SelectItem key={b.id} value={b.id.toString()}>{b.name}</SelectItem>
@@ -186,7 +193,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                     onValueChange={(v) => field.onChange(parseInt(v))}
                     disabled={!selectedBankId}
                 >
-                    <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger className="rounded-xl w-full"><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
                     <SelectContent className="rounded-xl">
                     {investmentAccounts.map((a) => (
                         <SelectItem key={a.id} value={a.id.toString()}>
@@ -211,7 +218,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                     onValueChange={(v) => field.onChange(parseInt(v))}
                     disabled={!selectedBankId}
                 >
-                    <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Pay from..." /></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger className="rounded-xl w-full"><SelectValue placeholder="Pay from..." /></SelectTrigger></FormControl>
                     <SelectContent className="rounded-xl">
                     {fundingAccounts.map((a) => (
                         <SelectItem key={a.id} value={a.id.toString()}>
@@ -247,7 +254,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
               <FormItem>
                 <FormLabel>Asset Type</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger></FormControl>
+                  <FormControl><SelectTrigger className="rounded-xl w-full"><SelectValue /></SelectTrigger></FormControl>
                   <SelectContent className="rounded-xl">
                     {ASSET_TYPES.map((t) => (
                       <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
