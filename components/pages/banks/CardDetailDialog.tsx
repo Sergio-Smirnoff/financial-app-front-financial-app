@@ -33,7 +33,7 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
   const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
 
   const getAvailableAccounts = (currency: string) => {
-    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT') || []
   }
 
   const purchases = useMemo(() => {

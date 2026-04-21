@@ -108,7 +108,7 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
   const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+    return bank?.accounts.filter(a => a.currency === currency && a.type !== 'INVESTMENT') || []
   }, [bank, currency])
 
   if (isLoading) return <div className="py-4 flex justify-center"><LoadingSpinner size="sm" /></div>

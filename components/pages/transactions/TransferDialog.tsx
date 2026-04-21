@@ -30,7 +30,7 @@ import { CURRENCIES } from '@/lib/utils/currency'
 const schema = z.object({
   fromAccountId: z.number().min(1, 'Required'),
   toAccountId: z.number().min(1, 'Required'),
-  amount: z.number({ required_error: 'Required' }).positive('Must be positive'),
+  amount: z.number().positive('Must be positive'),
   currency: z.string().min(1, 'Required'),
   date: z.string().min(1, 'Required'),
   description: z.string().optional(),

@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateLoan } from '@/lib/hooks/useLoans'
-import { useBank } from '@/lib/hooks/useBanks'
+import { useBank, useBanks } from '@/lib/hooks/useBanks'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -37,18 +37,14 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
-export function LoanForm({ bankId, onSuccess }: { bankId: number, onSuccess: () => void }) {
+export function LoanForm({ bankId, onSuccess }: { bankId?: number, onSuccess: () => void }) {
+  const { banks } = useBanks()
   const createLoan = useCreateLoan()
-  const { data: bank } = useBank(bankId)
-
-  const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
-  }, [bank])
-
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      bankId,
+      bankId: bankId || 0,
       destinationAccountId: 0,
       name: '',
       principal: 0,
@@ -57,6 +53,13 @@ export function LoanForm({ bankId, onSuccess }: { bankId: number, onSuccess: () 
       startDate: new Date().toISOString().slice(0, 10),
     },
   })
+
+  const selectedBankId = form.watch('bankId')
+  const { data: bank } = useBank(selectedBankId || 0)
+
+  const availableAccounts = useMemo(() => {
+    return bank?.accounts.filter(a => a.type !== 'INVESTMENT') || []
+  }, [bank])
 
   const onSubmit: SubmitHandler<FormValues> = (values) => {
     createLoan.mutate(values, {
@@ -68,14 +71,44 @@ export function LoanForm({ bankId, onSuccess }: { bankId: number, onSuccess: () 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {!bankId && (
+            <FormField
+            control={form.control}
+            name="bankId"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Bank</FormLabel>
+                <Select value={field.value > 0 ? field.value.toString() : ''} onValueChange={(v) => {
+                    field.onChange(parseInt(v));
+                    form.setValue('destinationAccountId', 0);
+                }}>
+                    <FormControl><SelectTrigger><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                    <SelectContent>
+                    {banks.map((b) => (
+                        <SelectItem key={b.id} value={b.id.toString()}>
+                        {b.name}
+                        </SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        )}
+
         <FormField
           control={form.control}
           name="destinationAccountId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Deposit to Account</FormLabel>
-              <Select value={field.value > 0 ? field.value.toString() : ''} onValueChange={(v) => field.onChange(parseInt(v))}>
-                <FormControl><SelectTrigger><SelectValue placeholder="Select destination account" /></SelectTrigger></FormControl>
+              <Select 
+                value={field.value > 0 ? field.value.toString() : ''} 
+                onValueChange={(v) => field.onChange(parseInt(v))}
+                disabled={!selectedBankId}
+              >
+                <FormControl><SelectTrigger><SelectValue placeholder={selectedBankId ? "Select destination account" : "Select bank first"} /></SelectTrigger></FormControl>
                 <SelectContent>
                   {availableAccounts.map((a) => (
                     <SelectItem key={a.id} value={a.id.toString()}>

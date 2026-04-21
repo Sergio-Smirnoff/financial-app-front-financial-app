@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useLoans, useDeleteLoan, useLoanInstallments, usePayLoanInstallment } from '@/lib/hooks/useLoans'
 import { useUiStore } from '@/lib/store/ui.store'
-import { useBanks } from '@/lib/hooks/useBanks'
+import { useBanks, useBank } from '@/lib/hooks/useBanks'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -125,7 +125,7 @@ function LoanCard({
   const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.currency === loan.currency && a.type !== 'INVESTMENT' && a.type !== 'CASH') || []
+    return bank?.accounts.filter(a => a.currency === loan.currency && a.type !== 'INVESTMENT') || []
   }, [bank, loan.currency])
 
   const paidCount = installments?.filter((i) => i.paid).length ?? 0
