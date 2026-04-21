@@ -42,6 +42,7 @@ export function useCreateHolding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['holdings'] })
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }
@@ -54,6 +55,7 @@ export function useUpdateHolding() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['holdings'] })
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }
@@ -61,10 +63,12 @@ export function useUpdateHolding() {
 export function useDeleteHolding() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => investmentsApi.deleteHolding(id),
+    mutationFn: ({ id, destinationAccountId }: { id: number; destinationAccountId?: number }) => 
+        investmentsApi.deleteHolding(id, destinationAccountId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['holdings'] })
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
     },
   })
 }

@@ -3,7 +3,8 @@ export type AssetType = 'STOCK' | 'BOND' | 'CEDEAR' | 'FCI'
 export interface Holding {
   id: number
   userId: number
-  bankAccountId: number | null
+  bankId: number
+  bankAccountId: number
   ticker: string
   name: string
   assetType: AssetType
@@ -56,15 +57,17 @@ export interface PortfolioSummary {
 }
 
 export interface CreateHoldingRequest {
-  bankAccountId?: number | null
+  bankId: number
+  bankAccountId: number
+  fundingAccountId?: number
   ticker: string
   name: string
   assetType: AssetType
   quantity: number
   avgPurchasePrice: number
   currency: string
-  notifyGainThresholdPct?: number
-  notifyLossThresholdPct?: number
+  notifyGainThresholdPct?: number | null
+  notifyLossThresholdPct?: number | null
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest

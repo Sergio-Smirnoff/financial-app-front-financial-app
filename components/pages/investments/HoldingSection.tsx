@@ -11,11 +11,11 @@ interface HoldingSectionProps {
   label: string
   holdings: HoldingWithPrice[]
   onEdit: (holding: HoldingWithPrice) => void
-  onDelete: (holding: HoldingWithPrice) => void
+  onSell: (holding: HoldingWithPrice) => void
   onViewDetail: (holding: HoldingWithPrice) => void
 }
 
-export function HoldingSection({ label, holdings, onEdit, onDelete, onViewDetail }: HoldingSectionProps) {
+export function HoldingSection({ label, holdings, onEdit, onSell, onViewDetail }: HoldingSectionProps) {
   const [open, setOpen] = useState(true)
 
   return (
@@ -32,7 +32,7 @@ export function HoldingSection({ label, holdings, onEdit, onDelete, onViewDetail
       </CardHeader>
       {open && (
         <CardContent className="pt-0">
-          <HoldingTable holdings={holdings} onEdit={onEdit} onDelete={onDelete} onViewDetail={onViewDetail} />
+          <HoldingTable holdings={holdings} onEdit={onEdit} onSell={onSell} onViewDetail={onViewDetail} />
         </CardContent>
       )}
     </Card>

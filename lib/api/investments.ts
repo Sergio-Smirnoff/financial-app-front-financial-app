@@ -20,8 +20,8 @@ export const investmentsApi = {
   updateHolding: (id: number, data: UpdateHoldingRequest) =>
     api.put<Holding>(`${BASE}/holdings/${id}`, data),
 
-  deleteHolding: (id: number) =>
-    api.delete<void>(`${BASE}/holdings/${id}`),
+  deleteHolding: (id: number, destinationAccountId?: number) =>
+    api.delete<void>(`${BASE}/holdings/${id}${destinationAccountId ? `?destinationAccountId=${destinationAccountId}` : ''}`),
 
   getPortfolioSummary: () =>
     api.get<PortfolioSummary>(`${BASE}/portfolio/summary`),

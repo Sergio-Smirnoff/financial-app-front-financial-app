@@ -35,7 +35,9 @@ const ASSET_TYPES = [
 const CURRENCIES = ['ARS', 'USD'] as const
 
 const schema = z.object({
-  bankAccountId: z.number().optional().nullable(),
+  bankId: z.number().positive('Required'),
+  bankAccountId: z.number().positive('Required'),
+  fundingAccountId: z.number().positive('Required for transaction'),
   ticker: z.string().min(1, 'Required').max(20),
   name: z.string().min(1, 'Required').max(100),
   assetType: z.enum(['STOCK', 'BOND', 'CEDEAR', 'FCI']),
@@ -62,7 +64,9 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   const form = useForm<FormValues, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      bankAccountId: holding?.bankAccountId ?? null,
+      bankId: holding?.bankId ?? undefined,
+      bankAccountId: holding?.bankAccountId ?? undefined,
+      fundingAccountId: undefined,
       ticker: holding?.ticker ?? '',
       name: holding?.name ?? '',
       assetType: holding?.assetType ?? 'STOCK',
@@ -74,12 +78,18 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
     },
   })
 
+  const selectedBankId = form.watch('bankId')
   const selectedCurrency = form.watch('currency')
-  const investmentAccounts = banks.flatMap(b => 
-    b.accounts
-      .filter(a => a.type === 'INVESTMENT' && a.currency === selectedCurrency)
-      .map(a => ({ ...a, bankName: b.name }))
-  )
+
+  const currentBank = useMemo(() => banks.find(b => b.id === selectedBankId), [banks, selectedBankId])
+
+  const investmentAccounts = useMemo(() => {
+    return currentBank?.accounts.filter(a => a.type === 'INVESTMENT' && a.currency === selectedCurrency) || []
+  }, [currentBank, selectedCurrency])
+
+  const fundingAccounts = useMemo(() => {
+    return currentBank?.accounts.filter(a => a.type !== 'INVESTMENT' && a.currency === selectedCurrency) || []
+  }, [currentBank, selectedCurrency])
 
   const onSubmit = (values: FormValues) => {
     const data = {
@@ -94,13 +104,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
         { id: holding.id, data },
         {
           onSuccess: () => { toast.success('Holding updated'); onSuccess() },
-          onError: () => toast.error('Failed to update holding'),
+          onError: (e: any) => { toast.error(e.message || 'Failed to update holding') },
         },
       )
     } else {
       createHolding.mutate(data, {
         onSuccess: () => { toast.success('Holding created'); onSuccess() },
-        onError: () => toast.error('Failed to create holding'),
+        onError: (e: any) => { toast.error(e.message || 'Failed to create holding') },
       })
     }
   }
@@ -110,30 +120,115 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="bankAccountId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Linked Bank Account (Investment type only)</FormLabel>
-              <Select 
-                value={field.value?.toString() ?? 'none'} 
-                onValueChange={(v) => field.onChange(v === 'none' ? null : parseInt(v))}
-              >
-                <FormControl><SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
-                <SelectContent>
-                  <SelectItem value="none">Not linked</SelectItem>
-                  {investmentAccounts.map((a) => (
-                    <SelectItem key={a.id} value={a.id.toString()}>
-                      {a.bankName} - {a.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-3">
+            <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Currency</FormLabel>
+                    <Select value={field.value} onValueChange={(v) => {
+                        field.onChange(v);
+                        form.setValue('bankId', undefined as any);
+                        form.setValue('bankAccountId', undefined as any);
+                        form.setValue('fundingAccountId', undefined as any);
+                    }}>
+                        <FormControl><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent className="rounded-xl">
+                            {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="bankId"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Bank</FormLabel>
+                        <Select 
+                            value={field.value?.toString()} 
+                            onValueChange={(v) => {
+                                const id = parseInt(v);
+                                field.onChange(id);
+                                // Auto-select investment account if only one
+                                const bank = banks.find(b => b.id === id);
+                                const invAccs = bank?.accounts.filter(a => a.type === 'INVESTMENT' && a.currency === selectedCurrency) || [];
+                                if (invAccs.length === 1) {
+                                    form.setValue('bankAccountId', invAccs[0].id);
+                                } else {
+                                    form.setValue('bankAccountId', undefined as any);
+                                }
+                                form.setValue('fundingAccountId', undefined as any);
+                            }}
+                        >
+                            <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                            <SelectContent className="rounded-xl">
+                                {banks.map((b) => (
+                                    <SelectItem key={b.id} value={b.id.toString()}>{b.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+            <FormField
+            control={form.control}
+            name="bankAccountId"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Investment Account</FormLabel>
+                <Select 
+                    value={field.value?.toString()} 
+                    onValueChange={(v) => field.onChange(parseInt(v))}
+                    disabled={!selectedBankId}
+                >
+                    <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Select account" /></SelectTrigger></FormControl>
+                    <SelectContent className="rounded-xl">
+                    {investmentAccounts.map((a) => (
+                        <SelectItem key={a.id} value={a.id.toString()}>
+                        {a.name}
+                        </SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+
+            <FormField
+            control={form.control}
+            name="fundingAccountId"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Funding Account</FormLabel>
+                <Select 
+                    value={field.value?.toString()} 
+                    onValueChange={(v) => field.onChange(parseInt(v))}
+                    disabled={!selectedBankId}
+                >
+                    <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Pay from..." /></SelectTrigger></FormControl>
+                    <SelectContent className="rounded-xl">
+                    {fundingAccounts.map((a) => (
+                        <SelectItem key={a.id} value={a.id.toString()}>
+                        {a.name} ({formatCurrency(a.balance, a.currency)})
+                        </SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <FormField
@@ -143,7 +238,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
               <FormItem>
                 <FormLabel>Ticker</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. GGAL" className="uppercase" />
+                  <Input {...field} placeholder="e.g. GGAL" className="uppercase rounded-xl" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,10 +249,10 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="assetType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
+                <FormLabel>Asset Type</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                  <SelectContent>
+                  <FormControl><SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent className="rounded-xl">
                     {ASSET_TYPES.map((t) => (
                       <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                     ))}
@@ -175,7 +270,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Grupo Financiero Galicia" /></FormControl>
+              <FormControl><Input {...field} placeholder="e.g. Grupo Financiero Galicia" className="rounded-xl" /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -193,6 +288,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                     type="number"
                     step="0.000001"
                     min="0"
+                    className="rounded-xl"
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
                   />
@@ -212,6 +308,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                     type="number"
                     step="0.01"
                     min="0"
+                    className="rounded-xl"
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
                   />
@@ -221,23 +318,6 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="currency"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Currency</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                <SelectContent>
-                  {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">Notifications (optional)</p>
@@ -253,6 +333,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                       type="number"
                       step="0.01"
                       min="0"
+                      className="rounded-xl"
                       placeholder="e.g. 10"
                       value={field.value ?? ''}
                       onChange={(e) =>
@@ -275,6 +356,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                       type="number"
                       step="0.01"
                       min="0"
+                      className="rounded-xl"
                       placeholder="e.g. 10"
                       value={field.value ?? ''}
                       onChange={(e) =>
@@ -289,7 +371,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
           </div>
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" className="w-full rounded-xl" disabled={isPending}>
           {isPending ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update holding' : 'Create holding')}
         </Button>
       </form>

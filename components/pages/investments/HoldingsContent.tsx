@@ -9,6 +9,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { HoldingDetailDialog } from './HoldingDetailDialog'
+import { SellHoldingDialog } from './SellHoldingDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
@@ -28,25 +29,11 @@ interface HoldingsContentProps {
 }
 
 export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
-  const { openConfirmDelete } = useUiStore()
   const { data: holdings, isLoading, isError } = usePortfolioHoldings({ enabled })
-  const deleteHolding = useDeleteHolding()
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)
   const [detailHolding, setDetailHolding] = useState<HoldingWithPrice | null>(null)
-
-  const handleDelete = (holding: HoldingWithPrice) => {
-    openConfirmDelete({
-      title: 'Delete holding',
-      description: `Delete "${holding.ticker} — ${holding.name}"? This action cannot be undone.`,
-      onConfirm: () => {
-        deleteHolding.mutate(holding.id, {
-          onSuccess: () => toast.success('Holding deleted'),
-          onError: () => toast.error('Failed to delete holding'),
-        })
-      },
-    })
-  }
+  const [sellHolding, setSellHolding] = useState<HoldingWithPrice | null>(null)
 
   const handleEdit = (holding: HoldingWithPrice) => {
     setEditingHolding(holding)
@@ -87,7 +74,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
           label={group.label}
           holdings={group.items}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onSell={setSellHolding}
           onViewDetail={setDetailHolding}
         />
       ))}
@@ -104,7 +91,12 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog />
+      <SellHoldingDialog
+        holding={sellHolding}
+        open={sellHolding !== null}
+        onOpenChange={(o) => !o && setSellHolding(null)}
+        onSuccess={() => setSellHolding(null)}
+      />
 
       <HoldingDetailDialog
         holding={detailHolding}

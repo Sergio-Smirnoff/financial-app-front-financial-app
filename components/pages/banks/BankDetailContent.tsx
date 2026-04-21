@@ -288,13 +288,31 @@ export function BankDetailContent({ bankId }: Props) {
                         </div>
                         
                         <div className="flex items-center gap-1">
-                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold" onClick={() => openTransfer(account.id)}>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-9 gap-1.5 text-xs font-semibold" 
+                            onClick={() => openTransfer(account.id)}
+                            disabled={account.type === 'INVESTMENT'}
+                          >
                               <ArrowLeftRight className="h-3.5 w-3.5" /> Transfer
                           </Button>
-                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-green-600 hover:text-green-700" onClick={() => openQuickTx(account.id, account.currency, 'INCOME')}>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-9 gap-1.5 text-xs font-semibold text-green-600 hover:text-green-700" 
+                            onClick={() => openQuickTx(account.id, account.currency, 'INCOME')}
+                            disabled={account.type === 'INVESTMENT'}
+                          >
                               <PlusCircle className="h-3.5 w-3.5" /> Deposit
                           </Button>
-                          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" 
+                            onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}
+                            disabled={account.type === 'INVESTMENT'}
+                          >
                               <MinusCircle className="h-3.5 w-3.5" /> Withdraw
                           </Button>
                           <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History" onClick={() => openHistory(account)}>

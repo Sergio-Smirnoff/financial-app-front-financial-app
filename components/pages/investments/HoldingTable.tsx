@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Banknote } from 'lucide-react'
 import { formatCurrency, formatAmount } from '@/lib/utils/currency'
 import { cn } from '@/lib/utils'
 import type { HoldingWithPrice } from '@/types/investments'
@@ -17,7 +17,7 @@ import type { HoldingWithPrice } from '@/types/investments'
 interface HoldingTableProps {
   holdings: HoldingWithPrice[]
   onEdit: (holding: HoldingWithPrice) => void
-  onDelete: (holding: HoldingWithPrice) => void
+  onSell: (holding: HoldingWithPrice) => void
   onViewDetail: (holding: HoldingWithPrice) => void
 }
 
@@ -78,10 +78,11 @@ export function HoldingTable({ holdings, onEdit, onDelete, onViewDetail }: Holdi
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-destructive"
-                    onClick={() => onDelete(h)}
+                    className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                    title="Sell Holding"
+                    onClick={() => onSell(h)}
                   >
-                    <Trash2 className="h-3 w-3" />
+                    <Banknote className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
