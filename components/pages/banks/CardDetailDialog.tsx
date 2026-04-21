@@ -95,22 +95,22 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0 overflow-hidden">
-          <div className="p-6 bg-zinc-50 border-b shrink-0">
+        <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0 overflow-hidden bg-zinc-900 border-zinc-800 text-white">
+          <div className="p-6 bg-zinc-800/30 border-b border-zinc-800 shrink-0">
             <DialogHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-white border flex items-center justify-center shadow-sm">
-                        <CreditCard className="h-5 w-5 text-primary" />
+                    <div className="h-11 w-11 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+                        <CreditCard className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                        <DialogTitle className="text-xl font-bold">{card.displayName}</DialogTitle>
-                        <p className="text-sm text-zinc-500 font-mono tracking-tight">
+                        <DialogTitle className="text-xl font-bold text-white">{card.displayName}</DialogTitle>
+                        <p className="text-xs text-zinc-500 font-mono tracking-tight mt-0.5">
                             {card.brand} •••• {card.last4Digits} | {card.behavior.replace('_', ' ')}
                         </p>
                     </div>
                 </div>
-                <Button size="sm" className="gap-2" onClick={() => setExpenseOpen(true)}>
+                <Button size="sm" className="gap-2 rounded-xl font-bold" onClick={() => setExpenseOpen(true)}>
                     <Plus className="h-4 w-4" /> Add Expense
                 </Button>
               </div>
@@ -120,59 +120,59 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-6">
               {isLoading ? (
-                <p className="py-4 text-center text-sm text-muted-foreground italic">Loading installments…</p>
+                <p className="py-4 text-center text-sm text-zinc-500 italic">Loading installments…</p>
               ) : purchases.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground italic">No purchases recorded for this card.</p>
+                <p className="py-8 text-center text-sm text-zinc-500 italic">No purchases recorded for this card.</p>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Purchases</h3>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Purchases</h3>
                   {purchases.map((p) => {
                     const key = `${p.description}-${p.totalAmount}`
                     const isExpanded = expandedPurchases[key]
                     const isFullyPaid = p.paidCount === p.totalInstallments
 
                     return (
-                      <div key={key} className="border rounded-2xl overflow-hidden bg-white shadow-sm">
+                      <div key={key} className="border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-900 shadow-none">
                         <button
                           onClick={() => togglePurchase(key)}
-                          className="w-full flex items-center justify-between p-4 hover:bg-zinc-50 transition-colors text-left"
+                          className={`w-full flex items-center justify-between p-4 transition-colors text-left ${isExpanded ? 'bg-zinc-800/40' : 'hover:bg-zinc-800/20'}`}
                         >
                           <div className="flex items-center gap-3">
-                            {isExpanded ? <ChevronDown className="h-4 w-4 text-zinc-400" /> : <ChevronRight className="h-4 w-4 text-zinc-400" />}
+                            {isExpanded ? <ChevronDown className="h-4 w-4 text-zinc-600" /> : <ChevronRight className="h-4 w-4 text-zinc-600" />}
                             <div>
-                                <p className="font-bold text-zinc-900">{p.description}</p>
-                                <p className="text-xs text-zinc-500">
-                                    {p.paidCount} of {p.totalInstallments} paid • Total: {formatCurrency(p.totalAmount, p.currency)}
+                                <p className="font-bold text-white">{p.description}</p>
+                                <p className="text-xs text-zinc-500 font-medium">
+                                    {p.paidCount} of {p.totalInstallments} paid • <span className="text-zinc-400 font-bold">{formatCurrency(p.totalAmount, p.currency)}</span>
                                 </p>
                             </div>
                           </div>
-                          {isFullyPaid && <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-100">Fully Paid</Badge>}
+                          {isFullyPaid && <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-none uppercase text-[9px] font-bold">Fully Paid</Badge>}
                         </button>
 
                         {isExpanded && (
-                          <div className="px-4 pb-4 border-t bg-zinc-50/30">
-                            <div className="divide-y divide-zinc-100">
+                          <div className="px-4 pb-4 border-t border-zinc-800 bg-zinc-900/50">
+                            <div className="divide-y divide-zinc-800/50">
                                 {p.installments.map((inst) => (
                                     <div key={inst.id} className="py-3 flex items-center justify-between gap-4">
                                         <div className="flex items-center gap-3">
-                                            <span className="text-xs font-bold text-zinc-400 w-8">#{inst.installmentNumber}</span>
+                                            <span className="text-[10px] font-black text-zinc-700 w-8">#{inst.installmentNumber}</span>
                                             <div>
-                                                <p className="text-sm font-medium">{formatCurrency(inst.amount, inst.currency)}</p>
-                                                <p className="text-[10px] text-zinc-400 uppercase font-bold">Due {formatDate(inst.dueDate)}</p>
+                                                <p className={`text-sm font-bold ${inst.paid ? 'text-zinc-600' : 'text-zinc-200'}`}>{formatCurrency(inst.amount, inst.currency)}</p>
+                                                <p className="text-[9px] text-zinc-600 uppercase font-black tracking-tighter">Due {formatDate(inst.dueDate)}</p>
                                             </div>
                                         </div>
                                         {inst.paid ? (
-                                            <Badge variant="outline" className="text-[10px] bg-white">Paid {formatDate(inst.paidDate!)}</Badge>
+                                            <Badge variant="outline" className="text-[9px] border-zinc-800 text-zinc-600 font-bold uppercase">Paid {formatDate(inst.paidDate!)}</Badge>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
                                                     <SelectTrigger 
-                                                        className="h-7 w-[130px] text-[10px] font-bold"
+                                                        className="h-8 w-[140px] text-[10px] font-bold bg-zinc-900 border-zinc-800 text-zinc-400 rounded-xl"
                                                         disabled={getAvailableAccounts(inst.currency).length === 0}
                                                     >
-                                                        <SelectValue placeholder={getAvailableAccounts(inst.currency).length > 0 ? "Select account" : "No available accounts"} />
+                                                        <SelectValue placeholder={getAvailableAccounts(inst.currency).length > 0 ? "Account..." : "No accounts"} />
                                                     </SelectTrigger>
-                                                    <SelectContent>
+                                                    <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
                                                         {getAvailableAccounts(inst.currency).map(a => (
                                                             <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
                                                                 {a.name} ({formatCurrency(a.balance, a.currency)})
@@ -182,8 +182,7 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
                                                 </Select>
                                                 <Button
                                                     size="sm"
-                                                    variant="outline"
-                                                    className="h-7 text-xs px-3"
+                                                    className="h-8 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
                                                     disabled={markPaid.isPending || !selectedAccounts[inst.id]}
                                                     onClick={() => markPaid.mutate(
                                                         { installmentId: inst.id, accountId: selectedAccounts[inst.id]! },
@@ -212,16 +211,16 @@ export function CardDetailDialog({ card, open, onOpenChange, bankId }: Props) {
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center gap-2">
                     <CalendarClock className="h-4 w-4 text-red-500" />
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-red-500">Próximos Vencimientos</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-red-500">Próximos Vencimientos</h3>
                   </div>
-                  <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 space-y-2">
+                  <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-4 space-y-2">
                     {upcoming.map(inst => (
                         <div key={inst.id} className="flex items-center justify-between text-sm">
                             <div className="min-w-0 flex-1 mr-4">
-                                <p className="font-bold text-zinc-900 truncate">{inst.description}</p>
-                                <p className="text-xs text-red-600 font-medium">Due {formatDate(inst.dueDate)} (#{inst.installmentNumber}/{inst.totalInstallments})</p>
+                                <p className="font-bold text-zinc-200 truncate">{inst.description}</p>
+                                <p className="text-[10px] text-red-500/80 font-bold uppercase">Due {formatDate(inst.dueDate)} (#{inst.installmentNumber}/{inst.totalInstallments})</p>
                             </div>
-                            <p className="font-black text-zinc-900 shrink-0">{formatCurrency(inst.amount, inst.currency)}</p>
+                            <p className="font-black text-white shrink-0">{formatCurrency(inst.amount, inst.currency)}</p>
                         </div>
                     ))}
                   </div>

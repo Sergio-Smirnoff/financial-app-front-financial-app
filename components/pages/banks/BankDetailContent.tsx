@@ -136,28 +136,28 @@ export function BankDetailContent({ bankId }: Props) {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 p-8 flex flex-col h-full overflow-hidden">
+    <div className="space-y-6 animate-in fade-in duration-500 p-8 flex flex-col h-full overflow-hidden w-full">
       <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/banks">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full text-zinc-400 hover:text-white hover:bg-zinc-800">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
           <div className="flex items-center gap-3">
-             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white border shadow-sm">
+             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 shadow-none">
                 {bank.logoUrl ? (
                 <img src={bank.logoUrl} alt={bank.name} className="h-8 w-8 object-contain" />
                 ) : (
-                <Landmark className="h-6 w-6 text-zinc-400" />
+                <Landmark className="h-6 w-6 text-zinc-600" />
                 )}
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold tracking-tight text-zinc-900">{bank.name}</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-white">{bank.name}</h1>
                 <button 
                     onClick={() => setBankNotifOpen(true)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-zinc-100 ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-400'}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-zinc-800 ${hasAlerts ? 'bg-red-500/10 text-red-500' : 'text-zinc-600'}`}
                 >
                     <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
                 </button>
@@ -172,24 +172,24 @@ export function BankDetailContent({ bankId }: Props) {
         {/* Accounts Section */}
         <section className="space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Accounts</h2>
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Accounts</h2>
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative w-full md:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
                 <Input 
                   placeholder="Search accounts..." 
-                  className="pl-9 h-9 rounded-xl border-zinc-200"
+                  className="pl-9 h-9 rounded-xl border-zinc-800 bg-zinc-900/50 text-white placeholder:text-zinc-600 focus:ring-primary/20"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               
               <Select value={filterCurrency} onValueChange={setFilterCurrency}>
-                <SelectTrigger className="w-[100px] h-9 rounded-xl border-zinc-200 text-xs font-semibold">
+                <SelectTrigger className="w-[100px] h-9 rounded-xl border-zinc-800 bg-zinc-900/50 text-xs font-bold text-zinc-400">
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ALL">All Currencies</SelectItem>
+                <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                  <SelectItem value="ALL">All</SelectItem>
                   {uniqueCurrencies.map(c => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
@@ -197,10 +197,10 @@ export function BankDetailContent({ bankId }: Props) {
               </Select>
 
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[120px] h-9 rounded-xl border-zinc-200 text-xs font-semibold">
+                <SelectTrigger className="w-[120px] h-9 rounded-xl border-zinc-800 bg-zinc-900/50 text-xs font-bold text-zinc-400">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
                   <SelectItem value="ALL">All Types</SelectItem>
                   {uniqueTypes.map(t => (
                     <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>
@@ -208,20 +208,21 @@ export function BankDetailContent({ bankId }: Props) {
                 </SelectContent>
               </Select>
 
-              <div className="flex items-center gap-2 bg-zinc-50 border border-zinc-200 px-3 h-9 rounded-xl">
+              <div className="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800 px-3 h-9 rounded-xl">
                 <Switch 
                   id="hide-empty" 
                   checked={hideEmptyAccounts}
                   onCheckedChange={setHideEmptyAccounts}
+                  className="data-[state=checked]:bg-primary"
                 />
-                <Label htmlFor="hide-empty" className="text-[10px] font-bold uppercase text-zinc-500 cursor-pointer">Hide Empty</Label>
+                <Label htmlFor="hide-empty" className="text-[9px] font-bold uppercase text-zinc-500 cursor-pointer">Hide Empty</Label>
               </div>
 
               {(searchQuery || filterCurrency !== 'ALL' || filterType !== 'ALL' || hideEmptyAccounts) && (
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="h-9 w-9 rounded-xl text-zinc-400 hover:text-zinc-900"
+                  className="h-9 w-9 rounded-xl text-zinc-600 hover:text-white hover:bg-zinc-800"
                   onClick={() => {
                     setSearchQuery('');
                     setFilterCurrency('ALL');
@@ -234,15 +235,15 @@ export function BankDetailContent({ bankId }: Props) {
               )}
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-3">
             {filteredAccounts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-3xl bg-zinc-50/50">
-                <Wallet className="h-10 w-10 text-zinc-300 mb-3" />
-                <p className="text-base font-medium text-zinc-900">
+              <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-zinc-800 rounded-3xl bg-zinc-900/20">
+                <Wallet className="h-10 w-10 text-zinc-800 mb-3" />
+                <p className="text-base font-medium text-zinc-500">
                   {bank.accounts.length === 0 ? "No accounts yet" : "No accounts match your filters"}
                 </p>
                 {bank.accounts.length === 0 ? (
-                  <Button onClick={handleAddAccount} variant="outline" size="sm" className="mt-4">Create account</Button>
+                  <Button onClick={handleAddAccount} variant="outline" size="sm" className="mt-4 border-zinc-700 text-zinc-300 hover:bg-zinc-800">Create account</Button>
                 ) : (
                   <Button 
                     onClick={() => {
@@ -253,7 +254,7 @@ export function BankDetailContent({ bankId }: Props) {
                     }} 
                     variant="ghost" 
                     size="sm" 
-                    className="mt-4 text-zinc-500 hover:text-zinc-900"
+                    className="mt-4 text-zinc-600 hover:text-white"
                   >
                     Clear filters
                   </Button>
@@ -262,66 +263,66 @@ export function BankDetailContent({ bankId }: Props) {
             ) : (
               <>
                 {filteredAccounts.map((account) => (
-                  <div key={account.id} className="bg-white border rounded-3xl shadow-sm overflow-hidden flex flex-col">
-                    <div className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div key={account.id} className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-none transition-all group">
+                    <div className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-full bg-white border flex items-center justify-center shadow-sm">
+                        <div className="h-10 w-10 rounded-xl bg-zinc-800 flex items-center justify-center border border-zinc-700">
                           <Wallet className="h-5 w-5 text-primary" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-lg text-zinc-900">{account.name}</h3>
-                              <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 h-5">
+                              <h3 className="font-bold text-lg text-white">{account.name}</h3>
+                              <Badge variant="secondary" className="text-[10px] uppercase font-bold px-1.5 h-5 bg-zinc-800 text-zinc-400 border-none">
                                   {account.type}
                               </Badge>
                           </div>
-                          <p className="text-xs text-zinc-500 uppercase font-semibold tracking-wider">{account.currency}</p>
+                          <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Available Balance</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-6">
-                        <div className="text-right">
-                          <p className="text-xs text-zinc-400 font-semibold uppercase tracking-tighter">Available Balance</p>
-                          <p className="text-2xl font-black text-zinc-900">
+                      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
+                        <div className="md:text-right">
+                          <p className="text-2xl font-black text-white tracking-tight">
                               {formatCurrency(account.balance, account.currency)}
                           </p>
                         </div>
                         
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 border-t border-zinc-800 md:border-t-0 pt-3 md:pt-0">
                           <Button 
-                            variant="outline" 
+                            variant="ghost" 
                             size="sm" 
-                            className="h-9 gap-1.5 text-xs font-semibold" 
+                            className="h-9 gap-1.5 text-xs font-bold uppercase text-zinc-400 hover:text-white hover:bg-zinc-800" 
                             onClick={() => openTransfer(account.id)}
                             disabled={account.type === 'INVESTMENT'}
                           >
                               <ArrowLeftRight className="h-3.5 w-3.5" /> Transfer
                           </Button>
                           <Button 
-                            variant="outline" 
+                            variant="ghost" 
                             size="sm" 
-                            className="h-9 gap-1.5 text-xs font-semibold text-green-600 hover:text-green-700" 
+                            className="h-9 gap-1.5 text-xs font-bold uppercase text-green-500 hover:text-green-400 hover:bg-green-500/10" 
                             onClick={() => openQuickTx(account.id, account.currency, 'INCOME')}
                             disabled={account.type === 'INVESTMENT'}
                           >
                               <PlusCircle className="h-3.5 w-3.5" /> Deposit
                           </Button>
                           <Button 
-                            variant="outline" 
+                            variant="ghost" 
                             size="sm" 
-                            className="h-9 gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700" 
+                            className="h-9 gap-1.5 text-xs font-bold uppercase text-red-500 hover:text-red-400 hover:bg-red-500/10" 
                             onClick={() => openQuickTx(account.id, account.currency, 'EXPENSE')}
                             disabled={account.type === 'INVESTMENT'}
                           >
                               <MinusCircle className="h-3.5 w-3.5" /> Withdraw
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-400" title="History" onClick={() => openHistory(account)}>
+                          <div className="w-px h-4 bg-zinc-800 mx-1 hidden md:block" />
+                          <Button variant="ghost" size="icon" className="h-9 w-9 text-zinc-600 hover:text-white" title="History" onClick={() => openHistory(account)}>
                               <History className="h-4 w-4" />
                           </Button>
                           <Button 
                               variant="ghost" 
                               size="icon" 
-                              className="h-9 w-9 text-zinc-400 hover:text-red-600" 
+                              className="h-9 w-9 text-zinc-600 hover:text-red-500 hover:bg-red-500/10" 
                               title="Delete Account" 
                               onClick={() => handleDeleteAccount(account)}
                           >
@@ -334,7 +335,7 @@ export function BankDetailContent({ bankId }: Props) {
                 ))}
                 <Button 
                     variant="ghost" 
-                    className="w-full h-12 border-2 border-dashed rounded-3xl text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 gap-2 font-semibold"
+                    className="w-full h-14 border-2 border-dashed border-zinc-800 rounded-2xl text-zinc-600 hover:text-zinc-400 hover:bg-zinc-900/50 gap-2 font-bold uppercase text-xs"
                     onClick={handleAddAccount}
                 >
                     <Plus className="h-4 w-4" /> Add another account
@@ -345,11 +346,11 @@ export function BankDetailContent({ bankId }: Props) {
         </section>
 
         {/* Cards and Loans Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <section className="bg-white border rounded-3xl shadow-sm overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 items-stretch">
+          <section className="bg-zinc-900 border border-zinc-800 rounded-3xl shadow-none overflow-hidden flex flex-col">
             <CardList bankId={bankId} />
           </section>
-          <section className="bg-zinc-50/10 border rounded-3xl shadow-sm overflow-hidden">
+          <section className="bg-zinc-900 border border-zinc-800 rounded-3xl shadow-none overflow-hidden flex flex-col">
             <LoanList bankId={bankId} />
           </section>
         </div>

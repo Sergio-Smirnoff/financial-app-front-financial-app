@@ -43,29 +43,28 @@ export function BankCard({
   return (
     <Card 
       onClick={handleCardClick}
-      className="group relative overflow-hidden border-zinc-200 shadow-sm transition-all hover:shadow-md cursor-pointer h-full flex flex-col hover:border-primary/50"
+      className="group relative overflow-hidden border-zinc-800 bg-zinc-900 shadow-none transition-all cursor-pointer h-full flex flex-col hover:border-zinc-700"
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-zinc-50/50 pb-4">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 bg-zinc-800/50 pb-4 border-b border-zinc-800">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white border shadow-sm group-hover:scale-105 transition-transform">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 transition-transform group-hover:scale-105">
             {bank.logoUrl ? (
               <img src={bank.logoUrl} alt={bank.name} className="h-8 w-8 object-contain" />
             ) : (
-              <Building2 className="h-6 w-6 text-zinc-400" />
+              <Building2 className="h-6 w-6 text-zinc-600" />
             )}
           </div>
-          <CardTitle className="text-xl font-bold">{bank.name}</CardTitle>
+          <CardTitle className="text-xl font-bold text-white">{bank.name}</CardTitle>
         </div>
         <div className="flex items-center gap-1">
-          {/* Notification bell moved here */}
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors mr-1 ${hasAlerts ? 'bg-red-50 text-red-500' : 'text-zinc-300'}`}>
+          <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors mr-1 ${hasAlerts ? 'bg-red-500/10 text-red-500' : 'text-zinc-600'}`}>
             <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
           </div>
 
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 text-zinc-500 hover:bg-zinc-200/50" 
+            className="h-8 w-8 text-zinc-500 hover:text-white hover:bg-zinc-800" 
             onClick={(e) => { e.stopPropagation(); onEdit(bank); }}
           >
             <Pencil className="h-4 w-4" />
@@ -73,7 +72,7 @@ export function BankCard({
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-8 w-8 text-zinc-500 hover:text-red-600 hover:bg-red-50" 
+            className="h-8 w-8 text-zinc-500 hover:text-red-500 hover:bg-red-500/10" 
             onClick={(e) => { e.stopPropagation(); onDelete(bank.id); }}
           >
             <Trash2 className="h-4 w-4" />
@@ -82,47 +81,41 @@ export function BankCard({
       </CardHeader>
 
       <CardContent className="p-6 flex-1 flex flex-col justify-between">
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Summary Totals */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Total Balance</p>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+          <div className="space-y-1">
+            <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Total Balance</p>
+            <div className="flex flex-col">
               {Object.entries(bank.totalBalances || {}).length > 0 ? (
                 Object.entries(bank.totalBalances).map(([currency, amount]) => (
-                  <p key={currency} className="text-lg font-bold text-zinc-900">
+                  <p key={currency} className="text-lg font-bold text-zinc-500 tracking-tight">
                     {formatCurrency(amount, currency)}
                   </p>
                 ))
               ) : (
-                <p className="text-lg font-bold text-zinc-400">$ 0.00</p>
+                <p className="text-lg font-bold text-zinc-700">0.00 USD</p>
               )}
             </div>
           </div>
 
           {/* Asset Counts */}
-          <div className="grid grid-cols-3 gap-2 py-3 border-y border-zinc-100">
-            <div className="flex flex-col items-center justify-center text-center p-2 rounded-lg bg-zinc-50/50">
-              <Wallet className="h-4 w-4 text-zinc-400 mb-1" />
-              <span className="text-xs font-bold">{bank.accountsCount}</span>
-              <span className="text-[10px] text-zinc-500 uppercase">Accounts</span>
+          <div className="grid grid-cols-3 gap-3">
+            <div className="flex flex-col items-center justify-center text-center p-3 rounded-2xl bg-zinc-800/30 border border-zinc-800/50">
+              <Wallet className="h-4 w-4 text-zinc-500 mb-1.5" />
+              <span className="text-sm font-bold text-white">{bank.accountsCount}</span>
+              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">Accounts</span>
             </div>
-            <div className="flex flex-col items-center justify-center text-center p-2 rounded-lg bg-zinc-50/50">
-              <CreditCard className="h-4 w-4 text-zinc-400 mb-1" />
-              <span className="text-xs font-bold">{bank.cardsCount}</span>
-              <span className="text-[10px] text-zinc-500 uppercase">Cards</span>
+            <div className="flex flex-col items-center justify-center text-center p-3 rounded-2xl bg-zinc-800/30 border border-zinc-800/50">
+              <CreditCard className="h-4 w-4 text-zinc-500 mb-1.5" />
+              <span className="text-sm font-bold text-white">{bank.cardsCount}</span>
+              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">Cards</span>
             </div>
-            <div className="flex flex-col items-center justify-center text-center p-2 rounded-lg bg-zinc-50/50">
-              <Landmark className="h-4 w-4 text-zinc-400 mb-1" />
-              <span className="text-xs font-bold">{bank.loansCount}</span>
-              <span className="text-[10px] text-zinc-500 uppercase">Loans</span>
+            <div className="flex flex-col items-center justify-center text-center p-3 rounded-2xl bg-zinc-800/30 border border-zinc-800/50">
+              <Landmark className="h-4 w-4 text-zinc-500 mb-1.5" />
+              <span className="text-sm font-bold text-white">{bank.loansCount}</span>
+              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-tighter">Loans</span>
             </div>
           </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between">
-          <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal text-zinc-500">
-            {bank.accountsCount === 1 ? '1 account' : `${bank.accountsCount} accounts`}
-          </Badge>
         </div>
       </CardContent>
     </Card>

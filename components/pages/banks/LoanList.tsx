@@ -44,44 +44,44 @@ export function LoanList({ bankId }: Props) {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {loans.map((loan) => (
-            <div key={loan.id} className="rounded-2xl border bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+            <div key={loan.id} className="rounded-2xl border border-zinc-800 bg-zinc-800/40 shadow-none hover:bg-zinc-800/60 transition-colors overflow-hidden group">
               <div 
-                className="flex items-center justify-between p-5 cursor-pointer hover:bg-zinc-50/50"
+                className="flex items-center justify-between p-5 cursor-pointer"
                 onClick={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
               >
                 <div className="flex items-center gap-4">
-                  <div className={`h-10 w-10 rounded-full flex items-center justify-center ${loan.active ? 'bg-indigo-50 text-indigo-600' : 'bg-zinc-50 text-zinc-400'}`}>
-                    <CreditCard className="h-5 w-5" />
+                  <div className={`h-11 w-11 rounded-xl flex items-center justify-center border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] ${loan.active ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}`}>
+                    <CreditCard className="h-5.5 w-5.5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                        <p className="font-bold text-zinc-900">{loan.name}</p>
-                        <Badge variant={loan.active ? 'default' : 'secondary'} className="h-4 px-1.5 text-[9px] uppercase font-bold">
+                        <p className="font-bold text-white text-base">{loan.name}</p>
+                        <Badge variant={loan.active ? 'default' : 'secondary'} className={`h-4 px-1.5 text-[9px] uppercase font-bold border-none ${loan.active ? 'bg-primary text-primary-foreground' : 'bg-zinc-800 text-zinc-500'}`}>
                         {loan.active ? 'Active' : 'Closed'}
                         </Badge>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-zinc-500 mt-0.5">
-                        <span className="font-bold text-zinc-700">{formatCurrency(loan.principal, loan.currency)}</span>
-                        <span>•</span>
-                        <span>{loan.totalInstallments} installments</span>
+                    <div className="flex items-center gap-2 text-xs mt-0.5">
+                        <span className="font-bold text-zinc-300">{formatCurrency(loan.principal, loan.currency)}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-zinc-500 font-medium">{loan.totalInstallments} installments</span>
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[10px] uppercase font-bold text-zinc-400">Remaining</p>
-                        <p className="text-sm font-black text-zinc-900">{loan.remainingInstallments} left</p>
+                        <p className="text-[10px] uppercase font-bold text-zinc-600 tracking-wider">Remaining</p>
+                        <p className="text-sm font-black text-white">{loan.remainingInstallments} left</p>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-zinc-400">
-                        <ChevronDown className={`h-5 w-5 transition-transform duration-300 ${expandedId === loan.id ? 'rotate-180 text-primary' : ''}`} />
+                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-zinc-600 hover:text-white hover:bg-zinc-800">
+                        <ChevronDown className={`h-5 w-5 transition-transform duration-500 ${expandedId === loan.id ? 'rotate-180 text-primary' : ''}`} />
                     </Button>
                 </div>
               </div>
               
               {expandedId === loan.id && (
                 <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-300">
-                  <div className="pt-4 border-t border-zinc-100">
+                  <div className="pt-4 border-t border-zinc-800/50">
                     <LoanInstallmentSubList loanId={loan.id} currency={loan.currency} bankId={bankId} />
                   </div>
                 </div>
@@ -118,8 +118,8 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
       {installments?.map((inst) => {
         const selectedAccountId = selectedAccounts[inst.id];
         return (
-          <div key={inst.id} className={`flex items-center gap-4 py-2 px-3 rounded-lg transition-colors ${inst.paid ? 'bg-zinc-50/50' : 'hover:bg-zinc-50'}`}>
-            <div className={`h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-bold ${inst.paid ? 'bg-zinc-100 text-zinc-400' : 'bg-primary/10 text-primary'}`}>
+          <div key={inst.id} className={`flex items-center gap-4 py-2 px-3 rounded-lg transition-colors ${inst.paid ? 'bg-zinc-900/40' : 'hover:bg-zinc-800'}`}>
+            <div className={`h-6 w-6 rounded-md flex items-center justify-center text-[10px] font-bold ${inst.paid ? 'bg-zinc-800 text-zinc-600' : 'bg-primary/10 text-primary'}`}>
               {inst.installmentNumber}
             </div>
             
@@ -131,24 +131,25 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
             </div>
 
             <div className="flex items-center gap-4">
-              <span className={`text-sm font-bold ${inst.paid ? 'text-zinc-400' : 'text-zinc-900'}`}>
+              <span className={`text-sm font-bold ${inst.paid ? 'text-zinc-600' : 'text-zinc-200'}`}>
                   {formatCurrency(inst.amount, currency)}
               </span>
               
               {inst.paid ? (
-                  <Badge variant="secondary" className="h-6 px-2 text-[10px] font-bold bg-green-50 text-green-700 border-green-100 uppercase">
+                  <Badge variant="secondary" className="h-6 px-2 text-[10px] font-bold bg-green-500/10 text-green-500 border-none uppercase">
                       Paid
                   </Badge>
               ) : (
                   <div className="flex items-center gap-2">
                       <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
                           <SelectTrigger 
-                              className="h-7 w-[140px] text-[10px] font-bold"
+                              className="h-8 w-[140px] text-[10px] font-bold bg-zinc-900 border-zinc-800 text-zinc-400 rounded-xl"
                               disabled={availableAccounts.length === 0}
                           >
-                              <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No available accounts"} />
+                              <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No accounts"} />
                           </SelectTrigger>
-                          <SelectContent>                              {availableAccounts.map(a => (
+                          <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                              {availableAccounts.map(a => (
                                   <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
                                       {a.name} ({formatCurrency(a.balance, a.currency)})
                                   </SelectItem>
@@ -157,7 +158,7 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
                       </Select>
                       <Button
                           size="sm"
-                          className="h-7 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-white shadow-sm"
+                          className="h-8 text-[10px] px-3 font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
                           disabled={payInstallment.isPending || !selectedAccounts[inst.id]}
                           onClick={() => {
                               payInstallment.mutate(
@@ -170,7 +171,8 @@ function LoanInstallmentSubList({ loanId, currency, bankId }: { loanId: number, 
                           }}
                       >
                           Pay
-                      </Button>                  </div>
+                      </Button>
+                  </div>
               )}
             </div>
           </div>
