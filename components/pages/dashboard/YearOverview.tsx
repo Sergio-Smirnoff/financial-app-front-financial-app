@@ -9,6 +9,12 @@ interface YearOverviewProps {
   summaries: SummaryItem[]
 }
 
+import { Surface } from '@/components/shared/Surface'
+
+interface YearOverviewProps {
+  summaries: SummaryItem[]
+}
+
 export function YearOverview({ summaries }: YearOverviewProps) {
   const year = new Date().getFullYear()
 
@@ -23,7 +29,7 @@ export function YearOverview({ summaries }: YearOverviewProps) {
   const totalBalance = summaries.reduce((sum, s) => sum + s.balance, 0)
 
   return (
-    <Card className="border-t-4 border-t-primary">
+    <Surface className="border-t-4 border-t-primary" variant="accent">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold">Year to Date ({year})</CardTitle>
       </CardHeader>
@@ -31,7 +37,7 @@ export function YearOverview({ summaries }: YearOverviewProps) {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <TrendingUp className="h-4 w-4 text-green-600" />
+              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
               Income
             </div>
             <div className="text-xl font-bold text-green-600 dark:text-green-400">
@@ -40,10 +46,10 @@ export function YearOverview({ summaries }: YearOverviewProps) {
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <TrendingDown className="h-4 w-4 text-red-600" />
+              <TrendingDown className="h-4 w-4 text-destructive" />
               Expenses
             </div>
-            <div className="text-xl font-bold text-red-600 dark:text-red-400">
+            <div className="text-xl font-bold text-destructive">
               <MultiCurrencyAmount items={expenseItems} />
             </div>
           </div>
@@ -52,7 +58,7 @@ export function YearOverview({ summaries }: YearOverviewProps) {
               <Scale className="h-4 w-4" />
               Net Balance
             </div>
-            <div className={`text-xl font-bold ${totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            <div className={`text-xl font-bold ${totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
               <MultiCurrencyAmount items={balanceItems} />
             </div>
           </div>
@@ -67,6 +73,6 @@ export function YearOverview({ summaries }: YearOverviewProps) {
           </div>
         </div>
       </CardContent>
-    </Card>
+    </Surface>
   )
 }

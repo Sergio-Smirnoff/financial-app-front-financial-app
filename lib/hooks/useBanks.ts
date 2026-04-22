@@ -45,6 +45,8 @@ export const useBanks = () => {
   return {
     banks: banksQuery.data ?? [],
     isLoading: banksQuery.isLoading,
+    isError: banksQuery.isError,
+    error: banksQuery.error,
     createBank: createBankMutation.mutateAsync,
     updateBank: updateBankMutation.mutateAsync,
     deleteBank: deleteBankMutation.mutateAsync,

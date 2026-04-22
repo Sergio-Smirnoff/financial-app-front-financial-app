@@ -10,9 +10,15 @@ interface ActiveObligationsProps {
   loans: Loan[]
 }
 
+import { Surface } from '@/components/shared/Surface'
+
+interface ActiveObligationsProps {
+  loans: Loan[]
+}
+
 export function ActiveObligations({ loans }: ActiveObligationsProps) {
   return (
-    <Card>
+    <Surface>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium">Active Obligations — Loans</CardTitle>
       </CardHeader>
@@ -27,7 +33,7 @@ export function ActiveObligations({ loans }: ActiveObligationsProps) {
           )}
         </div>
       </CardContent>
-    </Card>
+    </Surface>
   )
 }
 
@@ -38,12 +44,12 @@ function LoanRow({ loan }: { loan: Loan }) {
     : 0
 
   return (
-    <div className="rounded-lg border p-3">
+    <div className="rounded-lg border bg-muted/20 p-3">
       <div className="flex items-start justify-between">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <p className="text-sm font-medium">{loan.name}</p>
-            <Badge variant="outline" className="text-[10px]">{loan.currency}</Badge>
+            <Badge variant="outline" className="text-[10px] text-muted-foreground">{loan.currency}</Badge>
           </div>
         </div>
         <Badge variant={progress >= 75 ? 'default' : 'secondary'} className="text-xs">

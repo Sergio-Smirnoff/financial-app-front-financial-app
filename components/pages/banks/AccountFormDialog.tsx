@@ -57,29 +57,30 @@ export function AccountFormDialog({ bankId, account, open, onOpenChange, onSubmi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-popover border-border">
         <DialogHeader>
           <DialogTitle>{account ? "Edit Account" : "Add Account"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="acc-name">Account Name</Label>
+            <Label htmlFor="acc-name" className="text-muted-foreground">Account Name</Label>
             <Input 
               id="acc-name" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="e.g. Daily spending, Savings" 
+              className="bg-background border-border"
               required 
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Account Type</Label>
+              <Label className="text-muted-foreground">Account Type</Label>
               <Select value={type} onValueChange={(v) => setType(v as AccountType)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-border">
                   <SelectItem value="CHECKING">Checking</SelectItem>
                   <SelectItem value="SAVINGS">Savings</SelectItem>
                   <SelectItem value="INVESTMENT">Investment</SelectItem>
@@ -87,12 +88,12 @@ export function AccountFormDialog({ bankId, account, open, onOpenChange, onSubmi
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label className="text-muted-foreground">Currency</Label>
               <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-background border-border">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border-border">
                   <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="ARS">ARS</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
@@ -101,18 +102,19 @@ export function AccountFormDialog({ bankId, account, open, onOpenChange, onSubmi
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="balance">Current Balance</Label>
+            <Label htmlFor="balance" className="text-muted-foreground">Current Balance</Label>
             <Input 
               id="balance" 
               type="number" 
               step="0.01"
               value={balance} 
               onChange={(e) => setBalance(e.target.value)} 
+              className="bg-background border-border"
               required 
             />
           </div>
           <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>

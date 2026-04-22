@@ -12,9 +12,10 @@ import { logout } from '@/lib/api/auth'
 
 interface HeaderProps {
   title: string
+  children?: React.ReactNode
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, children }: HeaderProps) {
   const { toggleSidebar } = useUiStore()
   const router = useRouter()
   const [user, setUser] = useState<ReturnType<typeof getUserFromCookie>>(null)
@@ -40,7 +41,10 @@ export function Header({ title }: HeaderProps) {
         <Menu className="h-5 w-5" />
       </Button>
 
-      <h1 className="flex-1 text-base font-semibold">{title}</h1>
+      <div className="flex-1 flex items-center gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+        {children}
+      </div>
 
       {user && (
         <span className="hidden text-sm text-muted-foreground sm:inline">

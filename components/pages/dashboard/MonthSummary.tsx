@@ -11,6 +11,8 @@ interface MonthSummaryProps {
   cardExpenseCount: number
 }
 
+import { Surface } from '@/components/shared/Surface'
+
 export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSummaryProps) {
   const incomeItems = summaries.map((s) => ({ amount: s.totalIncome, currency: s.currency }))
   const expenseItems = summaries.map((s) => ({ amount: s.totalExpense, currency: s.currency }))
@@ -22,7 +24,7 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
     <div>
       <h3 className="mb-3 text-sm font-medium text-muted-foreground">This Month</h3>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Surface>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Income</CardTitle>
             <span className="text-green-600 dark:text-green-400">
@@ -34,12 +36,12 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
               <MultiCurrencyAmount items={incomeItems} />
             </div>
           </CardContent>
-        </Card>
+        </Surface>
 
-        <Card>
+        <Surface>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Expenses</CardTitle>
-            <span className="text-red-600 dark:text-red-400">
+            <span className="text-destructive">
               <TrendingDown className="h-4 w-4" />
             </span>
           </CardHeader>
@@ -48,12 +50,12 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
               <MultiCurrencyAmount items={expenseItems} />
             </div>
           </CardContent>
-        </Card>
+        </Surface>
 
-        <Card>
+        <Surface>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Balance</CardTitle>
-            <span className={totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+            <span className={totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
               <Scale className="h-4 w-4" />
             </span>
           </CardHeader>
@@ -62,9 +64,9 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
               <MultiCurrencyAmount items={balanceItems} />
             </div>
           </CardContent>
-        </Card>
+        </Surface>
 
-        <Card>
+        <Surface>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Obligations</CardTitle>
             <span className="text-muted-foreground">
@@ -75,7 +77,7 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
             <p className="text-2xl font-bold">{loanCount + cardExpenseCount}</p>
             <p className="mt-1 text-xs text-muted-foreground">{loanCount} loans, {cardExpenseCount} card expenses</p>
           </CardContent>
-        </Card>
+        </Surface>
       </div>
     </div>
   )

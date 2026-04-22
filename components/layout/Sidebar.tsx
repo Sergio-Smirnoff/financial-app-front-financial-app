@@ -66,7 +66,7 @@ export function MobileSidebar() {
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden"
         onClick={() => setSidebarOpen(false)}
       />
       <aside className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r bg-sidebar md:hidden">

@@ -142,13 +142,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
     return (
       <div className="space-y-6 py-4">
         <div className="grid grid-cols-2 gap-4">
-          <div className="h-11 rounded-xl bg-zinc-900 animate-pulse" />
-          <div className="h-11 rounded-xl bg-zinc-900 animate-pulse" />
+          <div className="h-11 rounded-xl bg-muted animate-pulse" />
+          <div className="h-11 rounded-xl bg-muted animate-pulse" />
         </div>
-        <div className="h-11 rounded-xl bg-zinc-900 animate-pulse" />
-        <div className="h-11 rounded-xl bg-zinc-900 animate-pulse" />
-        <div className="h-24 rounded-xl bg-zinc-900 animate-pulse" />
-        <div className="h-12 rounded-xl bg-zinc-800 animate-pulse" />
+        <div className="h-11 rounded-xl bg-muted animate-pulse" />
+        <div className="h-11 rounded-xl bg-muted animate-pulse" />
+        <div className="h-24 rounded-xl bg-muted animate-pulse" />
+        <div className="h-12 rounded-xl bg-muted animate-pulse" />
       </div>
     )
   }
@@ -162,14 +162,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                 name="currency"
                 render={({ field }) => (
                     <FormItem>
-                    <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Currency</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Currency</FormLabel>
                     <Select value={field.value} onValueChange={(v) => {
                         field.onChange(v);
                         form.setValue('bankAccountId', undefined as any);
                         form.setValue('fundingAccountId', undefined as any);
                     }}>
-                        <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-zinc-900 border-zinc-800 text-zinc-300"><SelectValue /></SelectTrigger></FormControl>
-                        <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                        <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
+                        <SelectContent className="bg-popover border-border">
                             {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                         </SelectContent>
                     </Select>
@@ -183,7 +183,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                 name="bankId"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Bank</FormLabel>
+                        <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Bank</FormLabel>
                         <Select 
                             value={field.value?.toString()} 
                             onValueChange={(v) => {
@@ -193,8 +193,8 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                                 form.setValue('fundingAccountId', undefined as any);
                             }}
                         >
-                            <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-zinc-900 border-zinc-800 text-zinc-300"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
-                            <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                            <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                            <SelectContent className="bg-popover border-border">
                                 {banks.map((b) => (
                                     <SelectItem key={b.id} value={b.id.toString()}>{b.name}</SelectItem>
                                 ))}
@@ -212,14 +212,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="bankAccountId"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Investment Account</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Investment Account</FormLabel>
                 <Select 
                     value={field.value?.toString()} 
                     onValueChange={(v) => field.onChange(parseInt(v))}
                     disabled={!selectedBankId}
                 >
-                    <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-zinc-900 border-zinc-800 text-zinc-300"><SelectValue placeholder={selectedBankId ? "Select account" : "Pick bank first"} /></SelectTrigger></FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                    <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankId ? "Select account" : "Pick bank first"} /></SelectTrigger></FormControl>
+                    <SelectContent className="bg-popover border-border">
                     {investmentAccounts.map((a) => (
                         <SelectItem key={a.id} value={a.id.toString()}>
                         {a.name}
@@ -237,14 +237,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="fundingAccountId"
             render={({ field }) => (
                 <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Funding Account</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Funding Account</FormLabel>
                 <Select 
                     value={field.value?.toString()} 
                     onValueChange={(v) => field.onChange(parseInt(v))}
                     disabled={!selectedBankId}
                 >
-                    <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-zinc-900 border-zinc-800 text-zinc-300"><SelectValue placeholder={selectedBankId ? "Pay from..." : "Pick bank first"} /></SelectTrigger></FormControl>
-                    <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                    <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankId ? "Pay from..." : "Pick bank first"} /></SelectTrigger></FormControl>
+                    <SelectContent className="bg-popover border-border">
                     {fundingAccounts.map((a) => (
                         <SelectItem key={a.id} value={a.id.toString()}>
                         {a.name} ({formatCurrency(a.balance, a.currency)})
@@ -264,9 +264,9 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="ticker"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Ticker</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Ticker</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. GGAL" className="h-11 uppercase rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-700" />
+                  <Input {...field} placeholder="e.g. GGAL" className="h-11 uppercase rounded-xl bg-background border-border placeholder:text-muted-foreground/50" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -277,10 +277,10 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="assetType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Asset Type</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Asset Type</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-zinc-900 border-zinc-800 text-zinc-300"><SelectValue /></SelectTrigger></FormControl>
-                  <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent className="bg-popover border-border">
                     {ASSET_TYPES.map((t) => (
                       <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
                     ))}
@@ -297,8 +297,8 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Name</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Grupo Financiero Galicia" className="h-11 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-700" /></FormControl>
+              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Name</FormLabel>
+              <FormControl><Input {...field} placeholder="e.g. Grupo Financiero Galicia" className="h-11 rounded-xl bg-background border-border placeholder:text-muted-foreground/50" /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -310,13 +310,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="quantity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Quantity</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Quantity</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     step="0.000001"
                     min="0"
-                    className="h-11 rounded-xl bg-zinc-900 border-zinc-800 text-white"
+                    className="h-11 rounded-xl bg-background border-border"
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
                   />
@@ -330,13 +330,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="avgPurchasePrice"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-zinc-500 tracking-widest ml-1">Avg purchase price</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Avg purchase price</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     step="0.01"
                     min="0"
-                    className="h-11 rounded-xl bg-zinc-900 border-zinc-800 text-white"
+                    className="h-11 rounded-xl bg-background border-border"
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
                   />
@@ -348,20 +348,20 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
         </div>
 
         <div className="space-y-3 pt-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 border-b border-zinc-800 pb-1">Notifications (optional)</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 border-b border-border pb-1">Notifications (optional)</p>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="notifyGainThresholdPct"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[9px] font-bold uppercase text-zinc-500 tracking-wider">Alert on gain %</FormLabel>
+                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Alert on gain %</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
-                      className="h-10 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-800"
+                      className="h-10 rounded-xl bg-background border-border placeholder:text-muted-foreground/30"
                       placeholder="e.g. 10"
                       value={field.value ?? ''}
                       onChange={(e) =>
@@ -378,13 +378,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
               name="notifyLossThresholdPct"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[9px] font-bold uppercase text-zinc-500 tracking-wider">Alert on loss %</FormLabel>
+                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Alert on loss %</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
-                      className="h-10 rounded-xl bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-800"
+                      className="h-10 rounded-xl bg-background border-border placeholder:text-muted-foreground/30"
                       placeholder="e.g. 10"
                       value={field.value ?? ''}
                       onChange={(e) =>

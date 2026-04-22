@@ -34,6 +34,9 @@ import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Transaction, TransactionFilters } from '@/types/finances'
 
+import { Surface } from '@/components/shared/Surface'
+import { QueryBoundary } from '@/components/shared/QueryBoundary'
+
 export function TransactionsContent() {
   const { openConfirmDelete } = useUiStore()
   const { banks } = useBanks()
@@ -43,7 +46,7 @@ export function TransactionsContent() {
   const [transferOpen, setTransferOpen] = useState(false)
   const [editing, setEditing] = useState<Transaction | null>(null)
 
-  const { data, isLoading, isError, refetch } = useTransactions({ ...filters, currency: currencyFilter })
+  const { data, isLoading, isError, error, refetch } = useTransactions({ ...filters, currency: currencyFilter })
   const deleteMutation = useDeleteTransaction()
 
   const allAccounts = useMemo(() => {
@@ -62,7 +65,7 @@ export function TransactionsContent() {
       description: `Delete "${tx.description}"? This action cannot be undone.`,
       onConfirm: () => {
         deleteMutation.mutate(tx.id, {
-          onSuccess: () => toast.success('Transaction deleted'),
+          onSuccess: () => { toast.success('Transaction deleted'); refetch(); },
           onError: () => toast.error('Failed to delete transaction'),
         })
       },
@@ -86,10 +89,10 @@ export function TransactionsContent() {
           value={filters.type ?? 'ALL'}
           onValueChange={(v) => setFilters((f) => ({ ...f, type: v === 'ALL' ? undefined : (v as 'INCOME' | 'EXPENSE'), page: 0 }))}
         >
-          <SelectTrigger className="w-32 h-8 text-xs">
+          <SelectTrigger className="w-32 h-8 text-xs bg-background border-border">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="ALL">All types</SelectItem>
             <SelectItem value="INCOME">Income</SelectItem>
             <SelectItem value="EXPENSE">Expense</SelectItem>
@@ -103,10 +106,10 @@ export function TransactionsContent() {
             setFilters((f) => ({ ...f, page: 0 }))
           }}
         >
-          <SelectTrigger className="w-36 h-8 text-xs">
+          <SelectTrigger className="w-36 h-8 text-xs bg-background border-border">
             <SelectValue placeholder="Currency" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="ALL">All currencies</SelectItem>
             {CURRENCIES.map((c) => (
               <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>
@@ -118,10 +121,10 @@ export function TransactionsContent() {
           value={filters.accountId?.toString() ?? 'ALL'}
           onValueChange={(v) => setFilters((f) => ({ ...f, accountId: v === 'ALL' ? undefined : (v === 'CASH' ? 0 : Number(v)), page: 0 }))}
         >
-          <SelectTrigger className="w-40 h-8 text-xs">
+          <SelectTrigger className="w-40 h-8 text-xs bg-background border-border">
             <SelectValue placeholder="Account" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="ALL">All accounts</SelectItem>
             <SelectItem value="CASH">Cash</SelectItem>
             {allAccounts.map((acc) => (
@@ -135,7 +138,7 @@ export function TransactionsContent() {
         <div className="flex-1" />
 
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+          <Button size="sm" variant="outline" className="border-border" onClick={() => setTransferOpen(true)}>
             <ArrowRightLeft className="mr-1 h-4 w-4" />
             Transfer
           </Button>
@@ -146,90 +149,90 @@ export function TransactionsContent() {
         </div>
       </div>
 
-      {isLoading && <LoadingSpinner />}
-      {isError && <ErrorMessage message="Failed to load transactions." />}
-
-      {data && (
-        <>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Currency</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead className="w-20" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.content.length === 0 ? (
+      <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
+        {data && (
+          <>
+            <Surface className="overflow-hidden">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                      No transactions found
-                    </TableCell>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Account</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Currency</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="w-20" />
                   </TableRow>
-                ) : (
-                  data.content.map((tx) => (
-                    <TableRow key={tx.id}>
-                      <TableCell className="text-sm">{formatDate(tx.date)}</TableCell>
-                      <TableCell className="text-sm">{tx.description}</TableCell>
-                      <TableCell className="text-sm font-medium text-muted-foreground">
-                        {getAccountName(tx.accountId)}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {tx.categoryName ?? '—'}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={tx.type === 'INCOME' ? 'default' : 'destructive'} className="text-xs">
-                          {tx.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">{tx.currency}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        <span className={tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                          {formatCurrency(tx.amount, tx.currency)}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1 justify-end">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEdit(tx)}>
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(tx)}>
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
+                </TableHeader>
+                <TableBody>
+                  {data.content.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                        No transactions found
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  ) : (
+                    data.content.map((tx) => (
+                      <TableRow key={tx.id}>
+                        <TableCell className="text-sm">{formatDate(tx.date)}</TableCell>
+                        <TableCell className="text-sm">{tx.description}</TableCell>
+                        <TableCell className="text-sm font-medium text-muted-foreground">
+                          {getAccountName(tx.accountId)}
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {tx.categoryName ?? '—'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={tx.type === 'INCOME' ? 'default' : 'destructive'} className="text-xs">
+                            {tx.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs border-border">{tx.currency}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          <span className={tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
+                            {formatCurrency(tx.amount, tx.currency)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1 justify-end">
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEdit(tx)}>
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => handleDelete(tx)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </Surface>
 
-          {/* Pagination */}
-          {!data.last && (
-            <div className="flex justify-center">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 0) + 1 }))}
-              >
-                Load more
-              </Button>
-            </div>
-          )}
-        </>
-      )}
+            {/* Pagination */}
+            {!data.last && (
+              <div className="flex justify-center mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilters((f) => ({ ...f, page: (f.page ?? 0) + 1 }))}
+                  className="border-border"
+                >
+                  Load more
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </QueryBoundary>
 
       <Dialog open={formOpen} onOpenChange={(open) => !open && handleFormClose()}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-popover border-border">
           <DialogHeader>
             <DialogTitle>{editing ? 'Edit transaction' : 'New transaction'}</DialogTitle>
           </DialogHeader>
@@ -243,7 +246,7 @@ export function TransactionsContent() {
       <TransferDialog
         open={transferOpen}
         onOpenChange={setTransferOpen}
-        onSuccess={() => refetch()}
+        onSuccess={() => { setTransferOpen(false); refetch(); }}
       />
 
       <ConfirmDialog />

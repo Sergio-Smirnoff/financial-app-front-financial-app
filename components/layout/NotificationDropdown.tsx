@@ -41,11 +41,11 @@ export function NotificationDropdown({ onOpenDialog, onClose }: NotificationDrop
 
   return (
     <div
-      className="absolute right-0 top-full w-80 rounded-lg border bg-popover shadow-lg z-50"
+      className="absolute right-0 top-full w-80 rounded-lg border bg-popover border-border shadow-lg z-50"
     >
-      <div className="flex items-center justify-between border-b px-4 py-2">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2">
         <span className="text-sm font-medium">Notificaciones</span>
-        <Button variant="ghost" size="sm" onClick={onOpenDialog}>
+        <Button variant="ghost" size="sm" onClick={onOpenDialog} className="hover:bg-muted">
           Ver todas
         </Button>
       </div>
@@ -59,13 +59,13 @@ export function NotificationDropdown({ onOpenDialog, onClose }: NotificationDrop
             No hay notificaciones
           </div>
         ) : (
-          <div className="divide-y">
+          <div className="divide-y border-border">
             {notifications?.map((notif) => {
               const Icon = TYPE_ICONS[notif.type] ?? Bell
               return (
                 <div
                   key={notif.id}
-                  className={`flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer ${
+                  className={`flex items-start gap-3 p-3 hover:bg-muted/50 cursor-pointer border-border ${
                     !notif.read ? 'bg-muted/30' : ''
                   }`}
                   onClick={() => !notif.read && handleMarkAsRead(notif.id)}

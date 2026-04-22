@@ -42,32 +42,34 @@ export function BankFormDialog({ bank, open, onOpenChange, onSubmit }: BankFormD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="bg-popover border-border">
         <DialogHeader>
           <DialogTitle>{bank ? "Edit Bank" : "Add Bank"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Bank Name</Label>
+            <Label htmlFor="name" className="text-muted-foreground">Bank Name</Label>
             <Input 
               id="name" 
               value={name} 
               onChange={(e) => setName(e.target.value)} 
               placeholder="e.g. Chase, Bank of America" 
+              className="bg-background border-border"
               required 
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="logo">Logo URL (optional)</Label>
+            <Label htmlFor="logo" className="text-muted-foreground">Logo URL (optional)</Label>
             <Input 
               id="logo" 
               value={logoUrl} 
               onChange={(e) => setLogoUrl(e.target.value)} 
               placeholder="https://example.com/logo.png" 
+              className="bg-background border-border"
             />
           </div>
           <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>

@@ -107,8 +107,8 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Grocery shopping" /></FormControl>
+              <FormLabel className="text-muted-foreground">Description</FormLabel>
+              <FormControl><Input {...field} placeholder="e.g. Grocery shopping" className="bg-background border-border" /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -120,7 +120,7 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
             name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Amount</FormLabel>
+                <FormLabel className="text-muted-foreground">Amount</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -128,6 +128,7 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
                     min="0"
                     value={field.value ?? ''}
                     onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                    className="bg-background border-border"
                   />
                 </FormControl>
                 <FormMessage />
@@ -139,10 +140,10 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
             name="currency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Currency</FormLabel>
+                <FormLabel className="text-muted-foreground">Currency</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                  <SelectContent>
+                  <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent className="bg-popover border-border">
                     {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   </SelectContent>
                 </Select>
@@ -158,10 +159,10 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
             name="type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Type</FormLabel>
+                <FormLabel className="text-muted-foreground">Type</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                  <SelectContent>
+                  <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
+                  <SelectContent className="bg-popover border-border">
                     <SelectItem value="INCOME">Income</SelectItem>
                     <SelectItem value="EXPENSE">Expense</SelectItem>
                   </SelectContent>
@@ -175,8 +176,8 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
             name="date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date</FormLabel>
-                <FormControl><Input type="date" {...field} /></FormControl>
+                <FormLabel className="text-muted-foreground">Date</FormLabel>
+                <FormControl><Input type="date" {...field} className="bg-background border-border" /></FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -186,7 +187,7 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
         {categories && categories.length > 0 && (
           <div className="grid grid-cols-2 gap-3">
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel className="text-muted-foreground">Category</FormLabel>
               <Select
                 value={parentCategoryId?.toString() ?? ''}
                 onValueChange={(v) => {
@@ -194,8 +195,8 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
                   form.setValue('categoryId', undefined)
                 }}
               >
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
+                <SelectTrigger className="bg-background border-border"><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectContent className="bg-popover border-border">
                   {categories.map((c) => (
                     <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
                   ))}
@@ -208,14 +209,14 @@ export function TransactionForm({ defaultValues, onSuccess }: TransactionFormPro
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Subcategory</FormLabel>
+                  <FormLabel className="text-muted-foreground">Subcategory</FormLabel>
                   <Select
                     value={field.value?.toString() ?? ''}
                     onValueChange={(v) => field.onChange(v ? Number(v) : undefined)}
                     disabled={!parentCategoryId}
                   >
-                    <FormControl><SelectTrigger><SelectValue placeholder={parentCategoryId ? 'Select subcategory' : 'Select a category first'} /></SelectTrigger></FormControl>
-                    <SelectContent>
+                    <FormControl><SelectTrigger className="bg-background border-border"><SelectValue placeholder={parentCategoryId ? 'Select subcategory' : 'Select a category first'} /></SelectTrigger></FormControl>
+                    <SelectContent className="bg-popover border-border">
                       {subcategories.map((sub) => (
                         <SelectItem key={sub.id} value={String(sub.id)}>{sub.name}</SelectItem>
                       ))}

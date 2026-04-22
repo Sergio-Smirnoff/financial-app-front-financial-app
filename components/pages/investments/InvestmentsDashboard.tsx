@@ -12,30 +12,29 @@ interface InvestmentsDashboardProps {
   enabled?: boolean
 }
 
+import { QueryBoundary } from '@/components/shared/QueryBoundary'
+
 export function InvestmentsDashboard({ enabled = true }: InvestmentsDashboardProps) {
-  const { data: summary, isLoading, isError } = usePortfolioSummary({ enabled })
+  const { data: summary, isLoading, isError, error } = usePortfolioSummary({ enabled })
   const { data: holdings = [] } = usePortfolioHoldings({ enabled })
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage message="Failed to load portfolio summary." />
-
-  if (!summary) return null
-
   return (
-    <div className="space-y-4 max-w-4xl">
-      <PortfolioSummaryCard summary={summary} />
+    <QueryBoundary isLoading={isLoading} isError={isError || (!summary && !isLoading)} error={error}>
+        <div className="space-y-4 max-w-4xl">
+        {summary && <PortfolioSummaryCard summary={summary} />}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {summary.breakdownArs.length > 0 && (
-          <AllocationChart breakdown={summary.breakdownArs} currency="ARS" />
-        )}
-        {summary.breakdownUsd.length > 0 && (
-          <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
-        )}
-        <HoldingTypeBreakdown />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {summary?.breakdownArs && summary.breakdownArs.length > 0 && (
+            <AllocationChart breakdown={summary.breakdownArs} currency="ARS" />
+            )}
+            {summary?.breakdownUsd && summary.breakdownUsd.length > 0 && (
+            <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
+            )}
+            <HoldingTypeBreakdown />
+        </div>
 
-      <TopMovers holdings={holdings} />
-    </div>
+        <TopMovers holdings={holdings} />
+        </div>
+    </QueryBoundary>
   )
 }

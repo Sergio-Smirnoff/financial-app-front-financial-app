@@ -25,6 +25,8 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
+import { Surface } from '@/components/shared/Surface'
+
 export function IncomeExpenseChart() {
   const [chartCurrency, setChartCurrency] = useState<string>('USD')
 
@@ -74,15 +76,15 @@ export function IncomeExpenseChart() {
   }, [queries, months])
 
   return (
-    <Card>
+    <Surface>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">Income vs Expenses (Last 6 Months)</CardTitle>
           <Select value={chartCurrency} onValueChange={setChartCurrency}>
-            <SelectTrigger className="w-24 h-8 text-xs">
+            <SelectTrigger className="w-24 h-8 text-xs bg-background border-border">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover border-border">
               {CURRENCIES.map((c) => (
                 <SelectItem key={c} value={c} className="text-xs">
                   {c}
@@ -100,20 +102,27 @@ export function IncomeExpenseChart() {
         ) : (
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={chartData} barGap={2}>
-              <XAxis dataKey="month" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCompact(v)} />
+              <XAxis dataKey="month" fontSize={12} tickLine={false} axisLine={false} stroke="var(--muted-foreground)" />
+              <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => formatCompact(v)} stroke="var(--muted-foreground)" />
               <Tooltip
                 formatter={(value) => formatCurrency(Number(value), chartCurrency)}
-                contentStyle={{ borderRadius: '8px', fontSize: '13px' }}
+                contentStyle={{ 
+                  backgroundColor: 'var(--popover)', 
+                  borderColor: 'var(--border)',
+                  borderRadius: 'var(--radius)', 
+                  fontSize: '13px',
+                  color: 'var(--popover-foreground)'
+                }}
+                itemStyle={{ color: 'var(--popover-foreground)' }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Bar dataKey="Income" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Expenses" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Expenses" fill="var(--destructive)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
       </CardContent>
-    </Card>
+    </Surface>
   )
 }
 

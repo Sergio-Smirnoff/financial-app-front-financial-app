@@ -13,9 +13,11 @@ import { toast } from 'sonner'
 import type { Category } from '@/types/finances'
 import { getCategoryIcon } from '@/lib/utils/category-utils'
 
+import { QueryBoundary } from '@/components/shared/QueryBoundary'
+
 export function CategoriesContent() {
   const { openConfirmDelete } = useUiStore()
-  const { data: categories, isLoading, isError } = useCategories()
+  const { data: categories, isLoading, isError, error } = useCategories()
   const createCategory = useCreateCategory()
   const createSubcategory = useCreateSubcategory()
   const deleteCategory = useDeleteCategory()
@@ -69,9 +71,6 @@ export function CategoriesContent() {
     })
   }
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage message="Failed to load categories." />
-
   return (
     <div className="h-full flex flex-col">
       <div className="flex gap-2 w-full">
@@ -80,6 +79,7 @@ export function CategoriesContent() {
           value={newCategoryName}
           onChange={(e) => setNewCategoryName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
+          className="bg-background border-border"
         />
         <Button size="sm" onClick={handleCreateCategory} disabled={createCategory.isPending}>
           <Plus className="h-4 w-4 mr-1" /> Add
@@ -87,17 +87,19 @@ export function CategoriesContent() {
       </div>
 
       <div className="flex-1 overflow-auto mt-4">
-        <div className="space-y-2 w-full">
-          {categories?.map((cat) => {
-            const subcategories = cat.subcategories ?? []
-            const isExpanded = expanded.has(cat.id)
+        <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
+            <div className="space-y-2 w-full">
+            {categories?.map((cat) => {
+                const subcategories = cat.subcategories ?? []
+                const isExpanded = expanded.has(cat.id)
 
-            return (
-              <div key={cat.id} className="border rounded-lg overflow-hidden bg-card">
-                <div
-                  className="flex items-center gap-3 p-3 hover:bg-accent/50 cursor-pointer transition-colors"
-                  onClick={() => toggleExpand(cat.id)}
-                >
+                return (
+                <div key={cat.id} className="border border-border rounded-lg overflow-hidden bg-card">
+                    <div
+                    className="flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors"
+                    onClick={() => toggleExpand(cat.id)}
+                    >
+                        {/* Icon and content... */}
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   ) : (
@@ -178,6 +180,7 @@ export function CategoriesContent() {
             <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Create one above.</p>
           )}
         </div>
+        </QueryBoundary>
       </div>
 
       <ConfirmDialog />

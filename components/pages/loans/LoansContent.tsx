@@ -26,11 +26,14 @@ import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Loan } from '@/types/loans'
 
+import { QueryBoundary } from '@/components/shared/QueryBoundary'
+import { Surface } from '@/components/shared/Surface'
+
 export function LoansContent() {
   const { openConfirmDelete } = useUiStore()
   const { banks } = useBanks()
   const [accountId, setAccountId] = useState<number | undefined>(undefined)
-  const { data: loans, isLoading, isError } = useLoans(accountId)
+  const { data: loans, isLoading, isError, error } = useLoans(accountId)
   const deleteLoan = useDeleteLoan()
   const [formOpen, setFormOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -48,9 +51,6 @@ export function LoansContent() {
     })
   }
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage message="Failed to load loans." />
-
   const allAccounts = banks.flatMap(b => b.accounts.map(a => ({ ...a, bankName: b.name })))
 
   return (
@@ -60,10 +60,10 @@ export function LoansContent() {
           value={accountId?.toString() ?? 'ALL'}
           onValueChange={(v) => setAccountId(v === 'ALL' ? undefined : parseInt(v))}
         >
-          <SelectTrigger className="w-48 h-8 text-xs">
+          <SelectTrigger className="w-48 h-8 text-xs bg-background border-border">
             <SelectValue placeholder="Account" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover border-border">
             <SelectItem value="ALL">All accounts</SelectItem>
             {allAccounts.map((a) => (
               <SelectItem key={a.id} value={a.id.toString()} className="text-xs">
@@ -80,24 +80,26 @@ export function LoansContent() {
         </Button>
       </div>
 
-      {loans?.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">No loans yet.</p>
-      )}
-
-      <div className="flex-1 overflow-auto space-y-3">
-        {loans?.map((loan) => (
-          <LoanCard
-            key={loan.id}
-            loan={loan}
-            expanded={expandedId === loan.id}
-            onToggle={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
-            onDelete={() => handleDelete(loan)}
-          />
-        ))}
-      </div>
+      <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
+        {loans?.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">No loans yet.</p>
+        ) : (
+          <div className="flex-1 overflow-auto space-y-3">
+            {loans?.map((loan) => (
+              <LoanCard
+                key={loan.id}
+                loan={loan}
+                expanded={expandedId === loan.id}
+                onToggle={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
+                onDelete={() => handleDelete(loan)}
+              />
+            ))}
+          </div>
+        )}
+      </QueryBoundary>
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-popover border-border">
           <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
           <LoanForm onSuccess={() => setFormOpen(false)} />
         </DialogContent>
@@ -133,7 +135,7 @@ function LoanCard({
   const progress = totalCount > 0 ? (paidCount / totalCount) * 100 : 0
 
   return (
-    <Card>
+    <Surface>
       <CardHeader className="pb-2">
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
@@ -142,7 +144,7 @@ function LoanCard({
               <Badge variant={loan.active ? 'default' : 'secondary'} className="text-xs">
                 {loan.active ? 'Active' : 'Closed'}
               </Badge>
-              <Badge variant="outline" className="text-[10px]">{loan.currency}</Badge>
+              <Badge variant="outline" className="text-[10px] border-border">{loan.currency}</Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
               Principal: {formatCurrency(loan.principal, loan.currency)} · {loan.totalInstallments} installments
@@ -150,10 +152,10 @@ function LoanCard({
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onToggle}>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-muted" onClick={onToggle}>
               <ChevronDown className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
             </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={onDelete}>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={onDelete}>
               <Trash2 className="h-3 w-3" />
             </Button>
           </div>
@@ -171,29 +173,27 @@ function LoanCard({
 
       {expanded && (
         <CardContent className="pt-0">
-          {isLoading ? (
-            <LoadingSpinner size="sm" />
-          ) : (
+          <QueryBoundary isLoading={isLoading} isError={false}>
             <div className="space-y-1 mt-2">
               {installments?.map((inst) => {
                 const selectedAccountId = selectedAccounts[inst.id];
                 return (
-                  <div key={inst.id} className="flex items-center gap-3 py-1 border-t text-sm">
+                  <div key={inst.id} className="flex items-center gap-3 py-1 border-t border-border text-sm">
                     <span className="w-6 text-xs text-muted-foreground text-center">{inst.installmentNumber}</span>
                     <span className="flex-1 text-muted-foreground">{formatDate(inst.dueDate)}</span>
                     <span className="font-medium">{formatCurrency(inst.amount, loan.currency)}</span>
                     {inst.paid ? (
-                      <Badge variant="secondary" className="text-xs w-16 justify-center">Paid</Badge>
+                      <Badge variant="secondary" className="text-xs w-16 justify-center bg-muted text-muted-foreground">Paid</Badge>
                     ) : (
                       <div className="flex items-center gap-2">
                         <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
                           <SelectTrigger 
-                            className="h-7 w-[130px] text-[10px] font-bold"
+                            className="h-7 w-[130px] text-[10px] font-bold bg-background border-border"
                             disabled={availableAccounts.length === 0}
                           >
                             <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No available accounts"} />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-popover border-border">
                             {availableAccounts.map(a => (
                               <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
                                 {a.name} ({formatCurrency(a.balance, a.currency)})
@@ -203,7 +203,6 @@ function LoanCard({
                         </Select>
                         <Button
                           size="sm"
-                          variant="outline"
                           className="h-7 text-xs px-2"
                           disabled={payInstallment.isPending || !selectedAccountId}
                           onClick={() =>
@@ -224,9 +223,9 @@ function LoanCard({
                 );
               })}
             </div>
-          )}
+          </QueryBoundary>
         </CardContent>
       )}
-    </Card>
+    </Surface>
   )
 }

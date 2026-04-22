@@ -39,7 +39,7 @@ export function DashboardContent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl">Welcome back, <span className="font-bold">{userName}</span>!</h1>
+      <h1 className="text-3xl">Welcome back, <span className="font-bold text-primary">{userName}</span>!</h1>
 
       {/* Year-to-Date overview — all currencies */}
       {ytdSummary.isLoading ? (

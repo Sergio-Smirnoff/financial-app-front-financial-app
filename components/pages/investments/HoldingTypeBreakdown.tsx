@@ -64,6 +64,8 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   )
 }
 
+import { Surface } from '@/components/shared/Surface'
+
 export function HoldingTypeBreakdown() {
   const { data: holdings, isLoading } = usePortfolioHoldings()
   const [activeType, setActiveType] = useState<AssetType | null>(null)
@@ -84,7 +86,7 @@ export function HoldingTypeBreakdown() {
   const slices = buildSlices(grouped[currentType] ?? [])
 
   return (
-    <Card>
+    <Surface>
       <CardHeader>
         <CardTitle className="text-sm font-medium">Holdings by Type</CardTitle>
         <div className="flex gap-2 flex-wrap mt-1">
@@ -134,6 +136,6 @@ export function HoldingTypeBreakdown() {
           </ResponsiveContainer>
         )}
       </CardContent>
-    </Card>
+    </Surface>
   )
 }

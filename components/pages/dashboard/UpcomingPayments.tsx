@@ -10,6 +10,8 @@ import { currentMonthRange } from '@/lib/utils/dates'
 import { CalendarClock, Landmark, CreditCard, CheckCircle2 } from 'lucide-react'
 import type { UpcomingPayment } from '@/types/finances'
 
+import { Surface } from '@/components/shared/Surface'
+
 export function UpcomingPayments() {
   const { from, to } = currentMonthRange()
   const { data: payments, isLoading } = useUpcomingPayments({ from, to })
@@ -24,7 +26,7 @@ export function UpcomingPayments() {
   const totalDueItems = Object.entries(totalDueByCurrency).map(([currency, amount]) => ({ currency, amount }))
 
   return (
-    <Card>
+    <Surface>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-medium">
@@ -32,7 +34,7 @@ export function UpcomingPayments() {
             Due This Month
           </CardTitle>
           {!isLoading && totalDueItems.length > 0 && (
-            <span className="text-sm font-semibold text-red-600 dark:text-red-400">
+            <span className="text-sm font-semibold text-destructive">
               <MultiCurrencyAmount items={totalDueItems} /> pending
             </span>
           )}
@@ -63,7 +65,7 @@ export function UpcomingPayments() {
           </div>
         )}
       </CardContent>
-    </Card>
+    </Surface>
   )
 }
 
@@ -71,7 +73,7 @@ function PaymentRow({ payment }: { payment: UpcomingPayment }) {
   const Icon = payment.type === 'LOAN' ? Landmark : CreditCard
 
   return (
-    <div className={`flex items-center justify-between rounded-lg border p-3 ${payment.paid ? 'opacity-50' : ''}`}>
+    <div className={`flex items-center justify-between rounded-lg border p-3 bg-muted/20 ${payment.paid ? 'opacity-50' : ''}`}>
       <div className="flex items-center gap-3">
         <Icon className="h-4 w-4 text-muted-foreground" />
         <div>

@@ -26,18 +26,18 @@ export function CardList({ bankId }: Props) {
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-bold uppercase tracking-widest text-zinc-400">Cards</h4>
-        <Button size="sm" variant="outline" className="h-8 gap-2 text-xs font-bold" onClick={() => { setEditingCard(null); setCreatingOpen(true); }}>
+        <h4 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Cards</h4>
+        <Button size="sm" variant="outline" className="h-8 gap-2 text-xs font-bold border-border" onClick={() => { setEditingCard(null); setCreatingOpen(true); }}>
             <Plus className="h-3.5 w-3.5" /> Add Card
         </Button>
       </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[1, 2].map(i => <div key={i} className="aspect-[1.58/1] rounded-2xl animate-pulse bg-zinc-100" />)}
+            {[1, 2].map(i => <div key={i} className="aspect-[1.58/1] rounded-2xl animate-pulse bg-muted" />)}
         </div>
       ) : !data || data.length === 0 ? (
-        <p className="py-8 text-center text-sm text-zinc-400 italic">No cards registered</p>
+        <p className="py-8 text-center text-sm text-muted-foreground italic">No cards registered</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {data.map((c) => (
@@ -78,7 +78,7 @@ export function CardList({ bankId }: Props) {
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuContent align="end" className="w-48 bg-popover border-border">
                         <DropdownMenuItem
                             onClick={() => setEditingCard(c)}
                             className="gap-2"
@@ -86,7 +86,7 @@ export function CardList({ bankId }: Props) {
                             <Pencil className="h-4 w-4" /> Edit Card
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            className="text-red-600 gap-2"
+                            className="text-destructive gap-2 focus:text-destructive"
                             onClick={() => { if (confirm(`Delete card ending in ${c.last4Digits}?`)) del.mutate(c.id) }}
                         >
                             <Trash2 className="h-4 w-4" /> Delete Card

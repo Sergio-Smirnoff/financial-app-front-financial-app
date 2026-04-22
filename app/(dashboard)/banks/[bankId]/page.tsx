@@ -7,5 +7,9 @@ export default function BankDetailPage() {
   const params = useParams()
   const bankId = parseInt(params.bankId as string)
 
-  return <BankDetailContent bankId={bankId} />
+  return (
+    <div className="flex h-full w-full flex-col">
+      <BankDetailContent bankId={bankId} />
+    </div>
+  )
 }

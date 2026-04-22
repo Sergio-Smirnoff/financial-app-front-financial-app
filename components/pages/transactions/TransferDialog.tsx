@@ -100,7 +100,7 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
           <DialogTitle>Transfer funds</DialogTitle>
         </DialogHeader>
@@ -111,7 +111,7 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
               name="fromAccountId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>From Account</FormLabel>
+                  <FormLabel className="text-muted-foreground">From Account</FormLabel>
                   <Select 
                     onValueChange={(v) => {
                         const val = Number(v);
@@ -125,11 +125,11 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                     value={field.value > 0 ? field.value.toString() : undefined}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder="Select source account" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border-border">
                       {allAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id.toString()}>
                           {acc.bankName} - {acc.name} ({acc.currency})
@@ -147,18 +147,18 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
               name="toAccountId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>To Account (Same currency only)</FormLabel>
+                  <FormLabel className="text-muted-foreground">To Account (Same currency only)</FormLabel>
                   <Select 
                     onValueChange={(v) => field.onChange(Number(v))} 
                     value={field.value > 0 ? field.value.toString() : undefined}
                     disabled={!fromAccountId}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background border-border">
                         <SelectValue placeholder={!fromAccountId ? "Select from account first" : "Select destination account"} />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border-border">
                       {targetAccounts.map((acc) => (
                         <SelectItem key={acc.id} value={acc.id.toString()}>
                           {acc.bankName} - {acc.name} ({acc.currency})
@@ -177,7 +177,7 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel className="text-muted-foreground">Amount</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -185,6 +185,7 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                         min="0"
                         value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.valueAsNumber || undefined)}
+                        className="bg-background border-border"
                       />
                     </FormControl>
                     <FormMessage />
@@ -196,10 +197,10 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Currency</FormLabel>
+                    <FormLabel className="text-muted-foreground">Currency</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled>
-                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                      <SelectContent>
+                      <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
+                      <SelectContent className="bg-popover border-border">
                         {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -214,8 +215,8 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
-                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormLabel className="text-muted-foreground">Date</FormLabel>
+                  <FormControl><Input type="date" {...field} className="bg-background border-border" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -226,8 +227,8 @@ export function TransferDialog({ open, onOpenChange, onSuccess, defaultFromAccou
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
+                  <FormLabel className="text-muted-foreground">Description</FormLabel>
+                  <FormControl><Input {...field} className="bg-background border-border" /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}

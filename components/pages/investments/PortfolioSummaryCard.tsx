@@ -5,6 +5,8 @@ import { formatCurrency } from '@/lib/utils/currency'
 import { cn } from '@/lib/utils'
 import type { PortfolioSummary } from '@/types/investments'
 
+import { Surface } from '@/components/shared/Surface'
+
 interface PortfolioSummaryCardProps {
   summary: PortfolioSummary
 }
@@ -13,10 +15,10 @@ function PlValue({ amount, percent, currency }: { amount: number; percent: numbe
   const isPositive = amount >= 0
   return (
     <div>
-      <span className={cn('text-sm font-medium', isPositive ? 'text-green-600' : 'text-red-600')}>
+      <span className={cn('text-sm font-medium', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
         {isPositive ? '+' : ''}{formatCurrency(amount, currency)}
       </span>
-      <span className={cn('text-xs ml-1', isPositive ? 'text-green-600' : 'text-red-600')}>
+      <span className={cn('text-xs ml-1', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
         ({isPositive ? '+' : ''}{percent.toFixed(2)}%)
       </span>
     </div>
@@ -29,18 +31,18 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
 
   if (!hasArs && !hasUsd) {
     return (
-      <Card>
+      <Surface>
         <CardContent className="py-8">
           <p className="text-sm text-muted-foreground text-center">
             No holdings yet. Add your first holding in the Holdings tab.
           </p>
         </CardContent>
-      </Card>
+      </Surface>
     )
   }
 
   return (
-    <Card>
+    <Surface>
       <CardHeader>
         <CardTitle className="text-sm font-medium">Portfolio Summary</CardTitle>
       </CardHeader>
@@ -62,6 +64,6 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
           )}
         </div>
       </CardContent>
-    </Card>
+    </Surface>
   )
 }

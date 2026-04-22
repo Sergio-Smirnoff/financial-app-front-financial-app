@@ -65,35 +65,35 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-zinc-900 border-zinc-800 text-white">
+      <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
-          <DialogTitle className="text-white">Sell Holding: {holding.ticker}</DialogTitle>
+          <DialogTitle>Sell Holding: {holding.ticker}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="rounded-2xl bg-zinc-800/40 p-5 space-y-3 border border-zinc-800 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+          <div className="rounded-2xl bg-muted/40 p-5 space-y-3 border border-border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
             <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-bold uppercase tracking-wider">Quantity to sell</span>
-                <span className="font-black text-white text-sm">{holding.quantity}</span>
+                <span className="text-muted-foreground font-bold uppercase tracking-wider">Quantity to sell</span>
+                <span className="font-black text-sm">{holding.quantity}</span>
             </div>
             <div className="flex justify-between items-center text-xs">
-                <span className="text-zinc-500 font-bold uppercase tracking-wider">Market Price</span>
-                <span className="font-black text-white text-sm">{formatCurrency(holding.currentPrice ?? holding.avgPurchasePrice, holding.currency)}</span>
+                <span className="text-muted-foreground font-bold uppercase tracking-wider">Market Price</span>
+                <span className="font-black text-sm">{formatCurrency(holding.currentPrice ?? holding.avgPurchasePrice, holding.currency)}</span>
             </div>
-            <div className="pt-3 border-t border-zinc-800/50 flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Estimated Liquidation</span>
-                <span className="text-3xl font-black text-white tracking-tighter">
+            <div className="pt-3 border-t border-border flex flex-col items-center gap-1">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Estimated Liquidation</span>
+                <span className="text-3xl font-black tracking-tighter">
                     {formatCurrency(liquidationValue, holding.currency)}
                 </span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase text-zinc-500 ml-1 tracking-widest">Receive funds in</label>
+            <label className="text-[10px] font-bold uppercase text-muted-foreground ml-1 tracking-widest">Receive funds in</label>
             <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
-                <SelectTrigger className="rounded-xl h-11 bg-zinc-900 border-zinc-800 text-zinc-300">
+                <SelectTrigger className="rounded-xl h-11 bg-background border-border text-foreground">
                     <SelectValue placeholder="Select destination account" />
                 </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800 text-white">
+                <SelectContent className="bg-popover border-border">
                     {availableAccounts.map(a => (
                         <SelectItem key={a.id} value={a.id.toString()}>
                             {a.name} ({formatCurrency(a.balance, a.currency)})
@@ -102,14 +102,14 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
                 </SelectContent>
             </Select>
             {availableAccounts.length === 0 && (
-                <p className="text-[10px] text-red-500/80 italic ml-1">No available accounts in {holding.currency.toUpperCase()} to receive funds.</p>
+                <p className="text-[10px] text-destructive/80 italic ml-1">No available accounts in {holding.currency.toUpperCase()} to receive funds.</p>
             )}
           </div>
         </div>
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="ghost" className="rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="ghost" className="rounded-xl text-muted-foreground hover:bg-muted" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
-            className="rounded-xl bg-primary text-primary-foreground font-bold" 
+            className="rounded-xl font-bold" 
             disabled={!selectedAccountId || sellMutation.isPending}
             onClick={handleSell}
           >

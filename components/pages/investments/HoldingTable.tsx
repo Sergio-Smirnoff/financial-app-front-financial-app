@@ -72,13 +72,13 @@ export function HoldingTable({ holdings, onEdit, onSell, onViewDetail }: Holding
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1 justify-end">
-                  <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => onEdit(h)}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => onEdit(h)}>
                     <Pencil className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                    className="h-7 w-7 text-green-600 hover:text-green-500 hover:bg-green-500/10"
                     title="Sell Holding"
                     onClick={() => onSell(h)}
                   >
@@ -96,7 +96,7 @@ export function HoldingTable({ holdings, onEdit, onSell, onViewDetail }: Holding
 
 function plColor(value: number | null): string {
   if (value == null) return ''
-  if (value > 0) return 'text-green-600'
-  if (value < 0) return 'text-red-600'
+  if (value > 0) return 'text-green-600 dark:text-green-400'
+  if (value < 0) return 'text-destructive'
   return ''
 }

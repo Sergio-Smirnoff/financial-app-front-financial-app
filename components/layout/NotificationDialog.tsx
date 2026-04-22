@@ -39,7 +39,7 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg bg-popover border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
@@ -50,7 +50,7 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
               variant="outline"
               size="sm"
               onClick={() => markAllAsRead.mutate()}
-              className="gap-2"
+              className="gap-2 border-border"
             >
               <CheckCheck className="h-4 w-4" />
               Marcar todas como leídas
@@ -67,13 +67,13 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
               No hay notificaciones
             </div>
           ) : (
-            <div className="divide-y">
+            <div className="divide-y border-border">
               {notifications.map((notif) => {
                 const Icon = TYPE_ICONS[notif.type] ?? Bell
                 return (
                   <div
                     key={notif.id}
-                    className={`flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer ${
+                    className={`flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer border-border ${
                       !notif.read ? 'bg-muted/20' : ''
                     }`}
                     onClick={() => !notif.read && handleMarkAsRead(notif.id)}
@@ -103,12 +103,13 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
           )}
         </ScrollArea>
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 pt-4 border-t">
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-border">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
+              className="border-border"
             >
               Anterior
             </Button>
@@ -120,6 +121,7 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
               size="sm"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
+              className="border-border"
             >
               Siguiente
             </Button>
