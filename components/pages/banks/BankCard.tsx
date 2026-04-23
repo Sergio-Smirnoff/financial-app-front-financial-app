@@ -3,10 +3,8 @@
 import { BankResponse } from "@/types/banks";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Trash2, Pencil, Bell, CreditCard, Landmark, Wallet } from "lucide-react";
+import { Building2, Trash2, Pencil, CreditCard, Landmark, Wallet } from "lucide-react";
 import { formatCurrency } from "@/lib/utils/currency";
-import { useLatestNotifications } from "@/lib/hooks/useNotifications";
-import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Surface } from "@/components/shared/Surface";
 
@@ -22,19 +20,6 @@ export function BankCard({
   onDelete
 }: BankCardProps) {
   const router = useRouter();
-  const { data: notifications } = useLatestNotifications();
-
-  const hasAlerts = useMemo(() => {
-    if (!notifications) return false;
-    return notifications.some(n => {
-      try {
-        const metadata = n.metadata ? JSON.parse(n.metadata) : {};
-        return metadata.bankId === bank.id && !n.read;
-      } catch (e) {
-        return false;
-      }
-    });
-  }, [notifications, bank.id]);
 
   const handleCardClick = () => {
     router.push(`/banks/${bank.id}`);
@@ -57,10 +42,6 @@ export function BankCard({
           <CardTitle className="text-xl font-bold">{bank.name}</CardTitle>
         </div>
         <div className="flex items-center gap-1">
-          <div className={`flex h-8 w-8 items-center justify-center rounded-full transition-colors mr-1 ${hasAlerts ? 'bg-destructive/10 text-destructive' : 'text-muted-foreground'}`}>
-            <Bell className={`h-4 w-4 ${hasAlerts ? 'animate-bounce' : ''}`} />
-          </div>
-
           <Button 
             variant="ghost" 
             size="icon" 

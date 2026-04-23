@@ -26,7 +26,7 @@ interface BankNotificationDialogProps {
 }
 
 export function BankNotificationDialog({ open, onOpenChange, bankId, bankName }: BankNotificationDialogProps) {
-  const { data: allNotifications, isLoading } = useLatestNotifications()
+  const { data: allNotifications, isLoading } = useLatestNotifications(bankId)
   const markAsRead = useMarkAsRead()
 
   const bankNotifications = useMemo(() => {

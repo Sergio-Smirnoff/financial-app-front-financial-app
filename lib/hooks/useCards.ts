@@ -83,9 +83,10 @@ export function useMarkInstallmentPaid(cardId: number) {
   return useMutation({
     mutationFn: (vars: { installmentId: number; accountId: number; paidDate?: string }) =>
       cardsApi.markPaid(cardId, vars.installmentId, vars.accountId, vars.paidDate),
-    onSuccess: () => {
+    onSuccess: (_, vars) => {
         qc.invalidateQueries({ queryKey: QK.installments(cardId) });
         qc.invalidateQueries({ queryKey: ['banks'] });
+        qc.invalidateQueries({ queryKey: ['transactions', 'account', vars.accountId] });
     },
   })
 }

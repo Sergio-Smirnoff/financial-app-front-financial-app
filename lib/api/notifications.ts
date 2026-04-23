@@ -13,8 +13,8 @@ export const notificationsApi = {
   getAll: (page = 0, size = 20): Promise<PaginatedResponse<Notification>> =>
     api.get(`/api/v1/notifications?page=${page}&size=${size}`),
 
-  getLatest: (): Promise<Notification[]> =>
-    api.get('/api/v1/notifications/latest'),
+  getLatest: (bankId?: number): Promise<Notification[]> =>
+    api.get(bankId ? `/api/v1/notifications/latest?bankId=${bankId}` : '/api/v1/notifications/latest'),
 
   getUnreadCount: (): Promise<UnreadCount> =>
     api.get('/api/v1/notifications/unread-count'),

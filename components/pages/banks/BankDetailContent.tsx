@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useBank, useAccounts } from "@/lib/hooks/useBanks";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History, Bell, Trash2, Search, X } from "lucide-react";
+import { Plus, ArrowLeft, ArrowLeftRight, Landmark, Wallet, PlusCircle, MinusCircle, History, Trash2, Search, X } from "lucide-react";
 import { AccountResponse } from "@/types/banks";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
@@ -16,9 +16,7 @@ import { AccountFormDialog } from "./AccountFormDialog";
 import { TransferDialog } from "../transactions/TransferDialog";
 import { QuickTransactionDialog } from "./QuickTransactionDialog";
 import { TransactionHistoryDialog } from "./TransactionHistoryDialog";
-import { BankNotificationDialog } from "./BankNotificationDialog";
 import { useQueryClient } from "@tanstack/react-query";
-import { useLatestNotifications } from "@/lib/hooks/useNotifications";
 import { useUiStore } from "@/lib/store/ui.store";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { Input } from "@/components/ui/input";
@@ -38,7 +36,6 @@ export function BankDetailContent({ bankId }: Props) {
   const { data: bank, isLoading, isError, error } = useBank(bankId);
   const { createAccount, updateAccount, deleteAccount } = useAccounts();
   const { openConfirmDelete } = useUiStore();
-  const { data: notifications } = useLatestNotifications();
   
   const [accDialogOpen, setAccDialogOpen] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<AccountResponse | null>(null);
@@ -46,7 +43,6 @@ export function BankDetailContent({ bankId }: Props) {
   const [transferOpen, setTransferOpen] = useState(false);
   const [quickTxOpen, setQuickTxOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [bankNotifOpen, setBankNotifOpen] = useState(false);
   
   const [quickTxType, setQuickTxType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
   const [activeAccountId, setActiveAccountId] = useState<number | null>(null);
@@ -78,18 +74,6 @@ export function BankDetailContent({ bankId }: Props) {
     if (!bank?.accounts) return [];
     return Array.from(new Set(bank.accounts.map(a => a.type))).sort();
   }, [bank?.accounts]);
-
-  const hasAlerts = useMemo(() => {
-    if (!notifications) return false;
-    return notifications.some(n => {
-      try {
-        const metadata = n.metadata ? JSON.parse(n.metadata) : {};
-        return metadata.bankId === bankId && !n.read;
-      } catch (e) {
-        return false;
-      }
-    });
-  }, [notifications, bankId]);
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['banks', bankId] });
@@ -161,12 +145,6 @@ export function BankDetailContent({ bankId }: Props) {
                 <div>
                   <div className="flex items-center gap-3">
                     <p className="text-sm font-medium text-foreground">{bank?.name} Dashboard</p>
-                    <button 
-                        onClick={() => setBankNotifOpen(true)}
-                        className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors hover:bg-muted ${hasAlerts ? 'bg-destructive/10 text-destructive' : 'text-muted-foreground'}`}
-                    >
-                        <Bell className={`h-3 w-3 ${hasAlerts ? 'animate-bounce' : ''}`} />
-                    </button>
                   </div>
                   <p className="text-xs text-muted-foreground">Manage accounts, cards and loans</p>
                 </div>
@@ -400,13 +378,6 @@ export function BankDetailContent({ bankId }: Props) {
         accountId={activeAccountId ?? 0}
         accountName={activeAccountName}
         currency={activeCurrency}
-      />
-
-      <BankNotificationDialog
-        open={bankNotifOpen}
-        onOpenChange={setBankNotifOpen}
-        bankId={bankId}
-        bankName={bank?.name || ''}
       />
 
       <ConfirmDialog />

@@ -11,10 +11,10 @@ export function useUnreadCount() {
   })
 }
 
-export function useLatestNotifications() {
+export function useLatestNotifications(bankId?: number) {
   return useQuery({
-    queryKey: ['notifications', 'latest'],
-    queryFn: () => notificationsApi.getLatest(),
+    queryKey: ['notifications', 'latest', { bankId }],
+    queryFn: () => notificationsApi.getLatest(bankId),
   })
 }
 

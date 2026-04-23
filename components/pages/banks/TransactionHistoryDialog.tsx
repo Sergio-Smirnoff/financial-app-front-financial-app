@@ -51,13 +51,20 @@ export function TransactionHistoryDialog({ open, onOpenChange, accountId, accoun
                   <div className="text-right shrink-0">
                     <p className={`font-black text-sm ${
                         tx.transferGroupId ? 'text-foreground' :
-                        tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-destructive'
+                        tx.type === 'INCOME' ? 'text-green-600 dark:text-green-400' : 'text-red-500'
                     }`}>
                       {tx.type === 'INCOME' ? '+' : '-'}{formatCurrency(tx.amount, tx.currency)}
                     </p>
-                    {tx.transferGroupId && (
-                        <Badge variant="outline" className="text-[9px] uppercase font-bold h-4 px-1 opacity-50 border-border">Transfer</Badge>
-                    )}
+                    <div className="flex flex-col items-end gap-1">
+                        <span className={`text-[8px] font-bold uppercase tracking-tighter ${
+                            tx.type === 'INCOME' ? 'text-green-600/70' : 'text-red-500/70'
+                        }`}>
+                            {tx.type}
+                        </span>
+                        {tx.transferGroupId && (
+                            <Badge variant="outline" className="text-[8px] uppercase font-black h-3.5 px-1 opacity-50 border-border bg-muted/30">Transfer</Badge>
+                        )}
+                    </div>
                   </div>
                 </div>
               ))}
