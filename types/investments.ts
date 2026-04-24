@@ -56,6 +56,12 @@ export interface PortfolioSummary {
   breakdownUsd: AllocationBreakdown[]
 }
 
+export interface PortfolioEvolution {
+  date: string
+  totalValueArs: number
+  totalValueUsd: number
+}
+
 export interface CreateHoldingRequest {
   bankId: number
   bankAccountId: number
