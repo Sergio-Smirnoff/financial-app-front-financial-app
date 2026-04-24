@@ -42,6 +42,13 @@ export function usePortfolioHoldings(options?: { enabled?: boolean }) {
   })
 }
 
+export function useMarketDiscovery(limit: number = 5) {
+  return useQuery({
+    queryKey: ['market', 'discovery', limit],
+    queryFn: () => investmentsApi.getMarketDiscovery(limit),
+  })
+}
+
 export function useCreateHolding() {
   const queryClient = useQueryClient()
   return useMutation({
