@@ -15,8 +15,9 @@ export function ActiveAlertsCard({ holdings }: ActiveAlertsCardProps) {
   const alertedHoldings = useMemo(() => {
     return holdings.filter(h => h.notifyGainThresholdPct != null || h.notifyLossThresholdPct != null)
       .map(h => {
-        const isGainHit = h.notifyGainThresholdPct != null && h.plPercent >= h.notifyGainThresholdPct
-        const isLossHit = h.notifyLossThresholdPct != null && h.plPercent <= -Math.abs(h.notifyLossThresholdPct)
+        const plPercent = h.plPercent ?? 0
+        const isGainHit = h.notifyGainThresholdPct != null && plPercent >= h.notifyGainThresholdPct
+        const isLossHit = h.notifyLossThresholdPct != null && plPercent <= -Math.abs(h.notifyLossThresholdPct)
         return { ...h, isGainHit, isLossHit }
       })
       .sort((a, b) => {
