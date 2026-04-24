@@ -15,7 +15,11 @@ function buildParams(filters: Record<string, unknown>): string {
   const params = new URLSearchParams()
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
-      params.set(key, String(value))
+      if (Array.isArray(value)) {
+        value.forEach(v => params.append(key, String(v)))
+      } else {
+        params.set(key, String(value))
+      }
     }
   })
   const str = params.toString()

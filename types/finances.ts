@@ -30,6 +30,7 @@ export interface TransactionFilters {
   categoryId?: number
   currency?: string
   accountId?: number
+  accountIds?: number[]
   dateFrom?: string
   dateTo?: string
   page?: number

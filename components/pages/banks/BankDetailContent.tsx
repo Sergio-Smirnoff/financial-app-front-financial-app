@@ -325,6 +325,14 @@ export function BankDetailContent({ bankId }: Props) {
                 >
                     <Plus className="h-4 w-4" /> Add another account
                 </Button>
+
+                <div className="pt-4 border-t border-border/50">
+                    <Link href={\`/banks/\${bankId}/transactions\`}>
+                        <Button variant="outline" className="w-full h-12 rounded-2xl border-border text-muted-foreground hover:text-foreground font-bold uppercase text-xs gap-2">
+                            <History className="h-4 w-4" /> View full transaction history
+                        </Button>
+                    </Link>
+                </div>
               </>
             )}
           </div>
@@ -378,6 +386,7 @@ export function BankDetailContent({ bankId }: Props) {
         accountId={activeAccountId ?? 0}
         accountName={activeAccountName}
         currency={activeCurrency}
+        bankId={bankId}
       />
 
       <ConfirmDialog />
