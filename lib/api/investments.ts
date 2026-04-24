@@ -3,6 +3,8 @@ import type {
   Holding,
   HoldingWithPrice,
   PortfolioSummary,
+  PortfolioEvolution,
+  MarketQuote,
   PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
@@ -26,8 +28,14 @@ export const investmentsApi = {
   getPortfolioSummary: () =>
     api.get<PortfolioSummary>(`${BASE}/portfolio/summary`),
 
+  getPortfolioEvolution: (days: number = 30) =>
+    api.get<PortfolioEvolution[]>(`${BASE}/portfolio/evolution?days=${days}`),
+
   getPortfolioHoldings: () =>
     api.get<HoldingWithPrice[]>(`${BASE}/portfolio/holdings`),
+
+  getMarketDiscovery: (limit: number = 5) =>
+    api.get<MarketQuote[]>(`${BASE}/market/discovery?limit=${limit}`),
 
   getPriceHistory: (ticker: string, from?: string, to?: string) => {
     const params = new URLSearchParams()

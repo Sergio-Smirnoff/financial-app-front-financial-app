@@ -39,7 +39,7 @@ export interface PriceHistory {
 }
 
 export interface AllocationBreakdown {
-  assetType: AssetType
+  assetType: String
   totalValue: number
   currency: string
   percentage: number
@@ -54,6 +54,18 @@ export interface PortfolioSummary {
   plPercentUsd: number
   breakdownArs: AllocationBreakdown[]
   breakdownUsd: AllocationBreakdown[]
+}
+
+export interface PortfolioEvolution {
+  date: string
+  totalValueArs: number
+  totalValueUsd: number
+}
+
+export interface MarketQuote {
+  ticker: string
+  price: number
+  variation: number
 }
 
 export interface CreateHoldingRequest {

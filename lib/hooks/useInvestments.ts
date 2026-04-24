@@ -27,11 +27,25 @@ export function usePortfolioSummary(options?: { enabled?: boolean }) {
   })
 }
 
+export function usePortfolioEvolution(days: number = 30) {
+  return useQuery({
+    queryKey: ['portfolio', 'evolution', days],
+    queryFn: () => investmentsApi.getPortfolioEvolution(days),
+  })
+}
+
 export function usePortfolioHoldings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['portfolio', 'holdings'],
     queryFn: () => investmentsApi.getPortfolioHoldings(),
     enabled: options?.enabled ?? true,
+  })
+}
+
+export function useMarketDiscovery(limit: number = 5) {
+  return useQuery({
+    queryKey: ['market', 'discovery', limit],
+    queryFn: () => investmentsApi.getMarketDiscovery(limit),
   })
 }
 
