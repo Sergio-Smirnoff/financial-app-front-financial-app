@@ -26,6 +26,9 @@ export const investmentsApi = {
   getPortfolioSummary: () =>
     api.get<PortfolioSummary>(`${BASE}/portfolio/summary`),
 
+  getPortfolioEvolution: (days: number = 30) =>
+    api.get<PortfolioEvolution[]>(\`\${BASE}/portfolio/evolution?days=\${days}\`),
+
   getPortfolioHoldings: () =>
     api.get<HoldingWithPrice[]>(`${BASE}/portfolio/holdings`),
 

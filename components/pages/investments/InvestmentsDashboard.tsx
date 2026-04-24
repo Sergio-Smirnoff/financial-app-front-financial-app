@@ -6,6 +6,7 @@ import { AllocationChart } from './AllocationChart'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 import { TopMovers } from '@/components/pages/dashboard/TopMovers'
 import { ActiveAlertsCard } from './ActiveAlertsCard'
+import { PortfolioPerformanceChart } from './PortfolioPerformanceChart'
 import { QueryBoundary } from '@/components/shared/QueryBoundary'
 
 export function InvestmentsDashboard({ enabled = true }: { enabled?: boolean }) {
@@ -35,6 +36,7 @@ export function InvestmentsDashboard({ enabled = true }: { enabled?: boolean }) 
             {/* Right/Sidebar Column */}
             <div className="space-y-4">
                 <ActiveAlertsCard holdings={holdings} />
+                <PortfolioPerformanceChart />
                 {/* Future gadgets go here */}
             </div>
         </div>

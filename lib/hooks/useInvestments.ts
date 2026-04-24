@@ -27,6 +27,13 @@ export function usePortfolioSummary(options?: { enabled?: boolean }) {
   })
 }
 
+export function usePortfolioEvolution(days: number = 30) {
+  return useQuery({
+    queryKey: ['portfolio', 'evolution', days],
+    queryFn: () => investmentsApi.getPortfolioEvolution(days),
+  })
+}
+
 export function usePortfolioHoldings(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ['portfolio', 'holdings'],
