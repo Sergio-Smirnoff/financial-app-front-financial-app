@@ -5,7 +5,7 @@ import { BankTransactionsContent } from '@/components/pages/banks/BankTransactio
 
 export default function BankTransactionsPage() {
   const params = useParams()
-  const bankId = Number(params.id)
+  const bankId = Number(params.bankId)
 
   return <BankTransactionsContent bankId={bankId} />
 }

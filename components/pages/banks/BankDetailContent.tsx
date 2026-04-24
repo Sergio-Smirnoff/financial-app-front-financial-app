@@ -24,10 +24,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-interface Props { bankId: number }
-
 import { Surface } from "@/components/shared/Surface";
 import { QueryBoundary } from "@/components/shared/QueryBoundary";
+
+interface Props { bankId: number }
 
 import { Header } from '@/components/layout/Header';
 
@@ -327,7 +327,7 @@ export function BankDetailContent({ bankId }: Props) {
                 </Button>
 
                 <div className="pt-4 border-t border-border/50">
-                    <Link href={\`/banks/\${bankId}/transactions\`}>
+                    <Link href={`/banks/${bankId}/transactions`}>
                         <Button variant="outline" className="w-full h-12 rounded-2xl border-border text-muted-foreground hover:text-foreground font-bold uppercase text-xs gap-2">
                             <History className="h-4 w-4" /> View full transaction history
                         </Button>
@@ -348,6 +348,7 @@ export function BankDetailContent({ bankId }: Props) {
           </Surface>
         </div>
       </div>
+        </div>
 
       <AccountFormDialog 
         open={accDialogOpen} 
@@ -390,7 +391,6 @@ export function BankDetailContent({ bankId }: Props) {
       />
 
       <ConfirmDialog />
-        </div>
       </main>
       </QueryBoundary>
     </>
