@@ -39,7 +39,7 @@ export interface PriceHistory {
 }
 
 export interface AllocationBreakdown {
-  assetType: String
+  assetType: string
   totalValue: number
   currency: string
   percentage: number

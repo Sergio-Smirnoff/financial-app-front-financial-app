@@ -50,8 +50,8 @@ export function ActiveAlertsCard({ holdings }: ActiveAlertsCardProps) {
                 "text-xs font-black flex items-center gap-1",
                 h.isGainHit ? "text-green-500" : h.isLossHit ? "text-red-500" : "text-foreground"
               )}>
-                {h.plPercent > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                {h.plPercent.toFixed(2)}%
+                {(h.plPercent ?? 0) > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {(h.plPercent ?? 0).toFixed(2)}%
               </div>
               <div className="flex gap-1 mt-0.5">
                 {h.notifyGainThresholdPct && (

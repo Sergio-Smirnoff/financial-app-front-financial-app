@@ -79,7 +79,7 @@ export function PortfolioPerformanceChart() {
                     fontWeight: 'bold'
                 }}
                 itemStyle={{ fontWeight: 'black' }}
-                formatter={(value: number) => [formatCurrency(value, currency), currency === 'ARS' ? 'Value (ARS)' : 'Value (USD)']}
+                formatter={(value: any) => [formatCurrency(Number(value ?? 0), currency), currency === 'ARS' ? 'Value (ARS)' : 'Value (USD)']}
                 labelFormatter={(label) => formatDate(label)}
               />
               <Line 
