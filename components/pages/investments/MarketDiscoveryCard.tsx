@@ -12,9 +12,9 @@ export function MarketDiscoveryCard() {
 
   if (isLoading || !opportunities || opportunities.length === 0) {
       return (
-          <Surface className="h-[200px] flex items-center justify-center">
+          <Surface className="h-[200px] flex items-center justify-center text-center p-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
-                  {isLoading ? 'Scanning Market...' : 'No opportunities found'}
+                  {isLoading ? 'Scanning Market...' : 'You own all trending assets!'}
               </p>
           </Surface>
       )
