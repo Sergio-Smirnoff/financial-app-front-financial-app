@@ -44,27 +44,29 @@ export function CardList({ bankId }: Props) {
             <div
                 key={c.id}
                 onClick={() => setViewingCard(c)}
-                className={`relative aspect-[1.58/1] rounded-2xl p-5 text-white shadow-xl overflow-hidden group transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-2xl ${getCardGradient(c.brand)}`}
+                className={`relative aspect-[1.58/1] rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden group transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-2xl flex flex-col justify-between ${getCardGradient(c.brand)}`}
             >
-              {/* Card Chip Simulation */}
-              <div className="w-10 h-8 bg-yellow-400/80 rounded-md mb-4 relative overflow-hidden">
-                <div className="absolute inset-0 grid grid-cols-3 gap-0.5 opacity-20">
-                    {Array.from({length: 9}).map((_, i) => <div key={i} className="border border-black" />)}
+              <div>
+                {/* Card Chip Simulation */}
+                <div className="w-8 h-6 sm:w-10 sm:h-8 bg-yellow-400/80 rounded-md mb-3 sm:mb-4 relative overflow-hidden">
+                  <div className="absolute inset-0 grid grid-cols-3 gap-0.5 opacity-20">
+                      {Array.from({length: 9}).map((_, i) => <div key={i} className="border border-black" />)}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-[8px] sm:text-[10px] uppercase font-bold tracking-widest opacity-80 truncate">{c.displayName}</p>
+                  <p className="text-sm sm:text-base md:text-xl font-mono tracking-[0.15em] sm:tracking-[0.2em] pt-2">•••• •••• •••• {c.last4Digits}</p>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <p className="text-[10px] uppercase font-bold tracking-widest opacity-80">{c.displayName}</p>
-                <p className="text-xl font-mono tracking-[0.2em] pt-2">•••• •••• •••• {c.last4Digits}</p>
-              </div>
-
-              <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
+              <div className="flex items-end justify-between mt-auto">
                 <div>
-                  <p className="text-[8px] uppercase opacity-60">Expires</p>
-                  <p className="text-xs font-bold">{c.expiringDate.slice(2, 7).replace('-', '/')}</p>
+                  <p className="text-[6px] sm:text-[8px] uppercase opacity-60">Expires</p>
+                  <p className="text-[10px] sm:text-xs font-bold">{c.expiringDate.slice(2, 7).replace('-', '/')}</p>
                 </div>
                 <div className="text-right">
-                  <Badge variant="secondary" className="bg-white/20 text-white border-0 text-[8px] uppercase h-4 px-1">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-0 text-[6px] sm:text-[8px] uppercase h-3 sm:h-4 px-1">
                     {c.behavior.replace('_', ' ')}
                   </Badge>
                 </div>
