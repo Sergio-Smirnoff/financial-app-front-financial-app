@@ -57,7 +57,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
     .filter((g) => g.items.length > 0)
 
   return (
-    <div className="space-y-4 h-full flex flex-col overflow-hidden">
+    <div className="space-y-4">
       <div className="flex justify-end shrink-0">
         <Button size="sm" onClick={() => { setEditingHolding(null); setFormOpen(true) }}>
           <Plus className="mr-1 h-4 w-4" /> New holding
