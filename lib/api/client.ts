@@ -17,8 +17,9 @@ export class ApiError extends Error {
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
+  const isFormData = options?.body instanceof FormData
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     ...((options?.headers as Record<string, string>) ?? {}),
   }
 
@@ -70,8 +71,16 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  get:    <T>(path: string)                  => apiFetch<T>(path),
-  post:   <T>(path: string, data: unknown)   => apiFetch<T>(path, { method: 'POST',   body: JSON.stringify(data) }),
-  put:    <T>(path: string, data: unknown)   => apiFetch<T>(path, { method: 'PUT',    body: JSON.stringify(data) }),
-  delete: <T>(path: string)                  => apiFetch<T>(path, { method: 'DELETE' }),
+  get: <T>(path: string) => apiFetch<T>(path),
+  post: <T>(path: string, data: unknown) =>
+    apiFetch<T>(path, {
+      method: 'POST',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+  put: <T>(path: string, data: unknown) =>
+    apiFetch<T>(path, {
+      method: 'PUT',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+  delete: <T>(path: string) => apiFetch<T>(path, { method: 'DELETE' }),
 }
