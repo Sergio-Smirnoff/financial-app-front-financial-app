@@ -1,24 +1,42 @@
 'use client'
 
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { uploadApi } from '@/lib/api/upload'
 import { FileDropzone } from '@/components/pages/upload/FileDropzone'
-import { ProcessingReport } from '@/types/upload'
+import { ImportPreviewDialog } from '@/components/pages/upload/ImportPreviewDialog'
+import { StatementPreviewResponse, CsvPreviewResponse, FileType } from '@/types/upload'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { ImportsContent } from '@/components/pages/imports/ImportsContent'
 
 export default function UploadPage() {
-  const [report, setReport] = useState<ProcessingReport | null>(null)
+  const queryClient = useQueryClient()
+  const [previewData, setPreviewData] = useState<StatementPreviewResponse | null>(null)
+  const [csvPreviewData, setCsvPreviewData] = useState<CsvPreviewResponse | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [currentFileType, setCurrentFileType] = useState<FileType>('VISA_ICBC')
 
-  const processMutation = useMutation({
+  const previewMutation = useMutation({
     mutationFn: async (file: File) => {
-      const upload = await uploadApi.uploadFile(file)
-      return uploadApi.processFile(upload.id)
+      const isPdf = file.name.toLowerCase().endsWith('.pdf')
+      const type: FileType = isPdf ? 'VISA_ICBC' : 'CSV'
+      setCurrentFileType(type)
+      
+      if (isPdf) {
+        setCsvPreviewData(null)
+        return uploadApi.previewPdf(file, type)
+      } else {
+        setPreviewData(null)
+        return uploadApi.previewCsv(file)
+      }
     },
     onSuccess: (data) => {
-      setReport(data)
+      if (currentFileType === 'CSV') {
+        setCsvPreviewData(data as CsvPreviewResponse)
+      } else {
+        setPreviewData(data as StatementPreviewResponse)
+      }
+      setIsDialogOpen(true)
     },
   })
 
@@ -32,69 +50,38 @@ export default function UploadPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
           <FileDropzone 
-            onUpload={(file) => processMutation.mutate(file)} 
-            disabled={processMutation.isPending}
+            onUpload={(file) => previewMutation.mutate(file)} 
+            disabled={previewMutation.isPending}
           />
-          {processMutation.isPending && (
+          {previewMutation.isPending && (
             <p className="text-center text-sm text-muted-foreground animate-pulse">
-              Processing file... this may take a moment.
+              Parsing file... this may take a moment.
             </p>
           )}
         </div>
 
-        {report && (
-          <Card>
+        <div className="space-y-4">
+          <Card className="h-full">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                Processing Results
-                <Badge variant={report.errorCount > 0 ? 'destructive' : 'default'}>
-                  {report.status}
-                </Badge>
-              </CardTitle>
+              <CardTitle>Recent Imports</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="text-2xl font-bold">{report.totalRows}</p>
-                  <p className="text-xs text-muted-foreground uppercase">Total</p>
-                </div>
-                <div className="rounded-lg bg-green-500/10 p-3 text-green-600">
-                  <p className="text-2xl font-bold">{report.successCount}</p>
-                  <p className="text-xs uppercase">Success</p>
-                </div>
-                <div className="rounded-lg bg-destructive/10 p-3 text-destructive">
-                  <p className="text-2xl font-bold">{report.errorCount}</p>
-                  <p className="text-xs uppercase">Errors</p>
-                </div>
-              </div>
-
-              {report.errors.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Row Failures</p>
-                  <div className="max-h-48 overflow-auto rounded-md border text-sm">
-                    {report.errors.map((err, i) => (
-                      <div key={i} className="flex items-start gap-2 border-b p-2 last:border-0">
-                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
-                        <div>
-                          <p className="font-medium">Row {err.rowNumber}: {err.description}</p>
-                          <p className="text-xs text-muted-foreground">{err.errorMessage}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {report.errorCount === 0 && report.successCount > 0 && (
-                <div className="flex items-center gap-2 rounded-lg bg-green-500/10 p-3 text-sm text-green-600">
-                  <CheckCircle2 className="h-4 w-4" />
-                  All transactions imported successfully!
-                </div>
-              )}
+            <CardContent>
+              <ImportsContent />
             </CardContent>
           </Card>
-        )}
+        </div>
       </div>
+
+      <ImportPreviewDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        previewData={previewData}
+        csvPreviewData={csvPreviewData}
+        fileType={currentFileType}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ['upload-history'] })
+        }}
+      />
     </div>
   )
 }

@@ -7,7 +7,7 @@ import {
   Building2,
   Tag,
   TrendingUp,
-  Upload,
+  FileUp,
   Settings,
   X,
 } from 'lucide-react'
@@ -20,7 +20,7 @@ const NAV_ITEMS = [
   { label: 'Banks', href: '/banks', icon: Building2 },
   { label: 'Categories', href: '/categories', icon: Tag },
   { label: 'Investments', href: '/investments', icon: TrendingUp },
-  { label: 'Upload', href: '/upload', icon: Upload },
+  { label: 'Imports', href: '/imports', icon: FileUp },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
