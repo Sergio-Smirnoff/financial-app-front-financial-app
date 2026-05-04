@@ -1,29 +1,28 @@
 import { api } from './client'
-import {
-  PreviewResponse,
-  ConfirmRequest,
-  ConfirmResponse,
-  ResolveRequest,
-  ResolveResponse,
-  ImportHistoryRecord,
-  ImportFileType,
+import { 
+  ImportFileType, 
+  PreviewResponse, 
+  ConfirmRequest, 
+  ConfirmResponse, 
+  ResolveRequest, 
+  ResolveResponse, 
+  ImportHistoryRecord 
 } from '@/types/import'
 
 export const importApi = {
-  preview: (file: File, type: ImportFileType): Promise<PreviewResponse> => {
-    const form = new FormData()
-    form.append('file', file)
-    form.append('type', type)
-    return api.post<PreviewResponse>('/api/v1/upload/preview', form)
+  previewFile: (file: File, type: ImportFileType) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', type)
+    return api.post<PreviewResponse>('/api/v1/upload/preview', formData)
   },
 
-  confirm: (req: ConfirmRequest): Promise<ConfirmResponse> =>
+  confirmImport: (req: ConfirmRequest) =>
     api.post<ConfirmResponse>('/api/v1/upload/confirm', req),
 
-  resolveDuplicates: (req: ResolveRequest): Promise<ResolveResponse> =>
+  resolveDuplicates: (req: ResolveRequest) =>
     api.post<ResolveResponse>('/api/v1/upload/duplicates/resolve', req),
 
-  getHistory: (): Promise<ImportHistoryRecord[]> =>
+  getHistory: () =>
     api.get<ImportHistoryRecord[]>('/api/v1/upload/history'),
-
 }

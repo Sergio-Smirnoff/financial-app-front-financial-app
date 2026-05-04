@@ -9,46 +9,32 @@ export interface ParsedRow {
   type: 'EXPENSE' | 'INCOME'
 }
 
-export interface CurrencyCounts {
-  ARS: number
-  USD: number
-  skipped: number
-}
-
 export interface PreviewResponse {
   tempKey: string
   fileHash: string
+  // CSV fields
   headers?: string[]
   rows?: string[][]
+  // PDF/Parsed fields
   preview?: ParsedRow[]
   totalCount?: number
-  currencyCounts?: CurrencyCounts
-}
-
-export interface ColumnMapping {
-  dateCol: number
-  descCol: number
-  expenseCol: number | null
-  incomeCol: number | null
+  currencyCounts?: { ARS: number; USD: number; skipped: number }
 }
 
 export interface ConfirmRequest {
   tempKey: string
   type: ImportFileType
-  columnMapping?: ColumnMapping
+  columnMapping?: {
+    dateCol: number
+    descCol: number
+    expenseCol?: number
+    incomeCol?: number
+  }
   dateFormat?: string
+  accountId?: number
   cardId?: number
   arsAccountId?: number
   usdAccountId?: number
-  accountId?: number
-}
-
-export interface DuplicateItem {
-  id: string
-  date: string
-  description: string
-  amount: number
-  currency: string
 }
 
 export interface ConfirmResponse {
@@ -57,6 +43,14 @@ export interface ConfirmResponse {
   errors: string[]
   duplicates: DuplicateItem[]
   sessionId?: string
+}
+
+export interface DuplicateItem {
+  id: string
+  date: string
+  description: string
+  amount: number
+  currency: string
 }
 
 export interface ResolveRequest {
@@ -69,15 +63,27 @@ export interface ResolveResponse {
   skipped: number
 }
 
+export interface CurrencyCounts {
+  ARS: number
+  USD: number
+  skipped: number
+}
+
+export interface ColumnMapping {
+  dateCol: number
+  descCol: number
+  expenseCol: number | null
+  incomeCol: number | null
+}
+
 export interface ImportHistoryRecord {
   id: number
   originalName: string
   fileType: string
-  bankId?: number
+  bankId: number
   accountId?: number
   cardId?: number
   importedCount: number
   importStatus: ImportStatus
   createdAt: string
 }
-

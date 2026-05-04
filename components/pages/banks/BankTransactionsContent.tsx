@@ -56,7 +56,7 @@ export function BankTransactionsContent({ bankId }: Props) {
   }
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="flex-1 overflow-y-auto p-6 space-y-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-4">
             <Link href={`/banks/${bankId}`}>

@@ -1,40 +1,37 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { importApi } from '@/lib/api/import'
 import { ImportFileType, ConfirmRequest, ResolveRequest } from '@/types/import'
-import { toast } from 'sonner'
 
-export const usePreviewImport = () =>
-  useMutation({
-    mutationFn: ({ file, type }: { file: File; type: ImportFileType }) =>
-      importApi.preview(file, type),
+export function useImportHistory() {
+  return useQuery({
+    queryKey: ['import-history'],
+    queryFn: () => importApi.getHistory(),
   })
+}
 
-export const useConfirmImport = () => {
+export function usePreviewFile() {
+  return useMutation({
+    mutationFn: ({ file, type }: { file: File; type: ImportFileType }) => 
+      importApi.previewFile(file, type),
+  })
+}
+
+export function useConfirmImport() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (req: ConfirmRequest) => importApi.confirm(req),
+    mutationFn: (req: ConfirmRequest) => importApi.confirmImport(req),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['import-history'] })
     },
   })
 }
 
-export const useResolveDuplicates = () => {
+export function useResolveDuplicates() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (req: ResolveRequest) => importApi.resolveDuplicates(req),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['import-history'] })
-      toast.success(`Imported ${data.imported} additional transactions`)
-    },
-    onError: (e: any) => {
-      toast.error(e.message ?? 'Failed to resolve duplicates')
     },
   })
 }
-
-export const useImportHistory = () =>
-  useQuery({
-    queryKey: ['import-history'],
-    queryFn: () => importApi.getHistory(),
-  })

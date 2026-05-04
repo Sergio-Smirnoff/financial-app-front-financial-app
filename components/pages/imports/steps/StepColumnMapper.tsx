@@ -9,15 +9,15 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { ColumnMapping } from '@/types/import'
+import { cn } from '@/lib/utils'
 
 interface Props {
   headers: string[]
   rows: string[][]
   mapping: ColumnMapping
-  dateFormat: string
   onMappingChange: (m: ColumnMapping) => void
-  onDateFormatChange: (fmt: string) => void
   onNext: () => void
   onBack: () => void
 }
@@ -26,18 +26,19 @@ interface FieldDef {
   key: keyof ColumnMapping
   label: string
   required: boolean
+  color: string
 }
 
 const FIELDS: FieldDef[] = [
-  { key: 'dateCol', label: 'Date', required: true },
-  { key: 'descCol', label: 'Description', required: true },
-  { key: 'expenseCol', label: 'Expense amount', required: false },
-  { key: 'incomeCol', label: 'Income amount', required: false },
+  { key: 'dateCol', label: 'Date', required: true, color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  { key: 'descCol', label: 'Description', required: true, color: 'bg-green-100 text-green-700 border-green-200' },
+  { key: 'expenseCol', label: 'Expense', required: false, color: 'bg-red-100 text-red-700 border-red-200' },
+  { key: 'incomeCol', label: 'Income', required: false, color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
 ]
 
 export function StepColumnMapper({
-  headers, rows, mapping, dateFormat,
-  onMappingChange, onDateFormatChange, onNext, onBack,
+  headers, rows, mapping,
+  onMappingChange, onNext, onBack,
 }: Props) {
   const set = (key: keyof ColumnMapping, value: number | null) =>
     onMappingChange({ ...mapping, [key]: value })
@@ -47,6 +48,10 @@ export function StepColumnMapper({
     mapping.descCol >= 0 &&
     (mapping.expenseCol !== null || mapping.incomeCol !== null)
 
+  const getMappedFields = (colIdx: number) => {
+    return FIELDS.filter(f => mapping[f.key] === colIdx)
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -54,7 +59,7 @@ export function StepColumnMapper({
         <div className="grid grid-cols-2 gap-4">
           {FIELDS.map(({ key, label, required }) => {
             const val = mapping[key]
-            const strVal = val === null ? 'ignore' : String(val)
+            const strVal = val === null || val === undefined || val >= headers.length ? 'ignore' : String(val)
             return (
               <div key={key} className="space-y-1.5">
                 <Label className="text-xs">
@@ -66,7 +71,7 @@ export function StepColumnMapper({
                   onValueChange={(v) => set(key, v === 'ignore' ? null : Number(v))}
                 >
                   <SelectTrigger className="h-8 text-xs">
-                    <SelectValue />
+                    <SelectValue placeholder="Select column..." />
                   </SelectTrigger>
                   <SelectContent>
                     {!required && (
@@ -85,17 +90,6 @@ export function StepColumnMapper({
             )
           })}
         </div>
-
-        <div className="mt-4 space-y-1.5">
-          <Label className="text-xs">Date format</Label>
-          <Input
-            value={dateFormat}
-            onChange={(e) => onDateFormatChange(e.target.value)}
-            placeholder="MM/dd/yy"
-            className="h-8 text-xs w-40"
-          />
-          <p className="text-xs text-muted-foreground">Examples: MM/dd/yy · dd/MM/yyyy · yyyy-MM-dd</p>
-        </div>
       </div>
 
       {rows.length > 0 && (
@@ -105,9 +99,27 @@ export function StepColumnMapper({
             <Table>
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  {headers.map((h, i) => (
-                    <TableHead key={i} className="text-xs py-2">{h || `Col ${i + 1}`}</TableHead>
-                  ))}
+                  {headers.map((h, i) => {
+                    const mappedFields = getMappedFields(i)
+                    return (
+                      <TableHead key={i} className="text-xs py-2 h-auto align-top">
+                        <div className="space-y-1.5">
+                          <div className="font-medium text-foreground">{h || `Col ${i + 1}`}</div>
+                          <div className="flex flex-wrap gap-1">
+                            {mappedFields.map(f => (
+                              <Badge 
+                                key={f.key} 
+                                variant="outline" 
+                                className={cn("text-[10px] px-1 py-0 h-4 font-normal uppercase", f.color)}
+                              >
+                                {f.label}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
               </TableHeader>
               <TableBody>
