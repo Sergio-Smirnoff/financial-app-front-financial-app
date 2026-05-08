@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { BankResponse, BankRequest } from "@/types/banks";
+import { bankSchema, BankFormValues } from "@/lib/schemas/bank";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface BankFormDialogProps {
   bank?: BankResponse | null;
@@ -15,30 +25,40 @@ interface BankFormDialogProps {
 }
 
 export function BankFormDialog({ bank, open, onOpenChange, onSubmit }: BankFormDialogProps) {
-  const [name, setName] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<BankFormValues>({
+    resolver: zodResolver(bankSchema),
+    defaultValues: {
+      name: "",
+      logoUrl: "",
+    },
+  });
 
   useEffect(() => {
-    if (bank) {
-      setName(bank.name);
-      setLogoUrl(bank.logoUrl || "");
-    } else {
-      setName("");
-      setLogoUrl("");
+    if (open) {
+      if (bank) {
+        form.reset({
+          name: bank.name,
+          logoUrl: bank.logoUrl || "",
+        });
+      } else {
+        form.reset({
+          name: "",
+          logoUrl: "",
+        });
+      }
     }
-  }, [bank, open]);
+  }, [bank, open, form]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const onFormSubmit = async (values: BankFormValues) => {
     try {
-      await onSubmit({ name, logoUrl });
+      await onSubmit(values);
       onOpenChange(false);
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Failed to submit bank form:", error);
     }
   };
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,37 +66,52 @@ export function BankFormDialog({ bank, open, onOpenChange, onSubmit }: BankFormD
         <DialogHeader>
           <DialogTitle>{bank ? "Edit Bank" : "Add Bank"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-muted-foreground">Bank Name</Label>
-            <Input 
-              id="name" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              placeholder="e.g. Chase, Bank of America" 
-              className="bg-background border-border"
-              required 
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-muted-foreground">Bank Name</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field}
+                      placeholder="e.g. Chase, Bank of America" 
+                      className="bg-background border-border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="logo" className="text-muted-foreground">Logo URL (optional)</Label>
-            <Input 
-              id="logo" 
-              value={logoUrl} 
-              onChange={(e) => setLogoUrl(e.target.value)} 
-              placeholder="https://example.com/logo.png" 
-              className="bg-background border-border"
+            <FormField
+              control={form.control}
+              name="logoUrl"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-muted-foreground">Logo URL (optional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field}
+                      placeholder="https://example.com/logo.png" 
+                      className="bg-background border-border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {bank ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Saving..." : (bank ? "Update" : "Create")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

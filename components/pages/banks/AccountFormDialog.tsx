@@ -1,12 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AccountResponse, AccountRequest, AccountType } from "@/types/banks";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AccountResponse, AccountRequest } from "@/types/banks";
+import { accountSchema, AccountFormValues } from "@/lib/schemas/account";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface AccountFormDialogProps {
   bankId: number;
@@ -17,43 +27,50 @@ interface AccountFormDialogProps {
 }
 
 export function AccountFormDialog({ bankId, account, open, onOpenChange, onSubmit }: AccountFormDialogProps) {
-  const [name, setName] = useState("");
-  const [type, setType] = useState<AccountType>("CHECKING");
-  const [balance, setBalance] = useState("0");
-  const [currency, setCurrency] = useState("USD");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<AccountFormValues>({
+    resolver: zodResolver(accountSchema),
+    defaultValues: {
+      name: "",
+      type: "CHECKING",
+      balance: 0,
+      currency: "USD",
+    },
+  });
 
   useEffect(() => {
-    if (account) {
-      setName(account.name);
-      setType(account.type);
-      setBalance(account.balance.toString());
-      setCurrency(account.currency);
-    } else {
-      setName("");
-      setType("CHECKING");
-      setBalance("0");
-      setCurrency("USD");
+    if (open) {
+      if (account) {
+        form.reset({
+          name: account.name,
+          type: account.type,
+          balance: account.balance,
+          currency: account.currency,
+        });
+      } else {
+        form.reset({
+          name: "",
+          type: "CHECKING",
+          balance: 0,
+          currency: "USD",
+        });
+      }
     }
-  }, [account, open]);
+  }, [account, open, form]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const onFormSubmit = async (values: AccountFormValues) => {
     try {
       await onSubmit({ 
         bankId, 
-        name, 
-        type, 
-        balance: parseFloat(balance), 
-        currency,
+        ...values,
         isActive: true 
       });
       onOpenChange(false);
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Failed to submit account form:", error);
     }
   };
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,67 +78,101 @@ export function AccountFormDialog({ bankId, account, open, onOpenChange, onSubmi
         <DialogHeader>
           <DialogTitle>{account ? "Edit Account" : "Add Account"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="acc-name" className="text-muted-foreground">Account Name</Label>
-            <Input 
-              id="acc-name" 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
-              placeholder="e.g. Daily spending, Savings" 
-              className="bg-background border-border"
-              required 
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-muted-foreground">Account Name</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field}
+                      placeholder="e.g. Daily spending, Savings" 
+                      className="bg-background border-border"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-muted-foreground">Account Type</Label>
-              <Select value={type} onValueChange={(v) => setType(v as AccountType)}>
-                <SelectTrigger className="bg-background border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="CHECKING">Checking</SelectItem>
-                  <SelectItem value="SAVINGS">Savings</SelectItem>
-                  <SelectItem value="INVESTMENT">Investment</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-muted-foreground">Account Type</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-background border-border">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-popover border-border">
+                        <SelectItem value="CHECKING">Checking</SelectItem>
+                        <SelectItem value="SAVINGS">Savings</SelectItem>
+                        <SelectItem value="INVESTMENT">Investment</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-muted-foreground">Currency</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-background border-border">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-popover border-border">
+                        <SelectItem value="USD">USD</SelectItem>
+                        <SelectItem value="ARS">ARS</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div className="space-y-2">
-              <Label className="text-muted-foreground">Currency</Label>
-              <Select value={currency} onValueChange={setCurrency}>
-                <SelectTrigger className="bg-background border-border">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="ARS">ARS</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="balance" className="text-muted-foreground">Current Balance</Label>
-            <Input 
-              id="balance" 
-              type="number" 
-              step="0.01"
-              value={balance} 
-              onChange={(e) => setBalance(e.target.value)} 
-              className="bg-background border-border"
-              required 
+            <FormField
+              control={form.control}
+              name="balance"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel className="text-muted-foreground">Current Balance</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      step="0.01"
+                      placeholder="0.00"
+                      className="bg-background border-border"
+                      value={field.value}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter className="pt-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {account ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Saving..." : (account ? "Update" : "Create")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
