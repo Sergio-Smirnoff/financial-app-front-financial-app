@@ -1,6 +1,8 @@
 import type { AuthResponse, LoginRequest, RegisterRequest } from '@/types/auth'
 
-const BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:8080'
+import { API_CONFIG } from './config'
+
+const BASE_URL = API_CONFIG.BASE_URL
 
 async function authFetch<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {

@@ -1,7 +1,9 @@
 import { getCsrfToken } from '@/lib/auth'
 import { refreshToken } from '@/lib/api/auth'
 
-const BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:8080'
+import { API_CONFIG } from './config'
+
+const BASE_URL = API_CONFIG.BASE_URL
 
 // Shared in-flight promise so concurrent 401s only trigger one refresh
 let refreshing: Promise<boolean> | null = null
