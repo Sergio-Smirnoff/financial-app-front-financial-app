@@ -54,9 +54,9 @@ export function CardList({ bankId }: Props) {
                   </div>
                 </div>
 
-                <div className="space-y-1">
-                  <p className="text-[8px] sm:text-[10px] uppercase font-bold tracking-widest opacity-80 truncate">{c.displayName}</p>
-                  <p className="text-sm sm:text-base md:text-xl font-mono tracking-[0.15em] sm:tracking-[0.2em] pt-2">•••• •••• •••• {c.last4Digits}</p>
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-[10px] sm:text-xs md:text-sm font-mono tracking-[0.15em] sm:tracking-[0.2em] pt-1">•••• •••• •••• {c.last4Digits}</p>
+                  <p className="text-[7px] sm:text-[9px] uppercase font-bold tracking-widest opacity-80 truncate max-w-[150px]">{c.displayName}</p>
                 </div>
               </div>
 

@@ -76,10 +76,14 @@ export function BankDetailContent({ bankId }: Props) {
   }, [bank?.accounts]);
 
   const handleRefresh = () => {
-    queryClient.invalidateQueries({ queryKey: ['banks', bankId] });
+    queryClient.invalidateQueries({ queryKey: ['transactions'] });
     if (activeAccountId) {
         queryClient.invalidateQueries({ queryKey: ['transactions', 'account', activeAccountId] });
     }
+    // Give Kafka a moment to sync balance across microservices
+    setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['banks', bankId] });
+    }, 500);
   };
 
   const handleAddAccount = () => {

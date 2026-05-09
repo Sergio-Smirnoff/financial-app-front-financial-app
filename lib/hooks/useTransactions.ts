@@ -41,7 +41,10 @@ export function useCreateTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      queryClient.invalidateQueries({ queryKey: ['banks'] })
+      // Give Kafka a moment to sync balance across microservices
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['banks'] })
+      }, 500)
     },
   })
 }
@@ -54,7 +57,10 @@ export function useUpdateTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      queryClient.invalidateQueries({ queryKey: ['banks'] })
+      // Give Kafka a moment to sync balance across microservices
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['banks'] })
+      }, 500)
     },
   })
 }
@@ -66,7 +72,10 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      queryClient.invalidateQueries({ queryKey: ['banks'] })
+      // Give Kafka a moment to sync balance across microservices
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['banks'] })
+      }, 500)
     },
   })
 }
@@ -78,7 +87,10 @@ export function useTransfer() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      queryClient.invalidateQueries({ queryKey: ['banks'] })
+      // Give Kafka a moment to sync balance across microservices
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['banks'] })
+      }, 500)
     },
   })
 }
