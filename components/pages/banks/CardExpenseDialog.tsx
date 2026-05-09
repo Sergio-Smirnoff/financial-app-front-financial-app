@@ -1,76 +1,167 @@
 'use client'
-import { useForm, SubmitHandler } from 'react-hook-form'
+
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useCreateCardExpense } from '@/lib/hooks/useCards'
-
-const schema = z.object({
-  description: z.string().min(1).max(255),
-  totalAmount: z.number().positive(),
-  currency: z.enum(['ARS', 'USD']),
-  totalInstallments: z.number().int().min(1),
-  firstDueDate: z.string().min(1),
-})
-type FormValues = z.infer<typeof schema>
+import { cardExpenseSchema, CardExpenseFormValues } from '@/lib/schemas/cardExpense'
 
 interface Props { cardId: number; open: boolean; onOpenChange: (o: boolean) => void }
 
 export function CardExpenseDialog({ cardId, open, onOpenChange }: Props) {
   const mutation = useCreateCardExpense(cardId)
-  const { register, handleSubmit, formState, reset } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: { description: '', totalAmount: 0, currency: 'USD', totalInstallments: 1, firstDueDate: '' },
+  
+  const form = useForm<CardExpenseFormValues>({
+    resolver: zodResolver(cardExpenseSchema),
+    defaultValues: { 
+      description: '', 
+      totalAmount: 0, 
+      currency: 'USD', 
+      totalInstallments: 1, 
+      firstDueDate: '' 
+    },
   })
 
-  const onSubmit: SubmitHandler<FormValues> = async (v) => {
-    await mutation.mutateAsync(v)
-    reset()
-    onOpenChange(false)
+  const onFormSubmit = async (values: CardExpenseFormValues) => {
+    try {
+      await mutation.mutateAsync(values)
+      form.reset()
+      onOpenChange(false)
+    } catch (error) {
+      console.error("Failed to submit card expense form:", error)
+    }
   }
 
+  const isPending = mutation.isPending
+
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v) }}>
-      <DialogContent>
-        <DialogHeader><DialogTitle>New card expense</DialogTitle></DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Input id="description" {...register('description')} />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="totalAmount">Total amount</Label>
-              <Input id="totalAmount" type="number" step="0.01" {...register('totalAmount', { valueAsNumber: true })} />
+    <Dialog open={open} onOpenChange={(v) => { if (!v) form.reset(); onOpenChange(v) }}>
+      <DialogContent className="bg-popover border-border">
+        <DialogHeader>
+          <DialogTitle>New card expense</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-muted-foreground">Description</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="bg-background border-border" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="totalAmount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-muted-foreground">Total amount</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field}
+                        type="number" 
+                        step="0.01" 
+                        className="bg-background border-border"
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-muted-foreground">Currency</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="bg-background border-border">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-popover border-border">
+                        <SelectItem value="ARS">ARS</SelectItem>
+                        <SelectItem value="USD">USD</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <div>
-              <Label htmlFor="currency">Currency</Label>
-              <select id="currency" className="h-9 w-full rounded-md border bg-background px-3 text-sm" {...register('currency')}>
-                <option value="ARS">ARS</option>
-                <option value="USD">USD</option>
-              </select>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField
+                control={form.control}
+                name="totalInstallments"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-muted-foreground">Installments</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field}
+                        type="number" 
+                        min={1} 
+                        className="bg-background border-border"
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="firstDueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-muted-foreground">First due date</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field}
+                        type="date" 
+                        className="bg-background border-border"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="totalInstallments">Installments</Label>
-              <Input id="totalInstallments" type="number" min={1} {...register('totalInstallments', { valueAsNumber: true })} />
-            </div>
-            <div>
-              <Label htmlFor="firstDueDate">First due date</Label>
-              <Input id="firstDueDate" type="date" {...register('firstDueDate')} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-            <Button type="submit" disabled={mutation.isPending || !formState.isValid}>
-              {mutation.isPending ? 'Saving…' : 'Save'}
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Saving…' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )
