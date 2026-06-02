@@ -77,8 +77,8 @@ export function useUpdateHolding() {
 export function useDeleteHolding() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, destinationAccountId }: { id: number; destinationAccountId?: number }) => 
-        investmentsApi.deleteHolding(id, destinationAccountId),
+    mutationFn: ({ id, destinationCbu }: { id: number; destinationCbu?: string }) =>
+        investmentsApi.deleteHolding(id, destinationCbu),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['holdings'] })
       queryClient.invalidateQueries({ queryKey: ['portfolio'] })

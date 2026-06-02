@@ -6,7 +6,7 @@ export interface SpringPage<T> {
   number: number
 }
 
-export type TransactionType = 'INCOME' | 'EXPENSE'
+export type TransactionType = 'INCOME' | 'EXPENSE' | 'TRANSFER'
 export type CategoryType = 'INCOME' | 'EXPENSE' | 'BOTH'
 
 export interface Transaction {
@@ -21,16 +21,13 @@ export interface Transaction {
   date: string
   createdAt: string
   updatedAt: string
-  accountId: number | null
-  transferGroupId: string | null
+  fromCbu: string | null
+  toCbu: string | null
 }
 
 export interface TransactionFilters {
-  type?: TransactionType
-  categoryId?: number
+  accountCbu?: string
   currency?: string
-  accountId?: number
-  accountIds?: number[]
   dateFrom?: string
   dateTo?: string
   page?: number
@@ -39,9 +36,20 @@ export interface TransactionFilters {
 
 export interface SummaryFilters {
   currency?: string
-  accountId?: number
+  accountCbu?: string
   dateFrom?: string
   dateTo?: string
+}
+
+export interface AccountTransactionRow {
+  transactionId: number
+  accountCbu: string
+  amount: string
+  currency: string
+  description: string | null
+  category: string | null
+  subcategory: string | null
+  date: string
 }
 
 export interface Category {
@@ -60,38 +68,6 @@ export interface Subcategory {
   type: CategoryType
   isSystem: boolean
   userId: number | null
-}
-
-export interface Loan {
-  id: number
-  userId: number
-  description: string
-  entity: string | null
-  totalAmount: number
-  currency: string
-  totalInstallments: number
-  paidInstallments: number
-  nextPaymentDate: string | null
-  installmentAmount: number
-  active: boolean
-  createdAt: string
-  updatedAt: string
-  accountId: number | null
-  transferGroupId: string | null
-}
-
-export interface LoanInstallment {
-  id: number
-  loanId: number
-  installmentNumber: number
-  amount: number
-  dueDate: string
-  paid: boolean
-  paidDate: string | null
-  createdAt: string
-  updatedAt: string
-  accountId: number | null
-  transferGroupId: string | null
 }
 
 export interface UpcomingPayment {
@@ -130,12 +106,12 @@ interface ApiDashboardFinanceSummary {
 
 // ─── Request types ────────────────────────────────────────────────────────────
 
-export interface CreateTransactionRequest {
-  type: TransactionType
-  amount: number
+export interface RecordTransactionRequest {
+  fromCbu: string
+  toCbu: string
+  amount: string
   currency: string
   categoryId: number
-  accountId?: number
   description?: string
   date: string
 }
@@ -150,23 +126,4 @@ export interface CreateCategoryRequest {
 export interface CreateSubcategoryRequest {
   name: string
   type: CategoryType
-}
-
-export interface CreateLoanRequest {
-  description: string
-  entity?: string
-  totalAmount: number
-  currency: string
-  totalInstallments: number
-  installmentAmount: number
-  firstPaymentDate: string
-}
-
-export interface TransferRequest {
-  fromAccountId: number
-  toAccountId: number
-  amount: number
-  currency: string
-  description?: string
-  date: string
 }

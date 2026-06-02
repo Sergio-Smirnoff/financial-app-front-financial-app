@@ -1,10 +1,17 @@
 import { z } from "zod";
 
-export const accountSchema = z.object({
-  name: z.string().min(1, "Account name is required").max(100),
-  type: z.enum(["CHECKING", "SAVINGS", "INVESTMENT"]),
-  balance: z.number({ error: "Must be a number" }),
-  currency: z.string().min(1, "Currency is required"),
-});
+export const accountSchema = z
+  .object({
+    bankNumber: z.string().regex(/^\d{3}$/, "Select a bank"),
+    name: z.string().min(1, "Account name is required").max(100),
+    type: z.enum(["CHECKING", "SAVINGS", "INVESTMENT"]),
+    currency: z.string().min(1, "Currency is required"),
+    cbu: z.string().regex(/^\d{22}$/, "CBU must be exactly 22 digits"),
+    alias: z.string().max(100).optional().or(z.literal("")),
+  })
+  .refine((v) => v.cbu.slice(0, 3) === v.bankNumber, {
+    message: "CBU's first 3 digits must match the selected bank's code",
+    path: ["cbu"],
+  });
 
 export type AccountFormValues = z.infer<typeof accountSchema>;

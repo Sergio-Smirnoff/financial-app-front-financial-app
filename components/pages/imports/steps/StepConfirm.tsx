@@ -41,7 +41,7 @@ export function StepConfirm({
 
   if (fileType === 'VISA_PDF') {
     rows.push(
-      { label: 'Card', value: card ? `${card.displayName} ···${card.last4Digits}` : '—' },
+      { label: 'Card', value: card ? `${card.displayName} ···${card.cardNumber.slice(-4)}` : '—' },
       { label: 'ARS Account', value: account?.name ?? '—' },
     )
     if (usdAccount) rows.push({ label: 'USD Account', value: usdAccount.name })

@@ -1,42 +1,54 @@
 export type AccountType = 'CHECKING' | 'SAVINGS' | 'INVESTMENT';
 
 export interface AccountResponse {
-  id: number;
-  bankId: number;
+  bankNumber: string;
   userId: number;
   name: string;
   type: AccountType;
-  balance: number;
+  balance: string;
   currency: string;
+  cbu: string;
+  alias: string | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface BankResponse {
-  id: number;
-  userId: number;
+  bankNumber: string;
   name: string;
   logoUrl?: string;
   accounts: AccountResponse[];
-  totalBalances: Record<string, number>;
+  totalBalances: Record<string, string>;
   accountsCount: number;
-  cardsCount: number;
-  loansCount: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface BankRequest {
+export interface AvailableBank {
+  bankNumber: string;
   name: string;
   logoUrl?: string;
 }
 
+export interface BankingCatalog {
+  accountTypes: string[];
+  cardTypes: string[];
+  cardBrands: string[];
+  cardBehaviors: string[];
+}
+
 export interface AccountRequest {
-  bankId: number;
+  bankNumber: string;
   name: string;
   type: AccountType;
-  balance: number;
   currency: string;
+  cbu: string;
+  alias?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateAccountRequest {
+  name?: string;
+  balance?: string;
+  currency?: string;
   isActive?: boolean;
 }

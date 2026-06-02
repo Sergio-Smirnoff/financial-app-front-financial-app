@@ -1,7 +1,9 @@
 import { getCsrfToken } from '@/lib/auth'
 import { refreshToken } from '@/lib/api/auth'
 
-const BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:8080'
+import { API_CONFIG } from './config'
+
+const BASE_URL = API_CONFIG.BASE_URL
 
 // Shared in-flight promise so concurrent 401s only trigger one refresh
 let refreshing: Promise<boolean> | null = null
@@ -80,6 +82,11 @@ export const api = {
   put: <T>(path: string, data: unknown) =>
     apiFetch<T>(path, {
       method: 'PUT',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+  patch: <T>(path: string, data: unknown) =>
+    apiFetch<T>(path, {
+      method: 'PATCH',
       body: data instanceof FormData ? data : JSON.stringify(data),
     }),
   delete: <T>(path: string) => apiFetch<T>(path, { method: 'DELETE' }),

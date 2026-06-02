@@ -32,7 +32,7 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
             </span>
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">
+            <div className="text-xl font-bold text-green-600 dark:text-green-400">
               <MultiCurrencyAmount items={incomeItems} />
             </div>
           </CardContent>
@@ -46,7 +46,7 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
             </span>
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">
+            <div className="text-xl font-bold text-destructive">
               <MultiCurrencyAmount items={expenseItems} />
             </div>
           </CardContent>
@@ -60,7 +60,7 @@ export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSu
             </span>
           </CardHeader>
           <CardContent>
-            <div className="text-xl font-bold">
+            <div className={`text-xl font-bold ${totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
               <MultiCurrencyAmount items={balanceItems} />
             </div>
           </CardContent>

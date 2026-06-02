@@ -4,7 +4,7 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateLoan } from '@/lib/hooks/useLoans'
-import { useBank, useBanks } from '@/lib/hooks/useBanks'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,49 +17,49 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from '@/components/ui/select'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { toast } from 'sonner'
 
 const schema = z.object({
-  bankId: z.number().positive('Required'),
-  destinationAccountId: z.number().positive('Required'),
+  bankNumber: z.string().regex(/^\d{3}$/, 'Required'),
+  destinationAccountCbu: z.string().regex(/^\d{22}$/, 'Required'),
   name: z.string().min(1, 'Required'),
-  principal: z.number().positive('Must be positive'),
-  interestRate: z.number().min(0, 'Min 0'),
+  principal: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Non-negative amount'),
+  interestRate: z.string().regex(/^\d+(\.\d+)?$/, 'Non-negative rate'),
   totalInstallments: z.number().int().min(1, 'Min 1'),
   startDate: z.string().min(1, 'Required'),
 })
 
 type FormValues = z.infer<typeof schema>
 
-export function LoanForm({ bankId, onSuccess }: { bankId?: number, onSuccess: () => void }) {
+export function LoanForm({ bankNumber, onSuccess }: { bankNumber?: string, onSuccess: () => void }) {
   const { banks } = useBanks()
   const createLoan = useCreateLoan()
-  
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      bankId: bankId || 0,
-      destinationAccountId: 0,
+      bankNumber: bankNumber ?? '',
+      destinationAccountCbu: '',
       name: '',
-      principal: 0,
-      interestRate: 0,
+      principal: '',
+      interestRate: '0',
       totalInstallments: 12,
       startDate: new Date().toISOString().slice(0, 10),
     },
   })
 
-  const selectedBankId = form.watch('bankId')
-  const { data: bank } = useBank(selectedBankId || 0)
+  const selectedBankNumber = form.watch('bankNumber')
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.type !== 'INVESTMENT') || []
-  }, [bank])
+    const bank = banks.find((b) => b.bankNumber === selectedBankNumber)
+    return bank?.accounts.filter((a) => a.type !== 'INVESTMENT') ?? []
+  }, [banks, selectedBankNumber])
 
   const onSubmit: SubmitHandler<FormValues> = (values) => {
     createLoan.mutate(values, {
@@ -71,47 +71,42 @@ export function LoanForm({ bankId, onSuccess }: { bankId?: number, onSuccess: ()
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {!bankId && (
-            <FormField
+        {!bankNumber && (
+          <FormField
             control={form.control}
-            name="bankId"
+            name="bankNumber"
             render={({ field }) => (
-                <FormItem>
+              <FormItem>
                 <FormLabel>Bank</FormLabel>
-                <Select value={field.value > 0 ? field.value.toString() : ''} onValueChange={(v) => {
-                    field.onChange(parseInt(v));
-                    form.setValue('destinationAccountId', 0);
-                }}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
-                    <SelectContent>
+                <Select value={field.value} onValueChange={(v) => { field.onChange(v); form.setValue('destinationAccountCbu', '') }}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                  <SelectContent>
                     {banks.map((b) => (
-                        <SelectItem key={b.id} value={b.id.toString()}>
-                        {b.name}
-                        </SelectItem>
+                      <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.name}</SelectItem>
                     ))}
-                    </SelectContent>
+                  </SelectContent>
                 </Select>
                 <FormMessage />
-                </FormItem>
+              </FormItem>
             )}
-            />
+          />
         )}
 
         <FormField
           control={form.control}
-          name="destinationAccountId"
+          name="destinationAccountCbu"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Deposit to Account</FormLabel>
-              <Select 
-                value={field.value > 0 ? field.value.toString() : ''} 
-                onValueChange={(v) => field.onChange(parseInt(v))}
-                disabled={!selectedBankId}
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={!selectedBankNumber}
               >
-                <FormControl><SelectTrigger><SelectValue placeholder={selectedBankId ? "Select destination account" : "Select bank first"} /></SelectTrigger></FormControl>
+                <FormControl><SelectTrigger><SelectValue placeholder={selectedBankNumber ? 'Select destination account' : 'Select bank first'} /></SelectTrigger></FormControl>
                 <SelectContent>
                   {availableAccounts.map((a) => (
-                    <SelectItem key={a.id} value={a.id.toString()}>
+                    <SelectItem key={a.cbu} value={a.cbu}>
                       {a.name} ({a.currency})
                     </SelectItem>
                   ))}
@@ -142,12 +137,7 @@ export function LoanForm({ bankId, onSuccess }: { bankId?: number, onSuccess: ()
               <FormItem>
                 <FormLabel>Principal Amount</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    {...form.register('principal', { valueAsNumber: true })}
-                  />
+                  <Input {...field} inputMode="decimal" placeholder="0.00" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -160,12 +150,7 @@ export function LoanForm({ bankId, onSuccess }: { bankId?: number, onSuccess: ()
               <FormItem>
                 <FormLabel>Interest Rate (%)</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    {...form.register('interestRate', { valueAsNumber: true })}
-                  />
+                  <Input {...field} inputMode="decimal" placeholder="0" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -1,103 +1,50 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { banksApi } from '../api/banks';
-import { BankRequest, AccountRequest } from '@/types/banks';
+import { AccountRequest, UpdateAccountRequest } from '@/types/banks';
 import { toast } from 'sonner';
 
 export const useBanks = () => {
-  const queryClient = useQueryClient();
-
-  const banksQuery = useQuery({
-    queryKey: ['banks'],
-    queryFn: () => banksApi.list(),
-  });
-
-  const createBankMutation = useMutation({
-    mutationFn: (data: BankRequest) => banksApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Bank created successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to create bank');
-    },
-  });
-
-  const updateBankMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: BankRequest }) => 
-      banksApi.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Bank updated successfully');
-    },
-  });
-
-  const deleteBankMutation = useMutation({
-    mutationFn: (id: number) => banksApi.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Bank deleted successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete bank');
-    },
-  });
-
+  const banksQuery = useQuery({ queryKey: ['banks'], queryFn: () => banksApi.list() });
   return {
     banks: banksQuery.data ?? [],
     isLoading: banksQuery.isLoading,
     isError: banksQuery.isError,
     error: banksQuery.error,
-    createBank: createBankMutation.mutateAsync,
-    updateBank: updateBankMutation.mutateAsync,
-    deleteBank: deleteBankMutation.mutateAsync,
   };
 };
 
-export const useBank = (id: number) => {
-  return useQuery({
-    queryKey: ['banks', id],
-    queryFn: () => banksApi.get(id),
-    enabled: !!id,
-  });
-};
+export const useAvailableBanks = () =>
+  useQuery({ queryKey: ['banks', 'available'], queryFn: () => banksApi.available() });
+
+export const useBankCatalog = () =>
+  useQuery({ queryKey: ['banks', 'metadata'], queryFn: () => banksApi.metadata(), staleTime: 60 * 60 * 1000 });
+
+export const useBank = (bankNumber: string) =>
+  useQuery({ queryKey: ['banks', bankNumber], queryFn: () => banksApi.getByNumber(bankNumber), enabled: !!bankNumber });
 
 export const useAccounts = () => {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
+  const invalidate = () => qc.invalidateQueries({ queryKey: ['banks'] });
 
-  const createAccountMutation = useMutation({
+  const createAccount = useMutation({
     mutationFn: (data: AccountRequest) => banksApi.accounts.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Account created successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to create account');
-    },
+    onSuccess: () => { invalidate(); toast.success('Account created'); },
+    onError: (e: any) => toast.error(e.message || 'Failed to create account'),
   });
-
-  const updateAccountMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: AccountRequest }) => 
-      banksApi.accounts.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Account updated successfully');
-    },
+  const updateAccount = useMutation({
+    mutationFn: ({ cbu, data }: { cbu: string; data: UpdateAccountRequest }) => banksApi.accounts.update(cbu, data),
+    onSuccess: () => { invalidate(); toast.success('Account updated'); },
+    onError: (e: any) => toast.error(e.message || 'Failed to update account'),
   });
-
-  const deleteAccountMutation = useMutation({
-    mutationFn: (id: number) => banksApi.accounts.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['banks'] });
-      toast.success('Account deleted successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to delete account');
-    },
+  const deleteAccount = useMutation({
+    mutationFn: (cbu: string) => banksApi.accounts.delete(cbu),
+    onSuccess: () => { invalidate(); toast.success('Account deleted'); },
+    onError: (e: any) => toast.error(e.message || 'Failed to delete account'),
   });
 
   return {
-    createAccount: createAccountMutation.mutateAsync,
-    updateAccount: updateAccountMutation.mutateAsync,
-    deleteAccount: deleteAccountMutation.mutateAsync,
+    createAccount: createAccount.mutateAsync,
+    updateAccount: updateAccount.mutateAsync,
+    deleteAccount: deleteAccount.mutateAsync,
   };
 };
