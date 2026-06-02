@@ -3,14 +3,12 @@
 import { useState, useMemo } from 'react'
 import { useLoans, useDeleteLoan, useLoanInstallments, usePayLoanInstallment } from '@/lib/hooks/useLoans'
 import { useUiStore } from '@/lib/store/ui.store'
-import { useBanks, useBank } from '@/lib/hooks/useBanks'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { LoanForm } from './LoanForm'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -25,6 +23,7 @@ import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Loan } from '@/types/loans'
+import { AccountResponse } from '@/types/banks'
 
 import { QueryBoundary } from '@/components/shared/QueryBoundary'
 import { Surface } from '@/components/shared/Surface'
@@ -32,8 +31,8 @@ import { Surface } from '@/components/shared/Surface'
 export function LoansContent() {
   const { openConfirmDelete } = useUiStore()
   const { banks } = useBanks()
-  const [accountId, setAccountId] = useState<number | undefined>(undefined)
-  const { data: loans, isLoading, isError, error } = useLoans(accountId)
+  const [bankNumber, setBankNumber] = useState<string | undefined>(undefined)
+  const { data: loans, isLoading, isError, error } = useLoans(bankNumber)
   const deleteLoan = useDeleteLoan()
   const [formOpen, setFormOpen] = useState(false)
   const [expandedId, setExpandedId] = useState<number | null>(null)
@@ -51,23 +50,21 @@ export function LoansContent() {
     })
   }
 
-  const allAccounts = banks.flatMap(b => b.accounts.map(a => ({ ...a, bankName: b.name })))
-
   return (
     <div className="space-y-4 h-full flex flex-col overflow-hidden">
       <div className="flex items-center gap-3 shrink-0">
         <Select
-          value={accountId?.toString() ?? 'ALL'}
-          onValueChange={(v) => setAccountId(v === 'ALL' ? undefined : parseInt(v))}
+          value={bankNumber ?? 'ALL'}
+          onValueChange={(v) => setBankNumber(v === 'ALL' ? undefined : v)}
         >
           <SelectTrigger className="w-48 h-8 text-xs bg-background border-border">
-            <SelectValue placeholder="Account" />
+            <SelectValue placeholder="Bank" />
           </SelectTrigger>
           <SelectContent className="bg-popover border-border">
-            <SelectItem value="ALL">All accounts</SelectItem>
-            {allAccounts.map((a) => (
-              <SelectItem key={a.id} value={a.id.toString()} className="text-xs">
-                {a.bankName} - {a.name}
+            <SelectItem value="ALL">All banks</SelectItem>
+            {banks.map((b) => (
+              <SelectItem key={b.bankNumber} value={b.bankNumber} className="text-xs">
+                {b.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -122,13 +119,15 @@ function LoanCard({
   onDelete: () => void
 }) {
   const { data: installments, isLoading } = useLoanInstallments(expanded ? loan.id : 0)
-  const { data: bank } = useBank(loan.bankId)
+  const { banks } = useBanks()
   const payInstallment = usePayLoanInstallment()
-  const [selectedAccounts, setSelectedAccounts] = useState<Record<number, number>>({})
+  const [selectedAccounts, setSelectedAccounts] = useState<Record<number, string>>({})
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.currency === loan.currency && a.type !== 'INVESTMENT') || []
-  }, [bank, loan.currency])
+    const flat: AccountResponse[] = []
+    for (const b of banks) for (const a of b.accounts) flat.push(a)
+    return flat.filter((a) => a.currency === loan.currency && a.type !== 'INVESTMENT')
+  }, [banks, loan.currency])
 
   const paidCount = installments?.filter((i) => i.paid).length ?? 0
   const totalCount = installments?.length ?? loan.totalInstallments
@@ -147,8 +146,8 @@ function LoanCard({
               <Badge variant="outline" className="text-[10px] border-border">{loan.currency}</Badge>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Principal: {formatCurrency(loan.principal, loan.currency)} · {loan.totalInstallments} installments
-              {loan.interestRate > 0 && ` · Int: ${loan.interestRate}%`}
+              Principal: {formatCurrency(Number(loan.principal), loan.currency)} · {loan.totalInstallments} installments
+              {Number(loan.interestRate) > 0 && ` · Int: ${loan.interestRate}%`}
             </p>
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -176,27 +175,27 @@ function LoanCard({
           <QueryBoundary isLoading={isLoading} isError={false}>
             <div className="space-y-1 mt-2">
               {installments?.map((inst) => {
-                const selectedAccountId = selectedAccounts[inst.id];
+                const selectedCbu = selectedAccounts[inst.id]
                 return (
                   <div key={inst.id} className="flex items-center gap-3 py-1 border-t border-border text-sm">
                     <span className="w-6 text-xs text-muted-foreground text-center">{inst.installmentNumber}</span>
                     <span className="flex-1 text-muted-foreground">{formatDate(inst.dueDate)}</span>
-                    <span className="font-medium">{formatCurrency(inst.amount, loan.currency)}</span>
+                    <span className="font-medium">{formatCurrency(Number(inst.amount), loan.currency)}</span>
                     {inst.paid ? (
                       <Badge variant="secondary" className="text-xs w-16 justify-center bg-muted text-muted-foreground">Paid</Badge>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Select onValueChange={(v) => setSelectedAccounts(prev => ({ ...prev, [inst.id]: Number(v) }))}>
-                          <SelectTrigger 
+                        <Select onValueChange={(v) => setSelectedAccounts((prev) => ({ ...prev, [inst.id]: v }))}>
+                          <SelectTrigger
                             className="h-7 w-[130px] text-[10px] font-bold bg-background border-border"
                             disabled={availableAccounts.length === 0}
                           >
-                            <SelectValue placeholder={availableAccounts.length > 0 ? "Select account" : "No available accounts"} />
+                            <SelectValue placeholder={availableAccounts.length > 0 ? 'Select account' : 'No available accounts'} />
                           </SelectTrigger>
                           <SelectContent className="bg-popover border-border">
-                            {availableAccounts.map(a => (
-                              <SelectItem key={a.id} value={a.id.toString()} className="text-[10px]">
-                                {a.name} ({formatCurrency(a.balance, a.currency)})
+                            {availableAccounts.map((a) => (
+                              <SelectItem key={a.cbu} value={a.cbu} className="text-[10px]">
+                                {a.name} ({formatCurrency(Number(a.balance), a.currency)})
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -204,10 +203,10 @@ function LoanCard({
                         <Button
                           size="sm"
                           className="h-7 text-xs px-2"
-                          disabled={payInstallment.isPending || !selectedAccountId}
+                          disabled={payInstallment.isPending || !selectedCbu}
                           onClick={() =>
                             payInstallment.mutate(
-                              { loanId: loan.id, installmentId: inst.id, accountId: selectedAccountId! },
+                              { loanId: loan.id, installmentId: inst.id, accountCbu: selectedCbu! },
                               {
                                 onSuccess: () => toast.success('Installment paid'),
                                 onError: (e) => toast.error(e.message || 'Failed to pay installment'),
@@ -220,7 +219,7 @@ function LoanCard({
                       </div>
                     )}
                   </div>
-                );
+                )
               })}
             </div>
           </QueryBoundary>

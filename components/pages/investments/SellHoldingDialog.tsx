@@ -3,8 +3,9 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { useBank } from '@/lib/hooks/useBanks'
+import { useBanks } from '@/lib/hooks/useBanks'
 import { useDeleteHolding } from '@/lib/hooks/useInvestments'
+import type { AccountResponse } from '@/types/banks'
 import {
   Select,
   SelectContent,
@@ -24,20 +25,22 @@ interface SellHoldingDialogProps {
 }
 
 export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: SellHoldingDialogProps) {
-  const { data: bank } = useBank(holding?.bankId ?? 0)
+  const { banks } = useBanks()
   const sellMutation = useDeleteHolding()
-  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null)
+  const [selectedCbu, setSelectedCbu] = useState<string | null>(null)
 
   // Reset selection when dialog opens with a new holding
   useEffect(() => {
     if (open) {
-      setSelectedAccountId(null)
+      setSelectedCbu(null)
     }
   }, [open, holding?.id])
 
   const availableAccounts = useMemo(() => {
-    return bank?.accounts.filter(a => a.currency.toUpperCase() === holding?.currency.toUpperCase() && a.type !== 'INVESTMENT') || []
-  }, [bank, holding])
+    const flat: AccountResponse[] = []
+    for (const b of banks) for (const a of b.accounts) flat.push(a)
+    return flat.filter(a => a.currency.toUpperCase() === holding?.currency.toUpperCase() && a.type !== 'INVESTMENT')
+  }, [banks, holding])
 
   const liquidationValue = useMemo(() => {
     if (!holding) return 0
@@ -45,10 +48,10 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
   }, [holding])
 
   const handleSell = () => {
-    if (!holding || !selectedAccountId) return
+    if (!holding || !selectedCbu) return
 
     sellMutation.mutate(
-      { id: holding.id, destinationAccountId: selectedAccountId },
+      { id: holding.id, destinationCbu: selectedCbu },
       {
         onSuccess: () => {
           toast.success(`Sold ${holding.ticker} for ${formatCurrency(liquidationValue, holding.currency)}`)
@@ -89,14 +92,14 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
 
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase text-muted-foreground ml-1 tracking-widest">Receive funds in</label>
-            <Select onValueChange={(v) => setSelectedAccountId(Number(v))}>
+            <Select onValueChange={(v) => setSelectedCbu(v)}>
                 <SelectTrigger className="rounded-xl h-11 bg-background border-border text-foreground">
                     <SelectValue placeholder="Select destination account" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border">
                     {availableAccounts.map(a => (
-                        <SelectItem key={a.id} value={a.id.toString()}>
-                            {a.name} ({formatCurrency(a.balance, a.currency)})
+                        <SelectItem key={a.cbu} value={a.cbu}>
+                            {a.name} ({formatCurrency(Number(a.balance), a.currency)})
                         </SelectItem>
                     ))}
                 </SelectContent>
@@ -110,7 +113,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
           <Button variant="ghost" className="rounded-xl text-muted-foreground hover:bg-muted" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             className="rounded-xl font-bold" 
-            disabled={!selectedAccountId || sellMutation.isPending}
+            disabled={!selectedCbu || sellMutation.isPending}
             onClick={handleSell}
           >
             {sellMutation.isPending ? 'Processing...' : 'Confirm Sale'}

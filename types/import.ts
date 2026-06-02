@@ -31,10 +31,10 @@ export interface ConfirmRequest {
     incomeCol?: number
   }
   dateFormat?: string
-  accountId?: number
-  cardId?: number
-  arsAccountId?: number
-  usdAccountId?: number
+  accountCbu?: string
+  cardNumber?: string
+  arsAccountCbu?: string
+  usdAccountCbu?: string
 }
 
 export interface ConfirmResponse {
@@ -80,9 +80,9 @@ export interface ImportHistoryRecord {
   id: number
   originalName: string
   fileType: string
-  bankId: number
-  accountId?: number
-  cardId?: number
+  bankNumber: string
+  accountCbu?: string
+  cardNumber?: string
   importedCount: number
   importStatus: ImportStatus
   createdAt: string

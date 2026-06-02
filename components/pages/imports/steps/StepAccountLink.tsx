@@ -13,28 +13,28 @@ import { ImportFileType, CurrencyCounts } from '@/types/import'
 interface Props {
   fileType: ImportFileType
   currencyCounts?: CurrencyCounts
-  bankId: number | null
-  accountId: number | null
-  cardId: number | null
-  usdAccountId: number | null
-  onBankChange: (id: number | null) => void
-  onAccountChange: (id: number | null) => void
-  onCardChange: (id: number | null) => void
-  onUsdAccountChange: (id: number | null) => void
+  bankNumber: string | null
+  accountCbu: string | null
+  cardNumber: string | null
+  usdAccountCbu: string | null
+  onBankChange: (v: string | null) => void
+  onAccountChange: (v: string | null) => void
+  onCardChange: (v: string | null) => void
+  onUsdAccountChange: (v: string | null) => void
   onNext: () => void
   onBack: () => void
 }
 
 export function StepAccountLink({
   fileType, currencyCounts,
-  bankId, accountId, cardId, usdAccountId,
+  bankNumber, accountCbu, cardNumber, usdAccountCbu,
   onBankChange, onAccountChange, onCardChange, onUsdAccountChange,
   onNext, onBack,
 }: Props) {
   const { banks } = useBanks()
-  const { data: cards = [] } = useCards(bankId ?? undefined)
+  const { data: cards = [] } = useCards(bankNumber ?? undefined)
 
-  const selectedBank = banks.find(b => b.id === bankId)
+  const selectedBank = banks.find(b => b.bankNumber === bankNumber)
   const accounts = selectedBank?.accounts ?? []
   const arsAccounts = accounts.filter(a => a.currency === 'ARS' && a.isActive)
   const usdAccounts = accounts.filter(a => a.currency === 'USD' && a.isActive)
@@ -43,11 +43,11 @@ export function StepAccountLink({
     onAccountChange(null)
     onCardChange(null)
     onUsdAccountChange(null)
-  }, [bankId])
+  }, [bankNumber])
 
   const isVisa = fileType === 'VISA_PDF'
   const hasUsd = (currencyCounts?.USD ?? 0) > 0
-  const canProceed = isVisa ? (cardId !== null && accountId !== null) : accountId !== null
+  const canProceed = isVisa ? (cardNumber !== null && accountCbu !== null) : accountCbu !== null
 
   return (
     <div className="space-y-6">
@@ -55,15 +55,15 @@ export function StepAccountLink({
         <div className="space-y-1.5">
           <Label className="text-xs">Bank <span className="text-destructive">*</span></Label>
           <Select
-            value={bankId?.toString() ?? ''}
-            onValueChange={(v) => onBankChange(Number(v))}
+            value={bankNumber ?? ''}
+            onValueChange={(v) => onBankChange(v)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select bank…" />
             </SelectTrigger>
             <SelectContent>
               {banks.map(b => (
-                <SelectItem key={b.id} value={String(b.id)}>{b.name}</SelectItem>
+                <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -74,17 +74,17 @@ export function StepAccountLink({
             <div className="space-y-1.5">
               <Label className="text-xs">Card <span className="text-destructive">*</span></Label>
               <Select
-                value={cardId?.toString() ?? ''}
-                onValueChange={(v) => onCardChange(Number(v))}
-                disabled={!bankId}
+                value={cardNumber ?? ''}
+                onValueChange={(v) => onCardChange(v)}
+                disabled={!bankNumber}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={bankId ? 'Select card…' : 'Select a bank first'} />
+                  <SelectValue placeholder={bankNumber ? 'Select card…' : 'Select a bank first'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {(cards as any[]).map(c => (
-                    <SelectItem key={c.id} value={String(c.id)}>
-                      {c.displayName} ···{c.last4Digits}
+                  {cards.map(c => (
+                    <SelectItem key={c.cardNumber} value={c.cardNumber}>
+                      {c.displayName} ···{c.cardNumber.slice(-4)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -94,16 +94,16 @@ export function StepAccountLink({
             <div className="space-y-1.5">
               <Label className="text-xs">ARS Account <span className="text-destructive">*</span></Label>
               <Select
-                value={accountId?.toString() ?? ''}
-                onValueChange={(v) => onAccountChange(Number(v))}
-                disabled={!bankId}
+                value={accountCbu ?? ''}
+                onValueChange={(v) => onAccountChange(v)}
+                disabled={!bankNumber}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={bankId ? 'Select ARS account…' : 'Select a bank first'} />
+                  <SelectValue placeholder={bankNumber ? 'Select ARS account…' : 'Select a bank first'} />
                 </SelectTrigger>
                 <SelectContent>
                   {arsAccounts.map(a => (
-                    <SelectItem key={a.id} value={String(a.id)}>{a.name}</SelectItem>
+                    <SelectItem key={a.cbu} value={a.cbu}>{a.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -113,16 +113,16 @@ export function StepAccountLink({
               <div className="space-y-1.5">
                 <Label className="text-xs">USD Account</Label>
                 <Select
-                  value={usdAccountId?.toString() ?? ''}
-                  onValueChange={(v) => onUsdAccountChange(v ? Number(v) : null)}
-                  disabled={!bankId}
+                  value={usdAccountCbu ?? ''}
+                  onValueChange={(v) => onUsdAccountChange(v ? v : null)}
+                  disabled={!bankNumber}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select USD account (optional)…" />
                   </SelectTrigger>
                   <SelectContent>
                     {usdAccounts.map(a => (
-                      <SelectItem key={a.id} value={String(a.id)}>{a.name}</SelectItem>
+                      <SelectItem key={a.cbu} value={a.cbu}>{a.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -137,16 +137,16 @@ export function StepAccountLink({
           <div className="space-y-1.5">
             <Label className="text-xs">Account <span className="text-destructive">*</span></Label>
             <Select
-              value={accountId?.toString() ?? ''}
-              onValueChange={(v) => onAccountChange(Number(v))}
-              disabled={!bankId}
+              value={accountCbu ?? ''}
+              onValueChange={(v) => onAccountChange(v)}
+              disabled={!bankNumber}
             >
               <SelectTrigger>
-                <SelectValue placeholder={bankId ? 'Select account…' : 'Select a bank first'} />
+                <SelectValue placeholder={bankNumber ? 'Select account…' : 'Select a bank first'} />
               </SelectTrigger>
               <SelectContent>
                 {accounts.filter(a => a.isActive).map(a => (
-                  <SelectItem key={a.id} value={String(a.id)}>
+                  <SelectItem key={a.cbu} value={a.cbu}>
                     {a.name} ({a.currency})
                   </SelectItem>
                 ))}

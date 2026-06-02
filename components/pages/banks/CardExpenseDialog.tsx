@@ -23,29 +23,35 @@ import {
 import { useCreateCardExpense } from '@/lib/hooks/useCards'
 import { cardExpenseSchema, CardExpenseFormValues } from '@/lib/schemas/cardExpense'
 
-interface Props { cardId: number; open: boolean; onOpenChange: (o: boolean) => void }
+interface Props { cardNumber: string; open: boolean; onOpenChange: (o: boolean) => void }
 
-export function CardExpenseDialog({ cardId, open, onOpenChange }: Props) {
-  const mutation = useCreateCardExpense(cardId)
-  
+export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
+  const mutation = useCreateCardExpense(cardNumber)
+
   const form = useForm<CardExpenseFormValues>({
     resolver: zodResolver(cardExpenseSchema),
-    defaultValues: { 
-      description: '', 
-      totalAmount: 0, 
-      currency: 'USD', 
-      totalInstallments: 1, 
-      firstDueDate: '' 
+    defaultValues: {
+      description: '',
+      totalAmount: 0,
+      currency: 'USD',
+      totalInstallments: 1,
+      firstDueDate: '',
     },
   })
 
   const onFormSubmit = async (values: CardExpenseFormValues) => {
     try {
-      await mutation.mutateAsync(values)
+      await mutation.mutateAsync({
+        description: values.description,
+        totalAmount: String(values.totalAmount),
+        currency: values.currency,
+        totalInstallments: values.totalInstallments,
+        firstDueDate: values.firstDueDate,
+      })
       form.reset()
       onOpenChange(false)
     } catch (error) {
-      console.error("Failed to submit card expense form:", error)
+      console.error('Failed to submit card expense form:', error)
     }
   }
 
@@ -80,10 +86,10 @@ export function CardExpenseDialog({ cardId, open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel className="text-muted-foreground">Total amount</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         {...field}
-                        type="number" 
-                        step="0.01" 
+                        type="number"
+                        step="0.01"
                         className="bg-background border-border"
                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                       />
@@ -122,10 +128,10 @@ export function CardExpenseDialog({ cardId, open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel className="text-muted-foreground">Installments</FormLabel>
                     <FormControl>
-                      <Input 
+                      <Input
                         {...field}
-                        type="number" 
-                        min={1} 
+                        type="number"
+                        min={1}
                         className="bg-background border-border"
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                       />
@@ -141,11 +147,7 @@ export function CardExpenseDialog({ cardId, open, onOpenChange }: Props) {
                   <FormItem>
                     <FormLabel className="text-muted-foreground">First due date</FormLabel>
                     <FormControl>
-                      <Input 
-                        {...field}
-                        type="date" 
-                        className="bg-background border-border"
-                      />
+                      <Input {...field} type="date" className="bg-background border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

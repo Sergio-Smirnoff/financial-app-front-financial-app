@@ -60,7 +60,7 @@ function LoanRow({ loan }: { loan: Loan }) {
         <Progress value={progress} className="h-2" />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>Principal: {formatCurrency(loan.principal, loan.currency)}</span>
+        <span>Principal: {formatCurrency(Number(loan.principal), loan.currency)}</span>
         <span>{loan.remainingInstallments} installments left</span>
       </div>
     </div>

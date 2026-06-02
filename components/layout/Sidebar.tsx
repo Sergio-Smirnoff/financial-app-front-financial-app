@@ -7,7 +7,6 @@ import {
   Building2,
   Tag,
   TrendingUp,
-  FileUp,
   Settings,
   X,
 } from 'lucide-react'
@@ -20,7 +19,8 @@ const NAV_ITEMS = [
   { label: 'Banks', href: '/banks', icon: Building2 },
   { label: 'Categories', href: '/categories', icon: Tag },
   { label: 'Investments', href: '/investments', icon: TrendingUp },
-  { label: 'Imports', href: '/imports', icon: FileUp },
+  // Imports/uploads service not yet migrated to the CBU/bankNumber contract — hidden until ms-upload is built.
+  // { label: 'Imports', href: '/imports', icon: FileUp },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]
 

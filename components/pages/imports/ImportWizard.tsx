@@ -31,39 +31,41 @@ interface WizardState {
   totalCount: number
   currencyCounts: CurrencyCounts
   // account link
-  bankId: number | null
-  accountId: number | null
-  cardId: number | null
-  usdAccountId: number | null
+  bankNumber: string | null
+  accountCbu: string | null
+  cardNumber: string | null
+  usdAccountCbu: string | null
+}
+
+const INITIAL_STATE: WizardState = {
+  step: 'file_select',
+  fileType: null,
+  file: null,
+  tempKey: null,
+  fileHash: null,
+  csvHeaders: [],
+  csvRows: [],
+  columnMapping: { dateCol: 0, descCol: 1, expenseCol: 2, incomeCol: 3 },
+  dateFormat: 'yyyy-MM-dd',
+  parsedPreview: [],
+  totalCount: 0,
+  currencyCounts: { ARS: 0, USD: 0, skipped: 0 },
+  bankNumber: null,
+  accountCbu: null,
+  cardNumber: null,
+  usdAccountCbu: null,
 }
 
 export function ImportWizard() {
   const { banks } = useBanks()
-  const [state, setState] = useState<WizardState>({
-    step: 'file_select',
-    fileType: null,
-    file: null,
-    tempKey: null,
-    fileHash: null,
-    csvHeaders: [],
-    csvRows: [],
-    columnMapping: { dateCol: 0, descCol: 1, expenseCol: 2, incomeCol: 3 },
-    dateFormat: 'yyyy-MM-dd',
-    parsedPreview: [],
-    totalCount: 0,
-    currencyCounts: { ARS: 0, USD: 0, skipped: 0 },
-    bankId: null,
-    accountId: null,
-    cardId: null,
-    usdAccountId: null,
-  })
+  const [state, setState] = useState<WizardState>(INITIAL_STATE)
 
-  const { data: cards = [] } = useCards(state.bankId ?? undefined)
+  const { data: cards = [] } = useCards(state.bankNumber ?? undefined)
 
-  const selectedBank = banks.find(b => b.id === state.bankId)
-  const selectedAccount = selectedBank?.accounts.find(a => a.id === state.accountId)
-  const selectedCard = (cards as any[]).find(c => c.id === state.cardId)
-  const selectedUsdAccount = selectedBank?.accounts.find(a => a.id === state.usdAccountId)
+  const selectedBank = banks.find(b => b.bankNumber === state.bankNumber)
+  const selectedAccount = selectedBank?.accounts.find(a => a.cbu === state.accountCbu)
+  const selectedCard = cards.find(c => c.cardNumber === state.cardNumber)
+  const selectedUsdAccount = selectedBank?.accounts.find(a => a.cbu === state.usdAccountCbu)
 
   const [duplicates, setDuplicates] = useState<any[]>([])
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -113,24 +115,7 @@ export function ImportWizard() {
   }
 
   const reset = () => {
-    setState({
-      step: 'file_select',
-      fileType: null,
-      file: null,
-      tempKey: null,
-      fileHash: null,
-      csvHeaders: [],
-      csvRows: [],
-      columnMapping: { dateCol: 0, descCol: 1, expenseCol: 2, incomeCol: 3 },
-      dateFormat: 'yyyy-MM-dd',
-      parsedPreview: [],
-      totalCount: 0,
-      currencyCounts: { ARS: 0, USD: 0, skipped: 0 },
-      bankId: null,
-      accountId: null,
-      cardId: null,
-      usdAccountId: null,
-    })
+    setState(INITIAL_STATE)
     setDuplicates([])
     setSessionId(null)
   }
@@ -147,10 +132,10 @@ export function ImportWizard() {
           incomeCol: state.columnMapping.incomeCol ?? undefined,
         } : undefined,
         dateFormat: state.fileType === 'CSV' ? state.dateFormat : undefined,
-        accountId: state.accountId || undefined,
-        cardId: state.cardId || undefined,
-        arsAccountId: state.accountId || undefined,
-        usdAccountId: state.usdAccountId || undefined,
+        accountCbu: state.accountCbu || undefined,
+        cardNumber: state.cardNumber || undefined,
+        arsAccountCbu: state.accountCbu || undefined,
+        usdAccountCbu: state.usdAccountCbu || undefined,
       })
 
       if (res.duplicates && res.duplicates.length > 0) {
@@ -171,65 +156,65 @@ export function ImportWizard() {
         <h2 className="text-xl font-bold">Import Transactions</h2>
         <div className="flex gap-1">
           {['file_select', 'preview', 'account_link', 'confirm'].map((s, i) => (
-            <div 
-              key={s} 
+            <div
+              key={s}
               className={`h-1.5 w-8 rounded-full ${
-                ['file_select', 'preview', 'account_link', 'confirm'].indexOf(state.step) >= i 
+                ['file_select', 'preview', 'account_link', 'confirm'].indexOf(state.step) >= i
                   ? 'bg-primary' : 'bg-muted'
-              }`} 
+              }`}
             />
           ))}
         </div>
       </div>
 
       {state.step === 'file_select' && (
-        <StepFileSelect 
-          isLoading={previewMutation.isPending} 
-          onFileSelected={handleFileSelected} 
+        <StepFileSelect
+          isLoading={previewMutation.isPending}
+          onFileSelected={handleFileSelected}
         />
       )}
-      
+
       {state.step === 'preview' && state.fileType === 'CSV' && (
-        <StepColumnMapper 
+        <StepColumnMapper
           headers={state.csvHeaders}
           rows={state.csvRows}
           mapping={state.columnMapping}
           onMappingChange={(m) => updateState({ columnMapping: m })}
-          onNext={handleNext} 
-          onBack={handleBack} 
+          onNext={handleNext}
+          onBack={handleBack}
         />
       )}
 
       {state.step === 'preview' && state.fileType !== 'CSV' && (
-        <StepPdfPreview 
+        <StepPdfPreview
           preview={state.parsedPreview}
           totalCount={state.totalCount}
           currencyCounts={state.currencyCounts}
           fileType={state.fileType!}
-          onNext={handleNext} 
-          onBack={handleBack} 
+          onNext={handleNext}
+          onBack={handleBack}
         />
       )}
 
       {state.step === 'account_link' && (
-        <StepAccountLink 
+        <StepAccountLink
           fileType={state.fileType!}
           currencyCounts={state.currencyCounts}
-          bankId={state.bankId}
-          accountId={state.accountId}
-          cardId={state.cardId}
-          usdAccountId={state.usdAccountId}
-          onBankChange={(id) => updateState({ bankId: id })}
-          onAccountChange={(id) => updateState({ accountId: id })}
-          onCardChange={(id) => updateState({ cardId: id })}
-          onUsdAccountChange={(id) => updateState({ usdAccountId: id })}
-          onNext={handleNext} 
-          onBack={handleBack} 
+          bankNumber={state.bankNumber}
+          accountCbu={state.accountCbu}
+          cardNumber={state.cardNumber}
+          usdAccountCbu={state.usdAccountCbu}
+          onBankChange={(v) => updateState({ bankNumber: v })}
+          onAccountChange={(v) => updateState({ accountCbu: v })}
+          onCardChange={(v) => updateState({ cardNumber: v })}
+          onUsdAccountChange={(v) => updateState({ usdAccountCbu: v })}
+          onNext={handleNext}
+          onBack={handleBack}
         />
       )}
 
       {state.step === 'confirm' && (
-        <StepConfirm 
+        <StepConfirm
           file={state.file!}
           fileType={state.fileType!}
           bank={selectedBank}
@@ -239,18 +224,18 @@ export function ImportWizard() {
           totalCount={state.totalCount}
           currencyCounts={state.currencyCounts}
           isLoading={confirmMutation.isPending}
-          onConfirm={handleConfirm} 
+          onConfirm={handleConfirm}
           onBack={handleBack}
         />
       )}
 
       {duplicates.length > 0 && (
-        <ImportDuplicatesDialog 
+        <ImportDuplicatesDialog
           open={duplicates.length > 0}
           onOpenChange={(open) => !open && setDuplicates([])}
-          duplicates={duplicates} 
-          sessionId={sessionId!} 
-          onResolved={() => { toast.success('Import finished'); reset(); }} 
+          duplicates={duplicates}
+          sessionId={sessionId!}
+          onResolved={() => { toast.success('Import finished'); reset(); }}
         />
       )}
     </div>
