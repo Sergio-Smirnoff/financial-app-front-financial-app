@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { transactionsApi } from '@/lib/api/transactions'
-import type { TransactionFilters, SummaryFilters, CreateTransactionRequest,
-  TransferRequest
-} from '@/types/finances'
+import type { TransactionFilters, SummaryFilters, RecordTransactionRequest } from '@/types/finances'
 
 export function useTransactions(filters: TransactionFilters = {}) {
   return useQuery({
@@ -11,11 +9,11 @@ export function useTransactions(filters: TransactionFilters = {}) {
   })
 }
 
-export function useAccountTransactions(accountId: number) {
+export function useAccountTransactions(cbu: string) {
   return useQuery({
-    queryKey: ['transactions', 'account', accountId],
-    queryFn: () => transactionsApi.getByAccount(accountId),
-    enabled: !!accountId,
+    queryKey: ['transactions', 'account', cbu],
+    queryFn: () => transactionsApi.getByAccount(cbu),
+    enabled: !!cbu,
   })
 }
 
@@ -34,26 +32,10 @@ export function useTransactionSummary(filters: SummaryFilters = {}) {
   })
 }
 
-export function useCreateTransaction() {
+export function useRecordTransaction() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: CreateTransactionRequest) => transactionsApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      // Give Kafka a moment to sync balance across microservices
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['banks'] })
-      }, 500)
-    },
-  })
-}
-
-export function useUpdateTransaction() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: CreateTransactionRequest }) =>
-      transactionsApi.update(id, data),
+    mutationFn: (data: RecordTransactionRequest) => transactionsApi.record(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
@@ -72,22 +54,6 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      // Give Kafka a moment to sync balance across microservices
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['banks'] })
-      }, 500)
-    },
-  })
-}
-
-export function useTransfer() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (data: TransferRequest) => transactionsApi.transfer(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      // Give Kafka a moment to sync balance across microservices
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['banks'] })
       }, 500)

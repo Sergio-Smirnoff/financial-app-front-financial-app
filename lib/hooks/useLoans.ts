@@ -4,14 +4,14 @@ import type { LoanRequest } from '@/types/loans'
 
 const QK = {
   all: ['loans'] as const,
-  byAccount: (accountId: number) => ['loans', { accountId }] as const,
+  byBank: (bankNumber: string) => ['loans', { bankNumber }] as const,
   installments: (loanId: number) => ['loans', loanId, 'installments'] as const,
 }
 
-export function useLoans(bankId?: number) {
+export function useLoans(bankNumber?: string) {
   return useQuery({
-    queryKey: bankId ? QK.byAccount(bankId) : QK.all,
-    queryFn: () => loansApi.list(bankId),
+    queryKey: bankNumber ? QK.byBank(bankNumber) : QK.all,
+    queryFn: () => loansApi.list(bankNumber),
   })
 }
 
@@ -20,8 +20,8 @@ export function useCreateLoan() {
   return useMutation({
     mutationFn: (data: LoanRequest) => loansApi.create(data),
     onSuccess: () => {
-        qc.invalidateQueries({ queryKey: QK.all });
-        qc.invalidateQueries({ queryKey: ['banks'] });
+      qc.invalidateQueries({ queryKey: QK.all });
+      qc.invalidateQueries({ queryKey: ['banks'] });
     },
   })
 }
@@ -31,8 +31,8 @@ export function useDeleteLoan() {
   return useMutation({
     mutationFn: (id: number) => loansApi.delete(id),
     onSuccess: () => {
-        qc.invalidateQueries({ queryKey: QK.all });
-        qc.invalidateQueries({ queryKey: ['banks'] });
+      qc.invalidateQueries({ queryKey: QK.all });
+      qc.invalidateQueries({ queryKey: ['banks'] });
     },
   })
 }
@@ -48,13 +48,13 @@ export function useLoanInstallments(loanId: number) {
 export function usePayLoanInstallment() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (vars: { loanId: number; installmentId: number; accountId: number; paidDate?: string }) =>
-      loansApi.payInstallment(vars.loanId, vars.installmentId, vars.accountId, vars.paidDate),
+    mutationFn: (vars: { loanId: number; installmentId: number; accountCbu: string; paidDate?: string }) =>
+      loansApi.payInstallment(vars.loanId, vars.installmentId, vars.accountCbu, vars.paidDate),
     onSuccess: (_, vars) => {
       qc.invalidateQueries({ queryKey: QK.installments(vars.loanId) })
       qc.invalidateQueries({ queryKey: QK.all })
       qc.invalidateQueries({ queryKey: ['banks'] })
-      qc.invalidateQueries({ queryKey: ['transactions', 'account', vars.accountId] })
+      qc.invalidateQueries({ queryKey: ['transactions', 'account', vars.accountCbu] })
     },
   })
 }

@@ -1,19 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { cardsApi } from '@/lib/api/cards'
-import type { CardRequest, CardExpenseCreateRequest, CardInstallment, Card } from '@/types/cards'
+import type { CardRequest, UpdateCardRequest, CardExpenseCreateRequest, CardInstallment, Card } from '@/types/cards'
 import { toast } from 'sonner'
 
-export function useCards(bankId?: number) {
+export function useCards(bankNumber?: string) {
   return useQuery<Card[]>({
-    queryKey: ['cards', bankId],
-    queryFn: () => cardsApi.list(bankId),
+    queryKey: ['cards', bankNumber],
+    queryFn: () => cardsApi.list(bankNumber),
   })
 }
 
-export function useCard(id: number) {
+export function useCard(cardNumber: string) {
   return useQuery<Card>({
-    queryKey: ['card', id],
-    queryFn: () => cardsApi.get(id),
+    queryKey: ['card', cardNumber],
+    queryFn: () => cardsApi.get(cardNumber),
+    enabled: !!cardNumber,
   })
 }
 
@@ -31,10 +32,10 @@ export function useCreateCard() {
 export function useUpdateCard() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, body }: { id: number; body: CardRequest }) => cardsApi.update(id, body),
-    onSuccess: (_, { id }) => {
+    mutationFn: ({ cardNumber, body }: { cardNumber: string; body: UpdateCardRequest }) => cardsApi.update(cardNumber, body),
+    onSuccess: (_, { cardNumber }) => {
       queryClient.invalidateQueries({ queryKey: ['cards'] })
-      queryClient.invalidateQueries({ queryKey: ['card', id] })
+      queryClient.invalidateQueries({ queryKey: ['card', cardNumber] })
       toast.success('Card updated')
     },
   })
@@ -43,7 +44,7 @@ export function useUpdateCard() {
 export function useDeleteCard() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => cardsApi.delete(id),
+    mutationFn: (cardNumber: string) => cardsApi.delete(cardNumber),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] })
       toast.success('Card deleted')
@@ -51,44 +52,44 @@ export function useDeleteCard() {
   })
 }
 
-export function useCardInstallments(cardId: number | null) {
+export function useCardInstallments(cardNumber: string | null) {
   return useQuery<CardInstallment[]>({
-    queryKey: ['card-installments', cardId],
+    queryKey: ['card-installments', cardNumber],
     queryFn: async () => {
-      if (cardId === null) return []
-      return cardsApi.listInstallments(cardId)
+      if (cardNumber === null) return []
+      return cardsApi.listInstallments(cardNumber)
     },
-    enabled: cardId !== null,
+    enabled: cardNumber !== null,
   })
 }
 
-export function useCreateCardExpense(cardId: number) {
+export function useCreateCardExpense(cardNumber: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (body: CardExpenseCreateRequest) =>
-      cardsApi.createExpense(cardId, body),
+      cardsApi.createExpense(cardNumber, body),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['card-installments', cardId] })
+      queryClient.invalidateQueries({ queryKey: ['card-installments', cardNumber] })
       toast.success('Expense created')
     },
   })
 }
 
-export function useMarkInstallmentPaid(cardId: number) {
+export function useMarkInstallmentPaid(cardNumber: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
       installmentId,
-      accountId,
+      accountCbu,
       paidDate,
     }: {
       installmentId: number
-      accountId: number
+      accountCbu: string
       paidDate?: string
-    }) => cardsApi.markPaid(cardId, installmentId, accountId, paidDate),
+    }) => cardsApi.markPaid(cardNumber, installmentId, accountCbu, paidDate),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['card-installments', cardId] })
-      queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      queryClient.invalidateQueries({ queryKey: ['card-installments', cardNumber] })
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
       toast.success('Installment marked as paid')
     },
   })

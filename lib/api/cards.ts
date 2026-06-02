@@ -2,25 +2,26 @@ import { api } from '@/lib/api/client'
 import type {
   Card,
   CardRequest,
+  UpdateCardRequest,
   CardInstallment,
   CardExpenseCreateRequest,
 } from '@/types/cards'
 
 export const cardsApi = {
-  list: (bankId?: number) =>
-    api.get<Card[]>('/api/v1/banks/cards' + (bankId ? `?bankId=${bankId}` : '')),
-  get: (id: number) => api.get<Card>(`/api/v1/banks/cards/${id}`),
+  list: (bankNumber?: string) =>
+    api.get<Card[]>('/api/v1/banks/cards' + (bankNumber ? `?bankNumber=${bankNumber}` : '')),
+  get: (cardNumber: string) => api.get<Card>(`/api/v1/banks/cards/${cardNumber}`),
   create: (body: CardRequest) => api.post<Card>('/api/v1/banks/cards', body),
-  update: (id: number, body: CardRequest) => api.put<Card>(`/api/v1/banks/cards/${id}`, body),
-  delete: (id: number) => api.delete<void>(`/api/v1/banks/cards/${id}`),
+  update: (cardNumber: string, body: UpdateCardRequest) => api.patch<Card>(`/api/v1/banks/cards/${cardNumber}`, body),
+  delete: (cardNumber: string) => api.delete<void>(`/api/v1/banks/cards/${cardNumber}`),
 
-  listInstallments: (cardId: number) =>
-    api.get<CardInstallment[]>(`/api/v1/banks/cards/${cardId}/installments`),
-  createExpense: (cardId: number, body: CardExpenseCreateRequest) =>
-    api.post<CardInstallment[]>(`/api/v1/banks/cards/${cardId}/installments`, body),
-  markPaid: (cardId: number, installmentId: number, accountId: number, paidDate?: string) =>
+  listInstallments: (cardNumber: string) =>
+    api.get<CardInstallment[]>(`/api/v1/banks/cards/${cardNumber}/installments`),
+  createExpense: (cardNumber: string, body: CardExpenseCreateRequest) =>
+    api.post<CardInstallment[]>(`/api/v1/banks/cards/${cardNumber}/installments`, body),
+  markPaid: (cardNumber: string, installmentId: number, accountCbu: string, paidDate?: string) =>
     api.post<CardInstallment>(
-      `/api/v1/banks/cards/${cardId}/installments/${installmentId}/pay?accountId=${accountId}`
+      `/api/v1/banks/cards/${cardNumber}/installments/${installmentId}/pay?accountCbu=${accountCbu}`
         + (paidDate ? `&paidDate=${paidDate}` : ''),
       {},
     ),
