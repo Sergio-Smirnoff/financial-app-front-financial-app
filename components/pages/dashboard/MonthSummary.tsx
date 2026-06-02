@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MultiCurrencyAmount } from '@/components/shared/MultiCurrencyAmount'
 import { TrendingUp, TrendingDown, Scale, Receipt } from 'lucide-react'
+import { Surface } from '@/components/shared/Surface'
 import type { SummaryItem } from '@/types/finances'
 
 interface MonthSummaryProps {
@@ -10,8 +11,6 @@ interface MonthSummaryProps {
   loanCount: number
   cardExpenseCount: number
 }
-
-import { Surface } from '@/components/shared/Surface'
 
 export function MonthSummary({ summaries, loanCount, cardExpenseCount }: MonthSummaryProps) {
   const incomeItems = summaries.map((s) => ({ amount: s.totalIncome, currency: s.currency }))

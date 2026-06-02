@@ -44,7 +44,8 @@ export function useDeleteCategory() {
 export function useDeleteSubcategory() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: number) => categoriesApi.deleteSubcategory(id),
+    mutationFn: ({ parentId, subId }: { parentId: number; subId: number }) =>
+      categoriesApi.deleteSubcategory(parentId, subId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     },

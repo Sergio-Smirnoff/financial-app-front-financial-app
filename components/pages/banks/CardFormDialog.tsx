@@ -160,7 +160,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
                         <SelectItem value="INSTANT_PAYMENT">Instant payment</SelectItem>
-                        <SelectItem value="INSTALLMENTS">Installments</SelectItem>
+                        <SelectItem value="CREDIT">Credit (installments)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -1,6 +1,6 @@
 export type CardBrand = 'VISA' | 'MASTERCARD' | 'AMEX'
 export type CardType = 'STANDARD' | 'SILVER' | 'GOLD' | 'BLACK' | 'PLATINUM'
-export type CardBehavior = 'INSTANT_PAYMENT' | 'INSTALLMENTS'
+export type CardBehavior = 'INSTANT_PAYMENT' | 'CREDIT'
 
 export interface Card {
   bankNumber: string

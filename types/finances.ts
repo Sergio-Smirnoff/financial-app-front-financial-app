@@ -87,21 +87,6 @@ export interface SummaryItem {
   totalIncome: number
   totalExpense: number
   balance: number
-  activeLoans: number
-  totalLoanDebt: number
-  activeCardExpenses: number
-  totalCardExpenseDebt: number
-}
-
-export interface DashboardSummary {
-  financeSummary: ApiDashboardFinanceSummary | unknown
-  cards: unknown
-  recentNotifications: unknown
-}
-
-interface ApiDashboardFinanceSummary {
-  success: boolean
-  data: SummaryItem[]
 }
 
 // ─── Request types ────────────────────────────────────────────────────────────

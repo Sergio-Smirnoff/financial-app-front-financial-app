@@ -54,14 +54,19 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
 
   const categoryFilterType = mode === 'DEPOSIT' ? 'INCOME' : mode === 'WITHDRAW' ? 'EXPENSE' : null
 
+  // Categories are untyped server-side (no INCOME/EXPENSE/BOTH on the wire), so a
+  // missing/undefined type means the category applies to any transaction direction.
+  const matchesFilter = (type?: string) =>
+    categoryFilterType === null || type == null || type === categoryFilterType || type === 'BOTH'
+
   const parentCategories = useMemo(() => {
-    return (categories ?? []).filter((c) => categoryFilterType === null || c.type === categoryFilterType || c.type === 'BOTH')
+    return (categories ?? []).filter((c) => matchesFilter(c.type))
   }, [categories, categoryFilterType])
 
   const subcategories = useMemo(() => {
     if (!parentCategoryId || !categories) return []
     return categories.find((c) => c.id === parentCategoryId)?.subcategories
-      ?.filter((s) => categoryFilterType === null || s.type === categoryFilterType || s.type === 'BOTH') ?? []
+      ?.filter((s) => matchesFilter(s.type)) ?? []
   }, [parentCategoryId, categories, categoryFilterType])
 
   useEffect(() => {

@@ -2,14 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { MultiCurrencyAmount } from '@/components/shared/MultiCurrencyAmount'
-import { TrendingUp, TrendingDown, Scale, Wallet } from 'lucide-react'
-import type { SummaryItem } from '@/types/finances'
-
-interface YearOverviewProps {
-  summaries: SummaryItem[]
-}
-
+import { TrendingUp, TrendingDown, Scale } from 'lucide-react'
 import { Surface } from '@/components/shared/Surface'
+import type { SummaryItem } from '@/types/finances'
 
 interface YearOverviewProps {
   summaries: SummaryItem[]
@@ -21,10 +16,6 @@ export function YearOverview({ summaries }: YearOverviewProps) {
   const incomeItems = summaries.map((s) => ({ amount: s.totalIncome, currency: s.currency }))
   const expenseItems = summaries.map((s) => ({ amount: s.totalExpense, currency: s.currency }))
   const balanceItems = summaries.map((s) => ({ amount: s.balance, currency: s.currency }))
-  const debtItems = summaries.map((s) => ({
-    amount: s.totalLoanDebt ?? 0,
-    currency: s.currency,
-  }))
 
   const totalBalance = summaries.reduce((sum, s) => sum + s.balance, 0)
 
@@ -34,7 +25,7 @@ export function YearOverview({ summaries }: YearOverviewProps) {
         <CardTitle className="text-lg font-semibold">Year to Date ({year})</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
           <div className="space-y-1">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
@@ -60,15 +51,6 @@ export function YearOverview({ summaries }: YearOverviewProps) {
             </div>
             <div className={`text-xl font-bold ${totalBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
               <MultiCurrencyAmount items={balanceItems} />
-            </div>
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <Wallet className="h-4 w-4" />
-              Total Debt
-            </div>
-            <div className="text-xl font-bold">
-              <MultiCurrencyAmount items={debtItems} />
             </div>
           </div>
         </div>

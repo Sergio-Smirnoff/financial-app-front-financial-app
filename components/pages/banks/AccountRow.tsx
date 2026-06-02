@@ -10,6 +10,7 @@ import { ArrowLeftRight, PlusCircle, MinusCircle, History, Trash2, Wallet } from
 interface Props {
   account: AccountResponse;
   bankName?: string;
+  holdingsValue?: number;
   onDeposit: (account: AccountResponse) => void;
   onWithdraw: (account: AccountResponse) => void;
   onTransfer: (account: AccountResponse) => void;
@@ -17,9 +18,11 @@ interface Props {
   onDelete: (account: AccountResponse) => void;
 }
 
-export function AccountRow({ account, bankName, onDeposit, onWithdraw, onTransfer, onHistory, onDelete }: Props) {
+export function AccountRow({ account, bankName, holdingsValue, onDeposit, onWithdraw, onTransfer, onHistory, onDelete }: Props) {
   const isInvestment = account.type === "INVESTMENT";
   const maskedCbu = `••••${account.cbu.slice(-4)}`;
+  // Investment accounts show the market value of their holdings instead of a cash balance.
+  const displayValue = isInvestment && holdingsValue !== undefined ? holdingsValue : Number(account.balance);
 
   return (
     <Surface className="rounded-2xl transition-all group">
@@ -47,8 +50,11 @@ export function AccountRow({ account, bankName, onDeposit, onWithdraw, onTransfe
         <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
           <div className="md:text-right">
             <p className="text-2xl font-black tracking-tight text-muted-foreground">
-              {formatCurrency(Number(account.balance), account.currency)}
+              {formatCurrency(displayValue, account.currency)}
             </p>
+            {isInvestment && (
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Holdings value</p>
+            )}
           </div>
 
           <div className="flex items-center gap-1 border-t md:border-t-0 pt-3 md:pt-0">

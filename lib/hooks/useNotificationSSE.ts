@@ -4,8 +4,11 @@ import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import type { Notification } from '@/types/notifications'
+import { API_CONFIG } from '@/lib/api/config'
+import { getUserFromCookie } from '@/lib/auth'
 
-const SSE_URL = '/api/v1/notifications/stream'
+// Absolute gateway URL: EventSource must hit the gateway (:8080), not the Next.js origin.
+const SSE_URL = `${API_CONFIG.BASE_URL}/api/v1/notifications/stream`
 
 export function useNotificationSSE() {
   const queryClient = useQueryClient()
@@ -16,8 +19,9 @@ export function useNotificationSSE() {
   const esRef = useRef<EventSource | null>(null)
 
   useEffect(() => {
-    const userId = getUserIdFromCookie()
-    if (!userId) return
+    // Auth is carried by the access_token cookie (withCredentials); we only need to
+    // know a user is logged in. The app stores identity in the `user_info` cookie.
+    if (!getUserFromCookie()) return
 
     function connect() {
       if (esRef.current) return
@@ -45,10 +49,4 @@ export function useNotificationSSE() {
       esRef.current = null
     }
   }, [])
-}
-
-function getUserIdFromCookie(): number | null {
-  if (typeof document === 'undefined') return null
-  const match = document.cookie.match(/(?:^|;\s*)userId=([^;]+)/)
-  return match ? parseInt(match[1], 10) : null
 }

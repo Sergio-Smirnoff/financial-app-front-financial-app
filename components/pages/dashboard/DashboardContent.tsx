@@ -9,13 +9,13 @@ import { MonthSummary } from './MonthSummary'
 import { ActiveObligations } from './ActiveObligations'
 import { UpcomingPayments } from './UpcomingPayments'
 import { useState, useEffect } from 'react'
+import { currentMonthRange, currentYearRange } from '@/lib/utils/dates'
+import { getUserFromCookie } from '@/lib/auth'
 
 const IncomeExpenseChart = dynamic(
   () => import('./IncomeExpenseChart').then((m) => ({ default: m.IncomeExpenseChart })),
   { ssr: false },
 )
-import { currentMonthRange, currentYearRange } from '@/lib/utils/dates'
-import { getUserFromCookie } from '@/lib/auth'
 
 export function DashboardContent() {
   const { from: monthFrom, to: monthTo } = currentMonthRange()

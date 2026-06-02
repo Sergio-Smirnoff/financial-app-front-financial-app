@@ -16,6 +16,6 @@ export const categoriesApi = {
   deleteCategory: (id: number) =>
     api.delete<void>(`${BASE}/categories/${id}`),
 
-  deleteSubcategory: (id: number) =>
-    api.delete<void>(`${BASE}/subcategories/${id}`),
+  deleteSubcategory: (parentId: number, subId: number) =>
+    api.delete<void>(`${BASE}/categories/${parentId}/subcategories/${subId}`),
 }

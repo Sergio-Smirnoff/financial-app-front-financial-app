@@ -50,7 +50,8 @@ export function TransactionsContent() {
   const accountName = (cbu: string | null) => {
     if (!cbu) return '—'
     const account = allAccounts.find((a) => a.cbu === cbu)
-    return account ? account.name : `••••${cbu.slice(-4)}`
+    // Own accounts show their name; external counterparts show the full CBU.
+    return account ? account.name : cbu
   }
 
   const handleDelete = (tx: Transaction) => {
@@ -110,8 +111,8 @@ export function TransactionsContent() {
                 <TableRow>
                   <TableHead>Date</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead>To</TableHead>
+                  <TableHead>From Account</TableHead>
+                  <TableHead>To Account</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead>Currency</TableHead>

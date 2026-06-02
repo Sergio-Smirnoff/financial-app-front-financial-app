@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { cbuCheckDigitError } from "@/lib/utils/cbu";
 
 export const accountSchema = z
   .object({
@@ -12,6 +13,12 @@ export const accountSchema = z
   .refine((v) => v.cbu.slice(0, 3) === v.bankNumber, {
     message: "CBU's first 3 digits must match the selected bank's code",
     path: ["cbu"],
+  })
+  .superRefine((v, ctx) => {
+    const error = cbuCheckDigitError(v.cbu);
+    if (error) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: error, path: ["cbu"] });
+    }
   });
 
 export type AccountFormValues = z.infer<typeof accountSchema>;

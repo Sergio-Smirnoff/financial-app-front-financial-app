@@ -32,6 +32,16 @@ export function useTransactionSummary(filters: SummaryFilters = {}) {
   })
 }
 
+// Account balances live in ms-banks and are updated asynchronously via Kafka after
+// a finances transaction commits. A single refetch can fire before the event has
+// propagated, leaving a stale balance until a manual refresh. Stagger several
+// refetches so a later one catches the propagated update.
+function syncBalancesEventually(queryClient: ReturnType<typeof useQueryClient>) {
+  for (const ms of [300, 1200, 2500, 4500]) {
+    setTimeout(() => queryClient.invalidateQueries({ queryKey: ['banks'] }), ms)
+  }
+}
+
 export function useRecordTransaction() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -39,10 +49,7 @@ export function useRecordTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      // Give Kafka a moment to sync balance across microservices
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['banks'] })
-      }, 500)
+      syncBalancesEventually(queryClient)
     },
   })
 }
@@ -54,9 +61,7 @@ export function useDeleteTransaction() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['banks'] })
-      }, 500)
+      syncBalancesEventually(queryClient)
     },
   })
 }

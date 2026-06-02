@@ -4,13 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils/currency'
-import type { Loan } from '@/types/loans'
-
-interface ActiveObligationsProps {
-  loans: Loan[]
-}
-
 import { Surface } from '@/components/shared/Surface'
+import type { Loan } from '@/types/loans'
 
 interface ActiveObligationsProps {
   loans: Loan[]

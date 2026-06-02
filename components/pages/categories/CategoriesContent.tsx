@@ -139,7 +139,7 @@ export function CategoriesContent() {
                               title: 'Delete subcategory',
                               description: `Delete "${sub.name}"?`,
                               onConfirm: () =>
-                                deleteSubcategory.mutate(sub.id, {
+                                deleteSubcategory.mutate({ parentId: cat.id, subId: sub.id }, {
                                   onSuccess: () => toast.success('Subcategory deleted'),
                                   onError: () => toast.error('Failed to delete subcategory'),
                                 }),
