@@ -3,15 +3,14 @@ export type CardType = 'STANDARD' | 'SILVER' | 'GOLD' | 'BLACK' | 'PLATINUM'
 export type CardBehavior = 'INSTANT_PAYMENT' | 'INSTALLMENTS'
 
 export interface Card {
-  id: number
-  bankId: number
+  bankNumber: string
   userId: number
   displayName: string
   brand: CardBrand
   cardType: CardType
   behavior: CardBehavior
-  last4Digits: string
-  expiringDate: string
+  cardNumber: string
+  expiringDate: string   // "MM/yy"
   closingDay: number
   dueDay: number
   createdAt: string
@@ -19,25 +18,31 @@ export interface Card {
 }
 
 export interface CardRequest {
-  bankId: number
+  bankNumber: string
   brand: CardBrand
   cardType: CardType
   behavior: CardBehavior
-  last4Digits: string
+  cardNumber: string
   expiringDate: string
   closingDay: number
   dueDay: number
 }
 
+export interface UpdateCardRequest {
+  expiringDate?: string
+  closingDay?: number
+  dueDay?: number
+}
+
 export interface CardInstallment {
   id: number
-  cardId: number
+  cardNumber: string
   description: string
-  totalAmount: number
+  totalAmount: string
   currency: string
   installmentNumber: number
   totalInstallments: number
-  amount: number
+  amount: string
   dueDate: string
   paid: boolean
   paidDate: string | null
@@ -45,7 +50,7 @@ export interface CardInstallment {
 
 export interface CardExpenseCreateRequest {
   description: string
-  totalAmount: number
+  totalAmount: string
   currency: string
   totalInstallments: number
   firstDueDate: string

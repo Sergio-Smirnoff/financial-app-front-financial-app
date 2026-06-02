@@ -1,11 +1,11 @@
 export interface Loan {
   id: number
-  bankId: number
+  bankNumber: string
   userId: number
   name: string
-  principal: number
+  principal: string
   currency: string
-  interestRate: number
+  interestRate: string
   totalInstallments: number
   remainingInstallments: number
   startDate: string
@@ -18,7 +18,7 @@ export interface LoanInstallment {
   id: number
   loanId: number
   installmentNumber: number
-  amount: number
+  amount: string
   dueDate: string
   paid: boolean
   paidDate: string | null
@@ -27,11 +27,11 @@ export interface LoanInstallment {
 }
 
 export interface LoanRequest {
-  bankId: number
-  destinationAccountId: number
+  bankNumber: string
+  destinationAccountCbu: string
   name: string
-  principal: number
-  interestRate: number
+  principal: string
+  interestRate: string
   totalInstallments: number
   startDate: string
 }
