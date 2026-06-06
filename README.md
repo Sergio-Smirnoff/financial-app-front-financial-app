@@ -110,3 +110,13 @@ npm run lint
 ```
 
 Reads `NEXT_PUBLIC_GATEWAY_URL` (default `http://localhost:8080`). Copy `.env.local.example` to `.env.local` to override.
+
+## CI/CD
+
+| Workflow | Trigger | Does |
+|---|---|---|
+| `ci.yml` | PRs; push to develop/master | lint + build + docker build via shared `frontend-ci.yml` |
+| `docker-publish.yml` | push to master; `v*` tags | GHCR publish: `latest`, `sha-*`, semver on tags |
+| `release.yml` | manual (bump dropdown) | next `vX.Y.Z` tag + Release + versioned publish |
+
+Reusable workflows live in the root repo `Sergio-Smirnoff/financial-app`.
