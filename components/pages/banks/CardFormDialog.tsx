@@ -15,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { toast } from 'sonner'
 import { useCreateCard, useUpdateCard } from '@/lib/hooks/useCards'
 import { useAvailableBanks } from '@/lib/hooks/useBanks'
 import { cardSchema, CardFormValues } from '@/lib/schemas/card'
@@ -80,7 +81,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
       }
       onOpenChange(false)
     } catch (error) {
-      console.error('Failed to submit card form:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to save card')
     }
   }
 

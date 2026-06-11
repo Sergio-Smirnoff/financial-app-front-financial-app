@@ -136,7 +136,10 @@ export function TransactionsContent() {
                       <TableCell className="text-sm text-muted-foreground">{accountName(tx.toCbu)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{tx.categoryName ?? '—'}</TableCell>
                       <TableCell>
-                        <Badge variant={tx.type === 'INCOME' ? 'default' : tx.type === 'EXPENSE' ? 'destructive' : 'secondary'} className="text-xs">
+                        <Badge
+                          variant={tx.type === 'EXPENSE' ? 'destructive' : tx.type === 'TRANSFER' ? 'secondary' : 'default'}
+                          className={`text-xs ${tx.type === 'INCOME' ? 'border-transparent bg-green-600 text-white hover:bg-green-600 dark:bg-green-500 dark:hover:bg-green-500' : ''}`}
+                        >
                           {tx.type}
                         </Badge>
                       </TableCell>
