@@ -46,7 +46,7 @@ export default function HoldingDetailPage() {
           valueClassName={
             holding.plAmount != null
               ? plIsPositive
-                ? 'text-green-600 dark:text-green-400'
+                ? 'text-green-500'
                 : 'text-destructive'
               : undefined
           }
