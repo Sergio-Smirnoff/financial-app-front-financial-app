@@ -3,7 +3,9 @@
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
 import { BankFilter } from './BankFilter'
+import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 
 const InvestmentsDashboard = dynamic(
   () => import('./InvestmentsDashboard').then((m) => ({ default: m.InvestmentsDashboard })),
@@ -30,19 +32,60 @@ const AlertsTab = dynamic(
   { ssr: false },
 )
 
+function useActiveAlertsCount() {
+  const { data: holdings = [] } = usePortfolioHoldings()
+  return holdings.filter(
+    (h) => h.notifyGainThresholdPct != null || h.notifyLossThresholdPct != null,
+  ).length
+}
+
 export function InvestmentsLayout() {
   const [tab, setTab] = useState('overview')
   const [bankNumber, setBankNumber] = useState<string | null>(null)
   const showBankFilter = tab === 'overview' || tab === 'holdings' || tab === 'performance'
+  const alertsCount = useActiveAlertsCount()
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-4 h-full flex flex-col overflow-hidden">
-      <TabsList className="shrink-0">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="holdings">Holdings</TabsTrigger>
-        <TabsTrigger value="performance">Performance</TabsTrigger>
-        <TabsTrigger value="markets">Markets</TabsTrigger>
-        <TabsTrigger value="alerts">Alerts</TabsTrigger>
+      <TabsList
+        variant="line"
+        className="shrink-0 w-full justify-start border-b border-border rounded-none pb-0 h-auto gap-0"
+      >
+        {(
+          [
+            { value: 'overview', label: 'Overview' },
+            { value: 'holdings', label: 'Holdings' },
+            { value: 'performance', label: 'Performance' },
+            { value: 'markets', label: 'Markets' },
+            { value: 'alerts', label: 'Alerts' },
+          ] as const
+        ).map(({ value, label }) => (
+          <TabsTrigger
+            key={value}
+            value={value}
+            className="
+              rounded-none px-4 pb-3 pt-1 text-sm font-medium
+              text-muted-foreground
+              data-[state=active]:text-foreground
+              data-[state=active]:border-b-2
+              data-[state=active]:border-primary
+              data-[state=active]:shadow-none
+              hover:text-foreground
+              transition-colors
+              gap-1.5
+            "
+          >
+            {label}
+            {value === 'alerts' && alertsCount > 0 && (
+              <Badge
+                variant="default"
+                className="h-4 min-w-4 px-1 text-[10px] leading-none"
+              >
+                {alertsCount}
+              </Badge>
+            )}
+          </TabsTrigger>
+        ))}
       </TabsList>
 
       {showBankFilter && <BankFilter value={bankNumber} onChange={setBankNumber} />}

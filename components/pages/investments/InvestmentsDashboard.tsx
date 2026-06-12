@@ -39,9 +39,15 @@ export function InvestmentsDashboard({ enabled = true, bankNumber }: Investments
           {bankNumber && bankTotalsByCurrency.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {bankTotalsByCurrency.map(([currency, total]) => (
-                <div key={currency} className="rounded-xl border bg-card p-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bank Total {currency}</p>
+                <div
+                  key={currency}
+                  className="rounded-2xl border border-border bg-gradient-to-b from-muted/40 to-card p-5 min-w-[160px]"
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Invested · {currency}
+                  </p>
                   <p className="text-2xl font-black tracking-tight">{formatCurrency(total, currency)}</p>
+                  <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-1">read-only</p>
                 </div>
               ))}
             </div>

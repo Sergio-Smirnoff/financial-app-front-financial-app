@@ -1,10 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/currency'
 import { cn } from '@/lib/utils'
 import type { PortfolioSummary } from '@/types/investments'
-
 import { Surface } from '@/components/shared/Surface'
 
 interface PortfolioSummaryCardProps {
@@ -14,13 +13,38 @@ interface PortfolioSummaryCardProps {
 function PlValue({ amount, percent, currency }: { amount: number; percent: number; currency: string }) {
   const isPositive = amount >= 0
   return (
-    <div>
-      <span className={cn('text-sm font-medium', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
+    <div className="flex items-baseline gap-1">
+      <span className={cn('text-sm font-semibold', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
         {isPositive ? '+' : ''}{formatCurrency(amount, currency)}
       </span>
-      <span className={cn('text-xs ml-1', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
+      <span className={cn('text-xs', isPositive ? 'text-green-600 dark:text-green-400' : 'text-destructive')}>
         ({isPositive ? '+' : ''}{percent.toFixed(2)}%)
       </span>
+    </div>
+  )
+}
+
+function CurrencyPanel({
+  label,
+  totalValue,
+  plAmount,
+  plPercent,
+  currency,
+  divider,
+}: {
+  label: string
+  totalValue: number
+  plAmount: number
+  plPercent: number
+  currency: string
+  divider?: boolean
+}) {
+  return (
+    <div className={cn('space-y-1 px-2', divider && 'sm:border-l sm:border-border sm:pl-6')}>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
+      <p className="text-2xl font-black tracking-tight">{formatCurrency(totalValue, currency)}</p>
+      <PlValue amount={plAmount} percent={plPercent} currency={currency} />
+      <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">read-only</p>
     </div>
   )
 }
@@ -31,7 +55,7 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
 
   if (!hasArs && !hasUsd) {
     return (
-      <Surface>
+      <Surface className="bg-gradient-to-b from-muted/40 to-card">
         <CardContent className="py-8">
           <p className="text-sm text-muted-foreground text-center">
             No holdings yet. Add your first holding in the Holdings tab.
@@ -42,25 +66,32 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
   }
 
   return (
-    <Surface>
-      <CardHeader>
-        <CardTitle className="text-sm font-medium">Portfolio Summary</CardTitle>
+    <Surface className="bg-gradient-to-b from-muted/40 to-card">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          Portfolio Total
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-0">
           {hasArs && (
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">ARS</p>
-              <p className="text-2xl font-bold">{formatCurrency(summary.totalValueArs, 'ARS')}</p>
-              <PlValue amount={summary.totalPlArs} percent={summary.plPercentArs} currency="ARS" />
-            </div>
+            <CurrencyPanel
+              label="ARS"
+              totalValue={summary.totalValueArs}
+              plAmount={summary.totalPlArs}
+              plPercent={summary.plPercentArs}
+              currency="ARS"
+            />
           )}
           {hasUsd && (
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide">USD</p>
-              <p className="text-2xl font-bold">{formatCurrency(summary.totalValueUsd, 'USD')}</p>
-              <PlValue amount={summary.totalPlUsd} percent={summary.plPercentUsd} currency="USD" />
-            </div>
+            <CurrencyPanel
+              label="USD"
+              totalValue={summary.totalValueUsd}
+              plAmount={summary.totalPlUsd}
+              plPercent={summary.plPercentUsd}
+              currency="USD"
+              divider={hasArs}
+            />
           )}
         </div>
       </CardContent>
