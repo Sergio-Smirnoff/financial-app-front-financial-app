@@ -14,6 +14,7 @@ export function TickerSearchBox() {
       <Input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onBlur={() => setTimeout(() => setQuery(''), 150)}
         placeholder="Search a ticker to research…"
         className="h-11 rounded-xl"
       />
