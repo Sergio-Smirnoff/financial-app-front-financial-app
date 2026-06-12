@@ -32,7 +32,7 @@ const AlertsTab = dynamic(
   { ssr: false },
 )
 
-function useActiveAlertsCount() {
+function useAlertHoldingsCount() {
   const { data: holdings = [] } = usePortfolioHoldings()
   return holdings.filter(
     (h) => h.notifyGainThresholdPct != null || h.notifyLossThresholdPct != null,
@@ -43,7 +43,7 @@ export function InvestmentsLayout() {
   const [tab, setTab] = useState('overview')
   const [bankNumber, setBankNumber] = useState<string | null>(null)
   const showBankFilter = tab === 'overview' || tab === 'holdings' || tab === 'performance'
-  const alertsCount = useActiveAlertsCount()
+  const alertsCount = useAlertHoldingsCount()
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-4 h-full flex flex-col overflow-hidden">
@@ -67,8 +67,7 @@ export function InvestmentsLayout() {
               rounded-none px-4 pb-3 pt-1 text-sm font-medium
               text-muted-foreground
               data-[state=active]:text-foreground
-              data-[state=active]:border-b-2
-              data-[state=active]:border-primary
+              data-[state=active]:[&::after]:bg-primary
               data-[state=active]:shadow-none
               hover:text-foreground
               transition-colors
