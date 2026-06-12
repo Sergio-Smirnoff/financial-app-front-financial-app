@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useCreateHolding, useUpdateHolding } from '@/lib/hooks/useInvestments'
 import { useBanks } from '@/lib/hooks/useBanks'
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -31,7 +31,7 @@ const ASSET_TYPES = [
 const CURRENCIES = ['ARS', 'USD'] as const
 
 const schema = z.object({
-  accountCbu: z.string().regex(/^\d{22}$/, 'Required'),
+  bankNumber: z.string().regex(/^\d{3}$/, 'Required'),
   fundingCbu: z.string().regex(/^\d{22}$/, 'Required for transaction').optional().nullable(),
   ticker: z.string().min(1, 'Required').max(20),
   name: z.string().min(1, 'Required').max(100),
@@ -56,13 +56,10 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
   const updateHolding = useUpdateHolding()
   const isEditing = !!holding
 
-  // bank picker is a UX convenience; the submitted values are CBUs.
-  const [selectedBankNumber, setSelectedBankNumber] = useState<string>('')
-
   const form = useForm<FormValues, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      accountCbu: holding?.accountCbu || '',
+      bankNumber: holding?.bankNumber || '',
       fundingCbu: null,
       ticker: holding?.ticker || '',
       name: holding?.name || '',
@@ -75,47 +72,21 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
     },
   })
 
-  // On edit, once banks are loaded, derive the bank from the holding's account CBU.
-  useEffect(() => {
-    if (holding && banks.length > 0 && !selectedBankNumber) {
-      const owner = banks.find((b) => b.accounts.some((a) => a.cbu === holding.accountCbu))
-      setSelectedBankNumber(owner?.bankNumber ?? holding.accountCbu.slice(0, 3))
-      form.reset({
-        accountCbu: holding.accountCbu,
-        fundingCbu: null,
-        ticker: holding.ticker,
-        name: holding.name,
-        assetType: holding.assetType,
-        quantity: holding.quantity,
-        avgPurchasePrice: holding.avgPurchasePrice,
-        currency: holding.currency.toUpperCase() as any,
-        notifyGainThresholdPct: holding.notifyGainThresholdPct,
-        notifyLossThresholdPct: holding.notifyLossThresholdPct,
-      })
-    }
-  }, [holding, banks, form, selectedBankNumber])
-
   const selectedCurrency = form.watch('currency')
+  const selectedBankNumber = form.watch('bankNumber')
 
-  const currentBank = useMemo(() => {
-    if (!selectedBankNumber || banks.length === 0) return null
-    return banks.find((b) => b.bankNumber === selectedBankNumber) ?? null
-  }, [banks, selectedBankNumber])
+  const currentBank = useMemo(
+    () => banks.find((bank) => bank.bankNumber === selectedBankNumber) ?? null,
+    [banks, selectedBankNumber],
+  )
 
-  const investmentAccounts = useMemo(() => {
-    if (!currentBank) return []
-    return currentBank.accounts.filter((a) => a.type === 'INVESTMENT' && a.currency.toUpperCase() === selectedCurrency.toUpperCase())
-  }, [currentBank, selectedCurrency])
-
-  const fundingAccounts = useMemo(() => {
-    if (!currentBank) return []
-    return currentBank.accounts.filter((a) => a.type !== 'INVESTMENT' && a.currency.toUpperCase() === selectedCurrency.toUpperCase())
-  }, [currentBank, selectedCurrency])
-
-  const resetAccountSelections = () => {
-    form.setValue('accountCbu', '' as any)
-    form.setValue('fundingCbu', null)
-  }
+  const fundingAccounts = useMemo(
+    () =>
+      (currentBank?.accounts ?? []).filter(
+        (account) => account.currency.toUpperCase() === selectedCurrency.toUpperCase(),
+      ),
+    [currentBank, selectedCurrency],
+  )
 
   const onSubmit = (values: FormValues) => {
     const data = {
@@ -169,51 +140,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Currency</FormLabel>
-                <Select value={field.value} onValueChange={(v) => { field.onChange(v); resetAccountSelections() }}>
+                <Select
+                  value={field.value}
+                  onValueChange={(currency) => { field.onChange(currency); form.setValue('fundingCbu', null) }}
+                  disabled={isEditing}
+                >
                   <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                   <SelectContent className="bg-popover border-border">
-                    {CURRENCIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormItem>
-            <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Bank</FormLabel>
-            <Select
-              value={selectedBankNumber}
-              onValueChange={(v) => { setSelectedBankNumber(v); resetAccountSelections() }}
-              disabled={isEditing}
-            >
-              <SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder="Select Bank" /></SelectTrigger>
-              <SelectContent className="bg-popover border-border">
-                {banks.map((b) => (
-                  <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormItem>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="accountCbu"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Investment Account</FormLabel>
-                <Select
-                  value={field.value || ''}
-                  onValueChange={field.onChange}
-                  disabled={!selectedBankNumber || isEditing}
-                >
-                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? 'Select account' : 'Pick bank first'} /></SelectTrigger></FormControl>
-                  <SelectContent className="bg-popover border-border">
-                    {investmentAccounts.map((a) => (
-                      <SelectItem key={a.cbu} value={a.cbu}>{a.name}</SelectItem>
-                    ))}
+                    {CURRENCIES.map((currency) => <SelectItem key={currency} value={currency}>{currency}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -223,22 +157,18 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
 
           <FormField
             control={form.control}
-            name="fundingCbu"
+            name="bankNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Funding Account</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Bank</FormLabel>
                 <Select
-                  value={field.value ?? ''}
-                  onValueChange={field.onChange}
-                  disabled={!selectedBankNumber}
+                  value={field.value}
+                  onValueChange={(bankNumber) => { field.onChange(bankNumber); form.setValue('fundingCbu', null) }}
+                  disabled={isEditing}
                 >
-                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? 'Pay from...' : 'Pick bank first'} /></SelectTrigger></FormControl>
+                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
                   <SelectContent className="bg-popover border-border">
-                    {fundingAccounts.map((a) => (
-                      <SelectItem key={a.cbu} value={a.cbu}>
-                        {a.name} ({formatCurrency(Number(a.balance), a.currency)})
-                      </SelectItem>
-                    ))}
+                    {banks.map((bank) => <SelectItem key={bank.bankNumber} value={bank.bankNumber}>{bank.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -246,6 +176,31 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="fundingCbu"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Funding Account</FormLabel>
+              <Select
+                value={field.value ?? ''}
+                onValueChange={field.onChange}
+                disabled={!selectedBankNumber}
+              >
+                <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? 'Pay from...' : 'Pick bank first'} /></SelectTrigger></FormControl>
+                <SelectContent className="bg-popover border-border">
+                  {fundingAccounts.map((account) => (
+                    <SelectItem key={account.cbu} value={account.cbu}>
+                      {account.name} ({formatCurrency(Number(account.balance), account.currency)})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid grid-cols-2 gap-4">
           <FormField
@@ -270,8 +225,8 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                   <SelectContent className="bg-popover border-border">
-                    {ASSET_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    {ASSET_TYPES.map((assetType) => (
+                      <SelectItem key={assetType.value} value={assetType.value}>{assetType.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -3,7 +3,7 @@ export type AssetType = 'STOCK' | 'BOND' | 'CEDEAR' | 'FCI'
 export interface Holding {
   id: number
   userId: number
-  accountCbu: string
+  bankNumber: string
   fundingCbu?: string | null
   ticker: string
   name: string
@@ -69,7 +69,7 @@ export interface MarketQuote {
 }
 
 export interface CreateHoldingRequest {
-  accountCbu: string
+  bankNumber: string
   fundingCbu?: string | null
   ticker: string
   name: string

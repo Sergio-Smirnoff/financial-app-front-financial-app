@@ -54,7 +54,7 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
     } catch { /* toast handled by mutation */ }
   };
 
-  const accountTypes = catalog?.accountTypes ?? ["CHECKING", "SAVINGS", "INVESTMENT"];
+  const accountTypes = (catalog?.accountTypes ?? ["CHECKING", "SAVINGS"]).filter((accountType) => accountType !== "INVESTMENT");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

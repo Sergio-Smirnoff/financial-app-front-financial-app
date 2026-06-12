@@ -142,7 +142,7 @@ function LoanInstallmentSubList({ loanId, currency }: { loanId: number, currency
   const availableAccounts = useMemo(() => {
     const flat: AccountResponse[] = []
     for (const b of banks) for (const a of b.accounts) flat.push(a)
-    return flat.filter((a) => a.currency === currency && a.type !== 'INVESTMENT')
+    return flat.filter((account) => account.currency === currency)
   }, [banks, currency])
 
   if (isLoading) return <div className="py-4 flex justify-center"><LoadingSpinner size="sm" /></div>
