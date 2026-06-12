@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { usePortfolioHoldings, useDeleteHolding } from '@/lib/hooks/useInvestments'
+import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { useUiStore } from '@/lib/store/ui.store'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { HoldingDetailDialog } from './HoldingDetailDialog'
@@ -26,9 +25,10 @@ const ASSET_TYPE_LABELS: Record<AssetType, string> = {
 
 interface HoldingsContentProps {
   enabled?: boolean
+  bankNumber?: string | null
 }
 
-export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
+export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentProps) {
   const { data: holdings, isLoading, isError } = usePortfolioHoldings({ enabled })
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)
@@ -48,13 +48,10 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage message="Failed to load holdings." />
 
+  const visibleHoldings = (holdings ?? []).filter((holding) => !bankNumber || holding.bankNumber === bankNumber)
   const grouped = ASSET_TYPE_ORDER
-    .map((type) => ({
-      type,
-      label: ASSET_TYPE_LABELS[type],
-      items: (holdings ?? []).filter((h) => h.assetType === type),
-    }))
-    .filter((g) => g.items.length > 0)
+    .map((type) => ({ type, label: ASSET_TYPE_LABELS[type], items: visibleHoldings.filter((holding) => holding.assetType === type) }))
+    .filter((group) => group.items.length > 0)
 
   return (
     <div className="space-y-4">
@@ -64,7 +61,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
         </Button>
       </div>
 
-      {holdings?.length === 0 && (
+      {visibleHoldings.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">No holdings yet.</p>
       )}
 

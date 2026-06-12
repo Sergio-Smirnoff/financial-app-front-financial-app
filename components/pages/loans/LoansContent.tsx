@@ -126,7 +126,7 @@ function LoanCard({
   const availableAccounts = useMemo(() => {
     const flat: AccountResponse[] = []
     for (const b of banks) for (const a of b.accounts) flat.push(a)
-    return flat.filter((a) => a.currency === loan.currency && a.type !== 'INVESTMENT')
+    return flat.filter((account) => account.currency === loan.currency)
   }, [banks, loan.currency])
 
   const paidCount = installments?.filter((i) => i.paid).length ?? 0

@@ -58,7 +58,7 @@ export function LoanForm({ bankNumber, onSuccess }: { bankNumber?: string, onSuc
 
   const availableAccounts = useMemo(() => {
     const bank = banks.find((b) => b.bankNumber === selectedBankNumber)
-    return bank?.accounts.filter((a) => a.type !== 'INVESTMENT') ?? []
+    return bank?.accounts ?? []
   }, [banks, selectedBankNumber])
 
   const onSubmit: SubmitHandler<FormValues> = (values) => {

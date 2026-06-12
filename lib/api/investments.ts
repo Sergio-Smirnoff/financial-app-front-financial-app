@@ -41,7 +41,7 @@ interface RawPortfolioSummary {
 interface RawHoldingWithPrice {
   id: number
   userId: number
-  accountCbu: string
+  bankNumber: string
   ticker: string
   name: string
   assetType: string
@@ -134,7 +134,7 @@ export const investmentsApi = {
     return (raw ?? []).map((h) => ({
       id: h.id,
       userId: h.userId,
-      accountCbu: h.accountCbu,
+      bankNumber: h.bankNumber,
       fundingCbu: null,
       ticker: h.ticker,
       name: h.name,

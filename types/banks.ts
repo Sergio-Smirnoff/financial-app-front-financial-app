@@ -1,4 +1,4 @@
-export type AccountType = 'CHECKING' | 'SAVINGS' | 'INVESTMENT';
+export type AccountType = 'CHECKING' | 'SAVINGS';
 
 export interface AccountResponse {
   bankNumber: string;

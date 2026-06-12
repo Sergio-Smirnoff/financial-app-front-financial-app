@@ -4,43 +4,60 @@ import { usePortfolioSummary, usePortfolioHoldings } from '@/lib/hooks/useInvest
 import { PortfolioSummaryCard } from './PortfolioSummaryCard'
 import { AllocationChart } from './AllocationChart'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
-import { TopMovers } from '@/components/pages/dashboard/TopMovers'
-import { ActiveAlertsCard } from './ActiveAlertsCard'
-import { PortfolioPerformanceChart } from './PortfolioPerformanceChart'
-import { MarketDiscoveryCard } from './MarketDiscoveryCard'
 import { QueryBoundary } from '@/components/shared/QueryBoundary'
+import { formatCurrency } from '@/lib/utils/currency'
 
-export function InvestmentsDashboard({ enabled = true }: { enabled?: boolean }) {
+interface InvestmentsDashboardProps {
+  enabled?: boolean
+  bankNumber?: string | null
+}
+
+export function InvestmentsDashboard({ enabled = true, bankNumber }: InvestmentsDashboardProps) {
   const { data: summary, isLoading, isError, error } = usePortfolioSummary({ enabled })
   const { data: holdings = [] } = usePortfolioHoldings({ enabled })
 
+  const filteredHoldings = bankNumber
+    ? holdings.filter((holding) => holding.bankNumber === bankNumber)
+    : holdings
+
+  const bankTotalsByCurrency = bankNumber
+    ? Object.entries(
+        filteredHoldings.reduce<Record<string, number>>((acc, holding) => {
+          const currency = holding.currency.toUpperCase()
+          acc[currency] = (acc[currency] ?? 0) + (holding.currentValue ?? 0)
+          return acc
+        }, {}),
+      )
+    : []
+
   return (
     <QueryBoundary isLoading={isLoading} isError={isError || (!summary && !isLoading)} error={error}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left/Main Column */}
-            <div className="lg:col-span-2 space-y-4">
-                {summary && <PortfolioSummaryCard summary={summary} />}
+      <div className="grid grid-cols-1 gap-6">
+        <div className="space-y-4">
+          {summary && <PortfolioSummaryCard summary={summary} />}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {summary?.breakdownArs && summary.breakdownArs.length > 0 && (
-                    <AllocationChart breakdown={summary.breakdownArs} currency="ARS" />
-                    )}
-                    {summary?.breakdownUsd && summary.breakdownUsd.length > 0 && (
-                    <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
-                    )}
-                    <HoldingTypeBreakdown />
+          {bankNumber && bankTotalsByCurrency.length > 0 && (
+            <div className="flex flex-wrap gap-4">
+              {bankTotalsByCurrency.map(([currency, total]) => (
+                <div key={currency} className="rounded-xl border bg-card p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bank Total {currency}</p>
+                  <p className="text-2xl font-black tracking-tight">{formatCurrency(total, currency)}</p>
                 </div>
-
-                <TopMovers holdings={holdings} />
+              ))}
             </div>
+          )}
 
-            {/* Right/Sidebar Column */}
-            <div className="space-y-4">
-                <ActiveAlertsCard holdings={holdings} />
-                <PortfolioPerformanceChart />
-                <MarketDiscoveryCard />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {summary?.breakdownArs && summary.breakdownArs.length > 0 && (
+              <AllocationChart breakdown={summary.breakdownArs} currency="ARS" />
+            )}
+            {summary?.breakdownUsd && summary.breakdownUsd.length > 0 && (
+              <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
+            )}
+            <HoldingTypeBreakdown />
+          </div>
         </div>
+      </div>
     </QueryBoundary>
   )
 }
