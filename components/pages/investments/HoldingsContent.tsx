@@ -1,11 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { usePortfolioHoldings, useDeleteHolding } from '@/lib/hooks/useInvestments'
+import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { useUiStore } from '@/lib/store/ui.store'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { HoldingDetailDialog } from './HoldingDetailDialog'

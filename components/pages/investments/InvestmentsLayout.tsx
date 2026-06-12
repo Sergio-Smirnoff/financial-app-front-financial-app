@@ -54,7 +54,7 @@ export function InvestmentsLayout() {
         <HoldingsContent enabled={tab === 'holdings'} bankNumber={bankNumber} />
       </TabsContent>
       <TabsContent value="performance" className="flex-1 overflow-auto">
-        <PerformanceTab enabled={tab === 'performance'} bankNumber={bankNumber} />
+        <PerformanceTab enabled={tab === 'performance'} />
       </TabsContent>
       <TabsContent value="markets" className="flex-1 overflow-auto">
         <MarketsTab enabled={tab === 'markets'} />
