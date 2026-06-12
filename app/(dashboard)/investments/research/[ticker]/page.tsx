@@ -10,10 +10,15 @@ export default function TickerResearchPage() {
   const decodedTicker = decodeURIComponent(ticker)
   return (
     <div className="p-6 space-y-6 max-w-3xl mx-auto">
-      <Button type="button" variant="ghost" onClick={() => router.back()}>&larr; Back</Button>
+      <Button type="button" variant="ghost" onClick={() => router.back()}>
+        &larr; Back
+      </Button>
       <TickerChartPanel ticker={decodedTicker} />
       {/* TODO: InvestmentsLayout should read ?add= to auto-open the New Holding dialog (future task) */}
-      <Button type="button" onClick={() => router.push(`/investments?add=${encodeURIComponent(decodedTicker)}`)}>
+      <Button
+        type="button"
+        onClick={() => router.push(`/investments?add=${encodeURIComponent(decodedTicker)}`)}
+      >
         Add holding for {decodedTicker}
       </Button>
     </div>
