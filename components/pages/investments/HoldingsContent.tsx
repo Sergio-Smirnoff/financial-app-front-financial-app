@@ -92,7 +92,6 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
         onOpenChange={(o) => !o && setSellHolding(null)}
         onSuccess={() => setSellHolding(null)}
       />
-
     </div>
   )
 }
