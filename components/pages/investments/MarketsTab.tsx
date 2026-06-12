@@ -1,6 +1,7 @@
 'use client'
 
 import { MarketDiscoveryCard } from './MarketDiscoveryCard'
+import { TickerSearchBox } from './TickerSearchBox'
 import { TopMovers } from '@/components/pages/dashboard/TopMovers'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 
@@ -13,6 +14,7 @@ export function MarketsTab({ enabled }: MarketsTabProps) {
   if (!enabled) return null
   return (
     <div className="space-y-4">
+      <TickerSearchBox />
       <MarketDiscoveryCard />
       <TopMovers holdings={holdings} />
     </div>
