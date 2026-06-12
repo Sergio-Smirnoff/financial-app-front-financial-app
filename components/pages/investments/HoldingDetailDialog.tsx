@@ -2,18 +2,10 @@
 
 import { useState, useMemo } from 'react'
 import { format, subWeeks, subMonths } from 'date-fns'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from 'recharts'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { usePriceHistory } from '@/lib/hooks/useInvestments'
 import { formatCurrency } from '@/lib/utils/currency'
+import { PriceChart } from './PriceChart'
 import type { HoldingWithPrice } from '@/types/investments'
 
 type Range = '1W' | '1M' | '3M' | 'ALL'
@@ -198,36 +190,12 @@ export function HoldingDetailDialog({ holding, open, onClose }: Props) {
               prices refresh (weekdays 10–17 ARS time).
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="hsl(var(--border))"
-                />
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} />
-                <YAxis
-                  tick={{ fontSize: 10 }}
-                  tickLine={false}
-                  width={65}
-                  tickFormatter={(v) => v.toLocaleString()}
-                  domain={['auto', 'auto']}
-                  scale="linear"
-                />
-                <Tooltip
-                  formatter={(v) => [
-                    formatCurrency(Number(v ?? 0), holding.currency),
-                    'Price',
-                  ]}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="price"
-                  stroke={plColor}
-                  dot={false}
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <PriceChart
+              series={chartData}
+              currency={holding.currency}
+              strokeColor={plColor}
+              showAxes
+            />
           )}
         </div>
 

@@ -86,3 +86,19 @@ export function useDeleteHolding() {
     },
   })
 }
+
+export function useTickerSearch(query: string) {
+  return useQuery({
+    queryKey: ['ticker', 'search', query],
+    queryFn: () => investmentsApi.searchTickers(query),
+    enabled: query.trim().length >= 1,
+  })
+}
+
+export function useTickerResearch(ticker: string, range = 'D90') {
+  return useQuery({
+    queryKey: ['ticker', 'research', ticker, range],
+    queryFn: () => investmentsApi.getTickerResearch(ticker, range),
+    enabled: !!ticker,
+  })
+}

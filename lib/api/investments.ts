@@ -10,6 +10,8 @@ import type {
   PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
+  TickerSearchResult,
+  TickerResearch,
 } from '@/types/investments'
 
 // ── Backend sends all money/numeric fields as decimal strings ("no BigDecimal on
@@ -170,5 +172,34 @@ export const investmentsApi = {
     if (to) params.set('to', to)
     const query = params.toString() ? `?${params}` : ''
     return api.get<PriceHistory[]>(`${BASE}/prices/history/${ticker}${query}`)
+  },
+
+  searchTickers: async (query: string): Promise<TickerSearchResult[]> => {
+    const raw = await api.get<Array<{ ticker: string; price: string; currency: string; variation: string }>>(
+      `${BASE}/market/search?q=${encodeURIComponent(query)}`,
+    )
+    return (raw ?? []).map((result) => ({
+      ticker: result.ticker,
+      price: toNum(result.price),
+      currency: result.currency,
+      variation: toNum(result.variation),
+    }))
+  },
+
+  getTickerResearch: async (ticker: string, range = 'D90', assetType = 'STOCK'): Promise<TickerResearch> => {
+    const raw = await api.get<{
+      ticker: string
+      currency: string | null
+      currentPrice: string | null
+      variation: string | null
+      series: Array<{ date: string; price: string }>
+    }>(`${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`)
+    return {
+      ticker: raw.ticker,
+      currency: raw.currency,
+      currentPrice: toNumOrNull(raw.currentPrice),
+      variation: toNumOrNull(raw.variation),
+      series: (raw.series ?? []).map((point) => ({ date: point.date, price: toNum(point.price) })),
+    }
   },
 }

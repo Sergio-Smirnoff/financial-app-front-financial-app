@@ -82,3 +82,23 @@ export interface CreateHoldingRequest {
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest
+
+export interface TickerSearchResult {
+  ticker: string
+  price: number
+  currency: string
+  variation: number
+}
+
+export interface TickerResearchPoint {
+  date: string
+  price: number
+}
+
+export interface TickerResearch {
+  ticker: string
+  currency: string | null
+  currentPrice: number | null
+  variation: number | null
+  series: TickerResearchPoint[]
+}
