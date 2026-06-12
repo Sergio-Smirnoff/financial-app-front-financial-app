@@ -175,7 +175,7 @@ export function HoldingDetailDialog({ holding, open, onClose }: Props) {
         </div>
 
         {/* Chart */}
-        <div className="h-52">
+        <div className="h-[220px]">
           {isLoading ? (
             <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
               Loading…

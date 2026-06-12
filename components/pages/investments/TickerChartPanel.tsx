@@ -21,7 +21,7 @@ export function TickerChartPanel({ ticker }: { ticker: string }) {
               {formatCurrency(data.currentPrice, data.currency ?? 'ARS')}
               {data.variation != null && (
                 <span className={data.variation >= 0 ? 'text-green-500 ml-2' : 'text-red-500 ml-2'}>
-                  {data.variation >= 0 ? '+' : ''}{data.variation}%
+                  {data.variation >= 0 ? '+' : ''}{data.variation.toFixed(2)}%
                 </span>
               )}
             </span>
@@ -31,6 +31,7 @@ export function TickerChartPanel({ ticker }: { ticker: string }) {
           {RANGES.map((rangeOption) => (
             <button
               key={rangeOption}
+              type="button"
               onClick={() => setRange(rangeOption)}
               className={`text-xs font-bold px-3 py-1 rounded border ${
                 range === rangeOption
@@ -43,7 +44,7 @@ export function TickerChartPanel({ ticker }: { ticker: string }) {
           ))}
         </div>
       </div>
-      {isLoading && <div className="h-52 rounded-xl bg-muted animate-pulse" />}
+      {isLoading && <div className="h-[220px] rounded-xl bg-muted animate-pulse" />}
       {isError && <p className="text-sm text-red-500">Could not load price series.</p>}
       {data && <PriceChart series={data.series} currency={data.currency ?? 'ARS'} />}
     </div>

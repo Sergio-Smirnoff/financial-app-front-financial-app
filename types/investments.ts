@@ -90,7 +90,7 @@ export interface TickerSearchResult {
   variation: number
 }
 
-export interface TickerResearchPoint {
+export interface PricePoint {
   date: string
   price: number
 }
@@ -100,5 +100,5 @@ export interface TickerResearch {
   currency: string | null
   currentPrice: number | null
   variation: number | null
-  series: TickerResearchPoint[]
+  series: PricePoint[]
 }

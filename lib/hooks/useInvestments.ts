@@ -92,13 +92,16 @@ export function useTickerSearch(query: string) {
     queryKey: ['ticker', 'search', query],
     queryFn: () => investmentsApi.searchTickers(query),
     enabled: query.trim().length >= 1,
+    staleTime: 30 * 1000,
   })
 }
 
-export function useTickerResearch(ticker: string, range = 'D90') {
+export function useTickerResearch(ticker: string, range = 'D90', assetType = 'STOCK') {
   return useQuery({
-    queryKey: ['ticker', 'research', ticker, range],
-    queryFn: () => investmentsApi.getTickerResearch(ticker, range),
+    queryKey: ['ticker', 'research', ticker, range, assetType],
+    queryFn: () => investmentsApi.getTickerResearch(ticker, range, assetType),
     enabled: !!ticker,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
   })
 }

@@ -80,6 +80,21 @@ interface RawMarketQuote {
   volume: string
 }
 
+interface RawTickerSearchResult {
+  ticker: string
+  price: string
+  currency: string
+  variation: string
+}
+
+interface RawTickerResearch {
+  ticker: string
+  currency: string | null
+  currentPrice: string | null
+  variation: string | null
+  series: Array<{ date: string; price: string }>
+}
+
 const BASE = '/api/v1/investments'
 
 export const investmentsApi = {
@@ -175,7 +190,7 @@ export const investmentsApi = {
   },
 
   searchTickers: async (query: string): Promise<TickerSearchResult[]> => {
-    const raw = await api.get<Array<{ ticker: string; price: string; currency: string; variation: string }>>(
+    const raw = await api.get<RawTickerSearchResult[]>(
       `${BASE}/market/search?q=${encodeURIComponent(query)}`,
     )
     return (raw ?? []).map((result) => ({
@@ -187,13 +202,9 @@ export const investmentsApi = {
   },
 
   getTickerResearch: async (ticker: string, range = 'D90', assetType = 'STOCK'): Promise<TickerResearch> => {
-    const raw = await api.get<{
-      ticker: string
-      currency: string | null
-      currentPrice: string | null
-      variation: string | null
-      series: Array<{ date: string; price: string }>
-    }>(`${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`)
+    const raw = await api.get<RawTickerResearch>(
+      `${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`,
+    )
     return {
       ticker: raw.ticker,
       currency: raw.currency,
