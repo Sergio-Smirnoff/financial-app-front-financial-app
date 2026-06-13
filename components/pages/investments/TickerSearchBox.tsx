@@ -21,7 +21,7 @@ export function TickerSearchBox() {
         className="h-11 rounded-xl"
       />
       {query && visible.length > 0 && (
-        <div className="absolute z-10 mt-1.5 w-full rounded-xl border border-border bg-popover shadow-lg overflow-hidden">
+        <div className="mt-1.5 w-full rounded-xl border border-border bg-popover shadow-sm overflow-hidden">
           {visible.map((result, index) => (
             <button
               type="button"

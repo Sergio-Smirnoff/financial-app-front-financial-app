@@ -82,9 +82,10 @@ export function PortfolioPerformanceChart() {
                 formatter={(value: any) => [formatCurrency(Number(value ?? 0), currency), currency === 'ARS' ? 'Value (ARS)' : 'Value (USD)']}
                 labelFormatter={(label) => formatDate(label)}
               />
-              <Line 
-                type="monotone" 
-                dataKey={currency === 'ARS' ? 'totalValueArs' : 'totalValueUsd'} 
+              <Line
+                type="linear"
+                dataKey={currency === 'ARS' ? 'totalValueArs' : 'totalValueUsd'}
+                connectNulls={false}
                 stroke="hsl(var(--primary))" 
                 strokeWidth={3}
                 dot={{ r: 2, strokeWidth: 2, fill: 'hsl(var(--background))' }}

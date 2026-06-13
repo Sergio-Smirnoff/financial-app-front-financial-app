@@ -5,7 +5,9 @@ export const cardSchema = z.object({
   brand: z.enum(['VISA', 'MASTERCARD', 'AMEX']),
   cardType: z.enum(['STANDARD', 'SILVER', 'GOLD', 'BLACK', 'PLATINUM']),
   behavior: z.enum(['INSTANT_PAYMENT', 'CREDIT']),
-  cardNumber: z.string().regex(/^\d{16}$/, 'Must be 16 digits'),
+  cardNumber: z
+    .string()
+    .regex(/^\d{15,16}$/, 'Enter 16 digits, or 15 to auto-complete the check digit'),
   expiringDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Format MM/YY'),
   closingDay: z.number().int().min(1).max(31),
   dueDay: z.number().int().min(1).max(31),

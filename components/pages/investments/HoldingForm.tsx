@@ -190,11 +190,17 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
               >
                 <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? 'Pay from...' : 'Pick bank first'} /></SelectTrigger></FormControl>
                 <SelectContent className="bg-popover border-border">
-                  {fundingAccounts.map((account) => (
-                    <SelectItem key={account.cbu} value={account.cbu}>
-                      {account.name} ({formatCurrency(Number(account.balance), account.currency)})
+                  {fundingAccounts.length === 0 ? (
+                    <SelectItem value="__none" disabled>
+                      No {selectedCurrency} account in this bank
                     </SelectItem>
-                  ))}
+                  ) : (
+                    fundingAccounts.map((account) => (
+                      <SelectItem key={account.cbu} value={account.cbu}>
+                        {account.name} ({formatCurrency(Number(account.balance), account.currency)})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

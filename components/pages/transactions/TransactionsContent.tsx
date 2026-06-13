@@ -5,6 +5,7 @@ import { useTransactions, useDeleteTransaction } from '@/lib/hooks/useTransactio
 import { useUiStore } from '@/lib/store/ui.store'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { useBanks } from '@/lib/hooks/useBanks'
+import { sentinelAccountName } from '@/lib/utils/sentinelAccounts'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -50,8 +51,8 @@ export function TransactionsContent() {
   const accountName = (cbu: string | null) => {
     if (!cbu) return '—'
     const account = allAccounts.find((a) => a.cbu === cbu)
-    // Own accounts show their name; external counterparts show the full CBU.
-    return account ? account.name : cbu
+    if (account) return account.name
+    return sentinelAccountName(cbu) ?? cbu
   }
 
   const handleDelete = (tx: Transaction) => {

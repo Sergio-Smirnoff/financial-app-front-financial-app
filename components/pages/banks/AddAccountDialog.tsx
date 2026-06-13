@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "sonner";
+import { ApiError } from "@/lib/api/client";
 
 interface Props {
   account?: AccountResponse | null;
@@ -51,7 +53,13 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
         await onCreate({ bankNumber: v.bankNumber, name: v.name, type: v.type, currency: v.currency, cbu: v.cbu, alias: v.alias || undefined, isActive: true });
       }
       onOpenChange(false);
-    } catch { /* toast handled by mutation */ }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to save account";
+      if (error instanceof ApiError && error.code === "resource_already_exists") {
+        form.setError("name", { message });
+      }
+      toast.error(message);
+    }
   };
 
   const accountTypes = (catalog?.accountTypes ?? ["CHECKING", "SAVINGS"]).filter((accountType) => accountType !== "INVESTMENT");

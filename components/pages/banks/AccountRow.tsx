@@ -50,7 +50,7 @@ export function AccountRow({ account, bankName, onDeposit, onWithdraw, onTransfe
             </p>
           </div>
 
-          <div className="flex items-center gap-1 border-t md:border-t-0 pt-3 md:pt-0">
+          <div className="flex flex-wrap items-center gap-1 border-t md:border-t-0 pt-3 md:pt-0">
             <Button
               variant="ghost"
               size="sm"
