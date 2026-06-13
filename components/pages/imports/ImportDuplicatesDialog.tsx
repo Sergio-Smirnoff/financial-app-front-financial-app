@@ -12,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useResolveDuplicates } from '@/lib/hooks/useImport'
 import { DuplicateItem } from '@/types/import'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
 
 interface Props {
   open: boolean
@@ -33,9 +34,13 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
     })
 
   const handleResolve = async (keepIds: string[]) => {
-    await resolve.mutateAsync({ sessionId, keepIds })
-    onOpenChange(false)
-    onResolved()
+    try {
+      await resolve.mutateAsync({ sessionId, keepIds })
+      onOpenChange(false)
+      onResolved()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to resolve duplicates')
+    }
   }
 
   return (
