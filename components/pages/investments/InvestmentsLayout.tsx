@@ -5,7 +5,8 @@ import dynamic from 'next/dynamic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { BankFilter } from './BankFilter'
-import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
+import { PortfolioSummaryCard } from './PortfolioSummaryCard'
+import { usePortfolioHoldings, usePortfolioSummary } from '@/lib/hooks/useInvestments'
 
 const InvestmentsDashboard = dynamic(
   () => import('./InvestmentsDashboard').then((m) => ({ default: m.InvestmentsDashboard })),
@@ -44,6 +45,7 @@ export function InvestmentsLayout() {
   const [bankNumber, setBankNumber] = useState<string | null>(null)
   const showBankFilter = tab === 'overview' || tab === 'holdings' || tab === 'performance'
   const alertsCount = useAlertHoldingsCount()
+  const { data: summary } = usePortfolioSummary({ enabled: tab === 'overview' })
 
   return (
     <Tabs value={tab} onValueChange={setTab} className="space-y-4 h-full flex flex-col overflow-hidden">
@@ -56,7 +58,7 @@ export function InvestmentsLayout() {
             { value: 'overview', label: 'Overview' },
             { value: 'holdings', label: 'Holdings' },
             { value: 'performance', label: 'Performance' },
-            { value: 'markets', label: 'Markets' },
+            { value: 'markets', label: 'Market Discovery' },
             { value: 'alerts', label: 'Alerts' },
           ] as const
         ).map(({ value, label }) => (
@@ -86,6 +88,12 @@ export function InvestmentsLayout() {
           </TabsTrigger>
         ))}
       </TabsList>
+
+      {tab === 'overview' && summary && (
+        <div className="shrink-0">
+          <PortfolioSummaryCard summary={summary} />
+        </div>
+      )}
 
       {showBankFilter && <BankFilter value={bankNumber} onChange={setBankNumber} />}
 

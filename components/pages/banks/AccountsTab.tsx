@@ -222,6 +222,10 @@ export function AccountsTab() {
       )}
 
       <ConfirmDialog />
+
+      <p className="pt-2 text-center text-xs text-muted-foreground/70">
+        Account balances may take a few moments to update after a transaction.
+      </p>
     </div>
   );
 }

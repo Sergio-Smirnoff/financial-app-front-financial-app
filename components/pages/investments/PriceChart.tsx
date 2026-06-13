@@ -48,11 +48,12 @@ export function PriceChart({ series, currency, strokeColor = '#34d399', showAxes
         />
         <Tooltip formatter={(value) => formatCurrency(Number(value), currency)} />
         <Line
-          type="monotone"
+          type="linear"
           dataKey="price"
           stroke={strokeColor}
           strokeWidth={2}
           dot={false}
+          connectNulls={false}
         />
       </LineChart>
     </ResponsiveContainer>

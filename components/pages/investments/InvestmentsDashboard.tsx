@@ -1,7 +1,6 @@
 'use client'
 
 import { usePortfolioSummary, usePortfolioHoldings } from '@/lib/hooks/useInvestments'
-import { PortfolioSummaryCard } from './PortfolioSummaryCard'
 import { AllocationChart } from './AllocationChart'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 import { QueryBoundary } from '@/components/shared/QueryBoundary'
@@ -34,7 +33,16 @@ export function InvestmentsDashboard({ enabled = true, bankNumber }: Investments
     <QueryBoundary isLoading={isLoading} isError={isError || (!summary && !isLoading)} error={error}>
       <div className="grid grid-cols-1 gap-6">
         <div className="space-y-4">
-          {summary && <PortfolioSummaryCard summary={summary} />}
+          {bankNumber && filteredHoldings.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-8 text-center">
+              <p className="text-sm font-medium text-muted-foreground">
+                No holdings for this bank yet.
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground/70">
+                Buy a holding in this bank to see its invested total here.
+              </p>
+            </div>
+          )}
 
           {bankNumber && bankTotalsByCurrency.length > 0 && (
             <div className="flex flex-wrap gap-4">
