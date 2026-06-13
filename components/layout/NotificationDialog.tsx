@@ -41,7 +41,7 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg bg-popover border-border">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex items-center justify-between pr-8">
             <span className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
               Notificaciones

@@ -25,9 +25,9 @@ export function CardList({ cards, onView, onEdit, onDelete }: Props) {
         <div
           key={c.cardNumber}
           onClick={() => onView(c)}
-          className={`relative aspect-[1.58/1] rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden group transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-2xl flex flex-col justify-between ${getCardGradient(c.brand)}`}
+          className={`relative aspect-[1.58/1] min-h-[150px] rounded-2xl p-4 sm:p-5 text-white shadow-xl overflow-hidden group transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer hover:shadow-2xl flex flex-col justify-between ${getCardGradient(c.brand)}`}
         >
-          <div>
+          <div className="pr-10">
             <div className="w-8 h-6 sm:w-10 sm:h-8 bg-yellow-400/80 rounded-md mb-3 sm:mb-4 relative overflow-hidden">
               <div className="absolute inset-0 grid grid-cols-3 gap-0.5 opacity-20">
                 {Array.from({ length: 9 }).map((_, i) => <div key={i} className="border border-black" />)}
@@ -35,24 +35,24 @@ export function CardList({ cards, onView, onEdit, onDelete }: Props) {
             </div>
 
             <div className="space-y-1 sm:space-y-2">
-              <p className="text-[10px] sm:text-xs md:text-sm font-mono tracking-[0.15em] sm:tracking-[0.2em] pt-1">•••• •••• •••• {c.cardNumber.slice(-4)}</p>
-              <p className="text-[7px] sm:text-[9px] uppercase font-bold tracking-widest opacity-80 truncate max-w-[150px]">{c.displayName}</p>
+              <p className="text-[10px] sm:text-xs md:text-sm font-mono tracking-[0.12em] sm:tracking-[0.18em]">•••• •••• •••• {c.cardNumber.slice(-4)}</p>
+              <p className="text-[8px] sm:text-[9px] uppercase font-bold tracking-widest opacity-80 truncate">{c.displayName}</p>
             </div>
           </div>
 
-          <div className="flex items-end justify-between mt-auto">
-            <div>
+          <div className="flex items-end justify-between gap-2 mt-2">
+            <div className="min-w-0">
               <p className="text-[6px] sm:text-[8px] uppercase opacity-60">Expires</p>
               <p className="text-[10px] sm:text-xs font-bold">{c.expiringDate}</p>
             </div>
             <div className="text-right">
-              <Badge variant="secondary" className="bg-white/20 text-white border-0 text-[6px] sm:text-[8px] uppercase h-3 sm:h-4 px-1">
+              <Badge variant="secondary" className="bg-white/20 text-white border-0 text-[6px] sm:text-[8px] uppercase h-4 px-1 shrink-0">
                 {c.behavior.replace('_', ' ')}
               </Badge>
             </div>
           </div>
 
-          <div className="absolute top-4 right-4" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute top-3 right-3" onClick={(e) => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/20 rounded-full">

@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTickerSearch } from '@/lib/hooks/useInvestments'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
-export function TickerSearchBox() {
+interface Props {
+  onSelect: (ticker: string) => void
+}
+
+export function TickerSearchBox({ onSelect }: Props) {
   const [query, setQuery] = useState('')
-  const router = useRouter()
   const { data: results = [] } = useTickerSearch(query)
   const visible = results.slice(0, 8)
   return (
@@ -28,7 +30,7 @@ export function TickerSearchBox() {
               key={result.ticker}
               onClick={() => {
                 setQuery('')
-                router.push(`/investments/research/${encodeURIComponent(result.ticker)}`)
+                onSelect(result.ticker)
               }}
               className={cn(
                 'flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-muted',

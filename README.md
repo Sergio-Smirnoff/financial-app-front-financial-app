@@ -96,6 +96,18 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 
 ---
 
+## Recent UX Fixes (2026-06-12)
+
+| Area | Fix |
+|---|---|
+| Investments — Markets tab | Ticker research renders inline below the search box; the `/investments/research/[ticker]` route was removed. `TickerSearchBox` now takes an `onSelect` callback instead of navigating. |
+| Transactions table | Sentinel CBUs render operation labels: `Brokerage` for broker sentinel CBUs, `External` for the `0000000000000000000000` installment sentinel. User-entered CBUs still render raw. |
+| `PriceChart` | Points with a non-positive price are silently ignored, preventing a drop-to-zero spike on pre-open or no-trade candles. |
+| Card list | Layout no longer clips the Expires / behavior row. |
+| Notifications dialog | The close button no longer overlaps the "Mark all as read" action. |
+
+---
+
 ## Run
 
 ```bash

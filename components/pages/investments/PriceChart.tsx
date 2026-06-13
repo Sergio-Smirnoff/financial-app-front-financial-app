@@ -21,13 +21,15 @@ interface Props {
 }
 
 export function PriceChart({ series, currency, strokeColor = '#34d399', showAxes = false, height = 220 }: Props) {
-  if (series.length === 0) {
+  const cleaned = series.filter((point) => point.price > 0)
+
+  if (cleaned.length === 0) {
     return <p className="text-sm text-muted-foreground py-8 text-center">No price data.</p>
   }
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <LineChart data={series}>
+      <LineChart data={cleaned}>
         {showAxes && (
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
         )}
