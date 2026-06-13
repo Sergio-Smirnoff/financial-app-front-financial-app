@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select'
 import { useCreateCardExpense } from '@/lib/hooks/useCards'
 import { cardExpenseSchema, CardExpenseFormValues } from '@/lib/schemas/cardExpense'
+import { toast } from 'sonner'
 
 interface Props { cardNumber: string; open: boolean; onOpenChange: (o: boolean) => void }
 
@@ -51,7 +52,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
       form.reset()
       onOpenChange(false)
     } catch (error) {
-      console.error('Failed to submit card expense form:', error)
+      toast.error(error instanceof Error ? error.message : 'Failed to save card expense')
     }
   }
 

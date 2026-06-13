@@ -15,6 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { toast } from 'sonner'
+import { ApiError } from '@/lib/api/client'
 import { useCreateCard, useUpdateCard } from '@/lib/hooks/useCards'
 import { useAvailableBanks } from '@/lib/hooks/useBanks'
 import { cardSchema, CardFormValues } from '@/lib/schemas/card'
@@ -80,7 +82,14 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
       }
       onOpenChange(false)
     } catch (error) {
-      console.error('Failed to submit card form:', error)
+      const message = error instanceof Error ? error.message : 'Failed to save card'
+      if (
+        error instanceof ApiError &&
+        (error.code === 'invalid_card_number' || error.code === 'invalid_card_check_digit')
+      ) {
+        form.setError('cardNumber', { message })
+      }
+      toast.error(message)
     }
   }
 
@@ -175,7 +184,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="cardNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Card number (16 digits)</FormLabel>
+                    <FormLabel className="text-muted-foreground">Card number (16 digits, or 15 to auto-complete)</FormLabel>
                     <FormControl>
                       <Input {...field} inputMode="numeric" maxLength={16} disabled={isEditing} className="bg-background border-border tracking-widest" />
                     </FormControl>

@@ -10,6 +10,8 @@ import type {
   PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
+  TickerSearchResult,
+  TickerResearch,
 } from '@/types/investments'
 
 // ── Backend sends all money/numeric fields as decimal strings ("no BigDecimal on
@@ -41,7 +43,7 @@ interface RawPortfolioSummary {
 interface RawHoldingWithPrice {
   id: number
   userId: number
-  accountCbu: string
+  bankNumber: string
   ticker: string
   name: string
   assetType: string
@@ -76,6 +78,21 @@ interface RawMarketQuote {
   currency: string
   variation: string
   volume: string
+}
+
+interface RawTickerSearchResult {
+  ticker: string
+  price: string
+  currency: string
+  variation: string
+}
+
+interface RawTickerResearch {
+  ticker: string
+  currency: string | null
+  currentPrice: string | null
+  variation: string | null
+  series: Array<{ date: string; price: string }>
 }
 
 const BASE = '/api/v1/investments'
@@ -134,7 +151,7 @@ export const investmentsApi = {
     return (raw ?? []).map((h) => ({
       id: h.id,
       userId: h.userId,
-      accountCbu: h.accountCbu,
+      bankNumber: h.bankNumber,
       fundingCbu: null,
       ticker: h.ticker,
       name: h.name,
@@ -170,5 +187,30 @@ export const investmentsApi = {
     if (to) params.set('to', to)
     const query = params.toString() ? `?${params}` : ''
     return api.get<PriceHistory[]>(`${BASE}/prices/history/${ticker}${query}`)
+  },
+
+  searchTickers: async (query: string): Promise<TickerSearchResult[]> => {
+    const raw = await api.get<RawTickerSearchResult[]>(
+      `${BASE}/market/search?q=${encodeURIComponent(query)}`,
+    )
+    return (raw ?? []).map((result) => ({
+      ticker: result.ticker,
+      price: toNum(result.price),
+      currency: result.currency,
+      variation: toNum(result.variation),
+    }))
+  },
+
+  getTickerResearch: async (ticker: string, range = 'D90', assetType = 'STOCK'): Promise<TickerResearch> => {
+    const raw = await api.get<RawTickerResearch>(
+      `${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`,
+    )
+    return {
+      ticker: raw.ticker,
+      currency: raw.currency,
+      currentPrice: toNumOrNull(raw.currentPrice),
+      variation: toNumOrNull(raw.variation),
+      series: (raw.series ?? []).map((point) => ({ date: point.date, price: toNum(point.price) })),
+    }
   },
 }

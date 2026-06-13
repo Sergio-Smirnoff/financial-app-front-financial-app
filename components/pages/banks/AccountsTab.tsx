@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useBanks, useAccounts } from "@/lib/hooks/useBanks";
-import { usePortfolioHoldings } from "@/lib/hooks/useInvestments";
 import { useUiStore } from "@/lib/store/ui.store";
 import { AccountResponse, AccountRequest, UpdateAccountRequest, BankResponse } from "@/types/banks";
 import { Button } from "@/components/ui/button";
@@ -22,18 +21,6 @@ export function AccountsTab() {
   const { banks, isLoading, isError } = useBanks();
   const { createAccount, updateAccount, deleteAccount } = useAccounts();
   const { openConfirmDelete } = useUiStore();
-  const { data: holdings = [] } = usePortfolioHoldings();
-
-  // INVESTMENT accounts hold no cash balance in ms-banks; their worth is the market
-  // value of the holdings linked to them (by CBU) in ms-investments. Sum it per account.
-  const holdingsValueByCbu = useMemo(() => {
-    const byCbu = new Map<string, number>();
-    for (const h of holdings) {
-      if (!h.accountCbu) continue;
-      byCbu.set(h.accountCbu, (byCbu.get(h.accountCbu) ?? 0) + (h.currentValue ?? 0));
-    }
-    return byCbu;
-  }, [holdings]);
 
   const [addOpen, setAddOpen] = useState(false);
   const [editAccount, setEditAccount] = useState<AccountResponse | null>(null);
@@ -137,7 +124,6 @@ export function AccountsTab() {
             <SelectItem value="ALL">All Types</SelectItem>
             <SelectItem value="CHECKING">Checking</SelectItem>
             <SelectItem value="SAVINGS">Savings</SelectItem>
-            <SelectItem value="INVESTMENT">Investment</SelectItem>
           </SelectContent>
         </Select>
         {hasFilters && (
@@ -193,7 +179,6 @@ export function AccountsTab() {
                         key={account.cbu}
                         account={account}
                         bankName={bank.name}
-                        holdingsValue={account.type === "INVESTMENT" ? (holdingsValueByCbu.get(account.cbu) ?? 0) : undefined}
                         onDeposit={(a) => openRecord(a, "DEPOSIT")}
                         onWithdraw={(a) => openRecord(a, "WITHDRAW")}
                         onTransfer={(a) => openRecord(a, "TRANSFER")}
@@ -237,6 +222,10 @@ export function AccountsTab() {
       )}
 
       <ConfirmDialog />
+
+      <p className="pt-2 text-center text-xs text-muted-foreground/70">
+        Account balances may take a few moments to update after a transaction.
+      </p>
     </div>
   );
 }

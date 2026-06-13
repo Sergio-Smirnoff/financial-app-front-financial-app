@@ -66,14 +66,14 @@ export function IncomeExpenseChart() {
     const now = new Date()
     return months.map((_, i) => {
       const date = i < 5 ? subMonths(now, 5 - i) : now
-      const data = queries[i]?.data?.[0]
+      const data = queries[i]?.data?.find((s) => s.currency === chartCurrency)
       return {
         month: format(date, 'MMM'),
         Income: data?.totalIncome ?? 0,
         Expenses: data?.totalExpense ?? 0,
       }
     })
-  }, [queries, months])
+  }, [queries, months, chartCurrency])
 
   return (
     <Surface>

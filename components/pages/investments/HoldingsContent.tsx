@@ -1,19 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { usePortfolioHoldings, useDeleteHolding } from '@/lib/hooks/useInvestments'
-import { useUiStore } from '@/lib/store/ui.store'
+import { useRouter } from 'next/navigation'
+import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { ErrorMessage } from '@/components/shared/ErrorMessage'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
-import { HoldingDetailDialog } from './HoldingDetailDialog'
 import { SellHoldingDialog } from './SellHoldingDialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
-import { toast } from 'sonner'
 import type { HoldingWithPrice, AssetType } from '@/types/investments'
 
 const ASSET_TYPE_ORDER: AssetType[] = ['STOCK', 'CEDEAR', 'BOND', 'FCI']
@@ -26,13 +23,14 @@ const ASSET_TYPE_LABELS: Record<AssetType, string> = {
 
 interface HoldingsContentProps {
   enabled?: boolean
+  bankNumber?: string | null
 }
 
-export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
+export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentProps) {
   const { data: holdings, isLoading, isError } = usePortfolioHoldings({ enabled })
+  const router = useRouter()
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)
-  const [detailHolding, setDetailHolding] = useState<HoldingWithPrice | null>(null)
   const [sellHolding, setSellHolding] = useState<HoldingWithPrice | null>(null)
 
   const handleEdit = (holding: HoldingWithPrice) => {
@@ -48,13 +46,10 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
   if (isLoading) return <LoadingSpinner />
   if (isError) return <ErrorMessage message="Failed to load holdings." />
 
+  const visibleHoldings = (holdings ?? []).filter((holding) => !bankNumber || holding.bankNumber === bankNumber)
   const grouped = ASSET_TYPE_ORDER
-    .map((type) => ({
-      type,
-      label: ASSET_TYPE_LABELS[type],
-      items: (holdings ?? []).filter((h) => h.assetType === type),
-    }))
-    .filter((g) => g.items.length > 0)
+    .map((type) => ({ type, label: ASSET_TYPE_LABELS[type], items: visibleHoldings.filter((holding) => holding.assetType === type) }))
+    .filter((group) => group.items.length > 0)
 
   return (
     <div className="space-y-4">
@@ -64,7 +59,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
         </Button>
       </div>
 
-      {holdings?.length === 0 && (
+      {visibleHoldings.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-8">No holdings yet.</p>
       )}
 
@@ -75,7 +70,7 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
           holdings={group.items}
           onEdit={handleEdit}
           onSell={setSellHolding}
-          onViewDetail={setDetailHolding}
+          onViewDetail={(holding) => router.push(`/investments/holdings/${holding.id}`)}
         />
       ))}
 
@@ -96,12 +91,6 @@ export function HoldingsContent({ enabled = true }: HoldingsContentProps) {
         open={sellHolding !== null}
         onOpenChange={(o) => !o && setSellHolding(null)}
         onSuccess={() => setSellHolding(null)}
-      />
-
-      <HoldingDetailDialog
-        holding={detailHolding}
-        open={detailHolding !== null}
-        onClose={() => setDetailHolding(null)}
       />
     </div>
   )

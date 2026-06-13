@@ -39,7 +39,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
   const availableAccounts = useMemo(() => {
     const flat: AccountResponse[] = []
     for (const b of banks) for (const a of b.accounts) flat.push(a)
-    return flat.filter(a => a.currency.toUpperCase() === holding?.currency.toUpperCase() && a.type !== 'INVESTMENT')
+    return flat.filter((account) => account.currency.toUpperCase() === holding?.currency.toUpperCase())
   }, [banks, holding])
 
   const liquidationValue = useMemo(() => {

@@ -3,7 +3,7 @@ export type AssetType = 'STOCK' | 'BOND' | 'CEDEAR' | 'FCI'
 export interface Holding {
   id: number
   userId: number
-  accountCbu: string
+  bankNumber: string
   fundingCbu?: string | null
   ticker: string
   name: string
@@ -69,7 +69,7 @@ export interface MarketQuote {
 }
 
 export interface CreateHoldingRequest {
-  accountCbu: string
+  bankNumber: string
   fundingCbu?: string | null
   ticker: string
   name: string
@@ -82,3 +82,23 @@ export interface CreateHoldingRequest {
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest
+
+export interface TickerSearchResult {
+  ticker: string
+  price: number
+  currency: string
+  variation: number
+}
+
+export interface PricePoint {
+  date: string
+  price: number
+}
+
+export interface TickerResearch {
+  ticker: string
+  currency: string | null
+  currentPrice: number | null
+  variation: number | null
+  series: PricePoint[]
+}

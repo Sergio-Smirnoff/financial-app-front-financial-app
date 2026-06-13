@@ -14,9 +14,8 @@ async function authFetch<T>(path: string, body: unknown): Promise<T> {
 
   const json = await res.json()
 
-  if (!res.ok || !json.success) {
-    const message = json.errors?.join(', ') ?? json.message ?? 'Request failed'
-    throw new Error(message)
+  if (!res.ok) {
+    throw new Error(json.message ?? 'Request failed')
   }
 
   return json.data as T
@@ -45,7 +44,7 @@ export async function refreshToken(): Promise<AuthResponse> {
 
   const json = await res.json()
 
-  if (!res.ok || !json.success) {
+  if (!res.ok) {
     throw new Error('Refresh failed')
   }
 

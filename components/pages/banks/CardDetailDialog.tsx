@@ -39,7 +39,7 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
   }, [banks])
 
   const getAvailableAccounts = (currency: string) =>
-    allAccounts.filter((a) => a.currency === currency && a.type !== 'INVESTMENT')
+    allAccounts.filter((account) => account.currency === currency)
 
   const purchases = useMemo(() => {
     if (!installments) return []
