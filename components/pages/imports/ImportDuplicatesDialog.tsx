@@ -48,7 +48,7 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Possible duplicates found</DialogTitle>
-          <DialogDescription>Review duplicate rows detected in this import.</DialogDescription>
+          <DialogDescription className="sr-only">Review duplicate rows detected in this import.</DialogDescription>
           <p className="text-sm text-muted-foreground">
             {duplicates.length} transaction{duplicates.length !== 1 ? 's' : ''} already exist with the same date and amount. Select which ones to import anyway.
           </p>

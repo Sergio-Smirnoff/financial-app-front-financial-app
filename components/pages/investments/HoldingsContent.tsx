@@ -78,7 +78,7 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{editingHolding ? 'Edit holding' : 'New holding'}</DialogTitle>
-            <DialogDescription>Add a holding to your portfolio.</DialogDescription>
+            <DialogDescription>{editingHolding ? 'Update the details of this holding.' : 'Add a holding to your portfolio.'}</DialogDescription>
           </DialogHeader>
           <HoldingForm
             holding={editingHolding}

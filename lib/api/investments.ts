@@ -169,9 +169,10 @@ export const investmentsApi = {
     const raw = await api.get<{ marketDataAvailable: boolean; opportunities: Array<{ ticker: string; price: string; currency: string; variation: string; volume: string }> }>(
       `${BASE}/market/discovery?limit=${limit}`,
     )
+    const safe = raw ?? { marketDataAvailable: false, opportunities: [] }
     return {
-      marketDataAvailable: raw.marketDataAvailable,
-      opportunities: (raw.opportunities ?? []).map((o) => ({
+      marketDataAvailable: safe.marketDataAvailable,
+      opportunities: (safe.opportunities ?? []).map((o) => ({
         ticker: o.ticker,
         price: toNum(o.price),
         variation: toNum(o.variation),
