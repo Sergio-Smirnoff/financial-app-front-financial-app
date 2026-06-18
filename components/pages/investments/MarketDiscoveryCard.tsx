@@ -8,16 +8,36 @@ import { Surface } from '@/components/shared/Surface'
 import { cn } from '@/lib/utils'
 
 export function MarketDiscoveryCard() {
-  const { data: opportunities, isLoading } = useMarketDiscovery(5)
+  const { data, isLoading } = useMarketDiscovery(5)
 
-  if (isLoading || !opportunities || opportunities.length === 0) {
-      return (
-          <Surface className="h-[200px] flex items-center justify-center text-center p-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
-                  {isLoading ? 'Scanning Market...' : 'You own all trending assets!'}
-              </p>
-          </Surface>
-      )
+  if (isLoading) {
+    return (
+      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
+          Scanning Market...
+        </p>
+      </Surface>
+    )
+  }
+
+  if (data && !data.marketDataAvailable) {
+    return (
+      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
+        <p className="text-sm text-muted-foreground py-6 text-center">
+          Market data is currently unavailable. Please try again later.
+        </p>
+      </Surface>
+    )
+  }
+
+  if (!data || data.opportunities.length === 0) {
+    return (
+      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
+        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
+          You own all trending assets!
+        </p>
+      </Surface>
+    )
   }
 
   return (
@@ -29,13 +49,13 @@ export function MarketDiscoveryCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {opportunities.map((op) => (
+        {data.opportunities.map((op) => (
           <div key={op.ticker} className="flex items-center justify-between group">
             <div className="flex flex-col">
               <span className="text-sm font-black">{op.ticker}</span>
               <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">IOL Trending</span>
             </div>
-            
+
             <div className="flex flex-col items-end">
               <span className="text-xs font-black">{formatCurrency(op.price, 'ARS')}</span>
               <div className={cn(

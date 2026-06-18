@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useDeleteHolding } from '@/lib/hooks/useInvestments'
 import type { AccountResponse } from '@/types/banks'
@@ -71,6 +71,7 @@ export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: Se
       <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
           <DialogTitle>Sell Holding: {holding.ticker}</DialogTitle>
+          <DialogDescription>Sell part or all of this holding.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="rounded-2xl bg-muted/40 p-5 space-y-3 border border-border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">

@@ -6,7 +6,7 @@ import type {
   HoldingWithPrice,
   PortfolioSummary,
   PortfolioEvolution,
-  MarketQuote,
+  MarketDiscovery,
   PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
@@ -72,13 +72,6 @@ interface RawPortfolioEvolution {
   totals: RawCurrencyTotalsByDay[]
 }
 
-interface RawMarketQuote {
-  ticker: string
-  price: string
-  currency: string
-  variation: string
-  volume: string
-}
 
 interface RawTickerSearchResult {
   ticker: string
@@ -172,13 +165,19 @@ export const investmentsApi = {
     }))
   },
 
-  getMarketDiscovery: async (limit: number = 5): Promise<MarketQuote[]> => {
-    const raw = await api.get<RawMarketQuote[]>(`${BASE}/market/discovery?limit=${limit}`)
-    return (raw ?? []).map((q) => ({
-      ticker: q.ticker,
-      price: toNum(q.price),
-      variation: toNum(q.variation),
-    }))
+  getMarketDiscovery: async (limit: number = 5): Promise<MarketDiscovery> => {
+    const raw = await api.get<{ marketDataAvailable: boolean; opportunities: Array<{ ticker: string; price: string; currency: string; variation: string; volume: string }> }>(
+      `${BASE}/market/discovery?limit=${limit}`,
+    )
+    const safe = raw ?? { marketDataAvailable: false, opportunities: [] }
+    return {
+      marketDataAvailable: safe.marketDataAvailable,
+      opportunities: (safe.opportunities ?? []).map((o) => ({
+        ticker: o.ticker,
+        price: toNum(o.price),
+        variation: toNum(o.variation),
+      })),
+    }
   },
 
   getPriceHistory: (ticker: string, from?: string, to?: string) => {
