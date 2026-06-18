@@ -56,7 +56,7 @@ export function TickerChartPanel({ ticker }: { ticker: string }) {
       </div>
       {isLoading && <div className="h-[220px] rounded-xl bg-muted animate-pulse" />}
       {isError && <p className="text-sm text-destructive">Could not load price series.</p>}
-      {data && <PriceChart series={data.series} currency={data.currency ?? 'ARS'} />}
+      {data && <PriceChart series={data.series} currency={data.currency ?? 'ARS'} showAxes />}
     </div>
   )
 }
