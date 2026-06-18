@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -97,7 +97,7 @@ export function LoansContent() {
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="sm:max-w-md bg-popover border-border">
-          <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>New loan</DialogTitle><DialogDescription>Create or edit a loan.</DialogDescription></DialogHeader>
           <LoanForm onSuccess={() => setFormOpen(false)} />
         </DialogContent>
       </Dialog>

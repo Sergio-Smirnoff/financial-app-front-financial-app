@@ -9,7 +9,7 @@ import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { SellHoldingDialog } from './SellHoldingDialog'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
 import type { HoldingWithPrice, AssetType } from '@/types/investments'
 
@@ -78,6 +78,7 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{editingHolding ? 'Edit holding' : 'New holding'}</DialogTitle>
+            <DialogDescription>Add a holding to your portfolio.</DialogDescription>
           </DialogHeader>
           <HoldingForm
             holding={editingHolding}

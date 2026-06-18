@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Form,
@@ -98,6 +98,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
       <DialogContent className="bg-popover border-border">
         <DialogHeader>
           <DialogTitle>{isEditing ? 'Edit Card' : 'New Card'}</DialogTitle>
+          <DialogDescription>Add or edit a card.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">

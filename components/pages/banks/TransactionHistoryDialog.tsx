@@ -1,7 +1,7 @@
 'use client'
 
 import { useAccountTransactions } from '@/lib/hooks/useTransactions'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
@@ -23,6 +23,7 @@ export function TransactionHistoryDialog({ open, onOpenChange, accountCbu, accou
       <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col bg-popover border-border">
         <DialogHeader>
           <DialogTitle>Recent Activity: {accountName}</DialogTitle>
+          <DialogDescription>Transaction history for this account.</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto pr-2 mt-2">

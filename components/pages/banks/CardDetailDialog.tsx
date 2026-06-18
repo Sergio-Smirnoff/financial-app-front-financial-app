@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useCardInstallments, useMarkInstallmentPaid } from '@/lib/hooks/useCards'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { Badge } from '@/components/ui/badge'
@@ -109,6 +109,7 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                   </div>
                   <div>
                     <DialogTitle className="text-xl font-bold">{card.displayName}</DialogTitle>
+                    <DialogDescription className="sr-only">Details and expenses for this card.</DialogDescription>
                     <p className="text-xs text-muted-foreground font-mono tracking-tight mt-0.5">
                       {card.brand} •••• {card.cardNumber.slice(-4)} | {card.behavior.replace('_', ' ')}
                     </p>

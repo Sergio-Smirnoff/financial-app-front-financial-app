@@ -5,7 +5,7 @@ import { useBanks } from '@/lib/hooks/useBanks'
 import { useCategories } from '@/lib/hooks/useCategories'
 import { useRecordTransaction } from '@/lib/hooks/useTransactions'
 import { AccountResponse } from '@/types/banks'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -117,6 +117,7 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
       <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
           <DialogTitle>{TITLES[mode]} · {account.name}</DialogTitle>
+          <DialogDescription>Record a movement for this account.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">

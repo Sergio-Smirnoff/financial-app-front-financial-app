@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import {
-  Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -48,6 +48,7 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Possible duplicates found</DialogTitle>
+          <DialogDescription>Review duplicate rows detected in this import.</DialogDescription>
           <p className="text-sm text-muted-foreground">
             {duplicates.length} transaction{duplicates.length !== 1 ? 's' : ''} already exist with the same date and amount. Select which ones to import anyway.
           </p>

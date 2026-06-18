@@ -10,7 +10,7 @@ import { ChevronDown, Plus, CreditCard, Calendar, Trash2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils/currency'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -125,7 +125,7 @@ export function LoanList({ bankNumber }: Props) {
 
       <Dialog open={creatingOpen} onOpenChange={setCreatingOpen}>
         <DialogContent className="sm:max-w-md bg-popover border-border">
-          <DialogHeader><DialogTitle>New loan</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>New loan</DialogTitle><DialogDescription>Loan details and installments.</DialogDescription></DialogHeader>
           <LoanForm bankNumber={bankNumber} onSuccess={() => setCreatingOpen(false)} />
         </DialogContent>
       </Dialog>

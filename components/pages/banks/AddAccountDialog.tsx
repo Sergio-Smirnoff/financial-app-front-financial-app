@@ -7,7 +7,7 @@ import { AccountResponse, AccountRequest, UpdateAccountRequest } from "@/types/b
 import { accountSchema, AccountFormValues } from "@/lib/schemas/account";
 import { useAvailableBanks, useBankCatalog } from "@/lib/hooks/useBanks";
 import { CURRENCIES } from "@/lib/utils/currency";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -67,7 +67,7 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-popover border-border">
-        <DialogHeader><DialogTitle>{isEdit ? "Edit Account" : "Add Account"}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{isEdit ? "Edit Account" : "Add Account"}</DialogTitle><DialogDescription>Create or edit a bank account.</DialogDescription></DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField control={form.control} name="bankNumber" render={({ field }) => (

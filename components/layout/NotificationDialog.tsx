@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Bell, CreditCard, Landmark, TrendingUp, Calendar, Check, Info, CheckCheck } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNotifications, useMarkAsRead, useMarkAllAsRead } from '@/lib/hooks/useNotifications'
@@ -56,6 +56,7 @@ export function NotificationDialog({ open, onOpenChange }: NotificationDialogPro
               Marcar todas como leídas
             </Button>
           </DialogTitle>
+          <DialogDescription>Your recent notifications.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[400px]">
           {isLoading ? (
