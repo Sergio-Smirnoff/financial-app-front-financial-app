@@ -68,6 +68,11 @@ export interface MarketQuote {
   variation: number
 }
 
+export interface MarketDiscovery {
+  marketDataAvailable: boolean
+  opportunities: MarketQuote[]
+}
+
 export interface CreateHoldingRequest {
   bankNumber: string
   fundingCbu?: string | null
