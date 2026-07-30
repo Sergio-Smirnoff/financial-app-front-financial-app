@@ -35,6 +35,7 @@ front/financial-app/
 │       ├── loans/page.tsx
 │       ├── investments/page.tsx
 │       ├── imports/page.tsx
+│       ├── design-preview/page.tsx # Temporary Nocturne design token validation page
 │       └── settings/page.tsx
 ├── components/
 │   ├── layout/                     # Header, Sidebar, MobileSidebar, NotificationBell, ThemeToggle
