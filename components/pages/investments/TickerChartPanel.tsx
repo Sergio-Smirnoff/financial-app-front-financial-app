@@ -4,13 +4,18 @@ import { useState } from 'react'
 import { useTickerResearch } from '@/lib/hooks/useInvestments'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { PriceChart } from './PriceChart'
+import { AreaChart } from '@/components/charts/AreaChart'
 
 const RANGES = ['D30', 'D90', 'Y1', 'ALL'] as const
 
 export function TickerChartPanel({ ticker }: { ticker: string }) {
   const [range, setRange] = useState<(typeof RANGES)[number]>('D90')
   const { data, isLoading, isError } = useTickerResearch(ticker, range)
+
+  const series = (data?.series ?? []).map((pt) => ({
+    date: pt.date,
+    value: pt.price,
+  }))
 
   return (
     <div className="rounded-2xl border border-border bg-gradient-to-b from-muted/40 to-card p-5 space-y-4">
@@ -56,7 +61,14 @@ export function TickerChartPanel({ ticker }: { ticker: string }) {
       </div>
       {isLoading && <div className="h-[220px] rounded-xl bg-muted animate-pulse" />}
       {isError && <p className="text-sm text-destructive">Could not load price series.</p>}
-      {data && <PriceChart series={data.series} currency={data.currency ?? 'ARS'} showAxes />}
+      {data && (
+        <AreaChart
+          series={series}
+          currency={data.currency ?? 'ARS'}
+          ariaLabel={`Evolución de precio para ${ticker}`}
+          height={220}
+        />
+      )}
     </div>
   )
 }
