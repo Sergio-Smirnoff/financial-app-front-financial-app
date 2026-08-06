@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import { useCategories, useCreateCategory, useCreateSubcategory, useDeleteCategory, useDeleteSubcategory } from '@/lib/hooks/useCategories'
 import { useUiStore } from '@/lib/store/ui.store'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,8 +10,7 @@ import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { Category } from '@/types/finances'
 import { getCategoryIcon } from '@/lib/utils/category-utils'
-
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
+import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 
 export function CategoriesContent() {
   const { openConfirmDelete } = useUiStore()
@@ -87,8 +84,12 @@ export function CategoriesContent() {
       </div>
 
       <div className="flex-1 overflow-auto mt-4">
-        <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
-            <div className="space-y-2 w-full">
+        {isLoading ? (
+          <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
+        ) : isError ? (
+          <InlineBanner tone="error" description={error?.message || 'Failed to load categories'} />
+        ) : (
+          <div className="space-y-2 w-full">
             {categories?.map((cat) => {
                 const subcategories = cat.subcategories ?? []
                 const isExpanded = expanded.has(cat.id)
@@ -99,7 +100,6 @@ export function CategoriesContent() {
                     className="flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors"
                     onClick={() => toggleExpand(cat.id)}
                     >
-                        {/* Icon and content... */}
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   ) : (
@@ -180,7 +180,7 @@ export function CategoriesContent() {
             <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Create one above.</p>
           )}
         </div>
-        </QueryBoundary>
+        )}
       </div>
 
       <ConfirmDialog />

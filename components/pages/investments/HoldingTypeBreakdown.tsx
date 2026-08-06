@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { formatCurrency } from '@/lib/format'
 import type { AssetType, HoldingWithPrice } from '@/types/investments'
+import { Surface } from '@/components/shared/Surface'
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
 
@@ -64,13 +64,11 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   )
 }
 
-import { Surface } from '@/components/shared/Surface'
-
 export function HoldingTypeBreakdown() {
   const { data: holdings, isLoading } = usePortfolioHoldings()
   const [activeType, setActiveType] = useState<AssetType | null>(null)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
   if (!holdings?.length) return null
 
   const grouped = holdings.reduce<Partial<Record<AssetType, HoldingWithPrice[]>>>((acc, h) => {

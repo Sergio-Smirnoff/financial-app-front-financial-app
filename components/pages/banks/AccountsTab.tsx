@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Surface } from "@/components/shared/Surface";
-import { QueryBoundary } from "@/components/shared/QueryBoundary";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { formatCurrency } from "@/lib/format";
 import { Plus, Search, X, Landmark, Wallet } from "lucide-react";
@@ -133,66 +132,60 @@ export function AccountsTab() {
         )}
       </div>
 
-      <QueryBoundary
-        isLoading={isLoading}
-        isError={!!isError}
-        loadingComponent={
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => <div key={i} className="h-20 w-full rounded-2xl animate-pulse bg-muted/50 border" />)}
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => <div key={i} className="h-20 w-full rounded-2xl animate-pulse bg-muted/50 border" />)}
+        </div>
+      ) : banks.length === 0 ? (
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 p-12 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border mb-6">
+            <Wallet className="h-10 w-10 text-muted-foreground/50" />
           </div>
-        }
-      >
-        {banks.length === 0 ? (
-          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 p-12 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border mb-6">
-              <Wallet className="h-10 w-10 text-muted-foreground/50" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">No accounts yet</h2>
-            <p className="max-w-[340px] text-muted-foreground mb-8">Add your first account from the bank catalog to start tracking balances.</p>
-            <Button onClick={() => { setEditAccount(null); setAddOpen(true); }} size="lg" className="gap-2 rounded-xl font-bold">
-              <Plus className="h-5 w-5" /> Add Account
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-8 pb-12">
-            {visibleBanks.map((bank: BankResponse) => {
-              const accounts = bank.accounts.filter(matches);
-              if (accounts.length === 0) return null;
-              return (
-                <section key={bank.bankNumber} className="space-y-3">
-                  <div className="flex items-center gap-3 px-1">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-background border">
-                      {bank.logoUrl ? (
-                        <img src={bank.logoUrl} alt={bank.name} className="h-5 w-5 object-contain" />
-                      ) : (
-                        <Landmark className="h-4 w-4 text-muted-foreground" />
-                      )}
-                    </div>
-                    <h2 className="text-sm font-bold">{bank.name}</h2>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {accounts.length} account{accounts.length === 1 ? "" : "s"}
-                    </span>
+          <h2 className="text-2xl font-bold mb-2">No accounts yet</h2>
+          <p className="max-w-[340px] text-muted-foreground mb-8">Add your first account from the bank catalog to start tracking balances.</p>
+          <Button onClick={() => { setEditAccount(null); setAddOpen(true); }} size="lg" className="gap-2 rounded-xl font-bold">
+            <Plus className="h-5 w-5" /> Add Account
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-8 pb-12">
+          {visibleBanks.map((bank: BankResponse) => {
+            const accounts = bank.accounts.filter(matches);
+            if (accounts.length === 0) return null;
+            return (
+              <section key={bank.bankNumber} className="space-y-3">
+                <div className="flex items-center gap-3 px-1">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-background border">
+                    {bank.logoUrl ? (
+                      <img src={bank.logoUrl} alt={bank.name} className="h-5 w-5 object-contain" />
+                    ) : (
+                      <Landmark className="h-4 w-4 text-muted-foreground" />
+                    )}
                   </div>
-                  <div className="grid grid-cols-1 gap-3">
-                    {accounts.map((account) => (
-                      <AccountRow
-                        key={account.cbu}
-                        account={account}
-                        bankName={bank.name}
-                        onDeposit={(a) => openRecord(a, "DEPOSIT")}
-                        onWithdraw={(a) => openRecord(a, "WITHDRAW")}
-                        onTransfer={(a) => openRecord(a, "TRANSFER")}
-                        onHistory={openHistory}
-                        onDelete={handleDelete}
-                      />
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-        )}
-      </QueryBoundary>
+                  <h2 className="text-sm font-bold">{bank.name}</h2>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {accounts.length} account{accounts.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {accounts.map((account) => (
+                    <AccountRow
+                      key={account.cbu}
+                      account={account}
+                      bankName={bank.name}
+                      onDeposit={(a) => openRecord(a, "DEPOSIT")}
+                      onWithdraw={(a) => openRecord(a, "WITHDRAW")}
+                      onTransfer={(a) => openRecord(a, "TRANSFER")}
+                      onHistory={openHistory}
+                      onDelete={handleDelete}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
 
       <AddAccountDialog
         account={editAccount}

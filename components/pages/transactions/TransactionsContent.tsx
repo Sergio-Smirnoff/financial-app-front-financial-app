@@ -30,7 +30,7 @@ import { toast } from 'sonner'
 import type { Transaction, TransactionFilters } from '@/types/finances'
 
 import { Surface } from '@/components/shared/Surface'
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
+import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 
 export function TransactionsContent() {
   const { openConfirmDelete } = useUiStore()
@@ -104,8 +104,12 @@ export function TransactionsContent() {
         </Select>
       </div>
 
-      <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
-        {data && (
+      {isLoading ? (
+        <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
+      ) : isError ? (
+        <InlineBanner tone="error" description={error?.message || 'Failed to load transactions'} />
+      ) : (
+        data && (
           <Surface className="overflow-hidden">
             <Table>
               <TableHeader>
@@ -165,8 +169,8 @@ export function TransactionsContent() {
               </TableBody>
             </Table>
           </Surface>
-        )}
-      </QueryBoundary>
+        )
+      )}
 
       <ConfirmDialog />
     </div>
