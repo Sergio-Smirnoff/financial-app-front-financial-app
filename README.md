@@ -117,9 +117,12 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 
 # Standalone
 cd front/financial-app
-npm run dev       # Turbopack
+npm run dev          # Turbopack
 npm run build
 npm run lint
+npm run test:run     # Vitest unit test suite
+npm run e2e          # Playwright end-to-end journeys
+npm run i18n:check   # Key completeness validator (es-AR vs en)
 ```
 
 Reads `NEXT_PUBLIC_GATEWAY_URL` (default `http://localhost:8080`). Copy `.env.local.example` to `.env.local` to override.
