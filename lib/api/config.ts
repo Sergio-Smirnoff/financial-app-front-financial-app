@@ -7,5 +7,6 @@ export const API_CONFIG = {
     NOTIFICATIONS: '/api/v1/notifications',
     UPLOAD: '/api/v1/upload',
     INVESTMENTS: '/api/v1/investments',
+    BFF: '/api/v1/bff',
   },
 } as const;
