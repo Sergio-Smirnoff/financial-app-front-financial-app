@@ -35,6 +35,7 @@ graph TD
 | `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, market discovery |
 | `/imports` | `(dashboard)` | Bank statement PDF and generic CSV import wizard |
 | `/settings` | `(dashboard)` | User preferences, profile, security, and manual FX rates |
+| `/design-preview` | root | Gallery showcase of design system components and charts |
 
 ## Middleware (`middleware.ts`)
 
@@ -48,6 +49,7 @@ graph TD
 
 | Directory | Purpose |
 |---|---|
+| `components/charts/` | SVG charts: `AreaChart`, `BarPairChart`, `HorizonBars`, `CompositionBar`, `LegendList`, `Sparkline`, `primitives/` |
 | `components/layout/` | Navigation chrome: `Header`, `Sidebar`, `MobileSidebar`, `NotificationBell`, `NotificationDropdown`, `NotificationDialog`, `ThemeToggle` |
 | `components/pages/` | Domain-scoped page components (`banks/`, `dashboard/`, `investments/`, `transactions/`, `categories/`, `loans/`, `imports/`, `settings/`) |
 | `components/shared/` | Shared UI primitives: `ConfirmDialog`, `LoadingSpinner`, `ErrorMessage`, `MultiCurrencyAmount`, `QueryBoundary`, `Surface` |
