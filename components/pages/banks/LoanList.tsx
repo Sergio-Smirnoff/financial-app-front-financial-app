@@ -19,8 +19,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { LoanForm } from '../loans/LoanForm'
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import type { Loan } from '@/types/loans'
 import { AccountResponse } from '@/types/banks'
 
@@ -53,75 +51,69 @@ export function LoanList({ bankNumber }: Props) {
         </Button>
       </div>
 
-      <QueryBoundary
-        isLoading={isLoading}
-        isError={!!isError}
-        loadingComponent={
-          <div className="space-y-3">
-            {[1, 2].map((i) => <div key={i} className="h-20 rounded-2xl animate-pulse bg-muted" />)}
-          </div>
-        }
-      >
-        {!loans || loans.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground italic">No active loans</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {loans.map((loan) => (
-              <div key={loan.id} className="rounded-2xl border bg-muted/40 shadow-none hover:bg-muted/60 transition-colors overflow-hidden group">
-                <div
-                  className="flex items-center justify-between p-5 cursor-pointer"
-                  onClick={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`h-11 w-11 rounded-xl flex items-center justify-center border ${loan.active ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-muted border-border text-muted-foreground'}`}>
-                      <CreditCard className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-base">{loan.name}</p>
-                        <Badge variant={loan.active ? 'default' : 'secondary'} className="h-4 px-1.5 text-[9px] uppercase font-bold border-none">
-                          {loan.active ? 'Active' : 'Closed'}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs mt-0.5">
-                        <span className="font-bold text-muted-foreground">{formatCurrency(Number(loan.principal), loan.currency)}</span>
-                        <span className="text-muted-foreground/30">•</span>
-                        <span className="text-muted-foreground/50 font-medium">{loan.totalInstallments} installments</span>
-                      </div>
-                    </div>
+      {isLoading ? (
+        <div className="space-y-3">
+          {[1, 2].map((i) => <div key={i} className="h-20 rounded-2xl animate-pulse bg-muted" />)}
+        </div>
+      ) : !loans || loans.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground italic">No active loans</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {loans.map((loan) => (
+            <div key={loan.id} className="rounded-2xl border bg-muted/40 shadow-none hover:bg-muted/60 transition-colors overflow-hidden group">
+              <div
+                className="flex items-center justify-between p-5 cursor-pointer"
+                onClick={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`h-11 w-11 rounded-xl flex items-center justify-center border ${loan.active ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-muted border-border text-muted-foreground'}`}>
+                    <CreditCard className="h-5 w-5" />
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="text-right hidden sm:block">
-                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Remaining</p>
-                      <p className="text-sm font-black">{loan.remainingInstallments} left</p>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-base">{loan.name}</p>
+                      <Badge variant={loan.active ? 'default' : 'secondary'} className="h-4 px-1.5 text-[9px] uppercase font-bold border-none">
+                        {loan.active ? 'Active' : 'Closed'}
+                      </Badge>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                      onClick={(e) => { e.stopPropagation(); handleDelete(loan) }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-muted-foreground hover:bg-muted">
-                      <ChevronDown className={`h-5 w-5 transition-transform duration-500 ${expandedId === loan.id ? 'rotate-180 text-primary' : ''}`} />
-                    </Button>
+                    <div className="flex items-center gap-2 text-xs mt-0.5">
+                      <span className="font-bold text-muted-foreground">{formatCurrency(Number(loan.principal), loan.currency)}</span>
+                      <span className="text-muted-foreground/30">•</span>
+                      <span className="text-muted-foreground/50 font-medium">{loan.totalInstallments} installments</span>
+                    </div>
                   </div>
                 </div>
 
-                {expandedId === loan.id && (
-                  <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-300">
-                    <div className="pt-4 border-t border-border">
-                      <LoanInstallmentSubList loanId={loan.id} currency={loan.currency} />
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right hidden sm:block">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Remaining</p>
+                    <p className="text-sm font-black">{loan.remainingInstallments} left</p>
                   </div>
-                )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(loan) }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-muted-foreground hover:bg-muted">
+                    <ChevronDown className={`h-5 w-5 transition-transform duration-500 ${expandedId === loan.id ? 'rotate-180 text-primary' : ''}`} />
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
-        )}
-      </QueryBoundary>
+
+              {expandedId === loan.id && (
+                <div className="px-5 pb-5 animate-in slide-in-from-top-2 duration-300">
+                  <div className="pt-4 border-t border-border">
+                    <LoanInstallmentSubList loanId={loan.id} currency={loan.currency} />
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       <Dialog open={creatingOpen} onOpenChange={setCreatingOpen}>
         <DialogContent className="sm:max-w-md bg-popover border-border">
@@ -145,7 +137,7 @@ function LoanInstallmentSubList({ loanId, currency }: { loanId: number, currency
     return flat.filter((account) => account.currency === currency)
   }, [banks, currency])
 
-  if (isLoading) return <div className="py-4 flex justify-center"><LoadingSpinner size="sm" /></div>
+  if (isLoading) return <div className="py-4 flex justify-center text-xs text-muted-foreground">Cargando...</div>
 
   return (
     <div className="space-y-1">

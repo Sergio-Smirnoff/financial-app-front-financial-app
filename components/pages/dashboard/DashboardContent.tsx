@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useTransactionSummary } from '@/lib/hooks/useTransactions'
 import { useLoans } from '@/lib/hooks/useLoans'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 import { YearOverview } from './YearOverview'
 import { MonthSummary } from './MonthSummary'
 import { ActiveObligations } from './ActiveObligations'
@@ -32,7 +32,7 @@ export function DashboardContent() {
   const loans = useLoans()
 
   if (ytdSummary.isError || monthSummary.isError) {
-    return <ErrorMessage message="Failed to load dashboard data." />
+    return <InlineBanner tone="error" description="Failed to load dashboard data." />
   }
 
   const activeLoanCount = loans.data?.filter(l => l.active).length ?? 0

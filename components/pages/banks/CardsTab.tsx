@@ -6,7 +6,6 @@ import { useBanks } from '@/lib/hooks/useBanks'
 import { useUiStore } from '@/lib/store/ui.store'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Plus, CreditCard } from 'lucide-react'
 import type { Card } from '@/types/cards'
@@ -54,35 +53,29 @@ export function CardsTab() {
         </Button>
       </div>
 
-      <QueryBoundary
-        isLoading={isLoading}
-        isError={!!isError}
-        loadingComponent={
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => <div key={i} className="aspect-[1.58/1] rounded-2xl animate-pulse bg-muted" />)}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => <div key={i} className="aspect-[1.58/1] rounded-2xl animate-pulse bg-muted" />)}
+        </div>
+      ) : !cards || cards.length === 0 ? (
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 p-12 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border mb-6">
+            <CreditCard className="h-10 w-10 text-muted-foreground/50" />
           </div>
-        }
-      >
-        {!cards || cards.length === 0 ? (
-          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 p-12 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border mb-6">
-              <CreditCard className="h-10 w-10 text-muted-foreground/50" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">No cards yet</h2>
-            <p className="max-w-[340px] text-muted-foreground mb-8">Add a card to one of your banks to track expenses and installments.</p>
-            <Button onClick={() => { setEditingCard(null); setCreatingOpen(true); }} size="lg" className="gap-2 rounded-xl font-bold">
-              <Plus className="h-5 w-5" /> Add Card
-            </Button>
-          </div>
-        ) : (
-          <CardList
-            cards={cards}
-            onView={setViewingCard}
-            onEdit={setEditingCard}
-            onDelete={handleDelete}
-          />
-        )}
-      </QueryBoundary>
+          <h2 className="text-2xl font-bold mb-2">No cards yet</h2>
+          <p className="max-w-[340px] text-muted-foreground mb-8">Add a card to one of your banks to track expenses and installments.</p>
+          <Button onClick={() => { setEditingCard(null); setCreatingOpen(true); }} size="lg" className="gap-2 rounded-xl font-bold">
+            <Plus className="h-5 w-5" /> Add Card
+          </Button>
+        </div>
+      ) : (
+        <CardList
+          cards={cards}
+          onView={setViewingCard}
+          onEdit={setEditingCard}
+          onDelete={handleDelete}
+        />
+      )}
 
       <CardFormDialog
         open={creatingOpen || !!editingCard}

@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { TickerChartPanel } from '@/components/pages/investments/TickerChartPanel'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -14,7 +13,7 @@ export default function HoldingDetailPage() {
   const { data: holdings = [], isLoading } = usePortfolioHoldings()
   const holding = holdings.find((candidate) => String(candidate.id) === id)
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
   if (!holding) return <p className="p-6 text-sm text-muted-foreground">Holding not found.</p>
 
   const plIsPositive = holding.plAmount != null && holding.plAmount >= 0

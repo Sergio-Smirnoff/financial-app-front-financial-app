@@ -2,20 +2,22 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Menu, LogOut } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from './ThemeToggle'
-import { NotificationBell } from './NotificationBell'
 import { useUiStore } from '@/lib/store/ui.store'
 import { getUserFromCookie } from '@/lib/auth'
 import { logout } from '@/lib/api/auth'
 
-interface HeaderProps {
-  title: string
-  children?: React.ReactNode
+export interface TopBarProps {
+  /** Slot: ⌘K command bar — filled by plan 04 */
+  searchSlot?: React.ReactNode
+  /** Slot: currency selector — filled by plan 04 */
+  currencySlot?: React.ReactNode
+  /** Slot: notification bell — composed by AppShell */
+  notificationSlot?: React.ReactNode
 }
 
-export function Header({ title, children }: HeaderProps) {
+export function TopBar({ searchSlot, currencySlot, notificationSlot }: TopBarProps) {
   const { toggleSidebar } = useUiStore()
   const router = useRouter()
   const [user, setUser] = useState<ReturnType<typeof getUserFromCookie>>(null)
@@ -36,27 +38,25 @@ export function Header({ title, children }: HeaderProps) {
         size="icon"
         className="md:hidden"
         onClick={toggleSidebar}
-        aria-label="Open menu"
+        aria-label="Abrir menú"
       >
         <Menu className="h-5 w-5" />
       </Button>
 
-      <div className="flex-1 flex items-center gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        {children}
-      </div>
+      {/* ⌘K search slot */}
+      <div className="flex-1">{searchSlot}</div>
+
+      {/* currency selector slot */}
+      {currencySlot}
 
       {user && (
-        <span className="hidden text-sm text-muted-foreground sm:inline">
-          {user.name}
-        </span>
+        <span className="hidden text-sm text-muted-foreground sm:inline">{user.name}</span>
       )}
 
-      <NotificationBell />
+      {/* notification bell slot */}
+      {notificationSlot}
 
-      <ThemeToggle />
-
-      <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Logout">
+      <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Cerrar sesión">
         <LogOut className="h-4 w-4" />
       </Button>
     </header>

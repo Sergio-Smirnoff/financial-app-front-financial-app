@@ -24,8 +24,6 @@ import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Loan } from '@/types/loans'
 import { AccountResponse } from '@/types/banks'
-
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
 import { Surface } from '@/components/shared/Surface'
 
 export function LoansContent() {
@@ -77,23 +75,25 @@ export function LoansContent() {
         </Button>
       </div>
 
-      <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
-        {loans?.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">No loans yet.</p>
-        ) : (
-          <div className="flex-1 overflow-auto space-y-3">
-            {loans?.map((loan) => (
-              <LoanCard
-                key={loan.id}
-                loan={loan}
-                expanded={expandedId === loan.id}
-                onToggle={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
-                onDelete={() => handleDelete(loan)}
-              />
-            ))}
-          </div>
-        )}
-      </QueryBoundary>
+      {isLoading ? (
+        <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
+      ) : isError ? (
+        <div className="p-8 text-center text-sm text-destructive">{error?.message || 'Error loading loans'}</div>
+      ) : loans?.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-8">No loans yet.</p>
+      ) : (
+        <div className="flex-1 overflow-auto space-y-3">
+          {loans?.map((loan) => (
+            <LoanCard
+              key={loan.id}
+              loan={loan}
+              expanded={expandedId === loan.id}
+              onToggle={() => setExpandedId(expandedId === loan.id ? null : loan.id)}
+              onDelete={() => handleDelete(loan)}
+            />
+          ))}
+        </div>
+      )}
 
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="sm:max-w-md bg-popover border-border">
@@ -172,7 +172,9 @@ function LoanCard({
 
       {expanded && (
         <CardContent className="pt-0">
-          <QueryBoundary isLoading={isLoading} isError={false}>
+          {isLoading ? (
+            <div className="p-4 text-center text-xs text-muted-foreground">Cargando...</div>
+          ) : (
             <div className="space-y-1 mt-2">
               {installments?.map((inst) => {
                 const selectedCbu = selectedAccounts[inst.id]
@@ -222,7 +224,7 @@ function LoanCard({
                 )
               })}
             </div>
-          </QueryBoundary>
+          )}
         </CardContent>
       )}
     </Surface>

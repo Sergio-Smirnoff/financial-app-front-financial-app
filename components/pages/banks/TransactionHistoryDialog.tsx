@@ -2,7 +2,6 @@
 
 import { useAccountTransactions } from '@/lib/hooks/useTransactions'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { formatCurrency } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
@@ -28,7 +27,7 @@ export function TransactionHistoryDialog({ open, onOpenChange, accountCbu, accou
 
         <div className="flex-1 overflow-y-auto pr-2 mt-2">
           {isLoading ? (
-            <div className="py-20 flex justify-center"><LoadingSpinner /></div>
+            <div className="py-20 text-center text-sm text-muted-foreground">Cargando...</div>
           ) : !transactions || transactions.length === 0 ? (
             <p className="py-20 text-center text-muted-foreground">No transactions recorded for this account.</p>
           ) : (

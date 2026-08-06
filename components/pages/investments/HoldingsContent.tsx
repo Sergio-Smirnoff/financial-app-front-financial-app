@@ -3,8 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { SellHoldingDialog } from './SellHoldingDialog'
@@ -43,8 +42,8 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
     setEditingHolding(null)
   }
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage message="Failed to load holdings." />
+  if (isLoading) return <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
+  if (isError) return <InlineBanner tone="error" description="Failed to load holdings." />
 
   const visibleHoldings = (holdings ?? []).filter((holding) => !bankNumber || holding.bankNumber === bankNumber)
   const grouped = ASSET_TYPE_ORDER
