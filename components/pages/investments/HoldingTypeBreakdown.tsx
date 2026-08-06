@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import type { AssetType, HoldingWithPrice } from '@/types/investments'
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']

@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Pencil, Banknote } from 'lucide-react'
-import { formatCurrency, formatAmount } from '@/lib/utils/currency'
+import { formatCurrency, formatAmount } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { HoldingWithPrice } from '@/types/investments'
 

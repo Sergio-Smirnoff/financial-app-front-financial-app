@@ -5,7 +5,7 @@ import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { TickerChartPanel } from '@/components/pages/investments/TickerChartPanel'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { Button } from '@/components/ui/button'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export default function HoldingDetailPage() {

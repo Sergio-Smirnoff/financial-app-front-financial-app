@@ -4,7 +4,7 @@ import { usePortfolioSummary, usePortfolioHoldings } from '@/lib/hooks/useInvest
 import { AllocationChart } from './AllocationChart'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 import { QueryBoundary } from '@/components/shared/QueryBoundary'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 
 interface InvestmentsDashboardProps {
   enabled?: boolean

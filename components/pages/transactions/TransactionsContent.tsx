@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Trash2 } from 'lucide-react'
-import { formatCurrency, CURRENCIES } from '@/lib/utils/currency'
+import { formatCurrency, CURRENCIES } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Transaction, TransactionFilters } from '@/types/finances'

@@ -1,7 +1,7 @@
 'use client'
 
 import { TrendingUp, TrendingDown } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import type { HoldingWithPrice } from '@/types/investments'
 
 interface Props {

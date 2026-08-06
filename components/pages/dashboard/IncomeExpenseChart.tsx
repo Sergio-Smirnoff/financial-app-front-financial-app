@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { formatCurrency } from '@/lib/utils/currency'
-import { CURRENCIES } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
+import { CURRENCIES } from '@/lib/format'
 import { prevMonthRange, currentMonthRange } from '@/lib/utils/dates'
 import { format, subMonths } from 'date-fns'
 import {

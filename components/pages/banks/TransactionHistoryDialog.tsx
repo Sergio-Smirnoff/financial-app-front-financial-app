@@ -3,7 +3,7 @@
 import { useAccountTransactions } from '@/lib/hooks/useTransactions'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react'
 
