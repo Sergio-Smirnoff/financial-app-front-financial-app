@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
@@ -23,8 +24,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <QueryProvider>
-              {children}
-              <Toaster richColors />
+              <NuqsAdapter>
+                {children}
+                <Toaster richColors />
+              </NuqsAdapter>
             </QueryProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
