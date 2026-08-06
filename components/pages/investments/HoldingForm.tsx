@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import type { HoldingWithPrice } from '@/types/investments'
 
 const ASSET_TYPES = [

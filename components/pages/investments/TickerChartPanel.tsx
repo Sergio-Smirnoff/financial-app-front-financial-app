@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTickerResearch } from '@/lib/hooks/useInvestments'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { PriceChart } from './PriceChart'
 

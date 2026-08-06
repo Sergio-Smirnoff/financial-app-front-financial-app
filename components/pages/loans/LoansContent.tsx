@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus, Trash2, ChevronDown } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import type { Loan } from '@/types/loans'

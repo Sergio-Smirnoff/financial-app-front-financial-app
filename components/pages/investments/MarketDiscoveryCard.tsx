@@ -3,7 +3,7 @@
 import { useMarketDiscovery } from '@/lib/hooks/useInvestments'
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Flame, TrendingUp, TrendingDown } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { Surface } from '@/components/shared/Surface'
 import { cn } from '@/lib/utils'
 

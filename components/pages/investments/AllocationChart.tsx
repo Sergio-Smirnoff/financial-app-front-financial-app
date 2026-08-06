@@ -2,7 +2,7 @@
 
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import type { AllocationBreakdown } from '@/types/investments'
 import { Surface } from '@/components/shared/Surface'
 

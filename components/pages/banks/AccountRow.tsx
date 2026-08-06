@@ -4,7 +4,7 @@ import { AccountResponse } from "@/types/banks";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Surface } from "@/components/shared/Surface";
-import { formatCurrency } from "@/lib/utils/currency";
+import { formatCurrency } from "@/lib/format";
 import { ArrowLeftRight, PlusCircle, MinusCircle, History, Trash2, Wallet } from "lucide-react";
 
 interface Props {

@@ -1,7 +1,7 @@
 'use client'
 
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { PortfolioSummary } from '@/types/investments'
 import { Surface } from '@/components/shared/Surface'

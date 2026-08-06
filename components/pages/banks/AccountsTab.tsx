@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Surface } from "@/components/shared/Surface";
 import { QueryBoundary } from "@/components/shared/QueryBoundary";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
-import { formatCurrency } from "@/lib/utils/currency";
+import { formatCurrency } from "@/lib/format";
 import { Plus, Search, X, Landmark, Wallet } from "lucide-react";
 import { AccountRow } from "./AccountRow";
 import { AddAccountDialog } from "./AddAccountDialog";

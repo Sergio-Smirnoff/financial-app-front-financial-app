@@ -1,0 +1,28 @@
+{
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading",
+    "close": "Close",
+    "seeAll": "See all"
+  },
+  "sections": {
+    "unavailable": "We couldn't load this section",
+    "unavailableHint": "The rest of the page remains available",
+    "empty": "No data yet",
+    "asOf": "Updated {relative}"
+  },
+  "nav": {
+    "overview": "Overview",
+    "banks": "Banks",
+    "transactions": "Transactions",
+    "categories": "Categories",
+    "loans": "Loans",
+    "investments": "Investments",
+    "imports": "Imports",
+    "settings": "Settings"
+  }
+}

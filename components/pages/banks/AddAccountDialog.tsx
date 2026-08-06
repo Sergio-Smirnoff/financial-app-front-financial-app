@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AccountResponse, AccountRequest, UpdateAccountRequest } from "@/types/banks";
 import { accountSchema, AccountFormValues } from "@/lib/schemas/account";
 import { useAvailableBanks, useBankCatalog } from "@/lib/hooks/useBanks";
-import { CURRENCIES } from "@/lib/utils/currency";
+import { CURRENCIES } from "@/lib/format";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,

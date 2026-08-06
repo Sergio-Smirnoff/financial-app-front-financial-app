@@ -1,0 +1,28 @@
+{
+  "common": {
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "loading": "Cargando",
+    "close": "Cerrar",
+    "seeAll": "Ver todo"
+  },
+  "sections": {
+    "unavailable": "No pudimos cargar esta sección",
+    "unavailableHint": "El resto de la página sigue disponible",
+    "empty": "Todavía no hay datos",
+    "asOf": "Actualizado {relative}"
+  },
+  "nav": {
+    "overview": "Resumen",
+    "banks": "Bancos",
+    "transactions": "Movimientos",
+    "categories": "Categorías",
+    "loans": "Préstamos",
+    "investments": "Inversiones",
+    "imports": "Importaciones",
+    "settings": "Ajustes"
+  }
+}

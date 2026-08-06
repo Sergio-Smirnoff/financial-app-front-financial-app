@@ -1,6 +1,6 @@
 # Frontend — API Client
 
-HTTP client contract, 401 refresh sequence, and domain API modules.
+HTTP client contract, 401 refresh sequence, domain API modules, and typed BFF clients.
 
 ## `apiFetch` Contract (`lib/api/client.ts`)
 
@@ -40,7 +40,22 @@ sequenceDiagram
 
 The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensuring exactly one refresh call occurs concurrently across parallel requests.
 
-## Domain API Modules (`lib/api/`)
+## Typed BFF Clients (`lib/api/bff/`)
+
+| Client Module | Function | Target Route |
+|---|---|---|
+| `overview.ts` | `getOverview` | `/api/v1/bff/overview` |
+| `banks.ts` | `getBanks` | `/api/v1/bff/banks` |
+| `transactions.ts` | `getTransactions` | `/api/v1/bff/transactions` |
+| `categories.ts` | `getCategories` | `/api/v1/bff/categories` |
+| `investments.ts` | `getInvestments` | `/api/v1/bff/investments` |
+| `imports.ts` | `getImports` | `/api/v1/bff/imports` |
+| `settings.ts` | `getSettings` | `/api/v1/bff/settings` |
+| `search.ts` | `getSearch` | `/api/v1/bff/search` |
+
+All BFF responses return typed `Section<T>` envelopes allowing resilient partial section rendering.
+
+## Legacy Domain API Modules (`lib/api/`)
 
 | Module | Endpoints Covered |
 |---|---|
@@ -50,7 +65,6 @@ The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensu
 | `categories.ts` | Category & subcategory CRUD, archive/restore |
 | `loans.ts` | Loans list, originate, pay installment |
 | `investments.ts` | Holdings, portfolio summary/evolution, prices |
-| `dashboard.ts` | Aggregated dashboard data from gateway BFF |
 | `notifications.ts` | Notifications list, unread count, mark read, preferences |
 | `import.ts` | Statement upload preview, confirm, history, undo |
 | `cards.ts` | Cards list, issue, billing cycle, pay installment |

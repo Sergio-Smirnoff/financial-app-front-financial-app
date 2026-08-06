@@ -1,4 +1,4 @@
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 
 interface CurrencyAmount {
   amount: number

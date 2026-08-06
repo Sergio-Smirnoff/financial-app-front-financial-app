@@ -7,7 +7,7 @@ import { useLoans, useLoanInstallments, usePayLoanInstallment, useDeleteLoan } f
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useUiStore } from '@/lib/store/ui.store'
 import { ChevronDown, Plus, CreditCard, Calendar, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
