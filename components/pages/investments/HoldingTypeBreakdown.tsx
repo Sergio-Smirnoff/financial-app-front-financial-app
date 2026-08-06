@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { CompositionBar } from '@/components/charts/CompositionBar'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
 import { formatCurrency } from '@/lib/format'
 import type { AssetType, HoldingWithPrice } from '@/types/investments'
-
-const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
+import { Surface } from '@/components/shared/Surface'
 
 const ASSET_TYPE_LABELS: Record<AssetType, string> = {
   STOCK: 'Stocks',
@@ -40,32 +39,6 @@ function buildSlices(holdings: HoldingWithPrice[]): SliceEntry[] {
   }))
 }
 
-interface CustomTooltipProps {
-  active?: boolean
-  payload?: Array<{ payload: SliceEntry }>
-}
-
-function CustomTooltip({ active, payload }: CustomTooltipProps) {
-  if (!active || !payload?.length) return null
-  const item = payload[0].payload
-  return (
-    <div className="rounded-lg border bg-popover px-3 py-2 text-sm shadow-md">
-      <p className="font-semibold">{item.name} ({item.ticker})</p>
-      <p className="text-muted-foreground">
-        Value: {formatCurrency(item.value, item.currency)}
-      </p>
-      {item.currentPrice != null && (
-        <p className="text-muted-foreground">
-          Price: {formatCurrency(item.currentPrice, item.currency)}
-        </p>
-      )}
-      <p className="font-medium">{item.percentage.toFixed(1)}%</p>
-    </div>
-  )
-}
-
-import { Surface } from '@/components/shared/Surface'
-
 export function HoldingTypeBreakdown() {
   const { data: holdings, isLoading } = usePortfolioHoldings()
   const [activeType, setActiveType] = useState<AssetType | null>(null)
@@ -84,6 +57,12 @@ export function HoldingTypeBreakdown() {
 
   const currentType = activeType ?? types[0]
   const slices = buildSlices(grouped[currentType] ?? [])
+
+  const compSlices = slices.map((s) => ({
+    label: `${s.name} (${s.ticker})`,
+    amount: formatCurrency(s.value, s.currency),
+    pct: s.percentage,
+  }))
 
   return (
     <Surface>
@@ -109,31 +88,7 @@ export function HoldingTypeBreakdown() {
         {slices.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-4">No price data available</p>
         ) : (
-          <ResponsiveContainer width="100%" height={280}>
-            <PieChart>
-              <Pie
-                data={slices}
-                cx="50%"
-                cy="50%"
-                innerRadius={65}
-                outerRadius={95}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {slices.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                formatter={(_, entry) => {
-                  const item = entry.payload as unknown as SliceEntry
-                  return `${item.name} (${item.percentage.toFixed(1)}%)`
-                }}
-                wrapperStyle={{ fontSize: '12px' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          <CompositionBar slices={compSlices} />
         )}
       </CardContent>
     </Surface>
