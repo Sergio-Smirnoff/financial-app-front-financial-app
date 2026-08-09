@@ -39,5 +39,12 @@
     "uncategorised": "Movimientos sin categorizar",
     "method": "Método",
     "manual": "Manual"
+  },
+  "categories": {
+    "title": "Categorías y Presupuestos",
+    "subtitle": "Control presupuestario, asignación y reglas automáticas",
+    "pace": "Ritmo del mes",
+    "overBudget": "Excedido",
+    "rules": "Reglas Automáticas"
   }
 }
