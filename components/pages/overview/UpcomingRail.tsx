@@ -1,0 +1,50 @@
+'use client'
+
+import React from 'react'
+import Link from 'next/link'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
+import { DueRow } from '@/components/ui-kit/row/DueRow'
+import type { Section } from '@/lib/api/bff/types'
+import type { MoneyView } from '@/lib/format'
+
+export interface UpcomingPaymentItem {
+  id: string
+  label: string
+  dueDate: string
+  amount: MoneyView
+  kind: string
+}
+
+export interface UpcomingRailProps {
+  section?: Section<UpcomingPaymentItem[]>
+  isLoading: boolean
+  onRetry?: () => void
+}
+
+export function UpcomingRail({ section, isLoading, onRetry }: UpcomingRailProps) {
+  return (
+    <SectionState
+      section={section}
+      isLoading={isLoading}
+      onRetry={onRetry}
+      skeleton={<div className="h-40 rounded-xl bg-muted animate-pulse" />}
+    >
+      {(data) => (
+        <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+          <h3 className="section-head">Próximos Vencimientos</h3>
+          {data.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Sin vencimientos próximos.</p>
+          ) : (
+            <div className="space-y-3">
+              {data.map((item) => (
+                <Link key={item.id} href="/banks" className="block transition-opacity hover:opacity-80">
+                  <DueRow label={item.label} dueDate={item.dueDate} amount={item.amount} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </SectionState>
+  )
+}

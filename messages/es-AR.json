@@ -24,5 +24,13 @@
     "investments": "Inversiones",
     "imports": "Importaciones",
     "settings": "Ajustes"
+  },
+  "overview": {
+    "title": "Resumen",
+    "subtitle": "Estado financiero general y proyecciones",
+    "cash": "Efectivo",
+    "income": "Ingresos",
+    "expense": "Gastos",
+    "committed": "Comprometido"
   }
 }
