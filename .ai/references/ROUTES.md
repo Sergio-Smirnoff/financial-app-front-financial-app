@@ -27,7 +27,7 @@ graph TD
 |---|---|---|
 | `/login` | `(auth)` | User login form |
 | `/register` | `(auth)` | User registration form |
-| `/` | `(dashboard)` | Aggregated dashboard view (finances + banks + FX) |
+| `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
 | `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs |
 | `/transactions` | `(dashboard)` | Transaction history list, filters, and record dialog |
 | `/categories` | `(dashboard)` | Category and subcategory management tree |
