@@ -4,18 +4,12 @@ import dynamic from 'next/dynamic'
 import { useTransactionSummary } from '@/lib/hooks/useTransactions'
 import { useLoans } from '@/lib/hooks/useLoans'
 import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
-import { YearOverview } from './YearOverview'
 import { MonthSummary } from './MonthSummary'
 import { ActiveObligations } from './ActiveObligations'
 import { UpcomingPayments } from './UpcomingPayments'
 import { useState, useEffect } from 'react'
 import { currentMonthRange, currentYearRange } from '@/lib/utils/dates'
 import { getUserFromCookie } from '@/lib/auth'
-
-const IncomeExpenseChart = dynamic(
-  () => import('./IncomeExpenseChart').then((m) => ({ default: m.IncomeExpenseChart })),
-  { ssr: false },
-)
 
 export function DashboardContent() {
   const { from: monthFrom, to: monthTo } = currentMonthRange()
@@ -41,13 +35,6 @@ export function DashboardContent() {
     <div className="space-y-6">
       <h1 className="text-3xl">Welcome back, <span className="font-bold text-primary">{userName}</span>!</h1>
 
-      {/* Year-to-Date overview — all currencies */}
-      {ytdSummary.isLoading ? (
-        <div className="animate-pulse h-32 rounded-lg bg-muted" />
-      ) : (
-        <YearOverview summaries={ytdSummary.data ?? []} />
-      )}
-
       {/* This month stats — all currencies */}
       {monthSummary.isLoading ? (
         <div className="animate-pulse h-32 rounded-lg bg-muted" />
@@ -70,9 +57,6 @@ export function DashboardContent() {
         )}
         <UpcomingPayments />
       </div>
-
-      {/* Income vs Expenses chart — at the bottom, with local currency picker */}
-      <IncomeExpenseChart />
     </div>
   )
 }

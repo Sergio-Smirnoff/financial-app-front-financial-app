@@ -1,7 +1,7 @@
 'use client'
 
 import { usePortfolioSummary, usePortfolioHoldings } from '@/lib/hooks/useInvestments'
-import { AllocationChart } from './AllocationChart'
+import { CompositionBar } from '@/components/charts/CompositionBar'
 import { HoldingTypeBreakdown } from './HoldingTypeBreakdown'
 import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 import { formatCurrency } from '@/lib/format'
@@ -65,10 +65,28 @@ export function InvestmentsDashboard({ enabled = true, bankNumber }: Investments
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {summary?.breakdownArs && summary.breakdownArs.length > 0 && (
-            <AllocationChart breakdown={summary.breakdownArs} currency="ARS" />
+            <div className="rounded-2xl border border-border p-5 bg-card space-y-3">
+              <h3 className="text-sm font-semibold">Distribución ARS</h3>
+              <CompositionBar
+                slices={summary.breakdownArs.map((b) => ({
+                  label: b.assetType,
+                  amount: formatCurrency(b.totalValue, 'ARS'),
+                  pct: b.percentage,
+                }))}
+              />
+            </div>
           )}
           {summary?.breakdownUsd && summary.breakdownUsd.length > 0 && (
-            <AllocationChart breakdown={summary.breakdownUsd} currency="USD" />
+            <div className="rounded-2xl border border-border p-5 bg-card space-y-3">
+              <h3 className="text-sm font-semibold">Distribución USD</h3>
+              <CompositionBar
+                slices={summary.breakdownUsd.map((b) => ({
+                  label: b.assetType,
+                  amount: formatCurrency(b.totalValue, 'USD'),
+                  pct: b.percentage,
+                }))}
+              />
+            </div>
           )}
           <HoldingTypeBreakdown />
         </div>
