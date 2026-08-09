@@ -24,5 +24,13 @@
     "investments": "Investments",
     "imports": "Imports",
     "settings": "Settings"
+  },
+  "overview": {
+    "title": "Overview",
+    "subtitle": "General financial status and projections",
+    "cash": "Cash",
+    "income": "Income",
+    "expense": "Expenses",
+    "committed": "Committed"
   }
 }
