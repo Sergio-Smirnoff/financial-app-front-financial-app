@@ -50,7 +50,7 @@ graph TD
 | Directory | Purpose |
 |---|---|
 | `components/charts/` | SVG charts: `AreaChart`, `BarPairChart`, `HorizonBars`, `CompositionBar`, `LegendList`, `Sparkline`, `primitives/` |
-| `components/layout/` | Navigation chrome: `Header`, `Sidebar`, `MobileSidebar`, `NotificationBell`, `NotificationDropdown`, `NotificationDialog`, `ThemeToggle` |
-| `components/pages/` | Domain-scoped page components (`banks/`, `dashboard/`, `investments/`, `transactions/`, `categories/`, `loans/`, `imports/`, `settings/`) |
-| `components/shared/` | Shared UI primitives: `ConfirmDialog`, `LoadingSpinner`, `ErrorMessage`, `MultiCurrencyAmount`, `QueryBoundary`, `Surface` |
-| `components/ui/` | Headless shadcn/ui primitives (`button`, `dialog`, `select`, `table`, `tabs`, `input`, `form`, `badge`, `card`, `sonner`, etc.) |
+| `components/ui-kit/` | Wave 3 Design System UI kit: `money/`, `feedback/`, `shell/`, `overlay/`, `notifications/`, `layout/`, `controls/`, `table/`, `row/`, `data/`, `page/` (`banks/`, `investments/`, `imports/`) |
+| `components/pages/` | Domain-scoped page content components |
+| `components/shared/` | Legacy shared primitives |
+| `components/ui/` | Headless shadcn/ui primitives (`button`, `dialog`, `select`, `tabs`, `input`, `form`, `badge`, `card`, `sonner`, etc.) |
