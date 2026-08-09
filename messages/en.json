@@ -32,5 +32,12 @@
     "income": "Income",
     "expense": "Expenses",
     "committed": "Committed"
+  },
+  "transactions": {
+    "title": "Transactions",
+    "subtitle": "Transaction history, income, expenses and categorization",
+    "uncategorised": "Uncategorized transactions",
+    "method": "Method",
+    "manual": "Manual"
   }
 }

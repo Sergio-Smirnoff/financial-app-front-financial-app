@@ -32,5 +32,12 @@
     "income": "Ingresos",
     "expense": "Gastos",
     "committed": "Comprometido"
+  },
+  "transactions": {
+    "title": "Movimientos",
+    "subtitle": "Historial de ingresos, egresos y categorización",
+    "uncategorised": "Movimientos sin categorizar",
+    "method": "Método",
+    "manual": "Manual"
   }
 }

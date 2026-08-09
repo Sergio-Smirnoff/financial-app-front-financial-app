@@ -25,3 +25,7 @@ export function getTransactions({
   if (accountCbu) params.set('accountCbu', accountCbu)
   return api.get<TransactionsBff>(`${API_CONFIG.ENDPOINTS.BFF}/transactions?${params.toString()}`)
 }
+
+export function getTransactionDetail(id: number | string) {
+  return api.get<any>(`${API_CONFIG.ENDPOINTS.BFF}/transactions/${id}`)
+}
