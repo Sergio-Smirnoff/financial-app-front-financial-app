@@ -29,7 +29,7 @@ graph TD
 | `/register` | `(auth)` | User registration form |
 | `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
 | `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs |
-| `/transactions` | `(dashboard)` | Transaction history list, filters, and record dialog |
+| `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
 | `/categories` | `(dashboard)` | Category and subcategory management tree |
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
 | `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, market discovery |
