@@ -39,5 +39,12 @@
     "uncategorised": "Uncategorized transactions",
     "method": "Method",
     "manual": "Manual"
+  },
+  "categories": {
+    "title": "Categories & Budgets",
+    "subtitle": "Budget control, allocation and automatic rules",
+    "pace": "Monthly pace",
+    "overBudget": "Over budget",
+    "rules": "Automatic Rules"
   }
 }

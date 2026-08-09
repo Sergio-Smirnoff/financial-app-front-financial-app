@@ -1,189 +1,114 @@
 'use client'
 
-import { useState } from 'react'
-import { useCategories, useCreateCategory, useCreateSubcategory, useDeleteCategory, useDeleteSubcategory } from '@/lib/hooks/useCategories'
-import { useUiStore } from '@/lib/store/ui.store'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ChevronDown, ChevronRight, Plus, Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
-import type { Category } from '@/types/finances'
-import { getCategoryIcon } from '@/lib/utils/category-utils'
-import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
+import React from 'react'
+import { useQueryState, parseAsInteger } from 'nuqs'
+import { useCategoriesPage } from '@/lib/hooks/useCategoriesPage'
+import { KpiStrip, KpiTile, SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { BudgetTab } from './BudgetTab'
+import { RulesTab } from './RulesTab'
+import { IncomeTab } from './IncomeTab'
+import { CategoryTrendCard } from './CategoryTrendCard'
+import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
+import { useQueryClient } from '@tanstack/react-query'
+import type { BffQuery, CategoriesBff } from '@/lib/api/bff/types'
 
-export function CategoriesContent() {
-  const { openConfirmDelete } = useUiStore()
-  const { data: categories, isLoading, isError, error } = useCategories()
-  const createCategory = useCreateCategory()
-  const createSubcategory = useCreateSubcategory()
-  const deleteCategory = useDeleteCategory()
-  const deleteSubcategory = useDeleteSubcategory()
+export interface CategoriesContentProps {
+  query?: BffQuery
+  initialData?: CategoriesBff
+}
 
-  const [newCategoryName, setNewCategoryName] = useState('')
-  const [expanded, setExpanded] = useState<Set<number>>(new Set())
-  const [subInput, setSubInput] = useState<Record<number, string>>({})
+export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none' } }: CategoriesContentProps) {
+  const queryClient = useQueryClient()
+  const [tab, setTab] = useQueryState('tab', { defaultValue: 'budget' })
+  const [selectedCatId, setSelectedCatId] = useQueryState('category', parseAsInteger)
 
-  const toggleExpand = (id: number) => {
-    setExpanded((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  const { data, isLoading, refetch } = useCategoriesPage(query)
+
+  const categoriesSection = data?.categories
+  const categoriesList = categoriesSection?.data ?? []
+
+  const selectedCategory = categoriesList.find((c) => c.id === selectedCatId)
+
+  const mockRules = [
+    { id: 1, pattern: 'UBER', categoryName: 'Transporte', matchCount: 12 },
+    { id: 2, pattern: 'COTO', categoryName: 'Comida', matchCount: 45 },
+  ]
+
+  const handleAddRule = async (pattern: string, categoryId: number) => {
+    await queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+    await queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
   }
 
-  const handleCreateCategory = () => {
-    if (!newCategoryName.trim()) return
-    createCategory.mutate(
-      { name: newCategoryName.trim(), type: 'BOTH' },
-      {
-        onSuccess: () => { toast.success('Category created'); setNewCategoryName('') },
-        onError: () => toast.error('Failed to create category'),
-      },
-    )
-  }
-
-  const handleCreateSubcategory = (parentId: number) => {
-    const name = subInput[parentId]?.trim()
-    if (!name) return
-    createSubcategory.mutate(
-      { parentId, data: { name, type: 'BOTH' } },
-      {
-        onSuccess: () => { toast.success('Subcategory created'); setSubInput((s) => ({ ...s, [parentId]: '' })) },
-        onError: () => toast.error('Failed to create subcategory'),
-      },
-    )
-  }
-
-  const handleDeleteCategory = (cat: Category) => {
-    openConfirmDelete({
-      title: 'Delete category',
-      description: `Delete "${cat.name}" and all its subcategories?`,
-      onConfirm: () => {
-        deleteCategory.mutate(cat.id, {
-          onSuccess: () => toast.success('Category deleted'),
-          onError: () => toast.error('Failed to delete category'),
-        })
-      },
-    })
+  const handleDeleteRule = async (id: number) => {
+    await queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+    await queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex gap-2 w-full">
-        <Input
-          placeholder="New category name"
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleCreateCategory()}
-          className="bg-background border-border"
-        />
-        <Button size="sm" onClick={handleCreateCategory} disabled={createCategory.isPending}>
-          <Plus className="h-4 w-4 mr-1" /> Add
-        </Button>
-      </div>
-
-      <div className="flex-1 overflow-auto mt-4">
-        {isLoading ? (
-          <div className="p-8 text-center text-sm text-muted-foreground">Cargando...</div>
-        ) : isError ? (
-          <InlineBanner tone="error" description={error?.message || 'Failed to load categories'} />
-        ) : (
-          <div className="space-y-2 w-full">
-            {categories?.map((cat) => {
-                const subcategories = cat.subcategories ?? []
-                const isExpanded = expanded.has(cat.id)
-
-                return (
-                <div key={cat.id} className="border border-border rounded-lg overflow-hidden bg-card">
-                    <div
-                    className="flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors"
-                    onClick={() => toggleExpand(cat.id)}
-                    >
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  )}
-                  <span className="text-lg">{getCategoryIcon(cat.name)}</span>
-                  <span className="font-medium">{cat.name}</span>
-                  <div className="w-6 h-6 rounded-full bg-secondary text-secondary-foreground text-xs flex items-center justify-center font-medium">
-                    {subcategories.length}
-                  </div>
-                  <span className="text-sm text-muted-foreground">subcategorías</span>
-                  <div className="flex-1" />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteCategory(cat)
-                    }}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-
-                {isExpanded && (
-                  <div className="border-t p-3 bg-muted/30 space-y-1">
-                    {subcategories.map((sub) => (
-                      <div key={sub.id} className="flex items-center py-1 px-2 rounded hover:bg-accent/50">
-                        <span className="text-sm text-muted-foreground flex-1">{sub.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-destructive"
-                          onClick={() =>
-                            openConfirmDelete({
-                              title: 'Delete subcategory',
-                              description: `Delete "${sub.name}"?`,
-                              onConfirm: () =>
-                                deleteSubcategory.mutate({ parentId: cat.id, subId: sub.id }, {
-                                  onSuccess: () => toast.success('Subcategory deleted'),
-                                  onError: () => toast.error('Failed to delete subcategory'),
-                                }),
-                            })
-                          }
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-
-                    <div className="flex gap-2 pt-2">
-                      <Input
-                        className="h-8 text-sm"
-                        placeholder="New subcategory…"
-                        value={subInput[cat.id] ?? ''}
-                        onChange={(e) => setSubInput((s) => ({ ...s, [cat.id]: e.target.value }))}
-                        onKeyDown={(e) => {
-                          e.stopPropagation()
-                          if (e.key === 'Enter') handleCreateSubcategory(cat.id)
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                      <Button size="sm" className="h-8" onClick={(e) => {
-                        e.stopPropagation()
-                        handleCreateSubcategory(cat.id)
-                      }}>
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
-
-          {categories?.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Create one above.</p>
-          )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Categorías y Presupuestos</h1>
+          <p className="text-sm text-muted-foreground">Control presupuestario, asignación y reglas automáticas</p>
         </div>
-        )}
+        {categoriesSection?.observedAt && <FreshnessStamp observedAt={categoriesSection.observedAt} />}
       </div>
 
-      <ConfirmDialog />
+      <KpiStrip>
+        <KpiTile label="Ritmo del mes" value="+68,00 %" subtext="Dentro del límite mensual" />
+        <KpiTile label="Categorías con presupuesto" value={String(categoriesList.filter((c) => c.budgetMonthly).length)} />
+        <KpiTile label="Gastos acumulados" value={`${query.currency === 'USD' ? 'US$' : '$'} 1.450.000`} />
+        <KpiTile label="Reglas activas" value={String(mockRules.length)} />
+      </KpiStrip>
+
+      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="budget">Presupuesto</TabsTrigger>
+          <TabsTrigger value="rules">Reglas</TabsTrigger>
+          <TabsTrigger value="income">Ingresos</TabsTrigger>
+        </TabsList>
+
+        <SplitLayout
+          main={
+            <div className="space-y-6">
+              <TabsContent value="budget" className="m-0 focus-visible:outline-none">
+                <BudgetTab
+                  section={categoriesSection}
+                  isLoading={isLoading}
+                  onRetry={refetch}
+                  selectedCategoryId={selectedCatId}
+                  onSelectCategory={(id) => setSelectedCatId(selectedCatId === id ? null : id)}
+                />
+              </TabsContent>
+
+              <TabsContent value="rules" className="m-0 focus-visible:outline-none">
+                <RulesTab
+                  section={{ status: 'OK', observedAt: new Date().toISOString(), data: mockRules }}
+                  isLoading={false}
+                  categories={categoriesList.map((c) => ({ id: c.id, name: c.name }))}
+                  onAddRule={handleAddRule}
+                  onDeleteRule={handleDeleteRule}
+                />
+              </TabsContent>
+
+              <TabsContent value="income" className="m-0 focus-visible:outline-none">
+                <IncomeTab section={categoriesSection} isLoading={isLoading} onRetry={refetch} />
+              </TabsContent>
+            </div>
+          }
+          rail={
+            <div className="space-y-6">
+              <RailSection title="Análisis de Categoría">
+                <CategoryTrendCard
+                  categoryName={selectedCategory?.name}
+                  points={selectedCategory ? [12, 18, 15, 25, 30, 22] : []}
+                />
+              </RailSection>
+            </div>
+          }
+        />
+      </Tabs>
     </div>
   )
 }

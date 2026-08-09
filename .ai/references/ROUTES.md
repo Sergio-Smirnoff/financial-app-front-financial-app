@@ -30,7 +30,7 @@ graph TD
 | `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
 | `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs |
 | `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
-| `/categories` | `(dashboard)` | Category and subcategory management tree |
+| `/categories` | `(dashboard)` | Category budgets, progress rows, and rules with dry-run preview (served via `/api/v1/bff/categories`) |
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
 | `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, market discovery |
 | `/imports` | `(dashboard)` | Bank statement PDF and generic CSV import wizard |
