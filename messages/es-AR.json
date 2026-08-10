@@ -46,5 +46,12 @@
     "pace": "Ritmo del mes",
     "overBudget": "Excedido",
     "rules": "Reglas Automáticas"
+  },
+  "investments": {
+    "title": "Inversiones",
+    "subtitle": "Portafolio, cotizaciones y rendimiento",
+    "totalInvested": "Total invertido",
+    "totalPnl": "Resultado P&L",
+    "portfolio": "Cartera"
   }
 }

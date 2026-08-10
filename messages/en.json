@@ -46,5 +46,12 @@
     "pace": "Monthly pace",
     "overBudget": "Over budget",
     "rules": "Automatic Rules"
+  },
+  "investments": {
+    "title": "Investments",
+    "subtitle": "Portfolio, market quotes and performance",
+    "totalInvested": "Total invested",
+    "totalPnl": "Total P&L",
+    "portfolio": "Portfolio"
   }
 }
