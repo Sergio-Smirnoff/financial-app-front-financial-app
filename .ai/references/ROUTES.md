@@ -32,7 +32,7 @@ graph TD
 | `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
 | `/categories` | `(dashboard)` | Category budgets, progress rows, and rules with dry-run preview (served via `/api/v1/bff/categories`) |
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
-| `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, market discovery |
+| `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, and position detail (served via `/api/v1/bff/investments`) |
 | `/imports` | `(dashboard)` | Bank statement PDF and generic CSV import wizard |
 | `/settings` | `(dashboard)` | User preferences, profile, security, and manual FX rates |
 | `/design-preview` | root | Gallery showcase of design system components and charts |
