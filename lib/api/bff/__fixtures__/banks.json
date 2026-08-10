@@ -1,0 +1,23 @@
+{
+  "kpis": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": { "accountCount": 2, "cardDebt": { "amount": "1000", "currency": "ARS" } } },
+  "accounts": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
+  "cards": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
+  "loans": {
+    "status": "OK",
+    "observedAt": "2026-08-10T20:00:00Z",
+    "data": [
+      {
+        "id": 1,
+        "label": "Personal Loan",
+        "principal": { "amount": "100000", "currency": "ARS" },
+        "outstanding": { "amount": "50000", "currency": "ARS" },
+        "installmentsPaid": 6,
+        "installmentsTotal": 12,
+        "nextInstallmentDate": "2026-09-01"
+      }
+    ]
+  },
+  "importHealth": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
+  "cashDistribution": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
+  "paymentCalendar": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] }
+}
