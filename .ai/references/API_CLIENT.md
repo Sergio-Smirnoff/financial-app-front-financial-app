@@ -55,6 +55,18 @@ The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensu
 
 All BFF responses return typed `Section<T>` envelopes allowing resilient partial section rendering.
 
+### BFF Type Generation & Drift Gate
+
+BFF types in `lib/api/bff/schema.d.ts` are generated mechanically from `ms-gateway`'s OpenAPI spec (`openapi/gateway.json`). `lib/api/bff/types.ts` exports named aliases over this schema.
+
+- **When `ms-gateway` BFF response records change:**
+  1. Start the stack/gateway: `docker compose --profile app up -d gateway`
+  2. Dump the OpenAPI snapshot: `./scripts/dump-gateway-openapi.sh` (from parent repo)
+  3. Regenerate TypeScript definitions: `npm run bff:types`
+  4. Commit both `openapi/gateway.json` and `lib/api/bff/schema.d.ts`.
+- **Constraint:** Never hand-edit `schema.d.ts` or section response shapes in `types.ts`.
+- **CI Gate:** `npm run bff:check` runs in CI to verify `openapi/gateway.json` matches `schema.d.ts`.
+
 ## Legacy Domain API Modules (`lib/api/`)
 
 | Module | Endpoints Covered |
