@@ -21,7 +21,7 @@ describe('BFF Overview client', () => {
 
     const page = await getOverview({ currency: 'ARS', secondary: 'none' })
 
-    expect(page.kpis.status).toBe('OK')
-    expect(page.kpis.data.cash.amount).toBe('10')
+    expect(page.kpis?.status).toBe('OK')
+    expect(page.kpis?.data?.cash?.amount).toBe('10')
   })
 })
