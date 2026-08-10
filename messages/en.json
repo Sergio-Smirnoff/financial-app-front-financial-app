@@ -67,5 +67,11 @@
     "profile": "User Profile",
     "security": "Security & Sessions",
     "currency": "Currency & Format"
+  },
+  "auth": {
+    "login": "Sign In",
+    "register": "Create Account",
+    "rememberMe": "Remember me",
+    "invalidCredentials": "Incorrect email or password"
   }
 }

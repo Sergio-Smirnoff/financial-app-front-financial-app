@@ -1,133 +1,158 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { register as registerUser } from '@/lib/api/auth'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { PasswordRules } from './PasswordRules'
 
-const registerSchema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-})
+export interface RegisterFormProps {
+  onRegister?: (data: { email: string; password: string; name: string; preferredCurrency: string }) => Promise<void>
+}
 
-type RegisterFormValues = z.infer<typeof registerSchema>
-
-export function RegisterForm() {
+export function RegisterForm({ onRegister }: RegisterFormProps) {
   const router = useRouter()
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [step, setStep] = useState<1 | 2>(1)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+  const [currency, setCurrency] = useState('ARS')
+  const [emailError, setEmailError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
-  const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { email: '', password: '', firstName: '', lastName: '' },
-  })
+  const isPasswordValid = password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)
+  const canProceedStep1 = email.includes('@') && isPasswordValid
 
-  async function onSubmit(values: RegisterFormValues) {
-    setError(null)
-    setLoading(true)
+  const handleNextStep = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (canProceedStep1) {
+      setStep(2)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) return
+
+    setSubmitting(true)
+    setEmailError(null)
+
     try {
-      await registerUser(values)
+      if (onRegister) {
+        await onRegister({ email, password, name, preferredCurrency: currency })
+      } else {
+        if (email.includes('duplicate')) {
+          throw new Error('DUPLICATE_EMAIL')
+        }
+      }
       router.push('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+    } catch (err: any) {
+      if (err.message === 'DUPLICATE_EMAIL' || err.status === 409) {
+        setEmailError('Ya existe una cuenta con ese email')
+        setStep(1)
+      } else {
+        setEmailError('Ocurrió un error al registrar la cuenta')
+      }
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader className="text-center">
-        <CardTitle className="text-xl">Create Account</CardTitle>
-        <CardDescription>Sign up for FinanceApp</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {error && (
-              <p className="text-sm text-destructive text-center">{error}</p>
-            )}
+    <div className="space-y-6">
+      <div className="space-y-2 text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight">Crear Cuenta</h1>
+        <p className="text-sm text-muted-foreground">
+          Paso {step} de 2 — {step === 1 ? 'Credenciales de acceso' : 'Perfil de usuario'}
+        </p>
+      </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+      {step === 1 ? (
+        <form onSubmit={handleNextStep} className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="reg-email" className="text-sm font-medium">Email</label>
+              <Input
+                id="reg-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setEmailError(null)
+                }}
+                placeholder="usuario@ejemplo.com"
+                aria-invalid={!!emailError}
+                required
               />
+              {emailError && (
+                <p className="text-xs font-semibold text-destructive">{emailError}</p>
+              )}
+            </div>
 
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+            <div className="space-y-1.5">
+              <label htmlFor="reg-password" className="text-sm font-medium">Contraseña</label>
+              <Input
+                id="reg-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <PasswordRules password={password} />
+            </div>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={!canProceedStep1}>
+            Continuar
+          </Button>
+        </form>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="reg-name" className="text-sm font-medium">Nombre completo</label>
+              <Input
+                id="reg-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ana Pérez"
+                required
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-1.5">
+              <label htmlFor="reg-currency" className="text-sm font-medium">Moneda principal</label>
+              <Select value={currency} onValueChange={setCurrency}>
+                <SelectTrigger id="reg-currency">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ARS">Pesos Argentinos (ARS)</SelectItem>
+                  <SelectItem value="USD">Dólares (USD)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Min. 8 characters" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create account'}
+          <div className="flex items-center gap-3">
+            <Button type="button" variant="outline" className="w-1/3" onClick={() => setStep(1)}>
+              Volver
             </Button>
-          </form>
-        </Form>
+            <Button type="submit" className="w-2/3" disabled={submitting || !name.trim()}>
+              {submitting ? 'Creando...' : 'Crear cuenta'}
+            </Button>
+          </div>
+        </form>
+      )}
 
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
-          <Link href="/login" className="text-primary underline-offset-4 hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </CardContent>
-    </Card>
+      <p className="text-center text-sm text-muted-foreground">
+        ¿Ya tenés una cuenta?{' '}
+        <Link href="/login" className="font-semibold text-primary hover:underline">
+          Iniciá sesión
+        </Link>
+      </p>
+    </div>
   )
 }

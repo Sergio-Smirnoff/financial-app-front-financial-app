@@ -67,5 +67,11 @@
     "profile": "Perfil de Usuario",
     "security": "Seguridad y Sesiones",
     "currency": "Moneda y Formato"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Crear Cuenta",
+    "rememberMe": "Mantener sesión iniciada",
+    "invalidCredentials": "Email o contraseña incorrectos"
   }
 }
