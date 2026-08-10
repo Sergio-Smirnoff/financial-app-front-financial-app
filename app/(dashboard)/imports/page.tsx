@@ -1,17 +1,16 @@
-import { ImportWizard } from '@/components/pages/imports/ImportWizard'
-import { ImportHistory } from '@/components/pages/imports/ImportHistory'
+'use client'
+
+import React from 'react'
+import { useQueryState } from 'nuqs'
+import { ImportsContent } from '@/components/pages/imports/ImportsContent'
 
 export default function ImportsPage() {
+  const [currency] = useQueryState('currency', { defaultValue: 'ARS' })
+  const [secondary] = useQueryState('secondary', { defaultValue: 'none' })
+
   return (
-    <main className="flex-1 overflow-auto p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
-        <div className="bg-card border rounded-xl p-6">
-          <ImportWizard />
-        </div>
-        <div className="bg-card border rounded-xl p-4">
-          <ImportHistory />
-        </div>
-      </div>
+    <main className="flex-1 overflow-auto p-6">
+      <ImportsContent query={{ currency, secondary }} />
     </main>
   )
 }

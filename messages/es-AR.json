@@ -53,5 +53,12 @@
     "totalInvested": "Total invertido",
     "totalPnl": "Resultado P&L",
     "portfolio": "Cartera"
+  },
+  "imports": {
+    "title": "Importaciones",
+    "subtitle": "Importación de extractos bancarios y archivos CSV",
+    "activeRun": "Importación en progreso",
+    "wizard": "Asistente de Importación",
+    "history": "Historial de Importaciones"
   }
 }
