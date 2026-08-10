@@ -34,7 +34,7 @@ graph TD
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
 | `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, and position detail (served via `/api/v1/bff/investments`) |
 | `/imports` | `(dashboard)` | Bank statement PDF and generic CSV import wizard, history and reconciliation (served via `/api/v1/bff/imports`) |
-| `/settings` | `(dashboard)` | User preferences, profile, security, and manual FX rates |
+| `/settings` | `(dashboard)` | User preferences, profile, security, notifications and fee schedules (served via `/api/v1/bff/settings`) |
 | `/design-preview` | root | Gallery showcase of design system components and charts |
 
 ## Middleware (`middleware.ts`)

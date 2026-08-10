@@ -60,5 +60,12 @@
     "activeRun": "Import in progress",
     "wizard": "Import Wizard",
     "history": "Import History"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Account preferences, security and configuration",
+    "profile": "User Profile",
+    "security": "Security & Sessions",
+    "currency": "Currency & Format"
   }
 }

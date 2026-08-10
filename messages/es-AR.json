@@ -60,5 +60,12 @@
     "activeRun": "Importación en progreso",
     "wizard": "Asistente de Importación",
     "history": "Historial de Importaciones"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Preferencias de cuenta, seguridad y configuración",
+    "profile": "Perfil de Usuario",
+    "security": "Seguridad y Sesiones",
+    "currency": "Moneda y Formato"
   }
 }
