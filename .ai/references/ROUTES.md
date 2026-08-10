@@ -25,8 +25,8 @@ graph TD
 
 | Path | Layout | Purpose |
 |---|---|---|
-| `/login` | `(auth)` | User login form |
-| `/register` | `(auth)` | User registration form |
+| `/login` | `(auth)` | User login split form with remember-me support |
+| `/register` | `(auth)` | Two-step user registration form with live password rules |
 | `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
 | `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs |
 | `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
