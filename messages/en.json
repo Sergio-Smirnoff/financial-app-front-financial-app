@@ -53,5 +53,12 @@
     "totalInvested": "Total invested",
     "totalPnl": "Total P&L",
     "portfolio": "Portfolio"
+  },
+  "imports": {
+    "title": "Imports",
+    "subtitle": "Bank statement PDF and generic CSV import wizard",
+    "activeRun": "Import in progress",
+    "wizard": "Import Wizard",
+    "history": "Import History"
   }
 }
