@@ -18,7 +18,7 @@ export function AppShell({ children, topBarProps }: AppShellProps) {
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar
           {...topBarProps}
-          searchSlot={<SearchBar groups={[]} onQueryChange={() => {}} loading={false} />}
+          searchSlot={<SearchBar />}
           notificationSlot={<NotificationBell />}
         />
         <main className="flex-1 overflow-auto">{children}</main>

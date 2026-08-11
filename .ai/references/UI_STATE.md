@@ -32,6 +32,7 @@ BFF endpoints deliver sections wrapped in `{ status: 'OK' | 'UNAVAILABLE', obser
 - `useDashboard.ts`: Gateway BFF aggregated dashboard view.
 - `useNotifications.ts`: Notification list & unread count.
 - `useNotificationSSE.ts`: SSE EventSource listener (auto-reconnects, invalidates `['notifications']`).
+- `useSearch.ts`: Global search query hook (`['bff', 'search', debounced]`), debounced 250ms, enabled on q.length >= 2, staleTime 30s.
 - `useCards.ts`: Cards & card installment management.
 - `useImport.ts`: Upload preview & confirmation wizard state.
 
