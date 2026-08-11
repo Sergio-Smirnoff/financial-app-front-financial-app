@@ -16,17 +16,13 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog'
 import type { Section } from '@/lib/api/bff/types'
+import type { components } from '@/lib/api/bff/schema'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
-export interface CategorizationRuleItem {
-  id: number
-  pattern: string
-  categoryName: string
-  matchCount: number
-}
+export type RuleRowResponse = components['schemas']['RuleRowResponse']
 
 export interface RulesTabProps {
-  section?: Section<CategorizationRuleItem[]>
+  section?: Section<RuleRowResponse[]>
   isLoading: boolean
   onRetry?: () => void
   categories?: { id: number; name: string }[]
@@ -45,10 +41,10 @@ export function RulesTab({
   const [newRuleOpen, setNewRuleOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
 
-  const columns: ColumnDef<CategorizationRuleItem, unknown>[] = [
+  const columns: ColumnDef<RuleRowResponse, unknown>[] = [
     {
-      id: 'pattern',
-      accessorKey: 'pattern',
+      id: 'matcher',
+      accessorKey: 'matcher',
       header: 'Coincide con',
     },
     {
@@ -57,16 +53,16 @@ export function RulesTab({
       header: 'Categoría asignada',
     },
     {
-      id: 'matchCount',
-      accessorFn: (row) => `${row.matchCount} coincidencias`,
-      header: 'Coincidencias',
+      id: 'priority',
+      accessorFn: (row) => row.priority ?? 0,
+      header: 'Prioridad',
     },
     {
       id: 'actions',
       accessorFn: (row) => row,
       header: 'Acciones',
       cell: ({ getValue }) => {
-        const row = getValue() as CategorizationRuleItem
+        const row = getValue() as RuleRowResponse
         return (
           <div data-row className="flex items-center gap-2">
             <Button
@@ -75,7 +71,7 @@ export function RulesTab({
               size="sm"
               onClick={(e) => {
                 e.stopPropagation()
-                setDeleteId(row.id)
+                if (row.id != null) setDeleteId(row.id)
               }}
             >
               Acciones

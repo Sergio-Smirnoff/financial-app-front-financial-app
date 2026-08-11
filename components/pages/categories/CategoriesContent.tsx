@@ -10,6 +10,8 @@ import { RulesTab } from './RulesTab'
 import { IncomeTab } from './IncomeTab'
 import { CategoryTrendCard } from './CategoryTrendCard'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
+import { Money } from '@/components/ui-kit/money/Money'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { useQueryClient } from '@tanstack/react-query'
 import type { BffQuery, CategoriesBff } from '@/lib/api/bff/types'
 
@@ -21,19 +23,18 @@ export interface CategoriesContentProps {
 export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none' } }: CategoriesContentProps) {
   const queryClient = useQueryClient()
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'budget' })
-  const [selectedCatId, setSelectedCatId] = useQueryState('category', parseAsInteger)
+  const [selectedCatId, setSelectedCatId] = useQueryState('categoryId', parseAsInteger)
 
-  const { data, isLoading, refetch } = useCategoriesPage(query)
+  const { data, isLoading, refetch } = useCategoriesPage(query, selectedCatId)
 
-  const categoriesSection = data?.categories
-  const categoriesList = categoriesSection?.data ?? []
+  const kpis = data?.kpis
+  const budgets = data?.budgets
+  const selectedTrend = data?.selectedTrend
+  const rules = data?.rules
 
-  const selectedCategory = categoriesList.find((c) => c.id === selectedCatId)
-
-  const mockRules = [
-    { id: 1, pattern: 'UBER', categoryName: 'Transporte', matchCount: 12 },
-    { id: 2, pattern: 'COTO', categoryName: 'Comida', matchCount: 45 },
-  ]
+  const selectedCategoryName = selectedCatId
+    ? budgets?.data?.find((b) => b.categoryId === selectedCatId)?.name
+    : undefined
 
   const handleAddRule = async (pattern: string, categoryId: number) => {
     await queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
@@ -45,6 +46,8 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
     await queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
   }
 
+  const observedAt = budgets?.observedAt || kpis?.observedAt
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -52,15 +55,44 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
           <h1 className="text-2xl font-bold tracking-tight">Categorías y Presupuestos</h1>
           <p className="text-sm text-muted-foreground">Control presupuestario, asignación y reglas automáticas</p>
         </div>
-        {categoriesSection?.observedAt && <FreshnessStamp observedAt={categoriesSection.observedAt} />}
+        {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
 
-      <KpiStrip>
-        <KpiTile label="Ritmo del mes" value="+68,00 %" subtext="Dentro del límite mensual" />
-        <KpiTile label="Categorías con presupuesto" value={String(categoriesList.filter((c) => c.budgetMonthly).length)} />
-        <KpiTile label="Gastos acumulados" value={`${query.currency === 'USD' ? 'US$' : '$'} 1.450.000`} />
-        <KpiTile label="Reglas activas" value={String(mockRules.length)} />
-      </KpiStrip>
+      <SectionState
+        section={kpis}
+        isLoading={isLoading}
+        onRetry={refetch}
+        skeleton={
+          <KpiStrip>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-20 rounded-lg bg-muted animate-pulse" />
+            ))}
+          </KpiStrip>
+        }
+      >
+        {(kpiData) => (
+          <KpiStrip>
+            <div data-testid="cat-kpi-spent">
+              <KpiTile
+                label="Gastos acumulados"
+                value={kpiData.spent ? <Money value={kpiData.spent} /> : '—'}
+              />
+            </div>
+            <div data-testid="cat-kpi-available">
+              <KpiTile
+                label="Disponible"
+                value={kpiData.available ? <Money value={kpiData.available} /> : '—'}
+              />
+            </div>
+            <div data-testid="cat-kpi-over-count">
+              <KpiTile label="Excedidos" value={String(kpiData.overBudgetCount ?? 0)} />
+            </div>
+            <div data-testid="cat-kpi-pace">
+              <KpiTile label="Ritmo del mes" value={`${(kpiData.pacePct ?? 0).toFixed(2)} %`} />
+            </div>
+          </KpiStrip>
+        )}
+      </SectionState>
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
@@ -74,7 +106,7 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
             <div className="space-y-6">
               <TabsContent value="budget" className="m-0 focus-visible:outline-none">
                 <BudgetTab
-                  section={categoriesSection}
+                  section={budgets}
                   isLoading={isLoading}
                   onRetry={refetch}
                   selectedCategoryId={selectedCatId}
@@ -84,16 +116,19 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
 
               <TabsContent value="rules" className="m-0 focus-visible:outline-none">
                 <RulesTab
-                  section={{ status: 'OK', observedAt: new Date().toISOString(), data: mockRules }}
-                  isLoading={false}
-                  categories={categoriesList.map((c) => ({ id: c.id, name: c.name }))}
+                  section={rules}
+                  isLoading={isLoading}
+                  onRetry={refetch}
+                  categories={(budgets?.data ?? [])
+                    .filter((b) => b.categoryId != null && b.name != null)
+                    .map((b) => ({ id: b.categoryId!, name: b.name! }))}
                   onAddRule={handleAddRule}
                   onDeleteRule={handleDeleteRule}
                 />
               </TabsContent>
 
               <TabsContent value="income" className="m-0 focus-visible:outline-none">
-                <IncomeTab section={categoriesSection} isLoading={isLoading} onRetry={refetch} />
+                <IncomeTab section={budgets} isLoading={isLoading} onRetry={refetch} />
               </TabsContent>
             </div>
           }
@@ -101,8 +136,8 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
             <div className="space-y-6">
               <RailSection title="Análisis de Categoría">
                 <CategoryTrendCard
-                  categoryName={selectedCategory?.name}
-                  points={selectedCategory ? [12, 18, 15, 25, 30, 22] : []}
+                  categoryName={selectedCategoryName}
+                  points={selectedTrend?.data?.points ?? []}
                 />
               </RailSection>
             </div>
