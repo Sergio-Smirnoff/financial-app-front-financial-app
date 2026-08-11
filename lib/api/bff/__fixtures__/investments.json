@@ -1,0 +1,54 @@
+{
+  "alerts": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.225917526Z",
+    "status": "OK"
+  },
+  "composition": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.231869773Z",
+    "status": "OK"
+  },
+  "evolution": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.232430081Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "cost": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "marketValue": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "pnl": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "pnlPct": 0
+    },
+    "observedAt": "2026-08-11T13:31:14.231896504Z",
+    "status": "OK"
+  },
+  "marketStrip": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.232275890Z",
+    "status": "OK"
+  },
+  "positions": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.232112311Z",
+    "status": "OK"
+  },
+  "recentOperations": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.232096832Z",
+    "status": "OK"
+  }
+}

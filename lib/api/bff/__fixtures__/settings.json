@@ -1,0 +1,156 @@
+{
+  "fees": {
+    "data": {
+      "accounts": [],
+      "brokers": [],
+      "cards": [],
+      "debitCreditTaxRate": 0.006
+    },
+    "observedAt": "2026-08-11T13:31:14.284071113Z",
+    "status": "OK"
+  },
+  "notificationPrefs": {
+    "data": [
+      {
+        "category": "PAYMENT_DUE",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "BUDGET",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "PORTFOLIO_ALERTS",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "SUMMARY",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "IMPORT_HEALTH",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "ACCOUNT",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "SYSTEM",
+        "channels": [
+          "EMAIL"
+        ]
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.275392799Z",
+    "status": "OK"
+  },
+  "preferences": {
+    "data": {
+      "decimals": 2,
+      "numberFormat": "es-AR",
+      "primaryCurrency": "ARS",
+      "secondaryCurrency": "null",
+      "useGainLossColors": true
+    },
+    "observedAt": "2026-08-11T13:31:14.270425452Z",
+    "status": "OK"
+  },
+  "profile": {
+    "data": {
+      "createdAt": "2026-08-10T23:18:19.125928Z",
+      "email": "demo@financial.app",
+      "name": "Demo Usuario"
+    },
+    "observedAt": "2026-08-11T13:31:14.271284964Z",
+    "status": "OK"
+  },
+  "sessions": {
+    "data": [
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "10",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "9",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "8",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "7",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "6",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "5",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "4",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "3",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "2",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "1",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.272574929Z",
+    "status": "OK"
+  }
+}

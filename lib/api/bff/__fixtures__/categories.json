@@ -1,0 +1,95 @@
+{
+  "budgets": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.204336013Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "available": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "overBudgetCount": 0,
+      "pacePct": 0,
+      "spent": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      }
+    },
+    "observedAt": "2026-08-11T13:31:14.204920046Z",
+    "status": "OK"
+  },
+  "rules": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.205861914Z",
+    "status": "OK"
+  },
+  "selectedTrend": {
+    "data": {
+      "categoryId": null,
+      "points": [
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-02"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-03"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-04"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-05"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-06"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-07"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-08"
+        }
+      ]
+    },
+    "observedAt": "2026-08-11T13:31:14.205515189Z",
+    "status": "OK"
+  }
+}

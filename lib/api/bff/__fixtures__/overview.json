@@ -1,0 +1,621 @@
+{
+  "breakdown": {
+    "data": {
+      "cash": null,
+      "debt": null,
+      "investments": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "savings": null
+    },
+    "observedAt": "2026-08-11T13:31:14.143186781Z",
+    "status": "OK"
+  },
+  "committed": {
+    "data": [
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-09"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-10"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-11"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-12"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-01"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-02"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-03"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-04"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-05"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2027-06"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.141376073Z",
+    "status": "OK"
+  },
+  "flow": {
+    "data": [
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2025-08"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2025-09"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2025-10"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2025-11"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2025-12"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-01"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-02"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-03"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-04"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-05"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-06"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-07"
+      },
+      {
+        "expense": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "income": {
+          "amount": "600000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "month": "2026-08"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.144490823Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "cash": {
+        "amount": "600000.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "committed": null,
+      "expense": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "income": {
+        "amount": "600000.00",
+        "currency": "ARS",
+        "secondary": null
+      }
+    },
+    "observedAt": "2026-08-11T13:31:14.145524093Z",
+    "status": "OK"
+  },
+  "latestMovements": {
+    "data": [
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 80,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 72,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 64,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 55,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 47,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 38,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 30,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 22,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 14,
+        "method": "",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 6,
+        "method": "",
+        "note": "null"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.145173722Z",
+    "status": "OK"
+  },
+  "netWorth": {
+    "data": {
+      "allTimeHigh": true,
+      "delta": {
+        "amount": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "pct": 0
+      },
+      "series": [
+        {
+          "date": "2026-08-11",
+          "value": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          }
+        }
+      ]
+    },
+    "observedAt": "2026-08-11T13:31:14.143215605Z",
+    "status": "OK"
+  },
+  "spendByCategory": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.144018441Z",
+    "status": "OK"
+  },
+  "upcomingPayments": {
+    "data": [
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2026-09-01",
+        "id": "3",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2026-10-01",
+        "id": "4",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2026-11-01",
+        "id": "5",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2026-12-01",
+        "id": "6",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-01-01",
+        "id": "7",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-02-01",
+        "id": "8",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-03-01",
+        "id": "9",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-04-01",
+        "id": "10",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-05-01",
+        "id": "11",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      },
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "dueDate": "2027-06-01",
+        "id": "12",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.141329334Z",
+    "status": "OK"
+  }
+}

@@ -1,23 +1,151 @@
 {
-  "kpis": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": { "accountCount": 2, "cardDebt": { "amount": "1000", "currency": "ARS" } } },
-  "accounts": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
-  "cards": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
+  "accounts": {
+    "data": [
+      {
+        "alias": "demo.savings",
+        "balance": {
+          "amount": "1488505.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "bankName": "",
+        "cbu": "0170099200000000000024",
+        "type": "SAVINGS"
+      },
+      {
+        "alias": "demo.checking",
+        "balance": {
+          "amount": "23131495.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "bankName": "",
+        "cbu": "0170099200000000000017",
+        "type": "CHECKING"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.164974904Z",
+    "status": "OK"
+  },
+  "cards": {
+    "data": [
+      {
+        "alias": "",
+        "brand": "VISA",
+        "cardNumber": "4509953566233704",
+        "closingDate": "2026-08-20",
+        "dueDate": "2026-09-10",
+        "limit": 0,
+        "used": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "usedPct": 0
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.166608438Z",
+    "status": "OK"
+  },
+  "cashDistribution": {
+    "data": [
+      {
+        "amount": {
+          "amount": "1488505.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "label": "demo.savings",
+        "pct": 6.0500
+      },
+      {
+        "amount": {
+          "amount": "23131495.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "label": "demo.checking",
+        "pct": 93.9500
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.164893971Z",
+    "status": "OK"
+  },
+  "importHealth": {
+    "data": [
+      {
+        "alias": "demo.savings",
+        "cbu": "0170099200000000000024",
+        "daysSince": null,
+        "lastImportAt": null,
+        "status": "NEVER"
+      },
+      {
+        "alias": "demo.checking",
+        "cbu": "0170099200000000000017",
+        "daysSince": null,
+        "lastImportAt": null,
+        "status": "NEVER"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.167623194Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "accountCount": 2,
+      "cardDebt": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "loanBalance": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "totalCash": {
+        "amount": "24620000.00",
+        "currency": "ARS",
+        "secondary": null
+      }
+    },
+    "observedAt": "2026-08-11T13:31:14.167325181Z",
+    "status": "OK"
+  },
   "loans": {
-    "status": "OK",
-    "observedAt": "2026-08-10T20:00:00Z",
     "data": [
       {
         "id": 1,
-        "label": "Personal Loan",
-        "principal": { "amount": "100000", "currency": "ARS" },
-        "outstanding": { "amount": "50000", "currency": "ARS" },
-        "installmentsPaid": 6,
-        "installmentsTotal": 12,
-        "nextInstallmentDate": "2026-09-01"
+        "installmentsPaid": 0,
+        "installmentsTotal": 0,
+        "label": "",
+        "nextInstallmentDate": "2026-08-11",
+        "outstanding": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "principal": 0
       }
-    ]
+    ],
+    "observedAt": "2026-08-11T13:31:14.167283132Z",
+    "status": "OK"
   },
-  "importHealth": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
-  "cashDistribution": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] },
-  "paymentCalendar": { "status": "OK", "observedAt": "2026-08-10T20:00:00Z", "data": [] }
+  "paymentCalendar": {
+    "data": [
+      {
+        "amount": {
+          "amount": "72550.33",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "date": "2026-09-01",
+        "kind": "LOAN",
+        "label": "Préstamo personal"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.166928272Z",
+    "status": "OK"
+  }
 }

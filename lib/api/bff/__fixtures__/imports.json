@@ -1,0 +1,17 @@
+{
+  "activeRun": {
+    "data": null,
+    "observedAt": "2026-08-11T13:31:14.251153900Z",
+    "status": "OK"
+  },
+  "history": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.251139603Z",
+    "status": "OK"
+  },
+  "reconciliation": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.251121248Z",
+    "status": "OK"
+  }
+}

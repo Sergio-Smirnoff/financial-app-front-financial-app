@@ -1,0 +1,78 @@
+{
+  "categories": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.301819780Z",
+    "status": "OK"
+  },
+  "movements": {
+    "data": [
+      {
+        "href": "/transactions/77",
+        "id": "77",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/69",
+        "id": "69",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/61",
+        "id": "61",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/52",
+        "id": "52",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/44",
+        "id": "44",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/35",
+        "id": "35",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/27",
+        "id": "27",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/19",
+        "id": "19",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/11",
+        "id": "11",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      },
+      {
+        "href": "/transactions/3",
+        "id": "3",
+        "label": "Coto",
+        "sublabel": "185000.00 ARS"
+      }
+    ],
+    "observedAt": "2026-08-11T13:31:14.302517427Z",
+    "status": "OK"
+  },
+  "positions": {
+    "data": [],
+    "observedAt": "2026-08-11T13:31:14.314940070Z",
+    "status": "OK"
+  }
+}

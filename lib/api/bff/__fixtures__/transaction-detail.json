@@ -1,0 +1,26 @@
+{
+  "detail": {
+    "data": {
+      "origin": null,
+      "transaction": {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 80,
+        "method": "",
+        "note": "null"
+      }
+    },
+    "observedAt": "2026-08-11T13:31:14.333946081Z",
+    "status": "OK"
+  }
+}
