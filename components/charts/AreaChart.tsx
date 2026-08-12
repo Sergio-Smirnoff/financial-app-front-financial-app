@@ -150,6 +150,7 @@ export function AreaChart({
 
       {/* Main Series Line */}
       <path
+        data-role="line"
         d={linePath}
         fill="none"
         stroke="currentColor"

@@ -1,14 +1,11 @@
 'use client'
 
-import { ActiveAlertsCard } from './ActiveAlertsCard'
-import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
+import React from 'react'
 
-interface AlertsTabProps {
-  enabled?: boolean
-}
-
-export function AlertsTab({ enabled }: AlertsTabProps) {
-  const { data: holdings = [] } = usePortfolioHoldings({ enabled: !!enabled })
-  if (!enabled) return null
-  return <ActiveAlertsCard holdings={holdings} />
+export function AlertsTab() {
+  return (
+    <div className="p-4 rounded-lg border bg-card text-muted-foreground text-sm">
+      Las alertas de mercado se visualizan en el panel lateral de notificaciones.
+    </div>
+  )
 }

@@ -7,23 +7,22 @@ import { Money } from '@/components/ui-kit/money/Money'
 import type { Section } from '@/lib/api/bff/types'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
-export interface OperationItem {
-  id: string
-  date: string
-  ticker: string
-  kind: 'Compra' | 'Venta'
-  quantity: number
-  price: any
-  total: any
+export interface OperationRow {
+  holdingId?: number
+  ticker?: string
+  kind?: string
+  date?: string
+  quantity?: number
+  amount?: any
 }
 
 export interface OperationsTabProps {
-  section?: Section<OperationItem[]>
+  section?: Section<OperationRow[]>
   isLoading: boolean
   onRetry?: () => void
 }
 
-const columns: ColumnDef<OperationItem, unknown>[] = [
+const columns: ColumnDef<OperationRow, unknown>[] = [
   {
     id: 'date',
     accessorKey: 'date',
@@ -35,8 +34,9 @@ const columns: ColumnDef<OperationItem, unknown>[] = [
     header: 'Operación',
     cell: ({ getValue }) => {
       const kind = getValue() as string
+      const isBuy = kind?.toLowerCase().includes('compra') || kind?.toLowerCase().includes('buy')
       return (
-        <span className={`font-semibold text-xs px-2 py-0.5 rounded ${kind === 'Compra' ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
+        <span className={`font-semibold text-xs px-2 py-0.5 rounded ${isBuy ? 'bg-emerald-500/10 text-emerald-600' : 'bg-rose-500/10 text-rose-600'}`}>
           {kind}
         </span>
       )
@@ -53,15 +53,9 @@ const columns: ColumnDef<OperationItem, unknown>[] = [
     header: 'Cantidad',
   },
   {
-    id: 'price',
-    accessorFn: (row) => row.price,
-    header: 'Precio unitario',
-    cell: ({ getValue }) => <Money value={getValue() as any} />,
-  },
-  {
-    id: 'total',
-    accessorFn: (row) => row.total,
-    header: 'Monto total',
+    id: 'amount',
+    accessorFn: (row) => row.amount,
+    header: 'Monto',
     cell: ({ getValue }) => <Money value={getValue() as any} />,
   },
 ]
@@ -81,7 +75,9 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
             <p className="text-xs text-muted-foreground">Operaciones inferidas a partir de tus posiciones actuales</p>
           </div>
           {operations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sin operaciones registradas.</p>
+            <div data-testid="operations-empty" className="text-center py-8">
+              <p className="text-sm text-muted-foreground">Sin operaciones registradas.</p>
+            </div>
           ) : (
             <ScrollTable columns={columns} rows={operations} caption="Historial de operaciones" maxHeight={350} />
           )}

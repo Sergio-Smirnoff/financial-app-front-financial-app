@@ -51,7 +51,7 @@ export function PositionDetail({ holding }: PositionDetailProps) {
       <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
         <h3 className="section-head">Histórico de Precios</h3>
         <AreaChart
-          data={holding.prices}
+          series={holding.prices}
           currency={holding.currentPrice.currency}
           ariaLabel={`Histórico de precios de ${holding.ticker}`}
         />

@@ -5,14 +5,14 @@ import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { AreaChart } from '@/components/charts/AreaChart'
 import type { Section } from '@/lib/api/bff/types'
 
-export interface EvolutionItem {
-  date: string
-  value: number
-  cost: number
+export interface EvolutionPoint {
+  date?: string
+  marketValue?: { amount?: string; currency?: string; secondary?: any }
+  cost?: { amount?: string; currency?: string; secondary?: any }
 }
 
 export interface EvolutionCardProps {
-  section?: Section<EvolutionItem[]>
+  section?: Section<EvolutionPoint[]>
   isLoading: boolean
   onRetry?: () => void
 }
@@ -26,8 +26,23 @@ export function EvolutionCard({ section, isLoading, onRetry }: EvolutionCardProp
       skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
     >
       {(items) => {
-        const points = items.map((i) => ({ date: i.date, value: i.value }))
-        const comparisonPoints = items.map((i) => ({ date: i.date, value: i.cost }))
+        if (items.length === 0) {
+          return (
+            <div className="elev-sm rounded-xl border bg-card p-5">
+              <h3 className="section-head">Evolución de Cartera</h3>
+              <p className="text-sm text-muted-foreground mt-2">Sin datos de evolución disponibles.</p>
+            </div>
+          )
+        }
+
+        const points = items.map((i) => ({
+          date: i.date ?? '',
+          value: parseFloat(i.marketValue?.amount ?? '0'),
+        }))
+        const comparisonPoints = items.map((i) => ({
+          date: i.date ?? '',
+          value: parseFloat(i.cost?.amount ?? '0'),
+        }))
 
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
@@ -44,8 +59,8 @@ export function EvolutionCard({ section, isLoading, onRetry }: EvolutionCardProp
             </div>
 
             <AreaChart
-              data={points}
-              comparisonData={comparisonPoints}
+              series={points}
+              comparison={comparisonPoints}
               ariaLabel="Evolución del valor de cartera y costo acumulado"
             />
           </div>
