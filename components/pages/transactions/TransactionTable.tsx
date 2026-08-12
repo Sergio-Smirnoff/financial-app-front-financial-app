@@ -22,6 +22,7 @@ const columns: ColumnDef<TransactionRow, unknown>[] = [
     accessorKey: 'date',
     header: 'Fecha',
     enableSorting: true,
+    cell: ({ getValue }) => <span data-testid="tx-row">{String(getValue() ?? '')}</span>,
   },
   {
     id: 'description',
@@ -31,7 +32,7 @@ const columns: ColumnDef<TransactionRow, unknown>[] = [
   },
   {
     id: 'account',
-    accessorFn: (row) => row.accountAlias || row.accountCbu,
+    accessorFn: (row) => row.accountAlias || row.accountCbu || '–',
     header: 'Cuenta',
   },
   {
