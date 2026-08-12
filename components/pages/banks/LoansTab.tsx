@@ -17,29 +17,24 @@ export interface LoansTabProps {
 
 const loanColumns: ColumnDef<LoanRow, unknown>[] = [
   {
-    id: 'lender',
-    accessorKey: 'lender',
-    header: 'Prestamista / Entidad',
-  },
-  {
-    id: 'title',
-    accessorKey: 'title',
+    id: 'label',
+    accessorKey: 'label',
     header: 'Préstamo',
   },
   {
-    id: 'remainingAmount',
-    accessorFn: (row) => row.remainingAmount,
+    id: 'outstanding',
+    accessorFn: (row) => row.outstanding,
     header: 'Saldo Pendiente',
     cell: ({ getValue }) => <Money value={getValue() as any} />,
   },
   {
-    id: 'installmentsLeft',
-    accessorFn: (row) => `${row.installmentsLeft} cuotas`,
-    header: 'Cuotas Restantes',
+    id: 'installments',
+    accessorFn: (row) => `${row.installmentsPaid ?? 0} / ${row.installmentsTotal ?? 0} cuotas`,
+    header: 'Cuotas',
   },
   {
-    id: 'nextDueDate',
-    accessorKey: 'nextDueDate',
+    id: 'nextInstallmentDate',
+    accessorKey: 'nextInstallmentDate',
     header: 'Próximo Vencimiento',
   },
 ]

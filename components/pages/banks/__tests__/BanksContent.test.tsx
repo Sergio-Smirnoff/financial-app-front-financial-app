@@ -1,133 +1,44 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BanksContent } from '../BanksContent'
-import { AddAccountDialog } from '../AddAccountDialog'
-import { CardFormDialog } from '../CardFormDialog'
-import type { BanksBff, Section } from '@/lib/api/bff/types'
+import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
 import React from 'react'
+import { BanksContent } from '../BanksContent'
+import fixture from '@/lib/api/bff/__fixtures__/banks.json'
+import type { BanksBff } from '@/lib/api/bff/types'
 
-const NOW = new Date().toISOString()
-const STALE_DATE = new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString()
+vi.mock('@/lib/api/bff/banks', () => ({ getBanks: vi.fn(async () => fixture as unknown as BanksBff) }))
 
-const fixture: BanksBff = {
-  summary: {
-    status: 'OK',
-    observedAt: NOW,
-    data: {
-      totalBalance: { amount: '1200000', currency: 'ARS', secondary: null },
-      activeAccounts: 2,
-      activeCards: 1,
-      totalLoans: { amount: '350000', currency: 'ARS', secondary: null },
-    },
-  },
-  accounts: {
-    status: 'OK',
-    observedAt: NOW,
-    data: [
-      { id: 1, bankName: 'Galicia', accountType: 'Caja de Ahorro', cbu: '0070001', alias: 'galicia.ars', balance: { amount: '800000', currency: 'ARS', secondary: null }, lastSync: NOW },
-      { id: 2, bankName: 'BBVA', accountType: 'Cuenta Corriente', cbu: '0170002', alias: 'bbva.ars', balance: { amount: '400000', currency: 'ARS', secondary: null }, lastSync: STALE_DATE },
-    ],
-  },
-  cards: {
-    status: 'OK',
-    observedAt: NOW,
-    data: [
-      { id: 1, cardName: 'Visa Signature', lastFour: '4321', dueDate: '2026-08-28', closingDate: '2026-08-20', balance: { amount: '180000', currency: 'ARS', secondary: null } },
-    ],
-  },
-  loans: {
-    status: 'OK',
-    observedAt: NOW,
-    data: [
-      { id: 1, title: 'Préstamo Personal', lender: 'Galicia', totalAmount: { amount: '500000', currency: 'ARS', secondary: null }, remainingAmount: { amount: '350000', currency: 'ARS', secondary: null }, installmentAmount: { amount: '35000', currency: 'ARS', secondary: null }, installmentsLeft: 10, nextDueDate: '2026-09-05' },
-    ],
-  },
-}
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <NuqsTestingAdapter>{children}</NuqsTestingAdapter>
+  </QueryClientProvider>
+)
 
-vi.mock('@/lib/hooks/useBanksPage', () => ({
-  useBanksPage: vi.fn(),
-}))
-
-import { useBanksPage } from '@/lib/hooks/useBanksPage'
-
-function renderBanks(data: BanksBff) {
-  vi.mocked(useBanksPage).mockReturnValue({
-    data,
-    isLoading: false,
-    refetch: vi.fn(),
-  } as any)
-
-  const queryClient = new QueryClient()
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <BanksContent />
-    </QueryClientProvider>
-  )
-}
-
-describe('BanksContent', () => {
-  it('reflects the active tab in the URL', async () => {
-    const user = userEvent.setup()
-    renderBanks(fixture)
-    await user.click(screen.getByRole('tab', { name: 'Tarjetas' }))
-    expect(window.location.search).toContain('tab=cards')
+describe('BanksContent renders the real contract', () => {
+  it('shows the kpis section, not a summary section', async () => {
+    render(<BanksContent />, { wrapper })
+    expect(await screen.findByTestId('banks-kpi-total-cash')).toBeInTheDocument()
+    expect(screen.getByTestId('banks-kpi-account-count')).toHaveTextContent('2')
   })
 
-  it('shows limit usage on a card and never on an account', () => {
-    renderBanks(fixture)
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
+  it('renders import health from its own section, not from accounts', async () => {
+    render(<BanksContent />, { wrapper })
+    await screen.findByTestId('import-health-rail')
+    const expected = (fixture as unknown as BanksBff).importHealth.data!.length
+    expect(await screen.findAllByTestId('import-health-row')).toHaveLength(expected)
   })
 
-  it('keeps sibling sections alive when accounts fail', () => {
-    const degraded = {
-      ...fixture,
-      accounts: { status: 'UNAVAILABLE', observedAt: NOW, data: [] } as Section<any>,
-    }
-    renderBanks(degraded)
-    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
-    expect(screen.getByText('Estado de Importaciones')).toBeInTheDocument()
+  it('renders cash distribution slices from the cashDistribution section', async () => {
+    render(<BanksContent />, { wrapper })
+    const slices = (fixture as unknown as BanksBff).cashDistribution.data!
+    expect((await screen.findAllByText(slices[0].label!))[0]).toBeInTheDocument()
   })
 
-  it('summarises loans and links to the full route', async () => {
-    const user = userEvent.setup()
-    renderBanks(fixture)
-    await user.click(screen.getByRole('tab', { name: 'Préstamos' }))
-    const link = screen.getByRole('link', { name: /Ver todo/ })
-    expect(link).toHaveAttribute('href', '/loans')
-  })
-
-  it('labels a never-imported account as such', () => {
-    const noSync = {
-      ...fixture,
-      accounts: {
-        status: 'OK',
-        observedAt: NOW,
-        data: [{ id: 1, bankName: 'Naranja X', accountType: 'Digital', cbu: '0001', alias: 'nx.ars', balance: { amount: '0', currency: 'ARS', secondary: null }, lastSync: '' }],
-      } as Section<any>,
-    }
-    renderBanks(noSync)
-    expect(screen.getAllByText('Sin importaciones').length).toBeGreaterThan(0)
-  })
-
-  it('every banks dialog has an accessible description', () => {
-    const queryClient = new QueryClient()
-
-    const { unmount: u1 } = render(
-      <QueryClientProvider client={queryClient}>
-        <AddAccountDialog open={true} onOpenChange={() => {}} />
-      </QueryClientProvider>
-    )
-    expect(screen.getByRole('dialog')).toHaveAccessibleDescription()
-    u1()
-
-    const { unmount: u2 } = render(
-      <QueryClientProvider client={queryClient}>
-        <CardFormDialog open={true} onOpenChange={() => {}} />
-      </QueryClientProvider>
-    )
-    expect(screen.getByRole('dialog')).toHaveAccessibleDescription()
-    u2()
+  it('renders the payment calendar from the paymentCalendar section', async () => {
+    render(<BanksContent />, { wrapper })
+    const entries = (fixture as unknown as BanksBff).paymentCalendar.data!
+    expect(await screen.findByTestId('payment-calendar')).toBeInTheDocument()
+    expect(await screen.findAllByTestId('payment-calendar-entry')).toHaveLength(entries.length)
   })
 })

@@ -1,40 +1,31 @@
 'use client'
 
 import React from 'react'
-import { DueRow } from '@/components/ui-kit/row/DueRow'
-import type { CreditCardRow, LoanRow } from '@/lib/api/bff/types'
+import { DueRow } from '@/components/ui-kit/row/ListRow'
+import type { components } from '@/lib/api/bff/schema'
+
+type CalendarEntry = components['schemas']['CalendarEntryResponse']
 
 export interface PaymentCalendarCardProps {
-  cards: CreditCardRow[]
-  loans: LoanRow[]
+  entries: CalendarEntry[]
 }
 
-export function PaymentCalendarCard({ cards, loans }: PaymentCalendarCardProps) {
-  const cardDues = cards.map((c) => ({
-    id: `card-${c.id}`,
-    label: `Vencimiento ${c.cardName}`,
-    dueDate: c.dueDate,
-    amount: c.balance,
-  }))
-
-  const loanDues = loans.map((l) => ({
-    id: `loan-${l.id}`,
-    label: `Cuota ${l.title}`,
-    dueDate: l.nextDueDate,
-    amount: l.installmentAmount,
-  }))
-
-  const allDues = [...cardDues, ...loanDues]
-
+export function PaymentCalendarCard({ entries = [] }: PaymentCalendarCardProps) {
   return (
-    <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+    <div data-testid="payment-calendar" className="elev-sm rounded-xl border bg-card p-5 space-y-4">
       <h3 className="section-head">Próximos Vencimientos Bancarios</h3>
-      {allDues.length === 0 ? (
+      {entries.length === 0 ? (
         <p className="text-sm text-muted-foreground">Sin vencimientos cercanos.</p>
       ) : (
         <div className="space-y-3">
-          {allDues.map((d) => (
-            <DueRow key={d.id} label={d.label} dueDate={d.dueDate} amount={d.amount} />
+          {entries.map((entry, idx) => (
+            <div key={idx} data-testid="payment-calendar-entry">
+              <DueRow
+                label={entry.label || 'Vencimiento'}
+                dueDate={entry.date || ''}
+                amount={entry.amount || { amount: '0', currency: 'ARS', secondary: null }}
+              />
+            </div>
           ))}
         </div>
       )}

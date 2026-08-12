@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { useQueryState } from 'nuqs'
 import { useBanksPage } from '@/lib/hooks/useBanksPage'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
+import { SplitLayout, RailSection, KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { AccountsTab } from './AccountsTab'
 import { CardsTab } from './CardsTab'
 import { LoansTab } from './LoansTab'
@@ -12,6 +12,8 @@ import { ImportHealthRail } from './ImportHealthRail'
 import { CashDistributionCard } from './CashDistributionCard'
 import { PaymentCalendarCard } from './PaymentCalendarCard'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
+import { Money } from '@/components/ui-kit/money/Money'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { AddAccountDialog } from './AddAccountDialog'
 import { CardFormDialog } from './CardFormDialog'
 import type { BffQuery, BanksBff } from '@/lib/api/bff/types'
@@ -21,6 +23,8 @@ export interface BanksContentProps {
   initialData?: BanksBff
 }
 
+const SkeletonCard = () => <div className="h-32 rounded-xl bg-muted animate-pulse" />
+
 export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }: BanksContentProps) {
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'accounts' })
   const { data, isLoading, refetch } = useBanksPage(query)
@@ -28,17 +32,13 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
   const [addAccountOpen, setAddAccountOpen] = useState(false)
   const [addCardOpen, setAddCardOpen] = useState(false)
 
-  const summary = data?.summary
+  const kpis = data?.kpis
   const accountsData = data?.accounts
   const cardsData = data?.cards
   const loansData = data?.loans
-
-  const importHealthItems = accountsData?.data?.map((acc) => ({
-    id: String(acc.id),
-    accountName: acc.alias || `${acc.bankName} ${acc.accountType}`,
-    status: (acc.lastSync ? 'FRESH' : 'NEVER') as 'FRESH' | 'STALE' | 'NEVER',
-    lastImportAt: acc.lastSync || null,
-  })) ?? []
+  const importHealth = data?.importHealth
+  const cashDistribution = data?.cashDistribution
+  const paymentCalendar = data?.paymentCalendar
 
   return (
     <div className="space-y-6">
@@ -47,8 +47,38 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
           <h1 className="text-2xl font-bold tracking-tight">Bancos y Cuentas</h1>
           <p className="text-sm text-muted-foreground">Gestión de cuentas, tarjetas y obligaciones bancarias</p>
         </div>
-        {summary?.observedAt && <FreshnessStamp observedAt={summary.observedAt} />}
+        {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
       </div>
+
+      <SectionState
+        section={kpis}
+        isLoading={isLoading}
+        onRetry={refetch}
+        skeleton={
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-20 rounded-lg bg-muted animate-pulse" />
+            ))}
+          </div>
+        }
+      >
+        {(kpiData) => (
+          <KpiStrip>
+            <div data-testid="banks-kpi-total-cash">
+              <KpiTile label="Efectivo total" value={<Money value={kpiData.totalCash} />} />
+            </div>
+            <div data-testid="banks-kpi-card-debt">
+              <KpiTile label="Deuda en tarjetas" value={<Money value={kpiData.cardDebt} />} />
+            </div>
+            <div data-testid="banks-kpi-loan-balance">
+              <KpiTile label="Saldo de préstamos" value={<Money value={kpiData.loanBalance} />} />
+            </div>
+            <div data-testid="banks-kpi-account-count">
+              <KpiTile label="Cuentas activas" value={kpiData.accountCount ?? 0} />
+            </div>
+          </KpiStrip>
+        )}
+      </SectionState>
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
@@ -84,19 +114,36 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
                 />
               </TabsContent>
 
-              {accountsData?.data && accountsData.data.length > 0 && (
-                <CashDistributionCard accounts={accountsData.data} />
-              )}
+              <SectionState
+                section={cashDistribution}
+                isLoading={isLoading}
+                skeleton={<SkeletonCard />}
+                onRetry={refetch}
+              >
+                {(slices) => <CashDistributionCard slices={slices} />}
+              </SectionState>
             </div>
           }
           rail={
             <div className="space-y-6">
               <RailSection title="Información e Importaciones">
                 <div className="space-y-6">
-                  <ImportHealthRail items={importHealthItems} />
-                  {cardsData?.data && loansData?.data && (
-                    <PaymentCalendarCard cards={cardsData.data} loans={loansData.data} />
-                  )}
+                  <SectionState
+                    section={importHealth}
+                    isLoading={isLoading}
+                    skeleton={<SkeletonCard />}
+                    onRetry={refetch}
+                  >
+                    {(rows) => <ImportHealthRail rows={rows} />}
+                  </SectionState>
+                  <SectionState
+                    section={paymentCalendar}
+                    isLoading={isLoading}
+                    skeleton={<SkeletonCard />}
+                    onRetry={refetch}
+                  >
+                    {(entries) => <PaymentCalendarCard entries={entries} />}
+                  </SectionState>
                 </div>
               </RailSection>
             </div>
