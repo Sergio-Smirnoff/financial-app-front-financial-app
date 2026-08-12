@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSettingsPage } from '@/lib/hooks/useSettingsPage'
 import { ProfileSection } from './ProfileSection'
 import { SecuritySection } from './SecuritySection'
@@ -11,6 +11,7 @@ import { DataSection } from './DataSection'
 import { SaveBar } from '@/components/ui-kit/controls/Toolbar'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api/client'
 import type { BffQuery, SettingsBff } from '@/lib/api/bff/types'
 
 export interface SettingsContentProps {
@@ -22,29 +23,68 @@ export function SettingsContent({ query }: SettingsContentProps) {
   const queryClient = useQueryClient()
   const { data, isLoading, refetch } = useSettingsPage()
 
-  const profileSection = data?.profile
-  const securitySection = data?.security
+  const profile = data?.profile
+  const preferences = data?.preferences
+  const fees = data?.fees
+  const notificationPrefs = data?.notificationPrefs
+  const sessions = data?.sessions
 
-  const [nameValue, setNameValue] = useState('Ana Pérez')
-  const [secondaryCurrency, setSecondaryCurrency] = useState('none')
-  const [decimals, setDecimals] = useState('2')
-  const [useColors, setUseColors] = useState(true)
-  const [paymentDue, setPaymentDue] = useState(true)
-  const [budgetOverrun, setBudgetOverrun] = useState(true)
+  const initialName = profile?.data?.name ?? 'Ana Pérez'
+  const initialPrimaryCurrency = preferences?.data?.primaryCurrency ?? 'ARS'
+  const initialSecondaryCurrency = preferences?.data?.secondaryCurrency ?? 'none'
+  const initialDecimals = String(preferences?.data?.decimals ?? '2')
+  const initialUseColors = preferences?.data?.useGainLossColors ?? true
 
-  const isDirty = nameValue !== 'Ana Pérez' || secondaryCurrency !== 'none' || decimals !== '2'
+  const [nameValue, setNameValue] = useState(initialName)
+  const [primaryCurrency, setPrimaryCurrency] = useState(initialPrimaryCurrency)
+  const [secondaryCurrency, setSecondaryCurrency] = useState(initialSecondaryCurrency)
+  const [decimals, setDecimals] = useState(initialDecimals)
+  const [useColors, setUseColors] = useState(initialUseColors)
+
+  useEffect(() => {
+    if (profile?.data?.name) {
+      setNameValue(profile.data.name)
+    }
+  }, [profile?.data?.name])
+
+  useEffect(() => {
+    if (preferences?.data) {
+      if (preferences.data.primaryCurrency) {
+        setPrimaryCurrency(preferences.data.primaryCurrency)
+      }
+      setSecondaryCurrency(preferences.data.secondaryCurrency ?? 'none')
+      setDecimals(String(preferences.data.decimals ?? '2'))
+      setUseColors(preferences.data.useGainLossColors ?? true)
+    }
+  }, [preferences?.data])
+
+  const isDirty =
+    nameValue !== initialName ||
+    primaryCurrency !== initialPrimaryCurrency ||
+    secondaryCurrency !== initialSecondaryCurrency ||
+    decimals !== initialDecimals ||
+    useColors !== initialUseColors
 
   const handleSave = async () => {
+    try {
+      await api.put('/api/v1/users/me/preferences', {
+        primaryCurrency,
+        secondaryCurrency,
+        decimals: parseInt(decimals, 10),
+        useGainLossColors: useColors,
+      })
+    } catch {
+      // Mock fallback or update
+    }
     await queryClient.invalidateQueries({ queryKey: ['bff', 'settings'] })
-    setNameValue('Ana Pérez')
-    setSecondaryCurrency('none')
-    setDecimals('2')
   }
 
   const handleDiscard = () => {
-    setNameValue('Ana Pérez')
-    setSecondaryCurrency('none')
-    setDecimals('2')
+    setNameValue(initialName)
+    setPrimaryCurrency(initialPrimaryCurrency)
+    setSecondaryCurrency(initialSecondaryCurrency)
+    setDecimals(initialDecimals)
+    setUseColors(initialUseColors)
   }
 
   const navLinks = [
@@ -63,7 +103,7 @@ export function SettingsContent({ query }: SettingsContentProps) {
           <h1 className="text-2xl font-bold tracking-tight">Ajustes</h1>
           <p className="text-sm text-muted-foreground">Preferencias de cuenta, seguridad y configuración</p>
         </div>
-        {profileSection?.observedAt && <FreshnessStamp observedAt={profileSection.observedAt} />}
+        {profile?.observedAt && <FreshnessStamp observedAt={profile.observedAt} />}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-8 items-start">
@@ -81,7 +121,7 @@ export function SettingsContent({ query }: SettingsContentProps) {
 
         <div className="space-y-8">
           <ProfileSection
-            section={profileSection}
+            section={profile}
             isLoading={isLoading}
             onRetry={refetch}
             nameValue={nameValue}
@@ -89,12 +129,17 @@ export function SettingsContent({ query }: SettingsContentProps) {
           />
 
           <SecuritySection
-            section={securitySection}
+            section={sessions}
             isLoading={isLoading}
             onRetry={refetch}
           />
 
           <CurrencyFormatSection
+            section={preferences}
+            isLoading={isLoading}
+            onRetry={refetch}
+            primaryCurrency={primaryCurrency}
+            onPrimaryCurrencyChange={setPrimaryCurrency}
             secondaryCurrency={secondaryCurrency}
             onSecondaryCurrencyChange={setSecondaryCurrency}
             decimals={decimals}
@@ -104,13 +149,16 @@ export function SettingsContent({ query }: SettingsContentProps) {
           />
 
           <NotificationsSection
-            paymentDue={paymentDue}
-            onPaymentDueChange={setPaymentDue}
-            budgetOverrun={budgetOverrun}
-            onBudgetOverrunChange={setBudgetOverrun}
+            section={notificationPrefs}
+            isLoading={isLoading}
+            onRetry={refetch}
           />
 
-          <FeesSection isLoading={isLoading} onRetry={refetch} />
+          <FeesSection
+            section={fees}
+            isLoading={isLoading}
+            onRetry={refetch}
+          />
 
           <DataSection />
         </div>

@@ -3,23 +3,25 @@
 import React from 'react'
 import { Input } from '@/components/ui/input'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import type { Section } from '@/lib/api/bff/types'
+import type { components } from '@/lib/api/bff/schema'
 
-export interface ProfileData {
-  email: string
-  name: string
-  preferredCurrency: string
-}
+type SectionResponseUserProfileResponse = components['schemas']['SectionResponseUserProfileResponse']
 
 export interface ProfileSectionProps {
-  section?: Section<ProfileData>
+  section?: SectionResponseUserProfileResponse | any
   isLoading: boolean
   onRetry?: () => void
   nameValue: string
   onNameChange: (val: string) => void
 }
 
-export function ProfileSection({ section, isLoading, onRetry, nameValue, onNameChange }: ProfileSectionProps) {
+export function ProfileSection({
+  section,
+  isLoading,
+  onRetry,
+  nameValue,
+  onNameChange,
+}: ProfileSectionProps) {
   return (
     <SectionState
       section={section}
@@ -27,16 +29,27 @@ export function ProfileSection({ section, isLoading, onRetry, nameValue, onNameC
       onRetry={onRetry}
       skeleton={<div className="h-32 rounded-xl bg-muted animate-pulse" />}
     >
-      {(profile) => (
+      {(profile: any) => (
         <div id="profile" className="elev-sm rounded-xl border bg-card p-6 space-y-4">
-          <h3 className="section-head">Perfil de Usuario</h3>
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="section-head">Perfil de Usuario</h3>
+            {profile.email && (
+              <span className="text-xs text-muted-foreground font-mono">
+                {profile.email}
+              </span>
+            )}
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1.5">
-              <label htmlFor="email-input" className="text-sm font-medium">Correo Electrónico</label>
-              <Input id="email-input" value={profile.email} disabled className="bg-muted" />
+              <label htmlFor="email-input" className="text-sm font-medium">
+                Correo Electrónico
+              </label>
+              <Input id="email-input" value={profile.email ?? ''} disabled className="bg-muted" />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="name-input" className="text-sm font-medium">Nombre</label>
+              <label htmlFor="name-input" className="text-sm font-medium">
+                Nombre
+              </label>
               <Input
                 id="name-input"
                 value={nameValue}
