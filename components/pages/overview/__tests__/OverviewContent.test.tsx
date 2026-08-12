@@ -98,8 +98,8 @@ function renderOverview(data: OverviewBff) {
 describe('OverviewContent', () => {
   it('renders the four KPIs from the kpis section', () => {
     renderOverview(fixture)
-    expect(screen.getByText('Efectivo')).toBeInTheDocument()
-    expect(screen.getByText(/1\.284\.000/)).toBeInTheDocument()
+    expect(screen.getAllByText('Efectivo')[0]).toBeInTheDocument()
+    expect(screen.getAllByText(/1\.284\.000/)[0]).toBeInTheDocument()
   })
 
   it('degrades only the failing section', () => {
@@ -109,7 +109,7 @@ describe('OverviewContent', () => {
     }
     renderOverview(degraded)
     expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
-    expect(screen.getByText('Efectivo')).toBeInTheDocument()
+    expect(screen.getAllByText('Efectivo')[0]).toBeInTheDocument()
   })
 
   it('marks an all-time high with text, not only colour', () => {

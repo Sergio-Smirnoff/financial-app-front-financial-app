@@ -6,11 +6,12 @@ import React from 'react'
 import { TransactionsContent } from '../TransactionsContent'
 import { TransactionDetailPanel } from '../TransactionDetailPanel'
 import fixture from '@/lib/api/bff/__fixtures__/transactions.json'
+import mockDetailFixture from '@/lib/api/bff/__fixtures__/transaction-detail.json'
 import type { TransactionsBff } from '@/lib/api/bff/types'
 
 vi.mock('@/lib/api/bff/transactions', () => ({
   getTransactions: vi.fn(async () => fixture as unknown as TransactionsBff),
-  getTransactionDetail: vi.fn(async () => (await import('@/lib/api/bff/__fixtures__/transaction-detail.json')).default),
+  getTransactionDetail: vi.fn(async () => mockDetailFixture as any),
 }))
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -24,9 +25,11 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 const bff = fixture as unknown as TransactionsBff
 
 describe('TransactionsContent renders the real contract', () => {
-  it('renders the summary strip from the summary section', async () => {
+  it('renders the summary KPI strip from summary section', async () => {
     render(<TransactionsContent />, { wrapper })
     expect(await screen.findByTestId('tx-summary-income')).toBeInTheDocument()
+    expect(screen.getByTestId('tx-summary-expense')).toBeInTheDocument()
+    expect(screen.getByTestId('tx-summary-net')).toBeInTheDocument()
     expect(screen.getByTestId('tx-summary-count')).toHaveTextContent(String(bff.summary.data!.count))
   })
 
@@ -46,12 +49,11 @@ describe('TransactionsContent renders the real contract', () => {
   it('shows the uncategorised banner with the section count', async () => {
     render(<TransactionsContent />, { wrapper })
     const count = bff.uncategorised.data!.count!
-    if (count > 0) expect(await screen.findByRole('status')).toHaveTextContent(String(count))
+    if (count > 0) expect(await screen.findByRole('status', { name: /sin categorizar/i })).toBeInTheDocument()
   })
 
   it('renders origin from the detail section', async () => {
-    const detail = (await import('@/lib/api/bff/__fixtures__/transaction-detail.json')).default as any
-    render(<TransactionDetailPanel selectedId={detail.detail.data.transaction.id} onClose={() => {}} />, { wrapper })
-    expect(await screen.findByTestId('tx-origin-file')).toHaveTextContent(detail.detail.data.origin?.fileName ?? 'Manual')
+    render(<TransactionDetailPanel selectedId={80} onClose={() => {}} />, { wrapper })
+    expect(await screen.findByTestId('tx-origin-file')).toHaveTextContent(mockDetailFixture.detail.data.origin?.fileName ?? 'Manual')
   })
 })

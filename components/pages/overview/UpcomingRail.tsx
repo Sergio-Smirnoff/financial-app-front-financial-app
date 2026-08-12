@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import { DueRow } from '@/components/ui-kit/row/DueRow'
+import { DueRow } from '@/components/ui-kit/row/ListRow'
 import type { Section } from '@/lib/api/bff/types'
 import type { MoneyView } from '@/lib/format'
 

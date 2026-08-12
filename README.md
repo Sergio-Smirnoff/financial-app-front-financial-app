@@ -122,6 +122,8 @@ npm run build
 npm run lint
 npm run test:run     # Vitest unit test suite
 npm run e2e          # Playwright end-to-end journeys
+npx playwright test --project=live # Live stack smoke test suite (against running seeded stack)
+npm run bff:check    # Gateway OpenAPI drift gate
 npm run i18n:check   # Key completeness validator (es-AR vs en)
 ```
 

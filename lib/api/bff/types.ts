@@ -3,7 +3,7 @@ import type { components } from './schema'
 type Schemas = components['schemas']
 
 export type Section<T> = { status: 'OK' | 'UNAVAILABLE'; observedAt: string; data: T | null }
-export type MoneyView = Schemas['MoneyView']
+export type MoneyView = Omit<Schemas['MoneyView'], 'secondary'> & { secondary?: Schemas['MoneyView'] | null }
 
 export type OverviewBff = Schemas['OverviewBffResponse']
 export type BanksBff = Schemas['BanksBffResponse']

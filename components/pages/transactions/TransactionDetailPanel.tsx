@@ -25,29 +25,29 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
   const items = tx
     ? [
         {
-          label: 'Importe',
-          value: (
+          term: 'Importe',
+          detail: (
             <Money
               value={tx.amount || { amount: '0', currency: 'ARS', secondary: null }}
               tone={tx.direction === 'IN' ? 'gain' : 'loss'}
             />
           ),
         },
-        { label: 'Cuenta', value: tx.accountAlias || tx.accountCbu || '–' },
-        { label: 'Categoría', value: tx.categoryName || 'Sin categorizar' },
-        { label: 'Método', value: tx.method || 'Débito automático' },
-        { label: 'Nota', value: tx.note && tx.note !== 'null' ? tx.note : '–' },
+        { term: 'Cuenta', detail: tx.accountAlias || tx.accountCbu || '–' },
+        { term: 'Categoría', detail: tx.categoryName || 'Sin categorizar' },
+        { term: 'Método', detail: tx.method || 'Débito automático' },
+        { term: 'Nota', detail: tx.note && tx.note !== 'null' ? tx.note : '–' },
         {
-          label: 'Origen',
-          value: (
+          term: 'Origen',
+          detail: (
             <span data-testid="tx-origin-file">
               {origin?.fileName || (origin ? `Run #${origin.runId ?? ''}` : 'Manual')}
             </span>
           ),
         },
         {
-          label: 'Estado',
-          value: (
+          term: 'Estado',
+          detail: (
             <StatusDot
               tone={origin?.reconciled ? 'ok' : 'neutral'}
               label={origin?.reconciled ? 'Conciliado' : 'Pendiente'}
@@ -59,7 +59,7 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
 
   return (
     <SidePanel
-      open={targetId !== null}
+      open={targetId !== null && targetId !== undefined}
       onClose={handleClose}
       title={tx?.description || 'Detalle del movimiento'}
     >

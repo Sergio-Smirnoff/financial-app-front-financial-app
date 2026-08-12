@@ -39,18 +39,19 @@ export function BudgetTab({
     >
       {(categories) => (
         <div className="space-y-3">
-          {categories.map((cat) => {
-            const spent = parseFloat(cat.spendThisMonth.amount || '0')
-            const budgetCap = cat.budgetMonthly ? parseFloat(cat.budgetMonthly.amount || '0') : 0
-            const currencySymbol = cat.spendThisMonth.currency === 'USD' ? 'US$' : '$'
-            const isOver = budgetCap > 0 && spent > budgetCap
-            const isSelected = selectedCategoryId === cat.id
+          {categories.map((cat: any) => {
+            const spent = parseFloat(cat.spent?.amount || '0')
+            const budgetCap = cat.cap ? parseFloat(cat.cap.amount || '0') : 0
+            const currencySymbol = cat.spent?.currency === 'USD' ? 'US$' : '$'
+            const isOver = cat.over ?? (budgetCap > 0 && spent > budgetCap)
+            const catId = cat.categoryId ?? cat.id
+            const isSelected = selectedCategoryId === catId
 
             return (
               <div
-                key={cat.id}
-                data-row
-                onClick={() => onSelectCategory?.(cat.id)}
+                key={catId || cat.name}
+                data-testid="budget-row"
+                onClick={() => catId && onSelectCategory?.(catId)}
                 className={`p-3 rounded-lg border cursor-pointer transition-colors ${
                   isSelected ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/40'
                 }`}
@@ -59,7 +60,7 @@ export function BudgetTab({
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{cat.name}</span>
                     {isOver && (
-                      <span className="text-xs font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
+                      <span data-testid="budget-over-flag" className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-destructive/10 text-destructive">
                         Excedido
                       </span>
                     )}

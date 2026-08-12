@@ -55,7 +55,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
             {chartPoints.length > 0 && (
               <div className="pt-2">
                 <AreaChart
-                  data={chartPoints}
+                  series={chartPoints}
                   currency={latestPoint?.value.currency || 'ARS'}
                   ariaLabel="Evolución del patrimonio neto"
                 />

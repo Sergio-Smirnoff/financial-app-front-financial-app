@@ -27,6 +27,16 @@ export function HorizonBars({
   const paddingX = 32
   const paddingY = 32
 
+  if (!months || months.length === 0) {
+    return (
+      <ChartFrame width={width} height={height} ariaLabel={ariaLabel} className={className}>
+        <text x={width / 2} y={height / 2} textAnchor="middle" fill="currentColor" className="text-sm fill-muted-foreground">
+          Sin datos suficientes
+        </text>
+      </ChartFrame>
+    )
+  }
+
   const currencySymbol = currency === 'USD' ? 'US$' : '$'
 
   const maxVal = Math.max(...months.map((m) => m.amount), 100)
