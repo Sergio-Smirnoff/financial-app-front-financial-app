@@ -2,41 +2,63 @@
 
 import React from 'react'
 import { ToggleRow } from '@/components/ui-kit/controls/Toolbar'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
+import type { Section } from '@/lib/api/bff/types'
+import type { components } from '@/lib/api/bff/schema'
+
+type NotificationPreferenceResponse = components['schemas']['NotificationPreferenceResponse']
 
 export interface NotificationsSectionProps {
-  paymentDue: boolean
-  onPaymentDueChange: (val: boolean) => void
-  budgetOverrun: boolean
-  onBudgetOverrunChange: (val: boolean) => void
+  section?: any
+  isLoading: boolean
+  onRetry?: () => void
 }
 
-export function NotificationsSection({
-  paymentDue,
-  onPaymentDueChange,
-  budgetOverrun,
-  onBudgetOverrunChange,
-}: NotificationsSectionProps) {
+const CATEGORY_LABELS: Record<string, string> = {
+  PAYMENT_DUE: 'Vencimiento de tarjetas y cuotas',
+  BUDGET: 'Exceso de presupuesto',
+  PORTFOLIO_ALERTS: 'Alertas de portafolio e inversiones',
+  SUMMARY: 'Resumen periódico',
+  IMPORT_HEALTH: 'Estado de importaciones',
+  ACCOUNT: 'Alertas de cuenta',
+  SYSTEM: 'Notificaciones del sistema',
+}
+
+export function NotificationsSection({ section, isLoading, onRetry }: NotificationsSectionProps) {
   return (
-    <div id="notifications" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
-      <h3 className="section-head">Notificaciones</h3>
+    <SectionState
+      section={section}
+      isLoading={isLoading}
+      onRetry={onRetry}
+      skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
+    >
+      {(prefs: any) => (
+        <div id="notifications" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
+          <h3 className="section-head">Notificaciones</h3>
 
-      <div className="space-y-4">
-        <ToggleRow
-          id="payment-due-toggle"
-          label="Vencimiento de tarjetas y cuotas"
-          description="Recibir alertas antes de la fecha de vencimiento de tus tarjetas de crédito y cuotas de préstamos."
-          checked={paymentDue}
-          onCheckedChange={onPaymentDueChange}
-        />
-
-        <ToggleRow
-          id="budget-overrun-toggle"
-          label="Exceso de presupuesto"
-          description="Alertar cuando el gasto acumulado supere el límite asignado a una categoría."
-          checked={budgetOverrun}
-          onCheckedChange={onBudgetOverrunChange}
-        />
-      </div>
-    </div>
+          <div className="space-y-4">
+            {((prefs as any[]) ?? []).map((pref: any) => {
+              const label = CATEGORY_LABELS[pref.category ?? ''] ?? pref.category ?? 'Notificación'
+              const channelsText = pref.channels?.length ? pref.channels.join(', ') : 'Ninguno'
+              return (
+                <div
+                  key={pref.category}
+                  data-testid="notification-pref-row"
+                  className="rounded-lg border bg-card px-3"
+                >
+                  <ToggleRow
+                    id={`notification-toggle-${pref.category}`}
+                    label={label}
+                    description={`Canales activos: ${channelsText}`}
+                    checked={(pref.channels?.length ?? 0) > 0}
+                    onCheckedChange={() => {}}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </SectionState>
   )
 }
