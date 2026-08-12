@@ -29,11 +29,11 @@ graph TD
 | `/register` | `(auth)` | Two-step user registration form with live password rules |
 | `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
 | `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs (served via `/api/v1/bff/banks`: `kpis`, `accounts`, `cards`, `loans`, `importHealth`, `cashDistribution`, `paymentCalendar`) |
-| `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
+| `/transactions` | `(dashboard)` | Transaction history list, KPI summary, filters, and detail panel (served via `/api/v1/bff/transactions` sections `summary`, `page`, `filterOptions`, `uncategorised` & detail endpoint `/transactions/{id}`) |
 | `/categories` | `(dashboard)` | Category budgets, progress rows, and rules with dry-run preview (served via `/api/v1/bff/categories`) |
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
 | `/investments` | `(dashboard)` | Investment holdings, portfolio P&L, and position detail (served via `/api/v1/bff/investments`) |
-| `/imports` | `(dashboard)` | Bank statement PDF and generic CSV import wizard, history and reconciliation (served via `/api/v1/bff/imports`) |
+| `/imports` | `(dashboard)` | Import wizard, active run progress card, history table, and reconciliation check (served via `/api/v1/bff/imports`) |
 | `/settings` | `(dashboard)` | User preferences, profile, security, notifications and fee schedules (served via `/api/v1/bff/settings`) |
 | `/design-preview` | root | Gallery showcase of design system components and charts |
 

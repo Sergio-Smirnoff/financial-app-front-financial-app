@@ -6,8 +6,9 @@ import { FilterBar, FilterChip } from '@/components/ui-kit/controls/FilterBar'
 import { SearchBar } from '@/components/ui-kit/controls/SearchBar'
 
 export interface TransactionFilterOptions {
-  categories: { id: number; name: string }[]
-  accounts: { cbu: string; alias: string }[]
+  accounts?: { cbu?: string; alias?: string }[]
+  categories?: { id?: number; name?: string }[]
+  methods?: string[]
 }
 
 export interface TransactionFiltersProps {
@@ -18,14 +19,16 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   const [q, setQ] = useQueryState('q', { defaultValue: '' })
   const [category, setCategory] = useQueryState('categories', { defaultValue: '' })
   const [account, setAccount] = useQueryState('accounts', { defaultValue: '' })
+  const [method, setMethod] = useQueryState('method', { defaultValue: '' })
   const [, setPage] = useQueryState('page', { defaultValue: '1' })
 
   const handleClear = useCallback(() => {
     setQ(null)
     setCategory(null)
     setAccount(null)
+    setMethod(null)
     setPage('1')
-  }, [setQ, setCategory, setAccount, setPage])
+  }, [setQ, setCategory, setAccount, setMethod, setPage])
 
   const activeChips: { key: string; label: string; onRemove: () => void }[] = []
 
@@ -38,7 +41,7 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   }
 
   if (category) {
-    const catName = options?.categories.find((c) => String(c.id) === category)?.name || (category === 'none' ? 'Sin categorizar' : category)
+    const catName = options?.categories?.find((c) => String(c.id) === category)?.name || (category === 'none' ? 'Sin categorizar' : category)
     activeChips.push({
       key: 'cat',
       label: `Categoría: ${catName}`,
@@ -47,11 +50,19 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   }
 
   if (account) {
-    const accAlias = options?.accounts.find((a) => a.cbu === account)?.alias || account
+    const accAlias = options?.accounts?.find((a) => a.cbu === account)?.alias || account
     activeChips.push({
       key: 'acc',
       label: `Cuenta: ${accAlias}`,
       onRemove: () => { setAccount(null); setPage('1') },
+    })
+  }
+
+  if (method) {
+    activeChips.push({
+      key: 'method',
+      label: `Método: ${method}`,
+      onRemove: () => { setMethod(null); setPage('1') },
     })
   }
 
@@ -61,18 +72,48 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
         <SearchBar groups={[]} onQueryChange={(newQ) => { setQ(newQ || null); setPage('1') }} loading={false} />
 
         <div className="flex flex-wrap items-center gap-2">
-          {(options?.categories ?? []).map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => { setCategory(category === String(cat.id) ? null : String(cat.id)); setPage('1') }}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                category === String(cat.id) ? 'bg-primary text-primary-foreground border-primary' : 'bg-background hover:bg-muted'
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+          <select
+            value={account}
+            aria-label="Filtrar por cuenta"
+            onChange={(e) => { setAccount(e.target.value || null); setPage('1') }}
+            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <option value="">Todas las cuentas</option>
+            {(options?.accounts ?? []).map((acc) => (
+              <option key={acc.cbu} value={acc.cbu}>
+                {acc.alias || acc.cbu}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={category}
+            aria-label="Filtrar por categoría"
+            onChange={(e) => { setCategory(e.target.value || null); setPage('1') }}
+            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <option value="">Todas las categorías</option>
+            <option value="none">Sin categorizar</option>
+            {(options?.categories ?? []).map((cat) => (
+              <option key={cat.id} value={String(cat.id)}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={method}
+            aria-label="Filtrar por método"
+            onChange={(e) => { setMethod(e.target.value || null); setPage('1') }}
+            className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <option value="">Todos los métodos</option>
+            {(options?.methods ?? []).map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 

@@ -8,30 +8,60 @@ import { StatusDot } from '@/components/ui-kit/row/StatusDot'
 import { useTransactionDetail } from '@/lib/hooks/useTransactionDetail'
 
 export interface TransactionDetailPanelProps {
-  selectedId: number | null
-  onClose: () => void
+  selectedId?: number | null
+  id?: number | null
+  onClose?: () => void
 }
 
-export function TransactionDetailPanel({ selectedId, onClose }: TransactionDetailPanelProps) {
-  const { data: detail } = useTransactionDetail(selectedId)
+export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionDetailPanelProps) {
+  const targetId = selectedId ?? id ?? null
+  const handleClose = onClose ?? (() => {})
+  const { data: bff } = useTransactionDetail(targetId)
 
-  const items = detail
+  const detailData = bff?.detail?.data
+  const tx = detailData?.transaction
+  const origin = detailData?.origin
+
+  const items = tx
     ? [
-        { label: 'Importe', value: <Money value={detail.amount || { amount: '0', currency: 'ARS', secondary: null }} tone={detail.direction === 'IN' ? 'gain' : 'loss'} /> },
-        { label: 'Cuenta', value: detail.accountAlias || detail.accountCbu || '–' },
-        { label: 'Categoría', value: detail.categoryName || 'Sin categorizar' },
-        { label: 'Método', value: detail.method || 'Débito automático' },
-        { label: 'Nota', value: detail.note || '–' },
-        { label: 'Origen', value: detail.origin || detail.fileName || 'Manual' },
-        { label: 'Estado', value: <StatusDot tone={detail.reconciled ? 'ok' : 'neutral'} label={detail.reconciled ? 'Conciliado' : 'Pendiente'} /> },
+        {
+          label: 'Importe',
+          value: (
+            <Money
+              value={tx.amount || { amount: '0', currency: 'ARS', secondary: null }}
+              tone={tx.direction === 'IN' ? 'gain' : 'loss'}
+            />
+          ),
+        },
+        { label: 'Cuenta', value: tx.accountAlias || tx.accountCbu || '–' },
+        { label: 'Categoría', value: tx.categoryName || 'Sin categorizar' },
+        { label: 'Método', value: tx.method || 'Débito automático' },
+        { label: 'Nota', value: tx.note && tx.note !== 'null' ? tx.note : '–' },
+        {
+          label: 'Origen',
+          value: (
+            <span data-testid="tx-origin-file">
+              {origin?.fileName || (origin ? `Run #${origin.runId ?? ''}` : 'Manual')}
+            </span>
+          ),
+        },
+        {
+          label: 'Estado',
+          value: (
+            <StatusDot
+              tone={origin?.reconciled ? 'ok' : 'neutral'}
+              label={origin?.reconciled ? 'Conciliado' : 'Pendiente'}
+            />
+          ),
+        },
       ]
     : []
 
   return (
     <SidePanel
-      open={selectedId !== null}
-      onClose={onClose}
-      title={detail?.description || 'Detalle del movimiento'}
+      open={targetId !== null}
+      onClose={handleClose}
+      title={tx?.description || 'Detalle del movimiento'}
     >
       <div className="space-y-4 pt-2">
         <DetailList items={items} />

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useQueryState, useQueryStates, parseAsInteger } from 'nuqs'
+import { useQueryState, parseAsInteger } from 'nuqs'
 import { useTransactionsPage } from '@/lib/hooks/useTransactionsPage'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Pagination } from '@/components/ui-kit/table/Pagination'
@@ -11,19 +11,30 @@ import { UncategorisedBanner } from './UncategorisedBanner'
 import { BulkCategoriseBar } from './BulkCategoriseBar'
 import { TransactionDetailPanel } from './TransactionDetailPanel'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
+import { Money } from '@/components/ui-kit/money/Money'
 import { useQueryClient } from '@tanstack/react-query'
-import type { BffQuery, TransactionRow } from '@/lib/api/bff/types'
+import type { BffQuery } from '@/lib/api/bff/types'
 import type { RowSelectionState } from '@tanstack/react-table'
 
 export interface TransactionsContentProps {
   query?: BffQuery
 }
 
+const SkeletonBanner = () => <div className="h-12 w-full rounded-xl bg-muted animate-pulse" />
+const SkeletonKpi = () => (
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />
+    ))}
+  </div>
+)
+
 export function TransactionsContent({ query = { currency: 'ARS', secondary: 'none' } }: TransactionsContentProps) {
   const queryClient = useQueryClient()
   const [q] = useQueryState('q', { defaultValue: '' })
   const [category] = useQueryState('categories', { defaultValue: '' })
   const [accountCbu] = useQueryState('accounts', { defaultValue: '' })
+  const [method] = useQueryState('method', { defaultValue: '' })
   const [pageState, setPageState] = useQueryState('page', parseAsInteger.withDefault(1))
 
   const categoryId = category && category !== 'none' ? parseInt(category, 10) : undefined
@@ -34,24 +45,30 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
     q,
     categoryId,
     accountCbu,
+    method,
     page: pageState,
   })
 
   const [selection, setSelection] = useState<RowSelectionState>({})
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
 
-  const filterOptions = data?.filters?.data
-  const movementsSection = data?.movements
-  const items = movementsSection?.data?.items ?? []
-  const totalPages = movementsSection?.data?.totalPages ?? 1
+  const summary = data?.summary
+  const pageSection = data?.page
+  const filterOptionsSection = data?.filterOptions
+  const uncategorised = data?.uncategorised
 
-  const uncategorisedCount = items.filter((i) => !i.categoryId).length
+  const items = pageSection?.data?.rows ?? []
+  const totalPages = pageSection?.data?.totalPages ?? 1
+  const filterOptions = filterOptionsSection?.data
+
   const selectedCount = Object.keys(selection).length
 
   const handleBulkCategorise = async (catId: number) => {
     await queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
     setSelection({})
   }
+
+  const observedAt = pageSection?.observedAt || summary?.observedAt
 
   return (
     <div className="space-y-6">
@@ -60,15 +77,48 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
           <h1 className="text-2xl font-bold tracking-tight">Movimientos</h1>
           <p className="text-sm text-muted-foreground">Historial de ingresos, egresos y categorización</p>
         </div>
-        {movementsSection?.observedAt && <FreshnessStamp observedAt={movementsSection.observedAt} />}
+        {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
 
-      <UncategorisedBanner count={uncategorisedCount} />
+      <SectionState section={uncategorised} isLoading={isLoading} skeleton={<SkeletonBanner />} onRetry={refetch}>
+        {(u) => <UncategorisedBanner count={u.count ?? 0} />}
+      </SectionState>
+
+      <SectionState section={summary} isLoading={isLoading} skeleton={<SkeletonKpi />} onRetry={refetch}>
+        {(s) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
+              <p className="text-xs font-medium text-muted-foreground">Ingresos</p>
+              <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-income">
+                <Money value={s.income} tone="gain" />
+              </p>
+            </div>
+            <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
+              <p className="text-xs font-medium text-muted-foreground">Egresos</p>
+              <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-expense">
+                <Money value={s.expense} tone="loss" />
+              </p>
+            </div>
+            <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
+              <p className="text-xs font-medium text-muted-foreground">Neto</p>
+              <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-net">
+                <Money value={s.net} tone="neutral" />
+              </p>
+            </div>
+            <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
+              <p className="text-xs font-medium text-muted-foreground">Movimientos</p>
+              <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-count">
+                {s.count ?? 0}
+              </p>
+            </div>
+          </div>
+        )}
+      </SectionState>
 
       <TransactionFilters options={filterOptions} />
 
       <SectionState
-        section={movementsSection}
+        section={pageSection}
         isLoading={isLoading}
         onRetry={refetch}
         skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
@@ -79,7 +129,7 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
               rows={items}
               selection={selection}
               onSelectionChange={setSelection}
-              onRowClick={(row) => setSelectedRowId(row.id)}
+              onRowClick={(row) => setSelectedRowId(row.id ?? null)}
             />
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
