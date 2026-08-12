@@ -28,7 +28,7 @@ graph TD
 | `/login` | `(auth)` | User login split form with remember-me support |
 | `/register` | `(auth)` | Two-step user registration form with live password rules |
 | `/` | `(dashboard)` | Overview dashboard (served via `/api/v1/bff/overview`) |
-| `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs |
+| `/banks` | `(dashboard)` | Accounts, cards, and loans management tabs (served via `/api/v1/bff/banks`: `kpis`, `accounts`, `cards`, `loans`, `importHealth`, `cashDistribution`, `paymentCalendar`) |
 | `/transactions` | `(dashboard)` | Transaction history list, filters, and detail panel (served via `/api/v1/bff/transactions`) |
 | `/categories` | `(dashboard)` | Category budgets, progress rows, and rules with dry-run preview (served via `/api/v1/bff/categories`) |
 | `/loans` | `(dashboard)` | Loan origination and installment payment history |
