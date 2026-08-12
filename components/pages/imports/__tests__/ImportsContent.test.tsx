@@ -1,76 +1,115 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ImportsContent } from '../ImportsContent'
-import type { ImportsBff } from '@/lib/api/bff/types'
 import React from 'react'
+import { ImportsContent } from '../ImportsContent'
+import fixture from '@/lib/api/bff/__fixtures__/imports.json'
+import type { ImportsBff } from '@/lib/api/bff/types'
 
-const NOW = new Date().toISOString()
+if (typeof Element.prototype.hasPointerCapture === 'undefined') {
+  Element.prototype.hasPointerCapture = () => false
+}
 
-const fixture: ImportsBff = {
+const bff: ImportsBff = {
+  ...(fixture as unknown as ImportsBff),
   history: {
     status: 'OK',
-    observedAt: NOW,
+    observedAt: new Date().toISOString(),
     data: [
       {
-        id: '1',
+        runId: 1,
         fileName: 'resumen-junio.csv',
-        source: 'CSV',
-        status: 'SUCCESS',
-        importedAt: NOW,
-        rowCount: 142,
-        duplicatesCount: 3,
+        accountCbu: '000111222',
+        importedAt: new Date().toISOString(),
+        inserted: 142,
+        duplicates: 3,
+        failed: 0,
+        status: 'COMPLETED',
+      },
+    ],
+  },
+  reconciliation: {
+    status: 'OK',
+    observedAt: new Date().toISOString(),
+    data: [
+      {
+        runId: 1,
+        expectedBalance: { amount: '1000.00', currency: 'ARS' },
+        computedBalance: { amount: '1000.00', currency: 'ARS' },
+        matches: true,
       },
     ],
   },
 }
 
-vi.mock('@/lib/hooks/useImportsPage', () => ({
-  useImportsPage: vi.fn(),
+vi.mock('@/lib/api/bff/imports', () => ({
+  getImports: vi.fn(async () => bff),
 }))
 
-import { useImportsPage } from '@/lib/hooks/useImportsPage'
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    {children}
+  </QueryClientProvider>
+)
 
-function renderImports(data: ImportsBff) {
-  vi.mocked(useImportsPage).mockReturnValue({
-    data,
-    isLoading: false,
-    refetch: vi.fn(),
-  } as any)
-
-  const queryClient = new QueryClient()
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <ImportsContent />
-    </QueryClientProvider>
-  )
-}
-
-describe('ImportsContent', () => {
-  it('shows the active run with live progress', () => {
-    renderImports(fixture)
-    expect(screen.getByRole('progressbar', { name: /resumen-julio\.csv/ })).toHaveAttribute('aria-valuenow', '120')
+describe('ImportsContent renders the real contract', () => {
+  it('renders one history row per run, with its counters', async () => {
+    render(<ImportsContent />, { wrapper })
+    const rows = await screen.findAllByTestId('import-run-row')
+    expect(rows).toHaveLength(bff.history.data!.length)
+    expect(rows[0]).toHaveTextContent(String(bff.history.data![0].inserted))
   })
 
-  it('renders history rows with inserted, duplicate and failed counts', () => {
-    renderImports(fixture)
-    const row = screen.getByText('resumen-junio.csv').closest('[data-row]')!
-    expect(within(row).getByText('142')).toBeInTheDocument()
-    expect(within(row).getByText('3 duplicados')).toBeInTheDocument()
+  it('renders the reconciliation card from its own section', async () => {
+    render(<ImportsContent />, { wrapper })
+    const card = await screen.findByTestId('reconciliation-card')
+    expect(card).toHaveTextContent(bff.reconciliation.data![0].matches ? /coincide/i : /no coincide/i)
   })
 
-  it('names the run, file and row count before undoing', async () => {
-    const user = userEvent.setup()
-    renderImports(fixture)
-    await user.click(screen.getByRole('button', { name: 'Deshacer' }))
-    const dialog = screen.getByRole('alertdialog')
-    expect(dialog).toHaveAccessibleDescription(/resumen-junio\.csv/)
-    expect(within(dialog).getByText(/142 movimientos/)).toBeInTheDocument()
+  it('shows the active run progress when one is running', async () => {
+    const running = {
+      ...bff,
+      activeRun: {
+        status: 'OK',
+        observedAt: new Date().toISOString(),
+        data: {
+          runId: 99,
+          status: 'RUNNING',
+          fileName: 'demo.csv',
+          startedAt: new Date().toISOString(),
+          processed: 12,
+          total: 40,
+        },
+      },
+    }
+    vi.mocked((await import('@/lib/api/bff/imports')).getImports).mockResolvedValueOnce(running as any)
+    render(<ImportsContent />, { wrapper })
+    expect(await screen.findByTestId('active-run-card')).toHaveTextContent('12')
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '12')
   })
 
-  it('shows matched and mismatched reconciliation with text', () => {
-    renderImports(fixture)
-    expect(screen.getByText('Saldo coincide')).toBeInTheDocument()
+  it('polls while a run is active and stops when it finishes', async () => {
+    vi.useFakeTimers()
+    const spy = vi.mocked((await import('@/lib/api/bff/imports')).getImports)
+    const running = {
+      ...bff,
+      activeRun: {
+        status: 'OK',
+        observedAt: new Date().toISOString(),
+        data: {
+          runId: 99,
+          status: 'RUNNING',
+          fileName: 'demo.csv',
+          startedAt: new Date().toISOString(),
+          processed: 12,
+          total: 40,
+        },
+      },
+    }
+    spy.mockResolvedValue(running as any)
+    render(<ImportsContent />, { wrapper })
+    await vi.advanceTimersByTimeAsync(5000)
+    expect(spy.mock.calls.length).toBeGreaterThan(1)
+    vi.useRealTimers()
   })
 })

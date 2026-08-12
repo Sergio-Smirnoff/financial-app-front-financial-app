@@ -3,11 +3,11 @@
 import React from 'react'
 import { useImportsPage } from '@/lib/hooks/useImportsPage'
 import { SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
-import { FileProgress } from '@/components/ui-kit/page/imports/FileProgress'
 import { ImportHistoryTable } from './ImportHistoryTable'
 import { ReconciliationCard } from './ReconciliationCard'
 import { ImportWizard } from './ImportWizard'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { useQueryClient } from '@tanstack/react-query'
 import type { BffQuery, ImportsBff } from '@/lib/api/bff/types'
 
@@ -16,24 +16,36 @@ export interface ImportsContentProps {
   initialData?: ImportsBff
 }
 
+function SkeletonTable() {
+  return (
+    <div className="space-y-3">
+      <div className="h-6 w-48 rounded bg-muted animate-pulse" />
+      <div className="h-48 rounded-xl bg-muted animate-pulse" />
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return <div className="h-32 rounded-xl bg-muted animate-pulse" />
+}
+
 export function ImportsContent({ query }: ImportsContentProps) {
   const queryClient = useQueryClient()
   const { data, isLoading, refetch } = useImportsPage()
 
-  const historySection = data?.history
-  const historyItems = historySection?.data ?? []
+  const activeRun = data?.activeRun
+  const history = data?.history
+  const reconciliation = data?.reconciliation
 
-  const activeRun = {
-    fileName: 'resumen-julio.csv',
-    progress: 120,
-    status: 'uploading' as const,
-  }
+  const activeData = activeRun?.data
 
-  const handleUndo = async (id: string) => {
+  const handleUndo = async (runId: number) => {
     await queryClient.invalidateQueries({ queryKey: ['bff', 'imports'] })
     await queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
     await queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
   }
+
+  const observedAt = history?.observedAt || activeRun?.observedAt || reconciliation?.observedAt
 
   return (
     <div className="space-y-6">
@@ -42,17 +54,43 @@ export function ImportsContent({ query }: ImportsContentProps) {
           <h1 className="text-2xl font-bold tracking-tight">Importaciones</h1>
           <p className="text-sm text-muted-foreground">Importación de extractos bancarios y archivos CSV</p>
         </div>
-        {historySection?.observedAt && <FreshnessStamp observedAt={historySection.observedAt} />}
+        {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
 
-      {activeRun && (
-        <div className="p-4 rounded-xl border bg-card space-y-2">
-          <span className="text-sm font-medium">Importación en progreso</span>
-          <FileProgress
-            fileName={activeRun.fileName}
-            progress={activeRun.progress}
-            status={activeRun.status}
-          />
+      {activeData && (
+        <div data-testid="active-run-card" className="p-4 rounded-xl border bg-card space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">Importación en progreso</span>
+              {activeData.fileName && (
+                <span className="text-sm text-muted-foreground">({activeData.fileName})</span>
+              )}
+            </div>
+            {activeData.startedAt && <FreshnessStamp observedAt={activeData.startedAt} />}
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>Procesados: {activeData.processed ?? 0}</span>
+              <span>Total: {activeData.total ?? 0}</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+              <div
+                role="progressbar"
+                className="h-full bg-primary transition-all"
+                style={{
+                  width: `${
+                    activeData.total && activeData.total > 0
+                      ? Math.min(100, Math.round(((activeData.processed ?? 0) / activeData.total) * 100))
+                      : 0
+                  }%`,
+                }}
+                aria-valuenow={activeData.processed ?? 0}
+                aria-valuemin={0}
+                aria-valuemax={activeData.total ?? 100}
+                aria-label={`Progreso de importación de ${activeData.fileName ?? 'archivo'}`}
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -64,18 +102,31 @@ export function ImportsContent({ query }: ImportsContentProps) {
               <ImportWizard />
             </div>
 
-            <ImportHistoryTable
-              section={historySection}
+            <SectionState
+              section={history}
               isLoading={isLoading}
               onRetry={refetch}
-              onUndo={handleUndo}
-            />
+              skeleton={<SkeletonTable />}
+            >
+              {(historyRows) => (
+                <ImportHistoryTable rows={historyRows} onUndo={handleUndo} />
+              )}
+            </SectionState>
           </div>
         }
         rail={
           <div className="space-y-6">
             <RailSection title="Verificación">
-              <ReconciliationCard matched={true} difference={0} hasBalanceColumn={true} />
+              <SectionState
+                section={reconciliation}
+                isLoading={isLoading}
+                onRetry={refetch}
+                skeleton={<SkeletonCard />}
+              >
+                {(reconciliationRows) => (
+                  <ReconciliationCard rows={reconciliationRows} />
+                )}
+              </SectionState>
             </RailSection>
           </div>
         }
