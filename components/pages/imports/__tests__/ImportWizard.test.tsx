@@ -4,6 +4,18 @@ import userEvent from '@testing-library/user-event'
 import { StepColumnMapper } from '../steps/StepColumnMapper'
 import React from 'react'
 
+if (typeof window !== 'undefined') {
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = () => false
+  }
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = () => {}
+  }
+  if (!Element.prototype.releasePointerCapture) {
+    Element.prototype.releasePointerCapture = () => {}
+  }
+}
+
 const headers = ['fecha', 'descripcion', 'monto', 'debito', 'credito', 'saldo']
 const rows = [['2026-08-01', 'Super', '100', '100', '0', '5000']]
 

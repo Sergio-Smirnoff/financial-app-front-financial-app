@@ -6,5 +6,7 @@ export function useImportsPage() {
     queryKey: ['bff', 'imports'],
     queryFn: () => getImports(),
     staleTime: 30_000,
+    refetchInterval: (query) =>
+      query.state.data?.activeRun?.data ? 3_000 : false,
   })
 }
