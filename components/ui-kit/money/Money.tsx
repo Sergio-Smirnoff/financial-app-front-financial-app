@@ -2,7 +2,7 @@ import type { MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface MoneyProps {
-  value: MoneyView
+  value: MoneyView | null | undefined
   tone?: 'neutral' | 'gain' | 'loss'
   decimals?: number
   className?: string
@@ -10,6 +10,11 @@ export interface MoneyProps {
 }
 
 export function Money({ value, tone = 'neutral', decimals, className, signed }: MoneyProps) {
+  // A BFF section can arrive with an absent figure; render a placeholder, never throw.
+  if (!value || value.amount == null) {
+    return <span className={cn('n text-muted-foreground', className)}>—</span>
+  }
+
   const primary = formatSingleMoneyHelper(
     value.amount,
     value.currency,
