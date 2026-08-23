@@ -68,7 +68,11 @@ describe('InvestmentsContent renders the real contract', () => {
   })
 
   it('renders empty state when positions are empty', () => {
-    renderInvestments(bff)
+    const withoutPositions = {
+      ...bff,
+      positions: { ...bff.positions, data: [] },
+    }
+    renderInvestments(withoutPositions as any)
     expect(screen.getByTestId('positions-empty')).toBeInTheDocument()
   })
 

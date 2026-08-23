@@ -26,16 +26,16 @@ export function CommittedCard({ section, isLoading, onRetry }: CommittedCardProp
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => {
-        const items = data.map((item) => ({
-          label: item.month,
-          value: parseFloat(item.amount.amount || '0'),
-          formatted: `${item.amount.currency === 'USD' ? 'US$' : '$'} ${parseFloat(item.amount.amount || '0').toLocaleString('es-AR')}`,
+        const months = data.map((item) => ({
+          month: item.month,
+          amount: parseFloat(item.amount?.amount || '0'),
         }))
+        const currency = data[0]?.amount?.currency ?? 'ARS'
 
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
             <h3 className="section-head">Gastos Comprometidos por Mes</h3>
-            <HorizonBars items={items} ariaLabel="Gastos comprometidos por mes" />
+            <HorizonBars months={months} currency={currency} ariaLabel="Gastos comprometidos por mes" />
           </div>
         )
       }}

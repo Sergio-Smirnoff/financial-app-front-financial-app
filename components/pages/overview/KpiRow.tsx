@@ -30,10 +30,18 @@ export function KpiRow({ section, isLoading, onRetry }: KpiRowProps) {
     >
       {(data) => (
         <KpiStrip>
-          <KpiTile label="Efectivo" value={<Money value={data.cash} />} />
-          <KpiTile label="Ingresos" value={<Money value={data.income} tone="gain" />} />
-          <KpiTile label="Gastos" value={<Money value={data.expense} tone="loss" />} />
-          <KpiTile label="Comprometido" value={<Money value={data.committed} />} />
+          <div data-testid="overview-kpi-cash">
+            <KpiTile label="Efectivo" value={<Money value={data.cash} />} />
+          </div>
+          <div data-testid="overview-kpi-income">
+            <KpiTile label="Ingresos" value={<Money value={data.income} tone="gain" />} />
+          </div>
+          <div data-testid="overview-kpi-expense">
+            <KpiTile label="Gastos" value={<Money value={data.expense} tone="loss" />} />
+          </div>
+          <div data-testid="overview-kpi-committed">
+            <KpiTile label="Comprometido" value={<Money value={data.committed} />} />
+          </div>
         </KpiStrip>
       )}
     </SectionState>

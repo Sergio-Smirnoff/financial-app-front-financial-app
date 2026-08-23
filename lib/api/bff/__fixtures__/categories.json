@@ -1,7 +1,21 @@
 {
   "budgets": {
-    "data": [],
-    "observedAt": "2026-08-11T13:31:14.204336013Z",
+    "data": [
+      {
+        "alertThresholdPct": 80.00,
+        "cap": 250000.00,
+        "categoryId": 1106,
+        "name": "Supermercado",
+        "over": true,
+        "pct": 131.00,
+        "spent": {
+          "amount": "327500.50",
+          "currency": "ARS",
+          "secondary": null
+        }
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.820274115Z",
     "status": "OK"
   },
   "kpis": {
@@ -11,20 +25,20 @@
         "currency": "ARS",
         "secondary": null
       },
-      "overBudgetCount": 0,
-      "pacePct": 0,
+      "overBudgetCount": 1,
+      "pacePct": 131.00,
       "spent": {
-        "amount": "0.00",
+        "amount": "327500.50",
         "currency": "ARS",
         "secondary": null
       }
     },
-    "observedAt": "2026-08-11T13:31:14.204920046Z",
+    "observedAt": "2026-08-23T16:33:44.820318579Z",
     "status": "OK"
   },
   "rules": {
     "data": [],
-    "observedAt": "2026-08-11T13:31:14.205861914Z",
+    "observedAt": "2026-08-23T16:33:44.819864375Z",
     "status": "OK"
   },
   "selectedTrend": {
@@ -73,7 +87,7 @@
         },
         {
           "amount": {
-            "amount": "0.00",
+            "amount": "189400.00",
             "currency": "ARS",
             "secondary": null
           },
@@ -81,7 +95,7 @@
         },
         {
           "amount": {
-            "amount": "0.00",
+            "amount": "2632450.50",
             "currency": "ARS",
             "secondary": null
           },
@@ -89,7 +103,7 @@
         }
       ]
     },
-    "observedAt": "2026-08-11T13:31:14.205515189Z",
+    "observedAt": "2026-08-23T16:33:44.820013786Z",
     "status": "OK"
   }
 }

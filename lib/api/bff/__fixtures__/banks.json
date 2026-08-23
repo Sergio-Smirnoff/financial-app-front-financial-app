@@ -4,7 +4,7 @@
       {
         "alias": "demo.savings",
         "balance": {
-          "amount": "1488505.00",
+          "amount": "1472757.50",
           "currency": "ARS",
           "secondary": null
         },
@@ -15,7 +15,7 @@
       {
         "alias": "demo.checking",
         "balance": {
-          "amount": "23131495.00",
+          "amount": "34405392.00",
           "currency": "ARS",
           "secondary": null
         },
@@ -24,7 +24,7 @@
         "type": "CHECKING"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.164974904Z",
+    "observedAt": "2026-08-23T16:33:44.788582555Z",
     "status": "OK"
   },
   "cards": {
@@ -44,31 +44,31 @@
         "usedPct": 0
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.166608438Z",
+    "observedAt": "2026-08-23T16:33:44.790000629Z",
     "status": "OK"
   },
   "cashDistribution": {
     "data": [
       {
         "amount": {
-          "amount": "1488505.00",
+          "amount": "1472757.50",
           "currency": "ARS",
           "secondary": null
         },
         "label": "demo.savings",
-        "pct": 6.0500
+        "pct": 4.1000
       },
       {
         "amount": {
-          "amount": "23131495.00",
+          "amount": "34405392.00",
           "currency": "ARS",
           "secondary": null
         },
         "label": "demo.checking",
-        "pct": 93.9500
+        "pct": 95.9000
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.164893971Z",
+    "observedAt": "2026-08-23T16:33:44.788532310Z",
     "status": "OK"
   },
   "importHealth": {
@@ -83,12 +83,12 @@
       {
         "alias": "demo.checking",
         "cbu": "0170099200000000000017",
-        "daysSince": null,
-        "lastImportAt": null,
-        "status": "NEVER"
+        "daysSince": 20688,
+        "lastImportAt": "1970-01-01T00:00:00Z",
+        "status": "STALE"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.167623194Z",
+    "observedAt": "2026-08-23T16:33:44.792559545Z",
     "status": "OK"
   },
   "kpis": {
@@ -105,12 +105,12 @@
         "secondary": null
       },
       "totalCash": {
-        "amount": "24620000.00",
+        "amount": "35878149.50",
         "currency": "ARS",
         "secondary": null
       }
     },
-    "observedAt": "2026-08-11T13:31:14.167325181Z",
+    "observedAt": "2026-08-23T16:33:44.790040393Z",
     "status": "OK"
   },
   "loans": {
@@ -120,7 +120,7 @@
         "installmentsPaid": 0,
         "installmentsTotal": 0,
         "label": "",
-        "nextInstallmentDate": "2026-08-11",
+        "nextInstallmentDate": "2026-08-23",
         "outstanding": {
           "amount": "0.00",
           "currency": "ARS",
@@ -129,7 +129,7 @@
         "principal": 0
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.167283132Z",
+    "observedAt": "2026-08-23T16:33:44.789646974Z",
     "status": "OK"
   },
   "paymentCalendar": {
@@ -145,7 +145,7 @@
         "label": "Préstamo personal"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.166928272Z",
+    "observedAt": "2026-08-23T16:33:44.789258965Z",
     "status": "OK"
   }
 }

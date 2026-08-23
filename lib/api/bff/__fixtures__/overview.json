@@ -1,16 +1,28 @@
 {
   "breakdown": {
     "data": {
-      "cash": null,
-      "debt": null,
+      "cash": {
+        "amount": "34405392.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "debt": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
       "investments": {
         "amount": "0.00",
         "currency": "ARS",
         "secondary": null
       },
-      "savings": null
+      "savings": {
+        "amount": "1472757.50",
+        "currency": "ARS",
+        "secondary": null
+      }
     },
-    "observedAt": "2026-08-11T13:31:14.143186781Z",
+    "observedAt": "2026-08-23T16:33:44.773073161Z",
     "status": "OK"
   },
   "committed": {
@@ -96,7 +108,7 @@
         "month": "2027-06"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.141376073Z",
+    "observedAt": "2026-08-23T16:33:44.773157119Z",
     "status": "OK"
   },
   "flow": {
@@ -246,12 +258,12 @@
       },
       {
         "expense": {
-          "amount": "0.00",
+          "amount": "189400.00",
           "currency": "ARS",
           "secondary": null
         },
         "income": {
-          "amount": "0.00",
+          "amount": "1380000.00",
           "currency": "ARS",
           "secondary": null
         },
@@ -259,48 +271,188 @@
       },
       {
         "expense": {
-          "amount": "0.00",
+          "amount": "2632450.50",
           "currency": "ARS",
           "secondary": null
         },
         "income": {
-          "amount": "600000.00",
+          "amount": "2050000.00",
           "currency": "ARS",
           "secondary": null
         },
         "month": "2026-08"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.144490823Z",
+    "observedAt": "2026-08-23T16:33:44.773374517Z",
     "status": "OK"
   },
   "kpis": {
     "data": {
       "cash": {
-        "amount": "600000.00",
+        "amount": "608149.50",
         "currency": "ARS",
         "secondary": null
       },
-      "committed": null,
+      "committed": {
+        "amount": "725503.30",
+        "currency": "ARS",
+        "secondary": null
+      },
       "expense": {
-        "amount": "0.00",
+        "amount": "2821850.50",
         "currency": "ARS",
         "secondary": null
       },
       "income": {
-        "amount": "600000.00",
+        "amount": "3430000.00",
         "currency": "ARS",
         "secondary": null
       }
     },
-    "observedAt": "2026-08-11T13:31:14.145524093Z",
+    "observedAt": "2026-08-23T16:33:44.773696382Z",
     "status": "OK"
   },
   "latestMovements": {
     "data": [
       {
         "accountAlias": "",
-        "accountCbu": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "645000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 12,
+        "categoryName": "Inversiones",
+        "date": "2026-08-23",
+        "description": "Investment purchase",
+        "direction": "OUT",
+        "id": 108,
+        "method": "OTHER",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "1600000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 12,
+        "categoryName": "Inversiones",
+        "date": "2026-08-23",
+        "description": "Investment purchase",
+        "direction": "OUT",
+        "id": 107,
+        "method": "OTHER",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 130,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 122,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 114,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 104,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 96,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
+        "amount": {
+          "amount": "21750.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "categoryName": "Transporte",
+        "date": "2026-08-19",
+        "description": "Cabify",
+        "direction": "OUT",
+        "id": 88,
+        "method": "CREDIT_CARD",
+        "note": "null"
+      },
+      {
+        "accountAlias": "",
+        "accountCbu": "0170099200000000000017",
         "amount": {
           "amount": "21750.00",
           "currency": "ARS",
@@ -312,12 +464,12 @@
         "description": "Cabify",
         "direction": "OUT",
         "id": 80,
-        "method": "",
+        "method": "CREDIT_CARD",
         "note": "null"
       },
       {
         "accountAlias": "",
-        "accountCbu": "",
+        "accountCbu": "0170099200000000000017",
         "amount": {
           "amount": "21750.00",
           "currency": "ARS",
@@ -329,147 +481,11 @@
         "description": "Cabify",
         "direction": "OUT",
         "id": 72,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 64,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 55,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 47,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 38,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 30,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 22,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 14,
-        "method": "",
-        "note": "null"
-      },
-      {
-        "accountAlias": "",
-        "accountCbu": "",
-        "amount": {
-          "amount": "21750.00",
-          "currency": "ARS",
-          "secondary": null
-        },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
-        "direction": "OUT",
-        "id": 6,
-        "method": "",
+        "method": "CREDIT_CARD",
         "note": "null"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.145173722Z",
+    "observedAt": "2026-08-23T16:33:44.774104719Z",
     "status": "OK"
   },
   "netWorth": {
@@ -485,7 +501,7 @@
       },
       "series": [
         {
-          "date": "2026-08-11",
+          "date": "2026-08-23",
           "value": {
             "amount": "0.00",
             "currency": "ARS",
@@ -494,12 +510,43 @@
         }
       ]
     },
-    "observedAt": "2026-08-11T13:31:14.143215605Z",
+    "observedAt": "2026-08-23T16:33:44.773089081Z",
     "status": "OK"
   },
   "spendByCategory": {
-    "data": [],
-    "observedAt": "2026-08-11T13:31:14.144018441Z",
+    "data": [
+      {
+        "amount": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 12,
+        "name": "Inversiones",
+        "pct": 0
+      },
+      {
+        "amount": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1107,
+        "name": "Transporte",
+        "pct": 0
+      },
+      {
+        "amount": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 1106,
+        "name": "Supermercado",
+        "pct": 0
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.772835254Z",
     "status": "OK"
   },
   "upcomingPayments": {
@@ -615,7 +662,7 @@
         "label": "Préstamo personal"
       }
     ],
-    "observedAt": "2026-08-11T13:31:14.141329334Z",
+    "observedAt": "2026-08-23T16:33:44.773136080Z",
     "status": "OK"
   }
 }

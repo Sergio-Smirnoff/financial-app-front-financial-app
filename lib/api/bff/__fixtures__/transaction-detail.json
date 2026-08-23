@@ -6,21 +6,21 @@
         "accountAlias": "",
         "accountCbu": "",
         "amount": {
-          "amount": "21750.00",
+          "amount": "645000.00",
           "currency": "ARS",
           "secondary": null
         },
-        "categoryId": 1107,
-        "categoryName": "Transporte",
-        "date": "2026-08-19",
-        "description": "Cabify",
+        "categoryId": 12,
+        "categoryName": "Inversiones",
+        "date": "2026-08-23",
+        "description": "Investment purchase",
         "direction": "OUT",
-        "id": 80,
+        "id": 108,
         "method": "",
         "note": "null"
       }
     },
-    "observedAt": "2026-08-11T13:31:14.333946081Z",
+    "observedAt": "2026-08-23T16:33:44.913796200Z",
     "status": "OK"
   }
 }
