@@ -29,7 +29,8 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => {
-        const parseAmt = (m: MoneyView) => Math.max(0, parseFloat(m.amount || '0'))
+        const parseAmt = (m: MoneyView | null | undefined) => Math.max(0, parseFloat(m?.amount || '0'))
+        const fmt = (m: MoneyView | null | undefined) => (m ? formatMoney(m) : '—')
         const invAmt = parseAmt(data.investments)
         const cashAmt = parseAmt(data.cash)
         const debtAmt = parseAmt(data.debt)
@@ -37,10 +38,10 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
         const total = invAmt + cashAmt + debtAmt + savAmt || 1
 
         const slices = [
-          { label: 'Inversiones', amount: formatMoney(data.investments), pct: (invAmt / total) * 100 },
-          { label: 'Efectivo', amount: formatMoney(data.cash), pct: (cashAmt / total) * 100 },
-          { label: 'Ahorro', amount: formatMoney(data.savings), pct: (savAmt / total) * 100 },
-          { label: 'Deuda', amount: formatMoney(data.debt), pct: (debtAmt / total) * 100 },
+          { label: 'Inversiones', amount: fmt(data.investments), pct: (invAmt / total) * 100 },
+          { label: 'Efectivo', amount: fmt(data.cash), pct: (cashAmt / total) * 100 },
+          { label: 'Ahorro', amount: fmt(data.savings), pct: (savAmt / total) * 100 },
+          { label: 'Deuda', amount: fmt(data.debt), pct: (debtAmt / total) * 100 },
         ].filter((s) => s.pct > 0)
 
         return (

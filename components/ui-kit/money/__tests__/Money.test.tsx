@@ -26,4 +26,9 @@ describe('Money', () => {
     const { container } = render(<Money value={{ amount: '1', currency: 'ARS', secondary: null }} />)
     expect(container.firstChild).toHaveClass('n')
   })
+
+  it('renders an em-dash placeholder for an absent figure instead of throwing', () => {
+    render(<Money value={null} />)
+    expect(screen.getByText('—')).toBeInTheDocument()
+  })
 })

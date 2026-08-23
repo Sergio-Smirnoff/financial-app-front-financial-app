@@ -2,17 +2,16 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { ApiError } from '@/lib/api/client'
 
 export interface LoginFormProps {
-  onLogin?: (credentials: { email: string; password: string; rememberMe: boolean }) => Promise<void>
+  onLogin: (credentials: { email: string; password: string; rememberMe: boolean }) => Promise<void>
 }
 
 export function LoginForm({ onLogin }: LoginFormProps) {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -27,17 +26,15 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     setError(null)
 
     try {
-      if (onLogin) {
-        await onLogin({ email, password, rememberMe })
+      await onLogin({ email, password, rememberMe })
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 401) {
+        setError('Email o contraseña incorrectos')
+      } else if (err instanceof Error && err.message) {
+        setError(err.message)
       } else {
-        // Simulate auth call failure if invalid
-        if (password === 'wrong') {
-          throw new Error('Invalid credentials')
-        }
-        router.push('/')
+        setError('No se pudo iniciar sesión. Intentá de nuevo.')
       }
-    } catch (err: any) {
-      setError('Email o contraseña incorrectos')
     } finally {
       setSubmitting(false)
     }

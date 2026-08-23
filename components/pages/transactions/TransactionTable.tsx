@@ -6,6 +6,7 @@ import { Money } from '@/components/ui-kit/money/Money'
 import type { TransactionRow } from '@/lib/api/bff/types'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 import type { RowSelectionState, SortingState, OnChangeFn } from '@tanstack/react-table'
+import { formatPaymentMethod } from '@/lib/format'
 
 export interface TransactionTableProps {
   rows: TransactionRow[]
@@ -42,7 +43,7 @@ const columns: ColumnDef<TransactionRow, unknown>[] = [
   },
   {
     id: 'method',
-    accessorFn: (row) => row.method || 'Débito automático',
+    accessorFn: (row) => formatPaymentMethod(row.method),
     header: 'Método',
   },
   {

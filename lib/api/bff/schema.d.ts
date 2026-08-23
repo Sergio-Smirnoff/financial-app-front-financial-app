@@ -336,10 +336,10 @@ export interface components {
             totalCash?: components["schemas"]["MoneyView"];
         };
         BreakdownResponse: {
-            cash?: components["schemas"]["MoneyView"];
-            debt?: components["schemas"]["MoneyView"];
-            investments?: components["schemas"]["MoneyView"];
-            savings?: components["schemas"]["MoneyView"];
+            cash: components["schemas"]["MoneyView"];
+            debt: components["schemas"]["MoneyView"];
+            investments: components["schemas"]["MoneyView"];
+            savings: components["schemas"]["MoneyView"];
         };
         BudgetRowResponse: {
             alertThresholdPct?: number;
@@ -533,8 +533,8 @@ export interface components {
             variation?: number;
         };
         MoneyView: {
-            amount?: string;
-            currency?: string;
+            amount: string;
+            currency: string;
             secondary?: components["schemas"]["MoneyView"];
         };
         NetWorthDeltaResponse: {
@@ -576,10 +576,10 @@ export interface components {
             upcomingPayments?: components["schemas"]["SectionResponseListUpcomingPaymentResponse"];
         };
         OverviewKpisResponse: {
-            cash?: components["schemas"]["MoneyView"];
-            committed?: components["schemas"]["MoneyView"];
-            expense?: components["schemas"]["MoneyView"];
-            income?: components["schemas"]["MoneyView"];
+            cash: components["schemas"]["MoneyView"];
+            committed: components["schemas"]["MoneyView"];
+            expense: components["schemas"]["MoneyView"];
+            income: components["schemas"]["MoneyView"];
         };
         PositionRowResponse: {
             avgCost?: components["schemas"]["MoneyView"];
@@ -625,98 +625,98 @@ export interface components {
         SectionResponseActiveRunResponse: {
             data?: components["schemas"]["ActiveRunResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseBanksKpisResponse: {
             data?: components["schemas"]["BanksKpisResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseBreakdownResponse: {
             data?: components["schemas"]["BreakdownResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseCategoriesKpisResponse: {
             data?: components["schemas"]["CategoriesKpisResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseCategoryTrendResponse: {
             data?: components["schemas"]["CategoryTrendResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseFeesSummaryResponse: {
             data?: components["schemas"]["FeesSummaryResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseFilterOptionsResponse: {
             data?: components["schemas"]["FilterOptionsResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseInvestmentsKpisResponse: {
             data?: components["schemas"]["InvestmentsKpisResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListAccountRowResponse: {
             data?: components["schemas"]["AccountRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListAlertRowResponse: {
             data?: components["schemas"]["AlertRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListBudgetRowResponse: {
             data?: components["schemas"]["BudgetRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCalendarEntryResponse: {
             data?: components["schemas"]["CalendarEntryResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCardRowResponse: {
             data?: components["schemas"]["CardRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCategorySpendResponse: {
             data?: components["schemas"]["CategorySpendResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCommittedPointResponse: {
             data?: components["schemas"]["CommittedPointResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCompositionSliceResponse: {
             data?: components["schemas"]["CompositionSliceResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListCurrencySummary: {
             items?: components["schemas"]["CurrencySummary"][];
@@ -727,26 +727,26 @@ export interface components {
         SectionResponseListEvolutionPointResponse: {
             data?: components["schemas"]["EvolutionPointResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListFlowPointResponse: {
             data?: components["schemas"]["FlowPointResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListImportHealthRowResponse: {
             data?: components["schemas"]["ImportHealthRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListImportRunRowResponse: {
             data?: components["schemas"]["ImportRunRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListLoan: {
             items?: components["schemas"]["Loan"][];
@@ -757,62 +757,62 @@ export interface components {
         SectionResponseListLoanRowResponse: {
             data?: components["schemas"]["LoanRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListMarketQuoteResponse: {
             data?: components["schemas"]["MarketQuoteResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListNotificationPreferenceResponse: {
             data?: components["schemas"]["NotificationPreferenceResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListOperationRowResponse: {
             data?: components["schemas"]["OperationRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListPositionRowResponse: {
             data?: components["schemas"]["PositionRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListReconciliationRowResponse: {
             data?: components["schemas"]["ReconciliationRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListRuleRowResponse: {
             data?: components["schemas"]["RuleRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListSearchHitResponse: {
             data?: components["schemas"]["SearchHitResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListSessionRowResponse: {
             data?: components["schemas"]["SessionRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListTransactionRowResponse: {
             data?: components["schemas"]["TransactionRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseListUpcomingPayment: {
             items?: components["schemas"]["UpcomingPayment"][];
@@ -823,56 +823,56 @@ export interface components {
         SectionResponseListUpcomingPaymentResponse: {
             data?: components["schemas"]["UpcomingPaymentResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseNetWorthResponse: {
             data?: components["schemas"]["NetWorthResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseOverviewKpisResponse: {
             data?: components["schemas"]["OverviewKpisResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseTransactionDetailResponse: {
             data?: components["schemas"]["TransactionDetailResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseTransactionsPageResponse: {
             data?: components["schemas"]["TransactionsPageResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseTransactionsSummaryResponse: {
             data?: components["schemas"]["TransactionsSummaryResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseUncategorisedSummaryResponse: {
             data?: components["schemas"]["UncategorisedSummaryResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseUserPreferencesResponse: {
             data?: components["schemas"]["UserPreferencesResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SectionResponseUserProfileResponse: {
             data?: components["schemas"]["UserProfileResponse"];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
         };
         SessionRowResponse: {
             current?: boolean;

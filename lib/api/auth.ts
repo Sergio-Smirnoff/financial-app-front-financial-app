@@ -1,5 +1,6 @@
 import type { AuthResponse, LoginRequest, RegisterRequest } from '@/types/auth'
 
+import { ApiError } from './client'
 import { API_CONFIG } from './config'
 
 const BASE_URL = API_CONFIG.BASE_URL
@@ -12,10 +13,10 @@ async function authFetch<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   })
 
-  const json = await res.json()
+  const json = await res.json().catch(() => null)
 
   if (!res.ok) {
-    throw new Error(json.message ?? 'Request failed')
+    throw new ApiError(json?.message ?? 'Request failed', res.status, json?.code, json?.data)
   }
 
   return json.data as T

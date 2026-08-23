@@ -10,6 +10,7 @@ export interface SectionStateProps<T> {
   emptyAction?: React.ReactNode
   emptyTitle?: string
   emptyDescription?: string
+  emptyTestId?: string
   onRetry?: () => void
   children: (data: T, observedAt: string) => React.ReactNode
 }
@@ -21,6 +22,7 @@ export function SectionState<T>({
   emptyAction,
   emptyTitle = 'Todavía no hay datos',
   emptyDescription,
+  emptyTestId,
   onRetry,
   children,
 }: SectionStateProps<T>): React.ReactNode {
@@ -46,7 +48,7 @@ export function SectionState<T>({
 
   if (stateResult.state === 'empty') {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card text-card-foreground">
+      <div data-testid={emptyTestId} className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card text-card-foreground">
         <p className="text-sm font-medium text-muted-foreground">{emptyTitle}</p>
         {emptyDescription && <p className="mt-1 text-xs text-muted-foreground">{emptyDescription}</p>}
         {emptyAction && <div className="mt-4">{emptyAction}</div>}

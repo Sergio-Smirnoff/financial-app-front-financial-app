@@ -13,18 +13,157 @@
       ],
       "categories": [],
       "methods": [
+        "DEBIT_CARD",
+        "CREDIT_CARD",
         "TRANSFER",
-        "CARD",
-        "CASH"
+        "AUTOMATIC_DEBIT",
+        "DEPOSIT",
+        "OTHER"
       ]
     },
-    "observedAt": "2026-08-11T13:31:14.185474385Z",
+    "observedAt": "2026-08-23T16:33:44.806174611Z",
     "status": "OK"
   },
   "page": {
     "data": {
       "page": 0,
       "rows": [
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "645000.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 12,
+          "categoryName": "Inversiones",
+          "date": "2026-08-23",
+          "description": "Investment purchase",
+          "direction": "OUT",
+          "id": 108,
+          "method": "OTHER",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "1600000.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 12,
+          "categoryName": "Inversiones",
+          "date": "2026-08-23",
+          "description": "Investment purchase",
+          "direction": "OUT",
+          "id": 107,
+          "method": "OTHER",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 130,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 122,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 114,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 104,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 96,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
+        {
+          "accountAlias": "",
+          "accountCbu": "0170099200000000000017",
+          "amount": {
+            "amount": "21750.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "categoryId": 1107,
+          "categoryName": "Transporte",
+          "date": "2026-08-19",
+          "description": "Cabify",
+          "direction": "OUT",
+          "id": 88,
+          "method": "CREDIT_CARD",
+          "note": "null"
+        },
         {
           "accountAlias": "",
           "accountCbu": "0170099200000000000017",
@@ -208,7 +347,7 @@
           "date": "2026-08-15",
           "description": "Jumbo",
           "direction": "OUT",
-          "id": 78,
+          "id": 128,
           "method": "CREDIT_CARD",
           "note": "null"
         },
@@ -225,181 +364,45 @@
           "date": "2026-08-15",
           "description": "Jumbo",
           "direction": "OUT",
-          "id": 70,
+          "id": 120,
           "method": "CREDIT_CARD",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 62,
-          "method": "CREDIT_CARD",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 53,
-          "method": "CREDIT_CARD",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 45,
-          "method": "CREDIT_CARD",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 36,
-          "method": "CREDIT_CARD",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 28,
-          "method": "OTHER",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 20,
-          "method": "OTHER",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 12,
-          "method": "OTHER",
-          "note": "null"
-        },
-        {
-          "accountAlias": "",
-          "accountCbu": "0170099200000000000017",
-          "amount": {
-            "amount": "142500.50",
-            "currency": "ARS",
-            "secondary": null
-          },
-          "categoryId": 1106,
-          "categoryName": "Supermercado",
-          "date": "2026-08-15",
-          "description": "Jumbo",
-          "direction": "OUT",
-          "id": 4,
-          "method": "OTHER",
           "note": "null"
         }
       ],
       "size": 20,
-      "totalElements": 81,
+      "totalElements": 131,
       "totalPages": 1
     },
-    "observedAt": "2026-08-11T13:31:14.186294242Z",
+    "observedAt": "2026-08-23T16:33:44.806569603Z",
     "status": "OK"
   },
   "summary": {
     "data": {
-      "count": 1,
+      "count": 83,
       "expense": {
-        "amount": "0.00",
+        "amount": "2632450.50",
         "currency": "ARS",
         "secondary": null
       },
       "income": {
-        "amount": "600000.00",
+        "amount": "2050000.00",
         "currency": "ARS",
         "secondary": null
       },
       "net": {
-        "amount": "600000.00",
+        "amount": "-582450.50",
         "currency": "ARS",
         "secondary": null
       }
     },
-    "observedAt": "2026-08-11T13:31:14.185006662Z",
+    "observedAt": "2026-08-23T16:33:44.805890306Z",
     "status": "OK"
   },
   "uncategorised": {
     "data": {
       "count": 1
     },
-    "observedAt": "2026-08-11T13:31:14.184552905Z",
+    "observedAt": "2026-08-23T16:33:44.805528457Z",
     "status": "OK"
   }
 }

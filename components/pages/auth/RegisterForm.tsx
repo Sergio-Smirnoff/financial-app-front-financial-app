@@ -2,18 +2,17 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ApiError } from '@/lib/api/client'
 import { PasswordRules } from './PasswordRules'
 
 export interface RegisterFormProps {
-  onRegister?: (data: { email: string; password: string; name: string; preferredCurrency: string }) => Promise<void>
+  onRegister: (data: { email: string; password: string; name: string; preferredCurrency: string }) => Promise<void>
 }
 
 export function RegisterForm({ onRegister }: RegisterFormProps) {
-  const router = useRouter()
   const [step, setStep] = useState<1 | 2>(1)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,18 +39,13 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
     setEmailError(null)
 
     try {
-      if (onRegister) {
-        await onRegister({ email, password, name, preferredCurrency: currency })
-      } else {
-        if (email.includes('duplicate')) {
-          throw new Error('DUPLICATE_EMAIL')
-        }
-      }
-      router.push('/')
-    } catch (err: any) {
-      if (err.message === 'DUPLICATE_EMAIL' || err.status === 409) {
+      await onRegister({ email, password, name, preferredCurrency: currency })
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 409) {
         setEmailError('Ya existe una cuenta con ese email')
         setStep(1)
+      } else if (err instanceof Error && err.message) {
+        setEmailError(err.message)
       } else {
         setEmailError('Ocurrió un error al registrar la cuenta')
       }

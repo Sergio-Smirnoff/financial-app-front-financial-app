@@ -3,6 +3,7 @@
 import React, { useCallback } from 'react'
 import { useQueryState } from 'nuqs'
 import { FilterBar, FilterChip } from '@/components/ui-kit/controls/FilterBar'
+import { formatPaymentMethod } from '@/lib/format'
 import { SearchBar } from '@/components/ui-kit/controls/SearchBar'
 
 export interface TransactionFilterOptions {
@@ -61,7 +62,7 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   if (method) {
     activeChips.push({
       key: 'method',
-      label: `Método: ${method}`,
+      label: `Método: ${formatPaymentMethod(method)}`,
       onRemove: () => { setMethod(null); setPage('1') },
     })
   }
@@ -110,7 +111,7 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
             <option value="">Todos los métodos</option>
             {(options?.methods ?? []).map((m) => (
               <option key={m} value={m}>
-                {m}
+                {formatPaymentMethod(m)}
               </option>
             ))}
           </select>

@@ -73,8 +73,8 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
             <div data-testid="banks-kpi-loan-balance">
               <KpiTile label="Saldo de préstamos" value={<Money value={kpiData.loanBalance} />} />
             </div>
-            <div data-testid="banks-kpi-account-count">
-              <KpiTile label="Cuentas activas" value={kpiData.accountCount ?? 0} />
+            <div>
+              <KpiTile label="Cuentas activas" value={<span data-testid="banks-kpi-account-count">{kpiData.accountCount ?? 0}</span>} />
             </div>
           </KpiStrip>
         )}

@@ -7,7 +7,6 @@ export const DEMO = {
   savingsCbu: '0170099200000000000024',
   loanName: 'Préstamo personal',
   overBudgetCategory: 'Supermercado',
-  importedFile: 'demo-statement.csv',
 }
 
 export async function loginAsDemo(page: Page) {

@@ -3,7 +3,9 @@
 out/
 
 # Dependencies
-node_modules/
+# No trailing slash: a bare `node_modules/` pattern does not match a symlink of that
+# name, which is how a (circular) node_modules symlink was committed here once.
+node_modules
 
 # Environment
 .env.local
@@ -21,3 +23,4 @@ CLAUDE.md
 .claude/
 AGENTS.md
 GEMINI.md
+test-results/

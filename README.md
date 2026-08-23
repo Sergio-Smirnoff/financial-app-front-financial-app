@@ -122,10 +122,29 @@ npm run build
 npm run lint
 npm run test:run     # Vitest unit test suite
 npm run e2e          # Playwright end-to-end journeys
-npx playwright test --project=live # Live stack smoke test suite (against running seeded stack)
+npm run e2e:live     # Live stack smoke suite (procedure below)
 npm run bff:check    # Gateway OpenAPI drift gate
 npm run i18n:check   # Key completeness validator (es-AR vs en)
 ```
+
+### Live smoke procedure
+
+The `live` Playwright project asserts real seeded data against the running stack. From a
+stopped stack, in the parent workspace:
+
+```bash
+docker compose --profile app up -d          # infra + all backend services
+docker compose stop frontend                # the compose frontend serves a stale published
+                                            # image and holds port 3000 — stop it
+bash scripts/seed-demo-user.sh              # idempotent; exits non-zero if a step persists nothing
+cd front/financial-app
+npm run dev                                 # frontend from source, MUST be on port 3000:
+                                            # .env pins ALLOWED_ORIGINS to http://localhost:3000,
+                                            # any other port fails login with a CORS error
+npm run e2e:live                            # 8 tests, all green or the wave is not done
+```
+
+No wave may report a live-verification goal met without pasting the run output.
 
 Reads `NEXT_PUBLIC_GATEWAY_URL` (default `http://localhost:8080`). Copy `.env.local.example` to `.env.local` to override.
 
