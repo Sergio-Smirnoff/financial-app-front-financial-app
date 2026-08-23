@@ -38,7 +38,7 @@ export function ListRow({ label, sublabel, right, className, onClick }: ListRowP
 export interface DueRowProps {
   dueDate: string
   label: string
-  amount: MoneyView
+  amount: MoneyView | null | undefined
   className?: string
 }
 

@@ -1,7 +1,7 @@
 export interface MoneyView {
   amount: string
   currency: string
-  secondary: MoneyView | null
+  secondary?: MoneyView | null
 }
 
 export function formatMoney(

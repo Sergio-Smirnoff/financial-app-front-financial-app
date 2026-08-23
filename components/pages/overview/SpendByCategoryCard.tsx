@@ -3,15 +3,11 @@
 import React from 'react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
-import type { Section } from '@/lib/api/bff/types'
-import type { MoneyView } from '@/lib/format'
+import type { OverviewBff, Section } from '@/lib/api/bff/types'
 
-export interface SpendCategoryItem {
-  categoryId: number
-  name: string
-  amount: MoneyView
-  pct: number
-}
+export type SpendCategoryItem = NonNullable<
+  NonNullable<OverviewBff['spendByCategory']>['data']
+>[number]
 
 export interface SpendByCategoryCardProps {
   section?: Section<SpendCategoryItem[]>
@@ -35,14 +31,15 @@ export function SpendByCategoryCard({ section, isLoading, onRetry }: SpendByCate
           ) : (
             <div className="space-y-3">
               {data.map((item) => {
-                const val = parseFloat(item.amount.amount || '0')
+                const val = parseFloat(item.amount?.amount || '0')
+                const pct = item.pct
                 return (
                   <ProgressRow
                     key={item.categoryId}
-                    label={item.name}
+                    label={item.name ?? ''}
                     value={val}
-                    max={val > 0 ? (val * 100) / Math.max(1, item.pct) : 100}
-                    caption={`${item.pct.toFixed(1)} %`}
+                    max={val > 0 ? (val * 100) / Math.max(1, pct ?? 0) : 100}
+                    caption={pct != null ? `${pct.toFixed(1)} %` : undefined}
                   />
                 )
               })}

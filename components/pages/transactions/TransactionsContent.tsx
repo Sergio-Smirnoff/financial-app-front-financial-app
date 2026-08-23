@@ -59,7 +59,10 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
 
   const items = pageSection?.data?.rows ?? []
   const totalPages = pageSection?.data?.totalPages ?? 1
-  const filterOptions = filterOptionsSection?.data
+  const filterOptions = filterOptionsSection?.data ?? undefined
+  const bulkCategories = (filterOptions?.categories ?? []).flatMap((c) =>
+    c.id != null && c.name != null ? [{ id: c.id, name: c.name }] : []
+  )
 
   const selectedCount = Object.keys(selection).length
 
@@ -136,7 +139,7 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
               <Pagination page={pageState} totalPages={totalPages} onChange={(p) => setPageState(p)} />
               <BulkCategoriseBar
                 count={selectedCount}
-                categories={filterOptions?.categories ?? []}
+                categories={bulkCategories}
                 onCategorise={handleBulkCategorise}
                 onClear={() => setSelection({})}
               />
