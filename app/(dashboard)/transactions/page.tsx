@@ -1,16 +1,15 @@
 'use client'
 
 import React from 'react'
-import { useQueryState } from 'nuqs'
+import { useBffQuery } from '@/lib/hooks/useBffQuery'
 import { TransactionsContent } from '@/components/pages/transactions/TransactionsContent'
 
 export default function TransactionsPage() {
-  const [currency] = useQueryState('currency', { defaultValue: 'ARS' })
-  const [secondary] = useQueryState('secondary', { defaultValue: 'none' })
+  const query = useBffQuery()
 
   return (
     <main className="flex-1 overflow-auto p-6">
-      <TransactionsContent query={{ currency, secondary }} />
+      <TransactionsContent query={query} />
     </main>
   )
 }
