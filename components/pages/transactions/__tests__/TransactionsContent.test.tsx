@@ -6,6 +6,7 @@ import React from 'react'
 import { TransactionsContent } from '../TransactionsContent'
 import { TransactionDetailPanel } from '../TransactionDetailPanel'
 import fixture from '@/lib/api/bff/__fixtures__/transactions.json'
+import { formatPaymentMethod } from '@/lib/format'
 import mockDetailFixture from '@/lib/api/bff/__fixtures__/transaction-detail.json'
 import type { TransactionsBff } from '@/lib/api/bff/types'
 
@@ -39,10 +40,11 @@ describe('TransactionsContent renders the real contract', () => {
     expect(rows).toHaveLength(bff.page.data!.rows!.length)
   })
 
-  it('offers the payment methods the gateway sent', async () => {
+  it('offers the payment methods the gateway sent, labelled for the user', async () => {
     render(<TransactionsContent />, { wrapper })
     for (const m of bff.filterOptions.data!.methods!) {
-      expect(await screen.findByRole('option', { name: m })).toBeInTheDocument()
+      const option = await screen.findByRole('option', { name: formatPaymentMethod(m) })
+      expect(option).toHaveValue(m)
     }
   })
 

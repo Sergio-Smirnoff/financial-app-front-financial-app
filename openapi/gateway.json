@@ -385,6 +385,12 @@
             "$ref": "#/components/schemas/MoneyView"
           }
         },
+        "required": [
+          "cash",
+          "debt",
+          "investments",
+          "savings"
+        ],
         "type": "object"
       },
       "BudgetRowResponse": {
@@ -919,6 +925,10 @@
             "$ref": "#/components/schemas/MoneyView"
           }
         },
+        "required": [
+          "amount",
+          "currency"
+        ],
         "type": "object"
       },
       "NetWorthDeltaResponse": {
@@ -1044,6 +1054,12 @@
             "$ref": "#/components/schemas/MoneyView"
           }
         },
+        "required": [
+          "cash",
+          "committed",
+          "expense",
+          "income"
+        ],
         "type": "object"
       },
       "PositionRowResponse": {
@@ -1167,6 +1183,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseBanksKpisResponse": {
@@ -1182,6 +1202,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseBreakdownResponse": {
@@ -1197,6 +1221,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseCategoriesKpisResponse": {
@@ -1212,6 +1240,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseCategoryTrendResponse": {
@@ -1227,6 +1259,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseFeesSummaryResponse": {
@@ -1242,6 +1278,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseFilterOptionsResponse": {
@@ -1257,6 +1297,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseInvestmentsKpisResponse": {
@@ -1272,6 +1316,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListAccountRowResponse": {
@@ -1290,6 +1338,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListAlertRowResponse": {
@@ -1308,6 +1360,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListBudgetRowResponse": {
@@ -1326,6 +1382,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCalendarEntryResponse": {
@@ -1344,6 +1404,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCardRowResponse": {
@@ -1362,6 +1426,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCategorySpendResponse": {
@@ -1380,6 +1448,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCommittedPointResponse": {
@@ -1398,6 +1470,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCompositionSliceResponse": {
@@ -1416,6 +1492,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListCurrencySummary": {
@@ -1452,6 +1532,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListFlowPointResponse": {
@@ -1470,6 +1554,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListImportHealthRowResponse": {
@@ -1488,6 +1576,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListImportRunRowResponse": {
@@ -1506,6 +1598,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListLoan": {
@@ -1542,6 +1638,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListMarketQuoteResponse": {
@@ -1560,6 +1660,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListNotificationPreferenceResponse": {
@@ -1578,6 +1682,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListOperationRowResponse": {
@@ -1596,6 +1704,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListPositionRowResponse": {
@@ -1614,6 +1726,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListReconciliationRowResponse": {
@@ -1632,6 +1748,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListRuleRowResponse": {
@@ -1650,6 +1770,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListSearchHitResponse": {
@@ -1668,6 +1792,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListSessionRowResponse": {
@@ -1686,6 +1814,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListTransactionRowResponse": {
@@ -1704,6 +1836,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListUpcomingPayment": {
@@ -1740,6 +1876,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseNetWorthResponse": {
@@ -1755,6 +1895,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseOverviewKpisResponse": {
@@ -1770,6 +1914,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseTransactionDetailResponse": {
@@ -1785,6 +1933,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseTransactionsPageResponse": {
@@ -1800,6 +1952,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseTransactionsSummaryResponse": {
@@ -1815,6 +1971,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseUncategorisedSummaryResponse": {
@@ -1830,6 +1990,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseUserPreferencesResponse": {
@@ -1845,6 +2009,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseUserProfileResponse": {
@@ -1860,6 +2028,10 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SessionRowResponse": {

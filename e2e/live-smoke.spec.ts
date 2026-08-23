@@ -26,7 +26,7 @@ test('Movimientos renders the summary strip, rows and method filter', async ({ p
   await page.goto('/transactions')
   await expect(page.getByTestId('tx-summary-income')).not.toBeEmpty()
   await expect(page.getByTestId('tx-row')).not.toHaveCount(0)
-  await expect(page.getByRole('option', { name: 'DEBIT_CARD' })).toBeAttached()
+  await expect(page.getByRole('option', { name: 'Tarjeta de débito' })).toBeAttached()
 })
 
 test('Categorías flags the deliberately over-cap budget', async ({ page }) => {

@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "e2e": "playwright test",
+    "e2e:live": "playwright test --project=live",
     "i18n:check": "node scripts/i18n-check.mjs",
     "bff:types": "openapi-typescript openapi/gateway.json -o lib/api/bff/schema.d.ts",
     "bff:check": "openapi-typescript openapi/gateway.json -o /tmp/schema.check.d.ts && diff -q /tmp/schema.check.d.ts lib/api/bff/schema.d.ts"

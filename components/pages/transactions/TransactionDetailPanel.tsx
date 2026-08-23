@@ -6,6 +6,7 @@ import { DetailList } from '@/components/ui-kit/row/DetailList'
 import { Money } from '@/components/ui-kit/money/Money'
 import { StatusDot } from '@/components/ui-kit/row/StatusDot'
 import { useTransactionDetail } from '@/lib/hooks/useTransactionDetail'
+import { formatPaymentMethod } from '@/lib/format'
 
 export interface TransactionDetailPanelProps {
   selectedId?: number | null
@@ -35,7 +36,7 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
         },
         { term: 'Cuenta', detail: tx.accountAlias || tx.accountCbu || '–' },
         { term: 'Categoría', detail: tx.categoryName || 'Sin categorizar' },
-        { term: 'Método', detail: tx.method || 'Débito automático' },
+        { term: 'Método', detail: formatPaymentMethod(tx.method) },
         { term: 'Nota', detail: tx.note && tx.note !== 'null' ? tx.note : '–' },
         {
           term: 'Origen',

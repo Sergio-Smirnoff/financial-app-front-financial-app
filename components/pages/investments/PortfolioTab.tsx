@@ -57,7 +57,7 @@ export function PortfolioTab({
         onRetry={onRetry}
         emptyTitle="Sin posiciones"
         emptyDescription="Sin posiciones. Agregá tu primera tenencia en la pestaña Mercados."
-        emptyAction={<span data-testid="positions-empty" />}
+        emptyTestId="positions-empty"
         skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
       >
         {(positions) => (
