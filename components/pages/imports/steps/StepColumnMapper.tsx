@@ -29,12 +29,16 @@ export function StepColumnMapper({
   const set = (key: keyof ColumnMapping, value: number | null) =>
     onMappingChange({ ...mapping, [key]: value })
 
+  // A null column is a column the user has not chosen yet — not a column zero.
+  const expenseColChosen = mapping.expenseCol !== null && mapping.expenseCol >= 0
+  const incomeColChosen = mapping.incomeCol !== null && mapping.incomeCol >= 0
+
   const canProceed =
     mapping.dateCol >= 0 &&
     mapping.descCol >= 0 &&
     (mode === 'signed'
-      ? mapping.expenseCol >= 0 || mapping.incomeCol >= 0
-      : mapping.expenseCol >= 0 && mapping.incomeCol >= 0)
+      ? expenseColChosen || incomeColChosen
+      : expenseColChosen && incomeColChosen)
 
   return (
     <div className="space-y-6">
@@ -104,7 +108,7 @@ export function StepColumnMapper({
             <div className="space-y-1.5">
               <Label htmlFor="amount-select" className="text-xs">Importe *</Label>
               <Select
-                value={mapping.expenseCol >= 0 ? String(mapping.expenseCol) : ''}
+                value={expenseColChosen ? String(mapping.expenseCol) : ''}
                 onValueChange={(v) => {
                   set('expenseCol', Number(v))
                   set('incomeCol', Number(v))
@@ -127,7 +131,7 @@ export function StepColumnMapper({
               <div className="space-y-1.5">
                 <Label htmlFor="debit-select" className="text-xs">Débito *</Label>
                 <Select
-                  value={mapping.expenseCol >= 0 ? String(mapping.expenseCol) : ''}
+                  value={expenseColChosen ? String(mapping.expenseCol) : ''}
                   onValueChange={(v) => set('expenseCol', Number(v))}
                 >
                   <SelectTrigger id="debit-select" className="h-8 text-xs">
@@ -146,7 +150,7 @@ export function StepColumnMapper({
               <div className="space-y-1.5">
                 <Label htmlFor="credit-select" className="text-xs">Crédito *</Label>
                 <Select
-                  value={mapping.incomeCol >= 0 ? String(mapping.incomeCol) : ''}
+                  value={incomeColChosen ? String(mapping.incomeCol) : ''}
                   onValueChange={(v) => set('incomeCol', Number(v))}
                 >
                   <SelectTrigger id="credit-select" className="h-8 text-xs">

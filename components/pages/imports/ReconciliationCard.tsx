@@ -4,9 +4,11 @@ import React from 'react'
 import { CheckCircle2, AlertTriangle } from 'lucide-react'
 import { Money } from '@/components/ui-kit/money/Money'
 import { cn } from '@/lib/utils'
-import type { components } from '@/lib/api/bff/schema'
+import type { ImportsBff } from '@/lib/api/bff/types'
 
-export type ReconciliationRowResponse = components['schemas']['ReconciliationRowResponse']
+export type ReconciliationRowResponse = NonNullable<
+  NonNullable<ImportsBff['reconciliation']>['data']
+>[number]
 
 export interface ReconciliationCardProps {
   rows?: ReconciliationRowResponse[]
