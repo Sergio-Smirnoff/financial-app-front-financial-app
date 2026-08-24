@@ -60,21 +60,26 @@ describe('BanksContent renders the real contract', () => {
   it('renders import health from its own section, not from accounts', async () => {
     render(<BanksContent />, { wrapper })
     await screen.findByTestId('import-health-rail')
-    const expected = (fixture as unknown as BanksBff).importHealth.data!.length
-    expect(await screen.findAllByTestId('import-health-row')).toHaveLength(expected)
+    const importHealth = (fixture as unknown as BanksBff).importHealth
+    if (!importHealth?.data) throw new Error('fixture invariant: importHealth present')
+    expect(await screen.findAllByTestId('import-health-row')).toHaveLength(importHealth.data.length)
   })
 
   it('renders cash distribution slices from the cashDistribution section', async () => {
     render(<BanksContent />, { wrapper })
-    const slices = (fixture as unknown as BanksBff).cashDistribution.data!
-    expect((await screen.findAllByText(slices[0].label!))[0]).toBeInTheDocument()
+    const cashDistribution = (fixture as unknown as BanksBff).cashDistribution
+    if (!cashDistribution?.data) throw new Error('fixture invariant: cashDistribution present')
+    const label = cashDistribution.data[0]?.label
+    if (!label) throw new Error('fixture invariant: first cash slice has a label')
+    expect((await screen.findAllByText(label))[0]).toBeInTheDocument()
   })
 
   it('renders the payment calendar from the paymentCalendar section', async () => {
     render(<BanksContent />, { wrapper })
-    const entries = (fixture as unknown as BanksBff).paymentCalendar.data!
+    const paymentCalendar = (fixture as unknown as BanksBff).paymentCalendar
+    if (!paymentCalendar?.data) throw new Error('fixture invariant: paymentCalendar present')
     expect(await screen.findByTestId('payment-calendar')).toBeInTheDocument()
-    expect(await screen.findAllByTestId('payment-calendar-entry')).toHaveLength(entries.length)
+    expect(await screen.findAllByTestId('payment-calendar-entry')).toHaveLength(paymentCalendar.data.length)
   })
 })
 

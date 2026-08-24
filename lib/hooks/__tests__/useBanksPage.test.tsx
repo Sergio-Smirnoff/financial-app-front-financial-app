@@ -7,14 +7,14 @@ import type { BanksBff } from '@/lib/api/bff/types'
 import React from 'react'
 
 const mockBanks: BanksBff = {
-  summary: {
+  kpis: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: {
-      totalBalance: { amount: '1200000', currency: 'ARS', secondary: null },
-      activeAccounts: 3,
-      activeCards: 2,
-      totalLoans: { amount: '350000', currency: 'ARS', secondary: null },
+      totalCash: { amount: '1200000', currency: 'ARS', secondary: null },
+      accountCount: 3,
+      cardDebt: { amount: '0', currency: 'ARS', secondary: null },
+      loanBalance: { amount: '350000', currency: 'ARS', secondary: null },
     },
   },
   accounts: {

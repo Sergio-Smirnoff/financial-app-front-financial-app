@@ -7,17 +7,18 @@ import type { CategoriesBff } from '@/lib/api/bff/types'
 import React from 'react'
 
 const mockCategories: CategoriesBff = {
-  categories: {
+  budgets: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: [
       {
-        id: 1,
+        categoryId: 1,
         name: 'Comida',
-        icon: 'utensils',
-        color: '#ff0000',
-        spendThisMonth: { amount: '45000', currency: 'ARS', secondary: null },
-        budgetMonthly: { amount: '40000', currency: 'ARS', secondary: null },
+        spent: { amount: '45000', currency: 'ARS', secondary: null },
+        cap: 40000,
+        pct: 112.5,
+        alertThresholdPct: 80,
+        over: true,
       },
     ],
   },

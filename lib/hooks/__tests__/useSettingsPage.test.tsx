@@ -10,12 +10,17 @@ const mockSettings: SettingsBff = {
   profile: {
     status: 'OK',
     observedAt: new Date().toISOString(),
-    data: { email: 'user@test.com', name: 'Ana Pérez', preferredCurrency: 'ARS' },
+    data: { email: 'user@test.com', name: 'Ana Pérez' },
   },
-  security: {
+  preferences: {
     status: 'OK',
     observedAt: new Date().toISOString(),
-    data: { mfaEnabled: false, lastPasswordChange: new Date().toISOString() },
+    data: { primaryCurrency: 'ARS' },
+  },
+  sessions: {
+    status: 'OK',
+    observedAt: new Date().toISOString(),
+    data: [{ id: '1', device: 'Chrome / Linux', current: true, lastSeenAt: new Date().toISOString() }],
   },
 }
 

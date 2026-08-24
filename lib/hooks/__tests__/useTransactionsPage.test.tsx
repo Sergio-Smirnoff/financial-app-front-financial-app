@@ -8,15 +8,15 @@ import type { TransactionsBff } from '@/lib/api/bff/types'
 import React from 'react'
 
 const mockBff: TransactionsBff = {
-  filters: {
+  filterOptions: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: { categories: [{ id: 1, name: 'Comida' }], accounts: [{ cbu: '0170001', alias: 'galicia.ars' }] },
   },
-  movements: {
+  page: {
     status: 'OK',
     observedAt: new Date().toISOString(),
-    data: { items: [], page: 1, totalPages: 1, totalCount: 0 },
+    data: { rows: [], page: 1, size: 20, totalPages: 1, totalElements: 0 },
   },
 }
 
