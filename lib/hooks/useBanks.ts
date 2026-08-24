@@ -24,7 +24,11 @@ export const useBank = (bankNumber: string) =>
 
 export const useAccounts = () => {
   const qc = useQueryClient();
-  const invalidate = () => qc.invalidateQueries({ queryKey: ['banks'] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ['banks'] });
+    // the banks page renders from the BFF cache, a separate namespace prefix matching never reaches
+    qc.invalidateQueries({ queryKey: ['bff', 'banks'] });
+  };
 
   const createAccount = useMutation({
     mutationFn: (data: AccountRequest) => banksApi.accounts.create(data),
