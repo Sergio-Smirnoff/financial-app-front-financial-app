@@ -4,7 +4,7 @@ import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 
 export interface InlineBannerProps {
   title?: string
-  description: string
+  description: React.ReactNode
   tone?: 'info' | 'warn' | 'error' | 'success'
   action?: React.ReactNode
   onClose?: () => void

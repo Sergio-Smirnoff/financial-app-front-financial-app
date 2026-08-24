@@ -2,9 +2,11 @@
 
 import React from 'react'
 import { Sparkline } from '@/components/charts/Sparkline'
-import type { components } from '@/lib/api/bff/schema'
+import type { CategoriesBff } from '@/lib/api/bff/types'
 
-export type CategoryTrendPointResponse = components['schemas']['CategoryTrendPointResponse']
+export type CategoryTrendPointResponse = NonNullable<
+  NonNullable<NonNullable<CategoriesBff['selectedTrend']>['data']>['points']
+>[number]
 
 export interface CategoryTrendCardProps {
   categoryName?: string

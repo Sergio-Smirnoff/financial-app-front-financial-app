@@ -4,16 +4,11 @@ import React from 'react'
 import Link from 'next/link'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { DueRow } from '@/components/ui-kit/row/ListRow'
-import type { Section } from '@/lib/api/bff/types'
-import type { MoneyView } from '@/lib/format'
+import type { OverviewBff, Section } from '@/lib/api/bff/types'
 
-export interface UpcomingPaymentItem {
-  id: string
-  label: string
-  dueDate: string
-  amount: MoneyView
-  kind: string
-}
+export type UpcomingPaymentItem = NonNullable<
+  NonNullable<OverviewBff['upcomingPayments']>['data']
+>[number]
 
 export interface UpcomingRailProps {
   section?: Section<UpcomingPaymentItem[]>
@@ -38,7 +33,7 @@ export function UpcomingRail({ section, isLoading, onRetry }: UpcomingRailProps)
             <div className="space-y-3">
               {data.map((item) => (
                 <Link key={item.id} href="/banks" className="block transition-opacity hover:opacity-80">
-                  <DueRow label={item.label} dueDate={item.dueDate} amount={item.amount} />
+                  <DueRow label={item.label ?? ''} dueDate={item.dueDate ?? ''} amount={item.amount} />
                 </Link>
               ))}
             </div>

@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { DueRow } from '@/components/ui-kit/row/ListRow'
-import type { components } from '@/lib/api/bff/schema'
+import type { BanksBff } from '@/lib/api/bff/types'
 
-type CalendarEntry = components['schemas']['CalendarEntryResponse']
+type CalendarEntry = NonNullable<NonNullable<BanksBff['paymentCalendar']>['data']>[number]
 
 export interface PaymentCalendarCardProps {
   entries: CalendarEntry[]
@@ -23,7 +23,7 @@ export function PaymentCalendarCard({ entries = [] }: PaymentCalendarCardProps) 
               <DueRow
                 label={entry.label || 'Vencimiento'}
                 dueDate={entry.date || ''}
-                amount={entry.amount || { amount: '0', currency: 'ARS', secondary: null }}
+                amount={entry.amount}
               />
             </div>
           ))}

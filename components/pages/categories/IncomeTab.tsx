@@ -3,10 +3,9 @@
 import React from 'react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
-import type { Section } from '@/lib/api/bff/types'
-import type { components } from '@/lib/api/bff/schema'
+import type { CategoriesBff, Section } from '@/lib/api/bff/types'
 
-export type BudgetRowResponse = components['schemas']['BudgetRowResponse']
+export type BudgetRowResponse = NonNullable<NonNullable<CategoriesBff['budgets']>['data']>[number]
 
 export interface IncomeTabProps {
   section?: Section<BudgetRowResponse[]>

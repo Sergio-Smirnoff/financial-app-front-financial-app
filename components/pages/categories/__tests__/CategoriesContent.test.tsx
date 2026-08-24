@@ -43,15 +43,19 @@ describe('CategoriesContent renders the real contract', () => {
   it('renders the kpi row', async () => {
     render(<CategoriesContent />, { wrapper })
     expect(await screen.findByTestId('cat-kpi-spent')).toBeInTheDocument()
+    const kpis = bff.kpis
+    if (!kpis?.data) throw new Error('fixture invariant: kpis present')
     expect(screen.getByTestId('cat-kpi-over-count'))
-      .toHaveTextContent(String(bff.kpis.data!.overBudgetCount))
+      .toHaveTextContent(String(kpis.data.overBudgetCount))
   })
 
   it('renders one budget row per budgets entry, flagging the over-cap one', async () => {
     render(<CategoriesContent />, { wrapper })
     const rows = await screen.findAllByTestId('budget-row')
-    expect(rows).toHaveLength(bff.budgets.data!.length)
-    const over = bff.budgets.data!.filter((b) => b.over).length
+    const budgets = bff.budgets
+    if (!budgets?.data) throw new Error('fixture invariant: budgets present')
+    expect(rows).toHaveLength(budgets.data.length)
+    const over = budgets.data.filter((b) => b.over).length
     expect(screen.getAllByTestId('budget-over-flag')).toHaveLength(over)
   })
 
@@ -59,8 +63,11 @@ describe('CategoriesContent renders the real contract', () => {
     const user = userEvent.setup()
     render(<CategoriesContent />, { wrapper })
     await user.click(screen.getByRole('tab', { name: 'Reglas' }))
-    const first = bff.rules.data![0]
-    expect(await screen.findByText(first.matcher!)).toBeInTheDocument()
+    const rules = bff.rules
+    if (!rules?.data) throw new Error('fixture invariant: rules present')
+    const matcher = rules.data[0]?.matcher
+    if (!matcher) throw new Error('fixture invariant: first rule has a matcher')
+    expect(await screen.findByText(matcher)).toBeInTheDocument()
   })
 
   it('requests the trend for the selected category', async () => {

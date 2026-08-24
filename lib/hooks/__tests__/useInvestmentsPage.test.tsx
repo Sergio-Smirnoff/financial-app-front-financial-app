@@ -7,20 +7,22 @@ import type { InvestmentsBff } from '@/lib/api/bff/types'
 import React from 'react'
 
 const mockInvestments: InvestmentsBff = {
-  summary: {
+  kpis: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: {
-      totalInvested: { amount: '1500000', currency: 'ARS', secondary: null },
-      totalPnl: { amount: { amount: '250000', currency: 'ARS', secondary: null }, pct: 16.67 },
+      cost: { amount: '1500000', currency: 'ARS', secondary: null },
+      marketValue: { amount: '1750000', currency: 'ARS', secondary: null },
+      pnl: { amount: '250000', currency: 'ARS', secondary: null },
+      pnlPct: 16.67,
     },
   },
-  holdings: {
+  positions: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: [],
   },
-  allocation: {
+  composition: {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: [],

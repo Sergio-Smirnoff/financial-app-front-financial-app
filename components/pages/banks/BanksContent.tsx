@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { useQueryState } from 'nuqs'
 import { useBanksPage } from '@/lib/hooks/useBanksPage'
+import { useAccounts } from '@/lib/hooks/useBanks'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { SplitLayout, RailSection, KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { AccountsTab } from './AccountsTab'
@@ -28,6 +29,7 @@ const SkeletonCard = () => <div className="h-32 rounded-xl bg-muted animate-puls
 export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }: BanksContentProps) {
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'accounts' })
   const { data, isLoading, refetch } = useBanksPage(query)
+  const { createAccount, updateAccount } = useAccounts()
 
   const [addAccountOpen, setAddAccountOpen] = useState(false)
   const [addCardOpen, setAddCardOpen] = useState(false)
@@ -151,7 +153,16 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
         />
       </Tabs>
 
-      <AddAccountDialog open={addAccountOpen} onOpenChange={setAddAccountOpen} />
+      <AddAccountDialog
+        open={addAccountOpen}
+        onOpenChange={setAddAccountOpen}
+        onCreate={async (data) => {
+          await createAccount(data)
+        }}
+        onUpdate={async (cbu, data) => {
+          await updateAccount({ cbu, data })
+        }}
+      />
       <CardFormDialog open={addCardOpen} onOpenChange={setAddCardOpen} />
     </div>
   )

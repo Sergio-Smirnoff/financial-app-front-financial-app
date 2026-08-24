@@ -56,14 +56,18 @@ describe('ImportsContent renders the real contract', () => {
   it('renders one history row per run, with its counters', async () => {
     render(<ImportsContent />, { wrapper })
     const rows = await screen.findAllByTestId('import-run-row')
-    expect(rows).toHaveLength(bff.history.data!.length)
-    expect(rows[0]).toHaveTextContent(String(bff.history.data![0].inserted))
+    const history = bff.history
+    if (!history?.data) throw new Error('fixture invariant: history present')
+    expect(rows).toHaveLength(history.data.length)
+    expect(rows[0]).toHaveTextContent(String(history.data[0].inserted))
   })
 
   it('renders the reconciliation card from its own section', async () => {
     render(<ImportsContent />, { wrapper })
     const card = await screen.findByTestId('reconciliation-card')
-    expect(card).toHaveTextContent(bff.reconciliation.data![0].matches ? /coincide/i : /no coincide/i)
+    const reconciliation = bff.reconciliation
+    if (!reconciliation?.data) throw new Error('fixture invariant: reconciliation present')
+    expect(card).toHaveTextContent(reconciliation.data[0].matches ? /coincide/i : /no coincide/i)
   })
 
   it('shows the active run progress when one is running', async () => {

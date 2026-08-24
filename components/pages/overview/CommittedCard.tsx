@@ -3,13 +3,9 @@
 import React from 'react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { HorizonBars } from '@/components/charts/HorizonBars'
-import type { Section } from '@/lib/api/bff/types'
-import type { MoneyView } from '@/lib/format'
+import type { OverviewBff, Section } from '@/lib/api/bff/types'
 
-export interface CommittedItem {
-  month: string
-  amount: MoneyView
-}
+export type CommittedItem = NonNullable<NonNullable<OverviewBff['committed']>['data']>[number]
 
 export interface CommittedCardProps {
   section?: Section<CommittedItem[]>
@@ -27,7 +23,7 @@ export function CommittedCard({ section, isLoading, onRetry }: CommittedCardProp
     >
       {(data) => {
         const months = data.map((item) => ({
-          month: item.month,
+          month: item.month ?? '',
           amount: parseFloat(item.amount?.amount || '0'),
         }))
         const currency = data[0]?.amount?.currency ?? 'ARS'

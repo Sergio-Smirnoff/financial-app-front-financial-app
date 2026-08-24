@@ -3,14 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search, Loader2 } from 'lucide-react'
 import { useSearch } from '@/lib/hooks/useSearch'
-import type { SearchHitResponse } from '@/lib/api/bff/schema'
-
-export interface SearchHit {
-  id: string
-  label: string
-  href: string
-  sublabel?: string
-}
+import type { SearchHit } from '@/lib/api/bff/types'
 
 export interface SearchGroup {
   key: string
@@ -84,7 +77,7 @@ export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
     data.positions?.status === 'UNAVAILABLE' &&
     data.categories?.status === 'UNAVAILABLE'
 
-  const flatHits: SearchHitResponse[] = activeSections.flatMap((s) => s.section?.data ?? [])
+  const flatHits: SearchHit[] = activeSections.flatMap((s) => s.section?.data ?? [])
   const totalHits = flatHits.length
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

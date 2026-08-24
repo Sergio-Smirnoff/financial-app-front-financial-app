@@ -12,12 +12,14 @@ const mockImports: ImportsBff = {
     observedAt: new Date().toISOString(),
     data: [
       {
-        id: '1',
+        runId: 1,
         fileName: 'resumen-junio.csv',
-        source: 'CSV',
+        accountCbu: '0170001',
         status: 'SUCCESS',
         importedAt: new Date().toISOString(),
-        rowCount: 142,
+        inserted: 142,
+        duplicates: 0,
+        failed: 0,
       },
     ],
   },

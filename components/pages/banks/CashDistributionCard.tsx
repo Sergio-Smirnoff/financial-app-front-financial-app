@@ -3,9 +3,9 @@
 import React from 'react'
 import { CompositionBar } from '@/components/charts/CompositionBar'
 import { formatMoney } from '@/lib/format'
-import type { components } from '@/lib/api/bff/schema'
+import type { BanksBff } from '@/lib/api/bff/types'
 
-type CompositionSlice = components['schemas']['CompositionSliceResponse']
+type CompositionSlice = NonNullable<NonNullable<BanksBff['cashDistribution']>['data']>[number]
 
 export interface CashDistributionCardProps {
   slices?: CompositionSlice[]

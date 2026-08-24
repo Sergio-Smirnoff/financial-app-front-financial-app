@@ -4,19 +4,12 @@ import React from 'react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
 import { formatMoney } from '@/lib/format'
-import type { Section } from '@/lib/api/bff/types'
+import type { CategoriesBff, Section } from '@/lib/api/bff/types'
 
-export interface CategoryItem {
-  id: number
-  name: string
-  icon: string
-  color: string
-  spendThisMonth: { amount: string; currency: string; secondary: null }
-  budgetMonthly: { amount: string; currency: string; secondary: null } | null
-}
+export type BudgetRow = NonNullable<NonNullable<CategoriesBff['budgets']>['data']>[number]
 
 export interface BudgetTabProps {
-  section?: Section<CategoryItem[]>
+  section?: Section<BudgetRow[]>
   isLoading: boolean
   onRetry?: () => void
   selectedCategoryId?: number | null

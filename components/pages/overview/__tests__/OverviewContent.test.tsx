@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { OverviewContent } from '../OverviewContent'
-import type { OverviewBff, Section } from '@/lib/api/bff/types'
+import type { OverviewBff } from '@/lib/api/bff/types'
 import React from 'react'
 
 const NOW = new Date().toISOString()
@@ -69,7 +69,7 @@ const fixture: OverviewBff = {
     status: 'OK',
     observedAt: NOW,
     data: [
-      { id: 1, date: '2026-08-01', description: 'Supermercado Coto', accountCbu: '001', accountAlias: 'galicia.ars', categoryId: 1, categoryName: 'Comida', method: 'DEBIT', note: null, amount: { amount: '25000', currency: 'ARS', secondary: null }, direction: 'OUT' },
+      { id: 1, date: '2026-08-01', description: 'Supermercado Coto', accountCbu: '001', accountAlias: 'galicia.ars', categoryId: 1, categoryName: 'Comida', method: 'DEBIT', amount: { amount: '25000', currency: 'ARS', secondary: null }, direction: 'OUT' },
     ],
   },
 }
@@ -103,9 +103,9 @@ describe('OverviewContent', () => {
   })
 
   it('degrades only the failing section', () => {
-    const degraded = {
+    const degraded: OverviewBff = {
       ...fixture,
-      netWorth: { status: 'UNAVAILABLE', observedAt: NOW, data: null } as Section<any>,
+      netWorth: { status: 'UNAVAILABLE', observedAt: NOW, data: null },
     }
     renderOverview(degraded)
     expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
@@ -123,7 +123,7 @@ describe('OverviewContent', () => {
   })
 
   it('offers the primary action only in the empty state', () => {
-    const emptyMovements = {
+    const emptyMovements: OverviewBff = {
       ...fixture,
       latestMovements: { status: 'OK', observedAt: NOW, data: [] },
     }
