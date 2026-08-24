@@ -28,7 +28,11 @@ export function Pagination({ page, totalPages, onChange }: PaginationProps) {
       </Button>
 
       <span className="text-sm text-muted-foreground">
-        {t('pageOf', { page, total: totalPages })}
+        {t.rich('paginationPageOf', {
+          page,
+          total: totalPages,
+          hl: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+        })}
       </span>
 
       <Button

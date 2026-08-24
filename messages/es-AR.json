@@ -38,7 +38,8 @@
     "pagination": "Paginación",
     "previousPage": "Página anterior",
     "nextPage": "Página siguiente",
-    "pageOf": "Página {page} de {total}"
+    "pageOf": "Página {page} de {total}",
+    "paginationPageOf": "Página <hl>{page}</hl> de {total}"
   },
   "sections": {
     "unavailable": "No pudimos cargar esta sección",

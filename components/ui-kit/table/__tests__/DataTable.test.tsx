@@ -116,7 +116,16 @@ describe('Pagination', () => {
   })
 
   it('reads the current page out of the total', () => {
+    const { container } = renderWithIntl(
+      <Pagination page={2} totalPages={5} onChange={vi.fn()} />
+    )
+    expect(container.querySelector('nav > span')).toHaveTextContent('Página 2 de 5')
+  })
+
+  it('emphasises the current page number', () => {
     renderWithIntl(<Pagination page={2} totalPages={5} onChange={vi.fn()} />)
-    expect(screen.getByText('Página 2 de 5')).toBeInTheDocument()
+    const highlighted = screen.getByText('2')
+    expect(highlighted).toHaveTextContent('2')
+    expect(highlighted).toHaveClass('font-medium', 'text-foreground')
   })
 })
