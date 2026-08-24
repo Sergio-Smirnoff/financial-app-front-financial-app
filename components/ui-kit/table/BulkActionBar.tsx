@@ -1,6 +1,7 @@
 'use client'
 
 import { X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 
 export interface BulkActionBarProps {
@@ -10,10 +11,12 @@ export interface BulkActionBarProps {
 }
 
 export function BulkActionBar({ count, actions, onClear }: BulkActionBarProps) {
+  const t = useTranslations('common')
+
   if (count === 0) {
     return (
       <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-        Sin filas seleccionadas
+        {t('noRowsSelected')}
       </div>
     )
   }
@@ -25,9 +28,7 @@ export function BulkActionBar({ count, actions, onClear }: BulkActionBarProps) {
       aria-atomic="true"
       className="flex items-center gap-3 rounded-lg border bg-primary/5 px-4 py-2 text-sm"
     >
-      <span className="font-medium">
-        {count} {count === 1 ? 'seleccionado' : 'seleccionados'}
-      </span>
+      <span className="font-medium">{t('rowsSelected', { count })}</span>
 
       <div className="flex items-center gap-2 ml-2">
         {actions.map((action) => (
@@ -47,7 +48,7 @@ export function BulkActionBar({ count, actions, onClear }: BulkActionBarProps) {
         size="icon"
         className="ml-auto h-7 w-7"
         onClick={onClear}
-        aria-label="Limpiar selección"
+        aria-label={t('clearSelection')}
       >
         <X className="h-3.5 w-3.5" />
       </Button>
