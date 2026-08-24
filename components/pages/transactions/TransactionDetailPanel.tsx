@@ -29,7 +29,7 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
           term: 'Importe',
           detail: (
             <Money
-              value={tx.amount || { amount: '0', currency: 'ARS', secondary: null }}
+              value={tx.amount}
               tone={tx.direction === 'IN' ? 'gain' : 'loss'}
             />
           ),
