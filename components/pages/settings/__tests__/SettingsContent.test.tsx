@@ -1,7 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { NextIntlClientProvider } from 'next-intl'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
 import { SettingsContent } from '../SettingsContent'
 import fixture from '@/lib/api/bff/__fixtures__/settings.json'
 import type { SettingsBff } from '@/lib/api/bff/types'
@@ -9,9 +11,11 @@ import type { SettingsBff } from '@/lib/api/bff/types'
 vi.mock('@/lib/api/bff/settings', () => ({ getSettings: vi.fn(async () => fixture as unknown as SettingsBff) }))
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    {children}
-  </QueryClientProvider>
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  </NextIntlClientProvider>
 )
 
 const bff = fixture as unknown as SettingsBff

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 
@@ -19,6 +20,8 @@ export function Toast({
   onClose,
   className,
 }: ToastProps) {
+  const t = useTranslations('common')
+
   const iconMap = {
     info: <Info className="h-4 w-4 text-primary shrink-0" />,
     warn: <AlertTriangle className="h-4 w-4 text-warn shrink-0" />,
@@ -44,7 +47,7 @@ export function Toast({
         <button
           onClick={onClose}
           className="text-muted-foreground hover:text-foreground shrink-0 p-1"
-          aria-label="Cerrar"
+          aria-label={t('close')}
         >
           <X className="h-3.5 w-3.5" />
         </button>

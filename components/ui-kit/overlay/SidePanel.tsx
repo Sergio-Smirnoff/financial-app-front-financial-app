@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,6 +19,7 @@ export interface SidePanelProps {
  * the content behind stays reachable via Tab (non-modal = no inert).
  */
 export function SidePanel({ open, onClose, title, children, className }: SidePanelProps) {
+  const t = useTranslations('common')
   const triggerRef = React.useRef<Element | null>(null)
 
   // Capture focus origin on open
@@ -55,7 +57,7 @@ export function SidePanel({ open, onClose, title, children, className }: SidePan
     >
       <div className="flex h-14 items-center justify-between border-b px-4">
         <h2 className="section-head">{title}</h2>
-        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Cerrar">
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label={t('close')}>
           <X className="h-4 w-4" />
         </Button>
       </div>
