@@ -1,8 +1,19 @@
+import type { ReactElement } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AccountCard } from '../AccountCard'
 import { CreditCardCard } from '../CreditCardCard'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
+
+function renderWithIntl(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      {ui}
+    </NextIntlClientProvider>,
+  )
+}
 
 const account = {
   id: 'acc-1',
@@ -29,7 +40,7 @@ const card = {
 
 describe('AccountCard', () => {
   it('shows balance and import freshness, no credit fields', () => {
-    render(<AccountCard account={account} />)
+    renderWithIntl(<AccountCard account={account} />)
     expect(screen.getByText('Sueldo')).toBeInTheDocument()
     expect(screen.queryByText(/Límite/)).not.toBeInTheDocument()
   })
@@ -37,8 +48,29 @@ describe('AccountCard', () => {
 
 describe('CreditCardCard', () => {
   it('shows limit usage and the closing cycle', () => {
-    render(<CreditCardCard card={card} />)
+    renderWithIntl(<CreditCardCard card={card} />)
     expect(screen.getByText(/Cierra/)).toBeInTheDocument()
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '43')
+  })
+
+  it('labels the usage figures in Spanish', () => {
+    renderWithIntl(<CreditCardCard card={card} />)
+    expect(screen.getByText('Usado')).toBeInTheDocument()
+    expect(screen.getByText('43 % de Límite')).toBeInTheDocument()
+    expect(screen.getByText('Límite:')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: 'Uso del límite de crédito' })).toBeInTheDocument()
+  })
+
+  it('renders the closing and due days as whole sentences', () => {
+    const { container } = renderWithIntl(<CreditCardCard card={card} />)
+    const cycle = container.querySelectorAll('.flex.gap-4 > span')
+    expect(cycle[0]).toHaveTextContent('Cierra día 15')
+    expect(cycle[1]).toHaveTextContent('Vence día 25')
+  })
+
+  it('emphasises the closing and due day numbers', () => {
+    renderWithIntl(<CreditCardCard card={card} />)
+    expect(screen.getByText('15')).toHaveClass('font-medium', 'text-foreground')
+    expect(screen.getByText('25')).toHaveClass('font-medium', 'text-foreground')
   })
 })

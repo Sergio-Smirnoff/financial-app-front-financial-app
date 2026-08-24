@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { Money } from '@/components/ui-kit/money/Money'
 import type { MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -21,6 +22,7 @@ export interface CreditCardCardProps {
 }
 
 export function CreditCardCard({ card, onClick, className }: CreditCardCardProps) {
+  const t = useTranslations('common')
   const used = Number(card.balance.amount)
   const limit = Number(card.creditLimit.amount)
   const usagePct = limit > 0 ? Math.round((used / limit) * 100) : 0
@@ -56,12 +58,12 @@ export function CreditCardCard({ card, onClick, className }: CreditCardCardProps
       {/* Limit usage progressbar */}
       <div className="flex flex-col gap-1.5">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Usado</span>
-          <span className="n">{usagePct} % de Límite</span>
+          <span>{t('used')}</span>
+          <span className="n">{t('percentOfLimit', { pct: usagePct })}</span>
         </div>
         <div
           role="progressbar"
-          aria-label="Uso del límite de crédito"
+          aria-label={t('creditLimitUsage')}
           aria-valuenow={usagePct}
           aria-valuemin={0}
           aria-valuemax={100}
@@ -76,14 +78,24 @@ export function CreditCardCard({ card, onClick, className }: CreditCardCardProps
           />
         </div>
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Límite: <Money value={card.creditLimit} className="text-xs" /></span>
+          <span>{t('limitLabel')} <Money value={card.creditLimit} className="text-xs" /></span>
         </div>
       </div>
 
       {/* Closing and due cycle */}
       <div className="flex gap-4 text-xs text-muted-foreground">
-        <span>Cierra día <span className="font-medium text-foreground n">{card.closingDay}</span></span>
-        <span>Vence día <span className="font-medium text-foreground n">{card.dueDay}</span></span>
+        <span>
+          {t.rich('closesOnDay', {
+            day: card.closingDay,
+            hl: (chunks) => <span className="font-medium text-foreground n">{chunks}</span>,
+          })}
+        </span>
+        <span>
+          {t.rich('dueOnDay', {
+            day: card.dueDay,
+            hl: (chunks) => <span className="font-medium text-foreground n">{chunks}</span>,
+          })}
+        </span>
       </div>
     </div>
   )

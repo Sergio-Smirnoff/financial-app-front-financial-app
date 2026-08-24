@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { QuotePill, type Quote } from './QuotePill'
 import { cn } from '@/lib/utils'
@@ -9,11 +10,12 @@ export interface MarketStripProps {
 }
 
 export function MarketStrip({ quotes, observedAt, className }: MarketStripProps) {
+  const t = useTranslations('common')
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          Mercado
+          {t('market')}
         </span>
         <FreshnessStamp observedAt={observedAt} />
       </div>

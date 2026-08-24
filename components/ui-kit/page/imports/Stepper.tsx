@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Check } from 'lucide-react'
 
@@ -9,8 +10,9 @@ export interface StepperProps {
 }
 
 export function Stepper({ steps, current, className }: StepperProps) {
+  const t = useTranslations('common')
   return (
-    <nav aria-label="Pasos del proceso" className={cn('flex items-center gap-0', className)}>
+    <nav aria-label={t('processSteps')} className={cn('flex items-center gap-0', className)}>
       {steps.map((step, index) => {
         const isDone = index < current
         const isCurrent = index === current
