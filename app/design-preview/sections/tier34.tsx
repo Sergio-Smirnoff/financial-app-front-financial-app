@@ -5,8 +5,7 @@ import { DataTable } from '@/components/ui-kit/table/DataTable'
 import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
 import { Pagination } from '@/components/ui-kit/table/Pagination'
 import { BulkActionBar } from '@/components/ui-kit/table/BulkActionBar'
-import { ListRow } from '@/components/ui-kit/row/ListRow'
-import { DueRow } from '@/components/ui-kit/row/DueRow'
+import { ListRow, DueRow } from '@/components/ui-kit/row/ListRow'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
 import { StatusDot } from '@/components/ui-kit/row/StatusDot'
 import { DetailList } from '@/components/ui-kit/row/DetailList'
@@ -65,8 +64,8 @@ export default function Tier34Section() {
         <h2 className="section-head">Rows, Dots & Progress</h2>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">
-            <ListRow title="Suscripción Netflix" subtitle="Servicios" right={<span className="font-semibold text-rose-500">-$ 8.500</span>} />
-            <DueRow label="Vencimiento Tarjeta Visa" dueDate="15 de Agosto" amount={mockMoney('150000')} />
+            <ListRow label="Suscripción Netflix" sublabel="Servicios" right={<span className="font-semibold text-rose-500">-$ 8.500</span>} />
+            <DueRow label="Vencimiento Tarjeta Visa" dueDate="2026-08-15" amount={mockMoney('150000')} />
             <ProgressRow label="Presupuesto Comida" value={85000} max={100000} />
             <ProgressRow label="Presupuesto Ocio (Excedido)" value={45000} max={30000} />
           </div>
@@ -77,7 +76,7 @@ export default function Tier34Section() {
               <StatusDot tone="error" label="Error de sync" />
               <StatusDot tone="neutral" label="Inactivo" />
             </div>
-            <DetailList items={[{ label: 'ID de transacción', value: 'tx_998124' }, { label: 'Canal', value: 'Home Banking' }]} />
+            <DetailList items={[{ term: 'ID de transacción', detail: 'tx_998124' }, { term: 'Canal', detail: 'Home Banking' }]} />
           </div>
         </div>
       </section>
@@ -88,7 +87,7 @@ export default function Tier34Section() {
           <Toolbar left={<span className="font-medium text-sm">Filtros activos</span>} right={<SearchBar groups={[]} onQueryChange={() => {}} loading={false} />} />
           <ToggleRow id="notifications-toggle" label="Notificaciones de gastos" description="Recibir alertas cuando un presupuesto se exceda" checked={toggled} onCheckedChange={setToggled} />
           <div className="flex items-center gap-4">
-            <FreshnessStamp observedAt={new Date().toISOString()} />
+            <FreshnessStamp observedAt="2026-08-23T12:00:00Z" />
             <AlertMark tone="warn" label="Precios desactualizados" />
           </div>
           <FeeTable rows={[{ scope: 'Caja de ahorro', label: 'Mantenimiento mensual', amount: mockMoney('2500'), pct: null, ivaTreatment: 'TAXED_21' }]} />
@@ -98,11 +97,11 @@ export default function Tier34Section() {
       <section className="space-y-4">
         <h2 className="section-head">Page-Specific Cards (Banks, Investments, Imports)</h2>
         <div className="grid gap-6 md:grid-cols-2">
-          <AccountCard account={{ id: 'acc-1', name: 'Cuenta Corriente ARS', bankName: 'Galicia', accountNumber: '123-456-789', balance: mockMoney('450000'), currency: 'ARS' }} />
-          <CreditCardCard card={{ id: 'card-1', name: 'Visa Signature', bankName: 'BBVA', lastFourDigits: '4321', currentBalance: mockMoney('180000'), creditLimit: mockMoney('500000'), closingDate: '2026-08-20', dueDate: '2026-08-28' }} />
+          <AccountCard account={{ id: 'acc-1', name: 'Cuenta Corriente ARS', bank: 'Galicia', cbu: '0070123456789012345678', currency: 'ARS', balance: mockMoney('450000'), lastImportAt: '2026-08-23T12:00:00Z' }} />
+          <CreditCardCard card={{ id: 'card-1', name: 'Visa Signature', bank: 'BBVA', lastFour: '4321', currency: 'ARS', balance: mockMoney('180000'), creditLimit: mockMoney('500000'), closingDay: 20, dueDay: 28 }} />
         </div>
         <div className="space-y-4">
-          <MarketStrip quotes={[{ code: 'RIESGO_PAIS', label: 'Riesgo País', value: '742', variation: -12, unit: 'POINTS', observedAt: new Date().toISOString() }]} />
+          <MarketStrip observedAt="2026-08-23T12:00:00Z" quotes={[{ code: 'RIESGO_PAIS', label: 'Riesgo País', value: '742', variation: -12, unit: 'POINTS', observedAt: '2026-08-23T12:00:00Z' }]} />
           <StockBar ticker="GGAL" name="Grupo Financiero Galicia" quantity={150} avgPrice={mockMoney('4200')} currentValue={mockMoney('4850')} pnlPct={15.48} />
           <div className="p-4 border rounded-xl bg-card">
             <PositionForm mode="add" />
