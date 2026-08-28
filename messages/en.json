@@ -67,7 +67,18 @@
     "ticker": "Ticker",
     "tickerPlaceholder": "e.g. GGAL",
     "quantity": "Quantity",
-    "purchasePrice": "Purchase price"
+    "purchasePrice": "Purchase price",
+    "mainNavigation": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "logout": "Log out",
+    "notifications": "Notifications",
+    "unreadNotifications": "{count, plural, one {# unread notification} other {# unread notifications}}",
+    "markAll": "Mark all",
+    "noNotifications": "No notifications",
+    "unread": "Unread",
+    "previous": "Previous",
+    "next": "Next"
   },
   "sections": {
     "unavailable": "We couldn't load this section",

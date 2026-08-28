@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Bell, CreditCard, Landmark, TrendingUp, Calendar, Check, Info, CheckCheck } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNotifications, useLatestNotifications, useMarkAsRead, useMarkAllAsRead } from '@/lib/hooks/useNotifications'
@@ -26,6 +27,7 @@ interface NotificationListProps {
 }
 
 export function NotificationList({ onClose, mode = 'dropdown' }: NotificationListProps) {
+  const t = useTranslations('common')
   const [page, setPage] = useState(0)
   const { data: latest } = useLatestNotifications()
   const { data: paged, isLoading } = useNotifications(page)
@@ -38,7 +40,7 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
   return (
     <div>
       <div className="flex items-center justify-between border-b px-4 py-2">
-        <span className="text-sm font-medium">Notificaciones</span>
+        <span className="text-sm font-medium">{t('notifications')}</span>
         <div className="flex items-center gap-1">
           {mode === 'full' && (
             <Button
@@ -48,12 +50,12 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
               className="gap-1 text-xs"
             >
               <CheckCheck className="h-3.5 w-3.5" />
-              Marcar todas
+              {t('markAll')}
             </Button>
           )}
           {onClose && (
             <Button variant="ghost" size="sm" onClick={onClose} className="text-xs">
-              Cerrar
+              {t('close')}
             </Button>
           )}
         </div>
@@ -61,10 +63,10 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
 
       <ScrollArea className={mode === 'full' ? 'h-[400px]' : 'h-64'}>
         {isLoading && mode === 'full' ? (
-          <div className="p-4 text-center text-sm text-muted-foreground">Cargando…</div>
+          <div className="p-4 text-center text-sm text-muted-foreground">{t('loading')}</div>
         ) : notifications.length === 0 ? (
           <div className="p-4 text-center text-sm text-muted-foreground">
-            No hay notificaciones
+            {t('noNotifications')}
           </div>
         ) : (
           <div className="divide-y">
@@ -85,7 +87,7 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
                       {!notif.read && (
                         <span
                           className="status-dot status-dot-warn shrink-0"
-                          aria-label="Sin leer"
+                          aria-label={t('unread')}
                         />
                       )}
                     </div>
@@ -112,10 +114,10 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
             onClick={() => setPage((p) => Math.max(0, p - 1))}
             disabled={page === 0}
           >
-            Anterior
+            {t('previous')}
           </Button>
           <span className="text-xs text-muted-foreground">
-            Página {page + 1} de {totalPages}
+            {t('pageOf', { page: page + 1, total: totalPages })}
           </span>
           <Button
             variant="outline"
@@ -123,7 +125,7 @@ export function NotificationList({ onClose, mode = 'dropdown' }: NotificationLis
             onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={page >= totalPages - 1}
           >
-            Siguiente
+            {t('next')}
           </Button>
         </div>
       )}

@@ -33,6 +33,7 @@ export interface SideNavProps {
 
 export function SideNav({ pathname: pathnameProp }: SideNavProps) {
   const t = useTranslations('nav')
+  const tCommon = useTranslations('common')
   const routePathname = usePathname()
   const pathname = pathnameProp ?? routePathname
 
@@ -44,7 +45,7 @@ export function SideNav({ pathname: pathnameProp }: SideNavProps) {
       <div className="flex h-14 items-center border-b px-4">
         <span className="font-semibold text-sidebar-foreground">FinanceApp</span>
       </div>
-      <nav className="flex-1 space-y-1 p-3" aria-label="Navegación principal">
+      <nav className="flex-1 space-y-1 p-3" aria-label={tCommon('mainNavigation')}>
         {NAV_ROUTES.map((item) => (
           <SideNavItem
             key={item.href}
@@ -61,6 +62,7 @@ export function SideNav({ pathname: pathnameProp }: SideNavProps) {
 
 export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
   const t = useTranslations('nav')
+  const tCommon = useTranslations('common')
   const routePathname = usePathname()
   const pathname = pathnameProp ?? routePathname
   const { sidebarOpen, setSidebarOpen } = useUiStore()
@@ -81,12 +83,12 @@ export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(false)}
-            aria-label="Cerrar menú"
+            aria-label={tCommon('closeMenu')}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <nav className="flex-1 space-y-1 p-3" aria-label="Navegación principal">
+        <nav className="flex-1 space-y-1 p-3" aria-label={tCommon('mainNavigation')}>
           {NAV_ROUTES.map((item) => (
             <SideNavItem
               key={item.href}

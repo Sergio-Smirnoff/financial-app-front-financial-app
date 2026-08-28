@@ -67,7 +67,18 @@
     "ticker": "Ticker",
     "tickerPlaceholder": "p.ej. GGAL",
     "quantity": "Cantidad",
-    "purchasePrice": "Precio de compra"
+    "purchasePrice": "Precio de compra",
+    "mainNavigation": "Navegación principal",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones",
+    "unreadNotifications": "{count, plural, one {# notificación sin leer} other {# notificaciones sin leer}}",
+    "markAll": "Marcar todas",
+    "noNotifications": "No hay notificaciones",
+    "unread": "Sin leer",
+    "previous": "Anterior",
+    "next": "Siguiente"
   },
   "sections": {
     "unavailable": "No pudimos cargar esta sección",

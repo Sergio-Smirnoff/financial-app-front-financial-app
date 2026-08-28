@@ -1,6 +1,9 @@
+import type { ReactElement } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
 import { NotificationBell } from '../NotificationBell'
 
 // All tests in this file share the same module-level mock (Vitest hoisting)
@@ -16,9 +19,17 @@ vi.mock('@/components/ui-kit/notifications/NotificationList', () => ({
   NotificationList: () => <div data-testid="notification-list" />,
 }))
 
+function renderWithIntl(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      {ui}
+    </NextIntlClientProvider>,
+  )
+}
+
 describe('NotificationBell', () => {
   it('announces unread count politely via role="status"', () => {
-    render(<NotificationBell />)
+    renderWithIntl(<NotificationBell />)
     const badge = screen.getByRole('status')
     expect(badge).toBeInTheDocument()
     // The mock has count=3 which is ≤9 so it renders the number
@@ -26,13 +37,18 @@ describe('NotificationBell', () => {
   })
 
   it('renders the unread badge when count > 0', () => {
-    render(<NotificationBell />)
+    renderWithIntl(<NotificationBell />)
     expect(screen.getByRole('status')).toBeInTheDocument()
+  })
+
+  it('names the unread badge with the pluralised catalogue string', () => {
+    renderWithIntl(<NotificationBell />)
+    expect(screen.getByRole('status')).toHaveAccessibleName('3 notificaciones sin leer')
   })
 
   it('opens the notification list on click', async () => {
     const user = userEvent.setup()
-    render(<NotificationBell />)
+    renderWithIntl(<NotificationBell />)
     await user.click(screen.getByRole('button', { name: 'Notificaciones' }))
     expect(screen.getByTestId('notification-list')).toBeInTheDocument()
   })
