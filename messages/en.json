@@ -144,5 +144,39 @@
     "register": "Create Account",
     "rememberMe": "Remember me",
     "invalidCredentials": "Incorrect email or password"
+  },
+  "banks": {
+    "title": "Banks & Accounts",
+    "subtitle": "Manage accounts, cards and bank obligations",
+    "tabAccounts": "Accounts",
+    "tabCards": "Cards",
+    "tabLoans": "Préstamos",
+    "railTitle": "Information & Imports",
+    "kpis": {
+      "totalCash": "Total cash",
+      "cardDebt": "Card debt",
+      "loanBalance": "Préstamos balance",
+      "accountCount": "Active accounts"
+    },
+    "accounts": {
+      "add": "Add account",
+      "fallbackName": "Account",
+      "fallbackBank": "Bank"
+    },
+    "cards": {
+      "add": "Add card",
+      "fallbackBrand": "Card",
+      "closesOn": "Closes:",
+      "dueOn": "Due:"
+    },
+    "loans": {
+      "activeTitle": "Active Préstamos",
+      "tableCaption": "Préstamos summary",
+      "columnLabel": "Préstamo",
+      "columnOutstanding": "Outstanding balance",
+      "columnInstallments": "Installments",
+      "columnNextDue": "Next due date",
+      "installmentsOfTotal": "{paid} / {total, plural, one {# installment} other {# installments}}"
+    }
   }
 }

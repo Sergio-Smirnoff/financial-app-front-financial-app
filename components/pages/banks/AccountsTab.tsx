@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { AccountCard } from '@/components/ui-kit/page/banks/AccountCard'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,8 @@ export interface AccountsTabProps {
 }
 
 export function AccountsTab({ section, isLoading, onRetry, onAddAccount }: AccountsTabProps) {
+  const t = useTranslations('banks')
+
   return (
     <SectionState
       section={section}
@@ -22,7 +25,7 @@ export function AccountsTab({ section, isLoading, onRetry, onAddAccount }: Accou
       emptyAction={
         onAddAccount ? (
           <Button size="sm" onClick={onAddAccount}>
-            Agregar cuenta
+            {t('accounts.add')}
           </Button>
         ) : undefined
       }
@@ -41,8 +44,8 @@ export function AccountsTab({ section, isLoading, onRetry, onAddAccount }: Accou
               key={acc.cbu || acc.alias || acc.bankName}
               account={{
                 id: acc.cbu || acc.alias || '',
-                name: acc.alias || acc.type || 'Cuenta',
-                bank: acc.bankName || 'Banco',
+                name: acc.alias || acc.type || t('accounts.fallbackName'),
+                bank: acc.bankName || t('accounts.fallbackBank'),
                 cbu: acc.cbu,
                 alias: acc.alias,
                 currency: acc.balance?.currency || 'ARS',

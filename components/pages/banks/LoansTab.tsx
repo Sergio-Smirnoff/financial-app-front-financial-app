@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
@@ -15,31 +16,45 @@ export interface LoansTabProps {
   onRetry?: () => void
 }
 
-const loanColumns: ColumnDef<LoanRow, unknown>[] = [
-  {
-    id: 'label',
-    accessorKey: 'label',
-    header: 'Préstamo',
-  },
-  {
-    id: 'outstanding',
-    accessorFn: (row) => row.outstanding,
-    header: 'Saldo Pendiente',
-    cell: ({ getValue }) => <Money value={getValue() as any} />,
-  },
-  {
-    id: 'installments',
-    accessorFn: (row) => `${row.installmentsPaid ?? 0} / ${row.installmentsTotal ?? 0} cuotas`,
-    header: 'Cuotas',
-  },
-  {
-    id: 'nextInstallmentDate',
-    accessorKey: 'nextInstallmentDate',
-    header: 'Próximo Vencimiento',
-  },
-]
+const LOAN_COLUMN_KEYS = {
+  label: 'loans.columnLabel',
+  outstanding: 'loans.columnOutstanding',
+  installments: 'loans.columnInstallments',
+  nextInstallmentDate: 'loans.columnNextDue',
+} as const
 
 export function LoansTab({ section, isLoading, onRetry }: LoansTabProps) {
+  const t = useTranslations('banks')
+  const tc = useTranslations('common')
+
+  const loanColumns: ColumnDef<LoanRow, unknown>[] = [
+    {
+      id: 'label',
+      accessorKey: 'label',
+      header: t(LOAN_COLUMN_KEYS.label),
+    },
+    {
+      id: 'outstanding',
+      accessorFn: (row) => row.outstanding,
+      header: t(LOAN_COLUMN_KEYS.outstanding),
+      cell: ({ getValue }) => <Money value={getValue() as any} />,
+    },
+    {
+      id: 'installments',
+      accessorFn: (row) =>
+        t('loans.installmentsOfTotal', {
+          paid: row.installmentsPaid ?? 0,
+          total: row.installmentsTotal ?? 0,
+        }),
+      header: t(LOAN_COLUMN_KEYS.installments),
+    },
+    {
+      id: 'nextInstallmentDate',
+      accessorKey: 'nextInstallmentDate',
+      header: t(LOAN_COLUMN_KEYS.nextInstallmentDate),
+    },
+  ]
+
   return (
     <SectionState
       section={section}
@@ -50,14 +65,14 @@ export function LoansTab({ section, isLoading, onRetry }: LoansTabProps) {
       {(loans) => (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <h3 className="section-head font-medium">Préstamos Activos</h3>
+            <h3 className="section-head font-medium">{t('loans.activeTitle')}</h3>
             <Link href="/loans">
               <Button variant="ghost" size="sm">
-                Ver todo →
+                {tc('seeAll')} →
               </Button>
             </Link>
           </div>
-          <ScrollTable columns={loanColumns} rows={loans} caption="Resumen de préstamos" maxHeight={300} />
+          <ScrollTable columns={loanColumns} rows={loans} caption={t('loans.tableCaption')} maxHeight={300} />
         </div>
       )}
     </SectionState>

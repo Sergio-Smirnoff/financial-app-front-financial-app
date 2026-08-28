@@ -144,5 +144,39 @@
     "register": "Crear Cuenta",
     "rememberMe": "Mantener sesión iniciada",
     "invalidCredentials": "Email o contraseña incorrectos"
+  },
+  "banks": {
+    "title": "Bancos y Cuentas",
+    "subtitle": "Gestión de cuentas, tarjetas y obligaciones bancarias",
+    "tabAccounts": "Cuentas",
+    "tabCards": "Tarjetas",
+    "tabLoans": "Préstamos",
+    "railTitle": "Información e Importaciones",
+    "kpis": {
+      "totalCash": "Efectivo total",
+      "cardDebt": "Deuda en tarjetas",
+      "loanBalance": "Saldo de préstamos",
+      "accountCount": "Cuentas activas"
+    },
+    "accounts": {
+      "add": "Agregar cuenta",
+      "fallbackName": "Cuenta",
+      "fallbackBank": "Banco"
+    },
+    "cards": {
+      "add": "Agregar tarjeta",
+      "fallbackBrand": "Tarjeta",
+      "closesOn": "Cierra:",
+      "dueOn": "Vence:"
+    },
+    "loans": {
+      "activeTitle": "Préstamos Activos",
+      "tableCaption": "Resumen de préstamos",
+      "columnLabel": "Préstamo",
+      "columnOutstanding": "Saldo Pendiente",
+      "columnInstallments": "Cuotas",
+      "columnNextDue": "Próximo Vencimiento",
+      "installmentsOfTotal": "{paid} / {total, plural, one {# cuota} other {# cuotas}}"
+    }
   }
 }

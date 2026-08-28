@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useQueryState } from 'nuqs'
 import { useBanksPage } from '@/lib/hooks/useBanksPage'
 import { useAccounts } from '@/lib/hooks/useBanks'
@@ -27,6 +28,7 @@ export interface BanksContentProps {
 const SkeletonCard = () => <div className="h-32 rounded-xl bg-muted animate-pulse" />
 
 export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }: BanksContentProps) {
+  const t = useTranslations('banks')
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'accounts' })
   const { data, isLoading, refetch } = useBanksPage(query)
   const { createAccount, updateAccount } = useAccounts()
@@ -46,8 +48,8 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Bancos y Cuentas</h1>
-          <p className="text-sm text-muted-foreground">Gestión de cuentas, tarjetas y obligaciones bancarias</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
       </div>
@@ -67,16 +69,16 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
         {(kpiData) => (
           <KpiStrip>
             <div data-testid="banks-kpi-total-cash">
-              <KpiTile label="Efectivo total" value={<Money value={kpiData.totalCash} />} />
+              <KpiTile label={t('kpis.totalCash')} value={<Money value={kpiData.totalCash} />} />
             </div>
             <div data-testid="banks-kpi-card-debt">
-              <KpiTile label="Deuda en tarjetas" value={<Money value={kpiData.cardDebt} />} />
+              <KpiTile label={t('kpis.cardDebt')} value={<Money value={kpiData.cardDebt} />} />
             </div>
             <div data-testid="banks-kpi-loan-balance">
-              <KpiTile label="Saldo de préstamos" value={<Money value={kpiData.loanBalance} />} />
+              <KpiTile label={t('kpis.loanBalance')} value={<Money value={kpiData.loanBalance} />} />
             </div>
             <div>
-              <KpiTile label="Cuentas activas" value={<span data-testid="banks-kpi-account-count">{kpiData.accountCount ?? 0}</span>} />
+              <KpiTile label={t('kpis.accountCount')} value={<span data-testid="banks-kpi-account-count">{kpiData.accountCount ?? 0}</span>} />
             </div>
           </KpiStrip>
         )}
@@ -84,9 +86,9 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
-          <TabsTrigger value="accounts">Cuentas</TabsTrigger>
-          <TabsTrigger value="cards">Tarjetas</TabsTrigger>
-          <TabsTrigger value="loans">Préstamos</TabsTrigger>
+          <TabsTrigger value="accounts">{t('tabAccounts')}</TabsTrigger>
+          <TabsTrigger value="cards">{t('tabCards')}</TabsTrigger>
+          <TabsTrigger value="loans">{t('tabLoans')}</TabsTrigger>
         </TabsList>
 
         <SplitLayout
@@ -128,7 +130,7 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
           }
           rail={
             <div className="space-y-6">
-              <RailSection title="Información e Importaciones">
+              <RailSection title={t('railTitle')}>
                 <div className="space-y-6">
                   <SectionState
                     section={importHealth}
