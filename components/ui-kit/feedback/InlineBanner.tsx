@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { AlertCircle, CheckCircle2, Info, AlertTriangle, X } from 'lucide-react'
 
@@ -19,6 +20,8 @@ export function InlineBanner({
   onClose,
   className,
 }: InlineBannerProps) {
+  const t = useTranslations('common')
+
   const iconMap = {
     info: <Info className="h-4 w-4 text-accent-500 shrink-0 mt-0.5" />,
     warn: <AlertTriangle className="h-4 w-4 text-warn shrink-0 mt-0.5" />,
@@ -51,7 +54,7 @@ export function InlineBanner({
         <button
           onClick={onClose}
           className="text-muted-foreground hover:text-foreground shrink-0 p-0.5 rounded-md focus-visible:outline-none"
-          aria-label="Cerrar"
+          aria-label={t('close')}
         >
           <X className="h-4 w-4" />
         </button>

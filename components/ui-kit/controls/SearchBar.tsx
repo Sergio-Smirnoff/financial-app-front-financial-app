@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Search, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearch } from '@/lib/hooks/useSearch'
 import type { SearchHit } from '@/lib/api/bff/types'
 
@@ -17,13 +18,14 @@ export interface SearchBarProps {
   loading?: boolean
 }
 
-const SECTION_TITLES: Record<string, string> = {
-  movements: 'Movimientos',
-  positions: 'Posiciones',
-  categories: 'Categorías',
-}
+const SECTION_TITLE_KEYS = {
+  movements: 'movements',
+  positions: 'positions',
+  categories: 'categories',
+} as const
 
 export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
+  const t = useTranslations('common')
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
@@ -64,9 +66,9 @@ export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
   const hasMinLength = query.trim().length >= 2
 
   const activeSections = [
-    { key: 'movements', title: SECTION_TITLES.movements, section: data?.movements },
-    { key: 'positions', title: SECTION_TITLES.positions, section: data?.positions },
-    { key: 'categories', title: SECTION_TITLES.categories, section: data?.categories },
+    { key: 'movements', title: t(SECTION_TITLE_KEYS.movements), section: data?.movements },
+    { key: 'positions', title: t(SECTION_TITLE_KEYS.positions), section: data?.positions },
+    { key: 'categories', title: t(SECTION_TITLE_KEYS.categories), section: data?.categories },
   ].filter(
     (s) => s.section?.status === 'OK' && Array.isArray(s.section?.data) && s.section.data.length > 0
   )
@@ -129,8 +131,8 @@ export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder="Buscar movimientos, posiciones, categorías..."
-          aria-label="Buscar"
+          placeholder={t('searchPlaceholder')}
+          aria-label={t('search')}
           className="w-full rounded-md border border-input bg-background pl-9 pr-12 py-1.5 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         <kbd className="absolute right-2.5 hidden sm:inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground pointer-events-none">
@@ -146,25 +148,25 @@ export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
           {isLoading && (
             <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Cargando...
+              {t('loading')}
             </div>
           )}
 
           {!isLoading && isAllUnavailable && (
             <div className="p-4 text-center text-sm text-destructive">
-              Error al cargar resultados de búsqueda
+              {t('searchError')}
             </div>
           )}
 
           {!isLoading && !isAllUnavailable && (
             <>
               <div role="status" className="sr-only">
-                {`${totalHits} ${totalHits === 1 ? 'resultado' : 'resultados'}`}
+                {t('resultCount', { count: totalHits })}
               </div>
 
               {totalHits === 0 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground">
-                  Sin resultados
+                  {t('noResults')}
                 </div>
               ) : (
                 activeSections.map((s) => (

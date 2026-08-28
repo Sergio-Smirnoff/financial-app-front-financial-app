@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { Bell, BellRing } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { useUnreadCount } from '@/lib/hooks/useNotifications'
 import { NotificationList } from './NotificationList'
 import { cn } from '@/lib/utils'
 
 export function NotificationBell() {
+  const t = useTranslations('common')
   const [panelOpen, setPanelOpen] = useState(false)
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
@@ -17,7 +19,7 @@ export function NotificationBell() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Notificaciones"
+        aria-label={t('notifications')}
         className="relative"
         onClick={() => setPanelOpen((o) => !o)}
       >
@@ -25,7 +27,7 @@ export function NotificationBell() {
         {unreadCount > 0 && (
           <span
             role="status"
-            aria-label={`${unreadCount} notificaciones sin leer`}
+            aria-label={t('unreadNotifications', { count: unreadCount })}
             className={cn(
               'absolute -top-1 -right-1 h-4 w-4 rounded-full text-[10px] font-medium',
               'flex items-center justify-center',

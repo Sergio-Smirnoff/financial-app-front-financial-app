@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { FileText, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
 
@@ -10,7 +11,15 @@ export interface FileProgressProps {
   className?: string
 }
 
+const FILE_STATUS_KEYS: Record<FileProgressProps['status'], string> = {
+  uploading: 'fileStatusUploading',
+  processing: 'fileStatusProcessing',
+  done: 'fileStatusDone',
+  error: 'fileStatusError',
+}
+
 export function FileProgress({ fileName, status, progress, errorMessage, className }: FileProgressProps) {
+  const t = useTranslations('common')
   const isError = status === 'error'
   const isDone = status === 'done'
   const isLoading = status === 'uploading' || status === 'processing'
@@ -19,7 +28,7 @@ export function FileProgress({ fileName, status, progress, errorMessage, classNa
     <div
       className={cn('flex items-start gap-3 rounded-lg border p-3', className)}
       role="status"
-      aria-label={`${fileName}: ${status}`}
+      aria-label={t('fileStatus', { file: fileName, status: t(FILE_STATUS_KEYS[status]) })}
     >
       <FileText className="h-5 w-5 shrink-0 text-muted-foreground mt-0.5" aria-hidden="true" />
       <div className="flex-1 min-w-0 space-y-1.5">
@@ -38,7 +47,7 @@ export function FileProgress({ fileName, status, progress, errorMessage, classNa
               aria-valuenow={progress}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label="Progreso de carga"
+              aria-label={t('uploadProgress')}
             />
           </div>
         )}

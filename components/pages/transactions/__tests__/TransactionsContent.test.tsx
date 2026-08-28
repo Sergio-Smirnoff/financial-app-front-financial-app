@@ -2,7 +2,9 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
+import { NextIntlClientProvider } from 'next-intl'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
 import { TransactionsContent } from '../TransactionsContent'
 import { TransactionDetailPanel } from '../TransactionDetailPanel'
 import fixture from '@/lib/api/bff/__fixtures__/transactions.json'
@@ -16,11 +18,13 @@ vi.mock('@/lib/api/bff/transactions', () => ({
 }))
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    <NuqsTestingAdapter>
-      {children}
-    </NuqsTestingAdapter>
-  </QueryClientProvider>
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <NuqsTestingAdapter>
+        {children}
+      </NuqsTestingAdapter>
+    </QueryClientProvider>
+  </NextIntlClientProvider>
 )
 
 const bff = fixture as unknown as TransactionsBff

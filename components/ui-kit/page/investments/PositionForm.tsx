@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -24,6 +25,7 @@ export interface PositionFormData {
  * Mutations are wired in plan 10 — this component is the UI shell only.
  */
 export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: PositionFormProps) {
+  const t = useTranslations('common')
   const [data, setData] = React.useState<PositionFormData>({
     ticker: '',
     quantity: '',
@@ -37,15 +39,15 @@ export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: Po
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} aria-label={mode === 'add' ? 'Agregar posición' : 'Editar posición'}>
+    <form onSubmit={handleSubmit} className={cn('space-y-4', className)} aria-label={mode === 'add' ? t('addPosition') : t('editPosition')}>
       <div className="space-y-1">
-        <label htmlFor="pos-ticker" className="kicker">Ticker</label>
+        <label htmlFor="pos-ticker" className="kicker">{t('ticker')}</label>
         <input
           id="pos-ticker"
           type="text"
           value={data.ticker}
           onChange={(e) => setData((d) => ({ ...d, ticker: e.target.value.toUpperCase() }))}
-          placeholder="p.ej. GGAL"
+          placeholder={t('tickerPlaceholder')}
           required
           className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
@@ -53,7 +55,7 @@ export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: Po
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label htmlFor="pos-qty" className="kicker">Cantidad</label>
+          <label htmlFor="pos-qty" className="kicker">{t('quantity')}</label>
           <input
             id="pos-qty"
             type="number"
@@ -66,7 +68,7 @@ export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: Po
           />
         </div>
         <div className="space-y-1">
-          <label htmlFor="pos-price" className="kicker">Precio de compra</label>
+          <label htmlFor="pos-price" className="kicker">{t('purchasePrice')}</label>
           <input
             id="pos-price"
             type="number"
@@ -83,11 +85,11 @@ export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: Po
       <div className="flex justify-end gap-2">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
-            Cancelar
+            {t('cancel')}
           </Button>
         )}
         <Button type="submit">
-          {mode === 'add' ? 'Agregar' : 'Guardar'}
+          {mode === 'add' ? t('add') : t('save')}
         </Button>
       </div>
     </form>

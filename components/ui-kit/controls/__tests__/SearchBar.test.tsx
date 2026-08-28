@@ -2,16 +2,20 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { NextIntlClientProvider } from 'next-intl'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
 import { SearchBar } from '../SearchBar'
 import fixture from '@/lib/api/bff/__fixtures__/search.json'
 
 vi.mock('@/lib/api/bff/search', () => ({ getSearch: vi.fn(async () => fixture) }))
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    {children}
-  </QueryClientProvider>
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      {children}
+    </QueryClientProvider>
+  </NextIntlClientProvider>
 )
 
 describe('SearchBar', () => {

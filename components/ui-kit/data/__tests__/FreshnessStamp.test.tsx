@@ -1,7 +1,18 @@
+import type { ReactElement } from 'react'
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
 import { FreshnessStamp } from '../FreshnessStamp'
 import { FeeTable } from '../FeeTable'
+
+function renderWithIntl(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      {ui}
+    </NextIntlClientProvider>,
+  )
+}
 
 function minutesAgo(n: number): string {
   return new Date(Date.now() - n * 60 * 1000).toISOString()
@@ -27,7 +38,7 @@ describe('FreshnessStamp', () => {
 
 describe('FeeTable', () => {
   it('renders IVA treatment per fee row', () => {
-    render(
+    renderWithIntl(
       <FeeTable
         rows={[
           {
@@ -44,7 +55,7 @@ describe('FeeTable', () => {
   })
 
   it('renders fee rows inside a scroll table', () => {
-    render(
+    renderWithIntl(
       <FeeTable
         rows={[
           {
@@ -58,5 +69,26 @@ describe('FeeTable', () => {
       />
     )
     expect(screen.getByRole('table')).toBeInTheDocument()
+  })
+
+  it('labels its caption and column headers in Spanish', () => {
+    renderWithIntl(
+      <FeeTable
+        rows={[
+          {
+            scope: 'Cuenta',
+            label: 'Retiro',
+            amount: null,
+            pct: 0.5,
+            ivaTreatment: 'EXEMPT',
+          },
+        ]}
+      />
+    )
+    expect(screen.getByRole('table', { name: 'Tabla de comisiones' })).toBeInTheDocument()
+    for (const header of ['Categoría', 'Concepto', 'Importe', 'IVA']) {
+      expect(screen.getByRole('columnheader', { name: header })).toBeInTheDocument()
+    }
+    expect(screen.getByText('Exento')).toBeInTheDocument()
   })
 })

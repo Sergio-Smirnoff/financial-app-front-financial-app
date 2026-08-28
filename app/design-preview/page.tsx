@@ -1,3 +1,7 @@
+import Tier12Section from './sections/tier12'
+import Tier34Section from './sections/tier34'
+import ChartsDesignPreviewSection from './sections/charts'
+
 export default function DesignPreviewPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8">
@@ -8,7 +12,9 @@ export default function DesignPreviewPage() {
         </p>
       </div>
       <div id="design-preview-sections" className="space-y-8">
-        {/* Sections added by plans 03, 04, 05 will be rendered here */}
+        <Tier12Section />
+        <Tier34Section />
+        <ChartsDesignPreviewSection />
       </div>
     </div>
   )

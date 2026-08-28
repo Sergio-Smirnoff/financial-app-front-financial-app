@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
 import { OverviewContent } from '../OverviewContent'
 import type { OverviewBff } from '@/lib/api/bff/types'
 import React from 'react'
@@ -89,9 +91,11 @@ function renderOverview(data: OverviewBff) {
 
   const queryClient = new QueryClient()
   return render(
-    <QueryClientProvider client={queryClient}>
-      <OverviewContent />
-    </QueryClientProvider>
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      <QueryClientProvider client={queryClient}>
+        <OverviewContent />
+      </QueryClientProvider>
+    </NextIntlClientProvider>
   )
 }
 

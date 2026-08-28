@@ -15,6 +15,8 @@ import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
 const bff = fixture as unknown as InvestmentsBff
 
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
 
 function renderInvestments(data: InvestmentsBff) {
   vi.mocked(useInvestmentsPage).mockReturnValue({
@@ -25,11 +27,13 @@ function renderInvestments(data: InvestmentsBff) {
 
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
-    <NuqsTestingAdapter>
-      <QueryClientProvider client={queryClient}>
-        <InvestmentsContent />
-      </QueryClientProvider>
-    </NuqsTestingAdapter>
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      <NuqsTestingAdapter>
+        <QueryClientProvider client={queryClient}>
+          <InvestmentsContent />
+        </QueryClientProvider>
+      </NuqsTestingAdapter>
+    </NextIntlClientProvider>
   )
 }
 

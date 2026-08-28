@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { Money } from '@/components/ui-kit/money/Money'
 import type { MoneyView } from '@/lib/format'
 import { formatDate } from '@/lib/format'
@@ -60,16 +61,24 @@ export interface RowFlagProps {
   className?: string
 }
 
+const ROW_FLAG_KEYS: Record<RowFlagProps['type'], string> = {
+  duplicate: 'flagDuplicate',
+  failed: 'flagFailed',
+  warning: 'flagWarning',
+}
+
 export function RowFlag({ type, label, className }: RowFlagProps) {
+  const t = useTranslations('common')
   const colors: Record<RowFlagProps['type'], string> = {
     duplicate: 'bg-warning',
     failed: 'bg-destructive',
     warning: 'bg-warning',
   }
+  const name = label ?? t(ROW_FLAG_KEYS[type])
   return (
     <span
-      aria-label={label ?? type}
-      title={label ?? type}
+      aria-label={name}
+      title={name}
       className={cn('inline-block w-1 rounded-r-full', colors[type], className)}
     />
   )

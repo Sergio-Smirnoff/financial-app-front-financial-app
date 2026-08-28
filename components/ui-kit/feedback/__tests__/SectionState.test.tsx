@@ -1,8 +1,19 @@
+import type { ReactElement } from 'react'
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
 import { SectionState } from '../SectionState'
 
 const NOW = '2026-08-06T12:00:00Z'
+
+function renderWithIntl(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      {ui}
+    </NextIntlClientProvider>,
+  )
+}
 
 describe('SectionState', () => {
   const cases = [
@@ -18,6 +29,7 @@ describe('SectionState', () => {
       isLoading: false,
       expect: () => {
         expect(screen.getByText('No pudimos cargar esta sección')).toBeInTheDocument()
+        expect(screen.getByText('El resto de la página sigue disponible')).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
         expect(screen.queryByText(/\$/)).not.toBeInTheDocument() // never a figure
       },
@@ -26,7 +38,10 @@ describe('SectionState', () => {
       name: 'empty',
       section: { status: 'OK' as const, observedAt: NOW, data: [] },
       isLoading: false,
-      expect: () => expect(screen.getByRole('button', { name: 'Agregar' })).toBeInTheDocument(),
+      expect: () => {
+        expect(screen.getByText('Todavía no hay datos')).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Agregar' })).toBeInTheDocument()
+      },
     },
     {
       name: 'ready',
@@ -37,7 +52,7 @@ describe('SectionState', () => {
   ]
 
   it.each(cases)('renders the $name state and nothing else', ({ section, isLoading, expect: assert }) => {
-    render(
+    renderWithIntl(
       <SectionState
         section={section}
         isLoading={isLoading}

@@ -3,7 +3,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NuqsTestingAdapter } from 'nuqs/adapters/testing'
+import { NextIntlClientProvider } from 'next-intl'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
 import { CategoriesContent } from '../CategoriesContent'
 import fixture from '@/lib/api/bff/__fixtures__/categories.json'
 import type { CategoriesBff } from '@/lib/api/bff/types'
@@ -32,11 +34,13 @@ vi.mock('@/lib/api/bff/categories', () => ({
 }))
 
 const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-    <NuqsTestingAdapter>
-      {children}
-    </NuqsTestingAdapter>
-  </QueryClientProvider>
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <NuqsTestingAdapter>
+        {children}
+      </NuqsTestingAdapter>
+    </QueryClientProvider>
+  </NextIntlClientProvider>
 )
 
 describe('CategoriesContent renders the real contract', () => {

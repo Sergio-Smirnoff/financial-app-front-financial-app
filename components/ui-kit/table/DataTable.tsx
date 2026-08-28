@@ -10,6 +10,7 @@ import {
 import { flexRender } from '@tanstack/react-table/flex-render'
 import { useState } from 'react'
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 
 export interface DataTableProps<T extends Record<string, any> = any> {
@@ -35,6 +36,7 @@ export function DataTable<T extends Record<string, any> = any>({
   caption,
   className,
 }: DataTableProps<T>) {
+  const t = useTranslations('common')
   const [internalSorting, setInternalSorting] = useState<SortingState>([])
   const [internalSelection, setInternalSelection] = useState<RowSelectionState>({})
 
@@ -48,7 +50,7 @@ export function DataTable<T extends Record<string, any> = any>({
     header: ({ table }) => (
       <input
         type="checkbox"
-        aria-label="Seleccionar todas las filas"
+        aria-label={t('selectAllRows')}
         checked={table.getIsAllRowsSelected()}
         ref={(el) => {
           if (el) el.indeterminate = table.getIsSomeRowsSelected()
@@ -59,7 +61,7 @@ export function DataTable<T extends Record<string, any> = any>({
     cell: ({ row }) => (
       <input
         type="checkbox"
-        aria-label={`Seleccionar fila ${row.index + 1}`}
+        aria-label={t('selectRow', { row: row.index + 1 })}
         checked={row.getIsSelected()}
         onChange={row.getToggleSelectedHandler()}
         onClick={(e) => e.stopPropagation()}

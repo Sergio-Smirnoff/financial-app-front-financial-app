@@ -1,14 +1,27 @@
+import type { ReactElement } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuotePill } from '../QuotePill'
+import { MarketStrip } from '../MarketStrip'
+import { PositionForm } from '../PositionForm'
 import { Dropzone } from '../../imports/Dropzone'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
+
+function renderWithIntl(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>
+      {ui}
+    </NextIntlClientProvider>,
+  )
+}
 
 const NOW = new Date().toISOString()
 
 describe('QuotePill', () => {
   it('formats riesgo país as points, not percent', () => {
-    render(
+    renderWithIntl(
       <QuotePill
         quote={{
           code: 'RIESGO_PAIS',
@@ -24,7 +37,7 @@ describe('QuotePill', () => {
   })
 
   it('formats percent variation for regular tickers', () => {
-    render(
+    renderWithIntl(
       <QuotePill
         quote={{
           code: 'GGAL',
@@ -42,7 +55,7 @@ describe('QuotePill', () => {
 
 describe('Dropzone', () => {
   it('rejects a non-CSV file with a scoped message', async () => {
-    render(<Dropzone accept=".csv,.pdf" onFile={vi.fn()} />)
+    renderWithIntl(<Dropzone accept=".csv,.pdf" onFile={vi.fn()} />)
     await userEvent.upload(
       screen.getByLabelText('Archivo'),
       new File(['x'], 'a.txt', { type: 'text/plain' })
@@ -50,5 +63,30 @@ describe('Dropzone', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Formato no admitido')
     })
+  })
+})
+
+describe('MarketStrip', () => {
+  it('titles the strip in Spanish', () => {
+    renderWithIntl(<MarketStrip quotes={[]} observedAt={NOW} />)
+    expect(screen.getByText('Mercado')).toBeInTheDocument()
+  })
+})
+
+describe('PositionForm', () => {
+  it('labels every field and the add-mode form', () => {
+    renderWithIntl(<PositionForm mode="add" onCancel={vi.fn()} />)
+    expect(screen.getByRole('form', { name: 'Agregar posición' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Ticker')).toHaveAttribute('placeholder', 'p.ej. GGAL')
+    expect(screen.getByLabelText('Cantidad')).toBeInTheDocument()
+    expect(screen.getByLabelText('Precio de compra')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Agregar' })).toBeInTheDocument()
+  })
+
+  it('switches the form name and submit label in edit mode', () => {
+    renderWithIntl(<PositionForm mode="edit" />)
+    expect(screen.getByRole('form', { name: 'Editar posición' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument()
   })
 })

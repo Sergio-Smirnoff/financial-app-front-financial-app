@@ -3,6 +3,7 @@
 import * as React from 'react'
 import { X } from 'lucide-react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -16,6 +17,8 @@ export interface FilterChipProps {
 }
 
 export function FilterChip({ label, onRemove, className }: FilterChipProps) {
+  const t = useTranslations('common')
+
   return (
     <span className={cn('tag tag-accent flex items-center gap-1', className)}>
       {label}
@@ -27,7 +30,7 @@ export function FilterChip({ label, onRemove, className }: FilterChipProps) {
             onRemove()
           }
         }}
-        aria-label={`Quitar filtro ${label}`}
+        aria-label={t('removeFilter', { label })}
         className="rounded-sm hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         type="button"
       >
@@ -48,6 +51,8 @@ export interface FilterBarProps {
 }
 
 export function FilterBar({ children, onClear, className }: FilterBarProps) {
+  const t = useTranslations('common')
+
   return (
     <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {children}
@@ -57,7 +62,7 @@ export function FilterBar({ children, onClear, className }: FilterBarProps) {
           className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
           type="button"
         >
-          Limpiar filtros
+          {t('clearFilters')}
         </button>
       )}
     </div>
@@ -80,6 +85,8 @@ export interface RowActionsProps {
 }
 
 export function RowActions({ items, className }: RowActionsProps) {
+  const t = useTranslations('common')
+
   return (
     <DropdownMenuPrimitive.Root>
       <DropdownMenuPrimitive.Trigger
@@ -89,7 +96,7 @@ export function RowActions({ items, className }: RowActionsProps) {
           'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
           className,
         )}
-        aria-label="Acciones de fila"
+        aria-label={t('rowActions')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

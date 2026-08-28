@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import type { Section } from '@/lib/api/bff/types'
 import { useSection } from '@/lib/hooks/useSection'
 import { Button } from '@/components/ui/button'
@@ -20,12 +21,14 @@ export function SectionState<T>({
   isLoading,
   skeleton,
   emptyAction,
-  emptyTitle = 'Todavía no hay datos',
+  emptyTitle,
   emptyDescription,
   emptyTestId,
   onRetry,
   children,
 }: SectionStateProps<T>): React.ReactNode {
+  const t = useTranslations('sections')
+  const tCommon = useTranslations('common')
   const stateResult = useSection(section, isLoading)
 
   if (stateResult.state === 'loading') {
@@ -35,11 +38,11 @@ export function SectionState<T>({
   if (stateResult.state === 'unavailable') {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card text-card-foreground">
-        <p className="text-sm font-medium text-destructive">No pudimos cargar esta sección</p>
-        <p className="mt-1 text-xs text-muted-foreground">El resto de la página sigue disponible</p>
+        <p className="text-sm font-medium text-destructive">{t('unavailable')}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{t('unavailableHint')}</p>
         {onRetry && (
           <Button variant="outline" size="sm" onClick={onRetry} className="mt-4">
-            Reintentar
+            {tCommon('retry')}
           </Button>
         )}
       </div>
@@ -49,7 +52,7 @@ export function SectionState<T>({
   if (stateResult.state === 'empty') {
     return (
       <div data-testid={emptyTestId} className="flex flex-col items-center justify-center p-8 text-center border rounded-lg bg-card text-card-foreground">
-        <p className="text-sm font-medium text-muted-foreground">{emptyTitle}</p>
+        <p className="text-sm font-medium text-muted-foreground">{emptyTitle ?? t('empty')}</p>
         {emptyDescription && <p className="mt-1 text-xs text-muted-foreground">{emptyDescription}</p>}
         {emptyAction && <div className="mt-4">{emptyAction}</div>}
       </div>

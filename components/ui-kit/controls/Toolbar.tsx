@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
@@ -72,22 +73,24 @@ export interface SaveBarProps {
 }
 
 export function SaveBar({ isDirty, onSave, onDiscard, saving }: SaveBarProps) {
+  const t = useTranslations('common')
+
   if (!isDirty) return null
 
   return (
     <div
       role="region"
-      aria-label="Cambios sin guardar"
+      aria-label={t('unsavedChanges')}
       className="sticky bottom-0 z-20 flex items-center justify-between gap-4 border-t bg-background/95 backdrop-blur px-6 py-3 shadow-lg"
     >
-      <p className="text-sm text-muted-foreground">Tienes cambios sin guardar.</p>
+      <p className="text-sm text-muted-foreground">{t('unsavedChangesHint')}</p>
       <div className="flex gap-2">
         <button
           type="button"
           onClick={onDiscard}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5"
         >
-          Descartar
+          {t('discard')}
         </button>
         <button
           type="button"
@@ -95,7 +98,7 @@ export function SaveBar({ isDirty, onSave, onDiscard, saving }: SaveBarProps) {
           disabled={saving}
           className="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
-          {saving ? 'Guardando...' : 'Guardar'}
+          {saving ? t('saving') : t('save')}
         </button>
       </div>
     </div>

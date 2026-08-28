@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut, Menu } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { useUiStore } from '@/lib/store/ui.store'
 import { getUserFromCookie } from '@/lib/auth'
@@ -18,6 +19,7 @@ export interface TopBarProps {
 }
 
 export function TopBar({ searchSlot, currencySlot, notificationSlot }: TopBarProps) {
+  const t = useTranslations('common')
   const { toggleSidebar } = useUiStore()
   const router = useRouter()
   const [user, setUser] = useState<ReturnType<typeof getUserFromCookie>>(null)
@@ -38,7 +40,7 @@ export function TopBar({ searchSlot, currencySlot, notificationSlot }: TopBarPro
         size="icon"
         className="md:hidden"
         onClick={toggleSidebar}
-        aria-label="Abrir menú"
+        aria-label={t('openMenu')}
       >
         <Menu className="h-5 w-5" />
       </Button>
@@ -56,7 +58,7 @@ export function TopBar({ searchSlot, currencySlot, notificationSlot }: TopBarPro
       {/* notification bell slot */}
       {notificationSlot}
 
-      <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Cerrar sesión">
+      <Button variant="ghost" size="icon" onClick={handleLogout} aria-label={t('logout')}>
         <LogOut className="h-4 w-4" />
       </Button>
     </header>
