@@ -195,6 +195,123 @@
       "statusNever": "Sin importaciones",
       "statusStale": "Desactualizado",
       "statusOk": "Al día"
+    },
+    "dialogs": {
+      "shared": {
+        "fieldBank": "Banco",
+        "selectBankPlaceholder": "Seleccioná un banco",
+        "fieldType": "Tipo",
+        "fieldCurrency": "Moneda",
+        "fieldDescription": "Descripción",
+        "create": "Crear",
+        "update": "Actualizar",
+        "behavior": {
+          "INSTANT_PAYMENT": "Pago inmediato",
+          "CREDIT": "Crédito (en cuotas)"
+        }
+      },
+      "addAccount": {
+        "addTitle": "Agregar cuenta",
+        "editTitle": "Editar cuenta",
+        "description": "Creá o editá una cuenta bancaria.",
+        "errorSave": "No pudimos guardar la cuenta",
+        "fieldName": "Nombre de la cuenta",
+        "namePlaceholder": "Sueldo",
+        "fieldAlias": "Alias (opcional)",
+        "aliasPlaceholder": "sergi.sueldo",
+        "fieldCbu": "CBU (22 dígitos)",
+        "accountType": {
+          "CHECKING": "Cuenta corriente",
+          "SAVINGS": "Caja de ahorro"
+        },
+        "noAliasTitle": "No ingresaste un alias",
+        "noAliasDescription": "No ingresaste un alias. Se usará el CBU de la cuenta como alias. ¿Querés continuar?",
+        "goBack": "Volver",
+        "useCbuAsAlias": "Usar el CBU como alias"
+      },
+      "cardForm": {
+        "newTitle": "Nueva tarjeta",
+        "editTitle": "Editar tarjeta",
+        "description": "Agregá o editá una tarjeta.",
+        "errorSave": "No pudimos guardar la tarjeta",
+        "fieldBrand": "Marca",
+        "cardType": {
+          "STANDARD": "Standard",
+          "SILVER": "Silver",
+          "GOLD": "Gold",
+          "BLACK": "Black",
+          "PLATINUM": "Platinum"
+        },
+        "fieldBehavior": "Modalidad",
+        "fieldCardNumber": "Número de tarjeta (16 dígitos, o 15 para autocompletar)",
+        "fieldExpiry": "Vencimiento (MM/AA)",
+        "fieldClosingDay": "Día de cierre",
+        "fieldDueDay": "Día de vencimiento"
+      },
+      "cardExpense": {
+        "title": "Nuevo gasto con tarjeta",
+        "description": "Agregá o editá un gasto con tarjeta.",
+        "errorSave": "No pudimos guardar el gasto de la tarjeta",
+        "fieldTotalAmount": "Importe total",
+        "fieldInstallments": "Cuotas",
+        "fieldFirstDueDate": "Primer vencimiento"
+      },
+      "cardDetail": {
+        "description": "Detalle y gastos de esta tarjeta.",
+        "addExpense": "Agregar gasto",
+        "loadingInstallments": "Cargando cuotas…",
+        "noPurchases": "No hay compras registradas en esta tarjeta.",
+        "purchases": "Compras",
+        "paidOfTotal": "{paid} de {total, plural, one {# cuota pagada} other {# cuotas pagadas}}",
+        "fullyPaid": "Pagada por completo",
+        "dueOnDate": "Vence {date}",
+        "paidOnDate": "Pagada {date}",
+        "accountPlaceholder": "Cuenta...",
+        "noAccounts": "Sin cuentas",
+        "installmentPaid": "Cuota pagada",
+        "errorPayment": "No pudimos registrar el pago",
+        "pay": "Pagar",
+        "upcomingDueDates": "Próximos Vencimientos",
+        "dueWithInstallment": "Vence {date} (#{number}/{total})"
+      },
+      "record": {
+        "title": {
+          "DEPOSIT": "Depositar fondos",
+          "WITHDRAW": "Retirar fondos",
+          "TRANSFER": "Transferir fondos"
+        },
+        "success": {
+          "DEPOSIT": "Depósito registrado",
+          "WITHDRAW": "Retiro registrado",
+          "TRANSFER": "Transferencia registrada"
+        },
+        "description": "Registrá un movimiento para esta cuenta.",
+        "errorSelectCounterpart": "Seleccioná una cuenta de contrapartida",
+        "errorCounterpartCbu": "El CBU de contrapartida debe tener 22 dígitos",
+        "errorAmountPositive": "El importe debe ser mayor a cero",
+        "errorCategoryRequired": "La categoría es obligatoria",
+        "errorRecord": "No pudimos registrar el movimiento",
+        "counterpartSource": "Origen",
+        "counterpartDestination": "Destino",
+        "counterpartOwn": "Cuenta propia",
+        "counterpartExternal": "CBU externo",
+        "selectAccountPlaceholder": "Seleccioná una cuenta",
+        "noMatchingAccounts": "No hay cuentas compatibles",
+        "cbuPlaceholder": "CBU de 22 dígitos",
+        "selectPlaceholder": "Seleccionar",
+        "fieldSubcategory": "Subcategoría",
+        "categoryFirst": "Elegí una categoría",
+        "reasonPlaceholder": "Motivo...",
+        "fieldDate": "Fecha",
+        "processing": "Procesando…",
+        "recordAction": "Registrar"
+      },
+      "history": {
+        "title": "Actividad Reciente: {account}",
+        "description": "Historial de movimientos de esta cuenta.",
+        "noTransactions": "No hay movimientos registrados en esta cuenta.",
+        "transactionFallback": "Movimiento"
+      }
     }
   }
 }

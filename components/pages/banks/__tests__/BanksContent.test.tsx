@@ -108,13 +108,13 @@ describe('BanksContent wires the add-account dialog to the account mutations', (
 
     await user.click(await screen.findByRole('button', { name: 'Agregar cuenta' }))
 
-    await user.click(await screen.findByLabelText('Bank'))
+    await user.click(await screen.findByLabelText('Banco'))
     await user.click(await screen.findByRole('option', { name: '007 — Banco Test' }))
-    await user.type(screen.getByLabelText('Account name'), 'Sueldo')
-    await user.type(screen.getByLabelText('Alias (optional)'), 'sergi.sueldo')
-    await user.type(screen.getByLabelText('CBU (22 digits)'), VALID_CBU)
+    await user.type(screen.getByLabelText('Nombre de la cuenta'), 'Sueldo')
+    await user.type(screen.getByLabelText('Alias (opcional)'), 'sergi.sueldo')
+    await user.type(screen.getByLabelText('CBU (22 dígitos)'), VALID_CBU)
 
-    await user.click(screen.getByRole('button', { name: 'Create' }))
+    await user.click(screen.getByRole('button', { name: 'Crear' }))
 
     await waitFor(() => expect(createAccountMock).toHaveBeenCalledTimes(1))
     expect(createAccountMock).toHaveBeenCalledWith({

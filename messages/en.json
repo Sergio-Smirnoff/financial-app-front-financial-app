@@ -195,6 +195,123 @@
       "statusNever": "No imports",
       "statusStale": "Out of date",
       "statusOk": "Up to date"
+    },
+    "dialogs": {
+      "shared": {
+        "fieldBank": "Bank",
+        "selectBankPlaceholder": "Select bank",
+        "fieldType": "Type",
+        "fieldCurrency": "Currency",
+        "fieldDescription": "Description",
+        "create": "Create",
+        "update": "Update",
+        "behavior": {
+          "INSTANT_PAYMENT": "Instant payment",
+          "CREDIT": "Credit (installments)"
+        }
+      },
+      "addAccount": {
+        "addTitle": "Add account",
+        "editTitle": "Edit account",
+        "description": "Create or edit a bank account.",
+        "errorSave": "We couldn't save the account",
+        "fieldName": "Account name",
+        "namePlaceholder": "Salary",
+        "fieldAlias": "Alias (optional)",
+        "aliasPlaceholder": "sergi.sueldo",
+        "fieldCbu": "CBU (22 digits)",
+        "accountType": {
+          "CHECKING": "Checking account",
+          "SAVINGS": "Savings account"
+        },
+        "noAliasTitle": "No alias provided",
+        "noAliasDescription": "You didn't enter an alias. The account's CBU will be used as its alias. Do you want to continue?",
+        "goBack": "Go back",
+        "useCbuAsAlias": "Use CBU as alias"
+      },
+      "cardForm": {
+        "newTitle": "New card",
+        "editTitle": "Edit card",
+        "description": "Add or edit a card.",
+        "errorSave": "We couldn't save the card",
+        "fieldBrand": "Brand",
+        "cardType": {
+          "STANDARD": "Standard",
+          "SILVER": "Silver",
+          "GOLD": "Gold",
+          "BLACK": "Black",
+          "PLATINUM": "Platinum"
+        },
+        "fieldBehavior": "Behavior",
+        "fieldCardNumber": "Card number (16 digits, or 15 to auto-complete)",
+        "fieldExpiry": "Expiry (MM/YY)",
+        "fieldClosingDay": "Closing day",
+        "fieldDueDay": "Due day"
+      },
+      "cardExpense": {
+        "title": "New card expense",
+        "description": "Add or edit a card expense.",
+        "errorSave": "We couldn't save the card expense",
+        "fieldTotalAmount": "Total amount",
+        "fieldInstallments": "Installments",
+        "fieldFirstDueDate": "First due date"
+      },
+      "cardDetail": {
+        "description": "Details and expenses for this card.",
+        "addExpense": "Add expense",
+        "loadingInstallments": "Loading installments…",
+        "noPurchases": "No purchases recorded for this card.",
+        "purchases": "Purchases",
+        "paidOfTotal": "{paid} of {total, plural, one {# installment} other {# installments}} paid",
+        "fullyPaid": "Fully paid",
+        "dueOnDate": "Due {date}",
+        "paidOnDate": "Paid {date}",
+        "accountPlaceholder": "Account...",
+        "noAccounts": "No accounts",
+        "installmentPaid": "Installment paid",
+        "errorPayment": "We couldn't record the payment",
+        "pay": "Pay",
+        "upcomingDueDates": "Upcoming Due Dates",
+        "dueWithInstallment": "Due {date} (#{number}/{total})"
+      },
+      "record": {
+        "title": {
+          "DEPOSIT": "Deposit Funds",
+          "WITHDRAW": "Withdraw Funds",
+          "TRANSFER": "Transfer Funds"
+        },
+        "success": {
+          "DEPOSIT": "Deposit recorded",
+          "WITHDRAW": "Withdrawal recorded",
+          "TRANSFER": "Transfer recorded"
+        },
+        "description": "Record a movement for this account.",
+        "errorSelectCounterpart": "Select a counterpart account",
+        "errorCounterpartCbu": "Counterpart CBU must be 22 digits",
+        "errorAmountPositive": "Amount must be greater than zero",
+        "errorCategoryRequired": "Category is required",
+        "errorRecord": "We couldn't record the transaction",
+        "counterpartSource": "Source",
+        "counterpartDestination": "Destination",
+        "counterpartOwn": "Own account",
+        "counterpartExternal": "External CBU",
+        "selectAccountPlaceholder": "Select account",
+        "noMatchingAccounts": "No matching accounts",
+        "cbuPlaceholder": "22-digit CBU",
+        "selectPlaceholder": "Select",
+        "fieldSubcategory": "Subcategory",
+        "categoryFirst": "Pick a category first",
+        "reasonPlaceholder": "Reason...",
+        "fieldDate": "Date",
+        "processing": "Processing…",
+        "recordAction": "Record"
+      },
+      "history": {
+        "title": "Recent Activity: {account}",
+        "description": "Transaction history for this account.",
+        "noTransactions": "No transactions recorded for this account.",
+        "transactionFallback": "Transaction"
+      }
     }
   }
 }

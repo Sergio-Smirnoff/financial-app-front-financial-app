@@ -17,7 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { ApiError } from "@/lib/api/client";
+
+const ACCOUNT_TYPE_KEYS: Record<string, string> = {
+  CHECKING: "dialogs.addAccount.accountType.CHECKING",
+  SAVINGS: "dialogs.addAccount.accountType.SAVINGS",
+};
 
 interface Props {
   account?: AccountResponse | null;
@@ -28,6 +34,8 @@ interface Props {
 }
 
 export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpdate }: Props) {
+  const t = useTranslations("banks");
+  const tc = useTranslations("common");
   const { data: availableBanks } = useAvailableBanks();
   const { data: catalog } = useBankCatalog();
   const isEdit = !!account;
@@ -55,7 +63,7 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
       await onCreate({ bankNumber: v.bankNumber, name: v.name, type: v.type, currency: v.currency, cbu: v.cbu, alias: v.alias || undefined, isActive: true });
       onOpenChange(false);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to save account";
+      const message = error instanceof Error ? error.message : t("dialogs.addAccount.errorSave");
       if (error instanceof ApiError && error.code === "resource_already_exists") {
         form.setError("name", { message });
       }
@@ -69,7 +77,7 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
         await onUpdate(account.cbu, { name: v.name, currency: v.currency });
         onOpenChange(false);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : "Failed to save account");
+        toast.error(error instanceof Error ? error.message : t("dialogs.addAccount.errorSave"));
       }
       return;
     }
@@ -86,14 +94,14 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="bg-popover border-border">
-          <DialogHeader><DialogTitle>{isEdit ? "Edit Account" : "Add Account"}</DialogTitle><DialogDescription>Create or edit a bank account.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>{isEdit ? t("dialogs.addAccount.editTitle") : t("dialogs.addAccount.addTitle")}</DialogTitle><DialogDescription>{t("dialogs.addAccount.description")}</DialogDescription></DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
               <FormField control={form.control} name="bankNumber" render={({ field }) => (
                 <FormItem className="space-y-2">
-                  <FormLabel className="text-muted-foreground">Bank</FormLabel>
+                  <FormLabel className="text-muted-foreground">{t("dialogs.shared.fieldBank")}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange} disabled={isEdit}>
-                    <FormControl><SelectTrigger className="bg-background border-border"><SelectValue placeholder="Select bank" /></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger className="bg-background border-border"><SelectValue placeholder={t("dialogs.shared.selectBankPlaceholder")} /></SelectTrigger></FormControl>
                     <SelectContent className="bg-popover border-border">
                       {(availableBanks ?? []).map((b) => (
                         <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.bankNumber} — {b.name}</SelectItem>
@@ -106,27 +114,30 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
-                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">Account name</FormLabel>
-                    <FormControl><Input {...field} placeholder="Sueldo" className="bg-background border-border" /></FormControl><FormMessage /></FormItem>
+                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">{t("dialogs.addAccount.fieldName")}</FormLabel>
+                    <FormControl><Input {...field} placeholder={t("dialogs.addAccount.namePlaceholder")} className="bg-background border-border" /></FormControl><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="alias" render={({ field }) => (
-                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">Alias (optional)</FormLabel>
-                    <FormControl><Input {...field} placeholder="sergi.sueldo" className="bg-background border-border" /></FormControl><FormMessage /></FormItem>
+                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">{t("dialogs.addAccount.fieldAlias")}</FormLabel>
+                    <FormControl><Input {...field} placeholder={t("dialogs.addAccount.aliasPlaceholder")} className="bg-background border-border" /></FormControl><FormMessage /></FormItem>
                 )} />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="type" render={({ field }) => (
-                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">Type</FormLabel>
+                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">{t("dialogs.shared.fieldType")}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled={isEdit}>
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
-                        {accountTypes.map((t) => <SelectItem key={t} value={t}>{t.charAt(0) + t.slice(1).toLowerCase()}</SelectItem>)}
+                        {accountTypes.map((accountType) => {
+                          const typeKey = ACCOUNT_TYPE_KEYS[accountType];
+                          return <SelectItem key={accountType} value={accountType}>{typeKey ? t(typeKey) : accountType}</SelectItem>;
+                        })}
                       </SelectContent>
                     </Select><FormMessage /></FormItem>
                 )} />
                 <FormField control={form.control} name="currency" render={({ field }) => (
-                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">Currency</FormLabel>
+                  <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">{t("dialogs.shared.fieldCurrency")}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
@@ -137,13 +148,13 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
               </div>
 
               <FormField control={form.control} name="cbu" render={({ field }) => (
-                <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">CBU (22 digits)</FormLabel>
+                <FormItem className="space-y-2"><FormLabel className="text-muted-foreground">{t("dialogs.addAccount.fieldCbu")}</FormLabel>
                   <FormControl><Input {...field} disabled={isEdit} inputMode="numeric" maxLength={22} placeholder="0070009000000000000017" className="bg-background border-border tracking-widest" /></FormControl><FormMessage /></FormItem>
               )} />
 
               <DialogFooter className="pt-4">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">Cancel</Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>{isEdit ? "Update" : "Create"}</Button>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">{tc("cancel")}</Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>{isEdit ? t("dialogs.shared.update") : t("dialogs.shared.create")}</Button>
               </DialogFooter>
             </form>
           </Form>
@@ -153,15 +164,15 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
       <AlertDialog open={!!pendingValues} onOpenChange={(o) => { if (!o) setPendingValues(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>No alias provided</AlertDialogTitle>
+            <AlertDialogTitle>{t("dialogs.addAccount.noAliasTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              You didn&apos;t enter an alias. The account&apos;s CBU will be used as its alias. Continue?
+              {t("dialogs.addAccount.noAliasDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingValues(null)}>Go back</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setPendingValues(null)}>{t("dialogs.addAccount.goBack")}</AlertDialogCancel>
             <AlertDialogAction onClick={async () => { const v = pendingValues!; setPendingValues(null); await createAccount(v); }}>
-              Use CBU as alias
+              {t("dialogs.addAccount.useCbuAsAlias")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
