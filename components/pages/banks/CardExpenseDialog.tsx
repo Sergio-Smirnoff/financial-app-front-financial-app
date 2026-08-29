@@ -23,10 +23,13 @@ import {
 import { useCreateCardExpense } from '@/lib/hooks/useCards'
 import { cardExpenseSchema, CardExpenseFormValues } from '@/lib/schemas/cardExpense'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface Props { cardNumber: string; open: boolean; onOpenChange: (o: boolean) => void }
 
 export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
+  const t = useTranslations('banks')
+  const tc = useTranslations('common')
   const mutation = useCreateCardExpense(cardNumber)
 
   const form = useForm<CardExpenseFormValues>({
@@ -52,7 +55,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
       form.reset()
       onOpenChange(false)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save card expense')
+      toast.error(error instanceof Error ? error.message : t('dialogs.cardExpense.errorSave'))
     }
   }
 
@@ -62,8 +65,8 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={(v) => { if (!v) form.reset(); onOpenChange(v) }}>
       <DialogContent className="bg-popover border-border">
         <DialogHeader>
-          <DialogTitle>New card expense</DialogTitle>
-          <DialogDescription>Add or edit a card expense.</DialogDescription>
+          <DialogTitle>{t('dialogs.cardExpense.title')}</DialogTitle>
+          <DialogDescription>{t('dialogs.cardExpense.description')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">
@@ -72,7 +75,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-muted-foreground">Description</FormLabel>
+                  <FormLabel className="text-muted-foreground">{t('dialogs.shared.fieldDescription')}</FormLabel>
                   <FormControl>
                     <Input {...field} className="bg-background border-border" />
                   </FormControl>
@@ -86,7 +89,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
                 name="totalAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Total amount</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardExpense.fieldTotalAmount')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -105,7 +108,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Currency</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.shared.fieldCurrency')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="bg-background border-border">
@@ -128,7 +131,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
                 name="totalInstallments"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Installments</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardExpense.fieldInstallments')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -147,7 +150,7 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
                 name="firstDueDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">First due date</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardExpense.fieldFirstDueDate')}</FormLabel>
                     <FormControl>
                       <Input {...field} type="date" className="bg-background border-border" />
                     </FormControl>
@@ -158,10 +161,10 @@ export function CardExpenseDialog({ cardNumber, open, onOpenChange }: Props) {
             </div>
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">
-                Cancel
+                {tc('cancel')}
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? 'Saving…' : 'Save'}
+                {isPending ? tc('saving') : tc('save')}
               </Button>
             </DialogFooter>
           </form>

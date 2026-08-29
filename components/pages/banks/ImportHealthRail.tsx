@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { StatusDot } from '@/components/ui-kit/row/StatusDot'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import type { components } from '@/lib/api/bff/schema'
@@ -13,20 +14,22 @@ export interface ImportHealthRailProps {
 }
 
 export function ImportHealthRail({ rows = [] }: ImportHealthRailProps) {
+  const t = useTranslations('banks')
+
   return (
     <div data-testid="import-health-rail" className="elev-sm rounded-xl border bg-card p-5 space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="section-head">Estado de Importaciones</h3>
+        <h3 className="section-head">{t('importHealth.title')}</h3>
         <Link href="/imports" className="text-xs text-primary hover:underline font-medium">
-          Importar →
+          {t('importHealth.importAction')} →
         </Link>
       </div>
 
       {rows.length === 0 ? (
         <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">Sin importaciones</p>
+          <p className="text-sm text-muted-foreground">{t('importHealth.empty')}</p>
           <Link href="/imports" className="text-xs text-primary underline">
-            Ir a Importaciones
+            {t('importHealth.goToImports')}
           </Link>
         </div>
       ) : (
@@ -40,7 +43,13 @@ export function ImportHealthRail({ rows = [] }: ImportHealthRailProps) {
                 <div className="flex items-center gap-2 min-w-0">
                   <StatusDot
                     tone={isNever ? 'neutral' : isStale ? 'warn' : 'ok'}
-                    label={isNever ? 'Sin importaciones' : isStale ? 'Desactualizado' : 'Al día'}
+                    label={
+                      isNever
+                        ? t('importHealth.statusNever')
+                        : isStale
+                          ? t('importHealth.statusStale')
+                          : t('importHealth.statusOk')
+                    }
                   />
                   <span className="truncate font-medium">{r.alias || r.cbu}</span>
                 </div>
@@ -48,7 +57,7 @@ export function ImportHealthRail({ rows = [] }: ImportHealthRailProps) {
                   <FreshnessStamp observedAt={r.lastImportAt} />
                 ) : (
                   <Link href="/imports" className="text-xs text-muted-foreground hover:underline">
-                    Importar
+                    {t('importHealth.importAction')}
                   </Link>
                 )}
               </div>

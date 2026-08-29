@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,9 @@ export interface CardsTabProps {
 }
 
 export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabProps) {
+  const t = useTranslations('banks')
+  const tc = useTranslations('common')
+
   return (
     <SectionState
       section={section}
@@ -23,7 +27,7 @@ export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabPro
       emptyAction={
         onAddCard ? (
           <Button size="sm" onClick={onAddCard}>
-            Agregar tarjeta
+            {t('cards.add')}
           </Button>
         ) : undefined
       }
@@ -41,7 +45,7 @@ export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabPro
             const lastFour = card.cardNumber ? card.cardNumber.slice(-4) : '••••'
             const usedPct = card.usedPct ?? 0
             const clamped = Math.min(usedPct, 100)
-            const cardName = card.alias || `${card.brand || 'Tarjeta'} •••• ${lastFour}`
+            const cardName = card.alias || `${card.brand || t('cards.fallbackBrand')} •••• ${lastFour}`
             const cardUsed = card.used || { amount: '0', currency: 'ARS', secondary: null }
             const limitVal = { amount: String(card.limit ?? 0), currency: cardUsed.currency, secondary: null }
 
@@ -50,19 +54,19 @@ export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabPro
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-semibold text-foreground">{cardName}</p>
-                    <p className="text-xs text-muted-foreground">{card.brand || 'Tarjeta'} •••• {lastFour}</p>
+                    <p className="text-xs text-muted-foreground">{card.brand || t('cards.fallbackBrand')} •••• {lastFour}</p>
                   </div>
                   <span className="text-xs text-muted-foreground uppercase tracking-wider">{cardUsed.currency}</span>
                 </div>
                 <Money value={cardUsed} className="text-2xl font-bold" />
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Usado</span>
-                    <span className="n">{usedPct} % de Límite</span>
+                    <span>{tc('used')}</span>
+                    <span className="n">{tc('percentOfLimit', { pct: usedPct })}</span>
                   </div>
                   <div
                     role="progressbar"
-                    aria-label="Uso del límite de crédito"
+                    aria-label={tc('creditLimitUsage')}
                     aria-valuenow={usedPct}
                     aria-valuemin={0}
                     aria-valuemax={100}
@@ -77,12 +81,12 @@ export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabPro
                     />
                   </div>
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Límite: <Money value={limitVal} className="text-xs" /></span>
+                    <span>{tc('limitLabel')} <Money value={limitVal} className="text-xs" /></span>
                   </div>
                 </div>
                 <div className="flex gap-4 text-xs text-muted-foreground">
-                  {card.closingDate && <span>Cierra: <span className="font-medium text-foreground n">{card.closingDate}</span></span>}
-                  {card.dueDate && <span>Vence: <span className="font-medium text-foreground n">{card.dueDate}</span></span>}
+                  {card.closingDate && <span>{t('cards.closesOn')} <span className="font-medium text-foreground n">{card.closingDate}</span></span>}
+                  {card.dueDate && <span>{t('cards.dueOn')} <span className="font-medium text-foreground n">{card.dueDate}</span></span>}
                 </div>
               </div>
             )
