@@ -177,6 +177,24 @@
       "columnInstallments": "Cuotas",
       "columnNextDue": "Próximo Vencimiento",
       "installmentsOfTotal": "{paid} / {total, plural, one {# cuota} other {# cuotas}}"
+    },
+    "cashDistribution": {
+      "title": "Distribución de Saldos",
+      "empty": "Sin saldos registrados."
+    },
+    "calendar": {
+      "title": "Próximos Vencimientos Bancarios",
+      "empty": "Sin vencimientos cercanos.",
+      "dueFallback": "Vencimiento"
+    },
+    "importHealth": {
+      "title": "Estado de Importaciones",
+      "importAction": "Importar",
+      "empty": "Sin importaciones",
+      "goToImports": "Ir a Importaciones",
+      "statusNever": "Sin importaciones",
+      "statusStale": "Desactualizado",
+      "statusOk": "Al día"
     }
   }
 }

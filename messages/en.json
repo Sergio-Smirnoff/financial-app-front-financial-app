@@ -177,6 +177,24 @@
       "columnInstallments": "Installments",
       "columnNextDue": "Next due date",
       "installmentsOfTotal": "{paid} / {total, plural, one {# installment} other {# installments}}"
+    },
+    "cashDistribution": {
+      "title": "Balance Distribution",
+      "empty": "No balances recorded."
+    },
+    "calendar": {
+      "title": "Upcoming Bank Due Dates",
+      "empty": "No upcoming due dates.",
+      "dueFallback": "Due date"
+    },
+    "importHealth": {
+      "title": "Import Status",
+      "importAction": "Import",
+      "empty": "No imports",
+      "goToImports": "Go to Imports",
+      "statusNever": "No imports",
+      "statusStale": "Out of date",
+      "statusOk": "Up to date"
     }
   }
 }

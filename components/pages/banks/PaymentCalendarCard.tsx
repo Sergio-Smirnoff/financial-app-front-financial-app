@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { DueRow } from '@/components/ui-kit/row/ListRow'
 import type { BanksBff } from '@/lib/api/bff/types'
 
@@ -11,17 +12,19 @@ export interface PaymentCalendarCardProps {
 }
 
 export function PaymentCalendarCard({ entries = [] }: PaymentCalendarCardProps) {
+  const t = useTranslations('banks')
+
   return (
     <div data-testid="payment-calendar" className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-      <h3 className="section-head">Próximos Vencimientos Bancarios</h3>
+      <h3 className="section-head">{t('calendar.title')}</h3>
       {entries.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sin vencimientos cercanos.</p>
+        <p className="text-sm text-muted-foreground">{t('calendar.empty')}</p>
       ) : (
         <div className="space-y-3">
           {entries.map((entry, idx) => (
             <div key={idx} data-testid="payment-calendar-entry">
               <DueRow
-                label={entry.label || 'Vencimiento'}
+                label={entry.label || t('calendar.dueFallback')}
                 dueDate={entry.date || ''}
                 amount={entry.amount}
               />
