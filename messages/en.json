@@ -150,12 +150,12 @@
     "subtitle": "Manage accounts, cards and bank obligations",
     "tabAccounts": "Accounts",
     "tabCards": "Cards",
-    "tabLoans": "Préstamos",
+    "tabLoans": "Loans",
     "railTitle": "Information & Imports",
     "kpis": {
       "totalCash": "Total cash",
       "cardDebt": "Card debt",
-      "loanBalance": "Préstamos balance",
+      "loanBalance": "Loans balance",
       "accountCount": "Active accounts"
     },
     "accounts": {
@@ -170,9 +170,9 @@
       "dueOn": "Due:"
     },
     "loans": {
-      "activeTitle": "Active Préstamos",
-      "tableCaption": "Préstamos summary",
-      "columnLabel": "Préstamo",
+      "activeTitle": "Active Loans",
+      "tableCaption": "Loans summary",
+      "columnLabel": "Loan",
       "columnOutstanding": "Outstanding balance",
       "columnInstallments": "Installments",
       "columnNextDue": "Next due date",
