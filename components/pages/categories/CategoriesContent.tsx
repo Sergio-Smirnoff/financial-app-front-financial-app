@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useQueryState, parseAsInteger } from 'nuqs'
+import { useTranslations } from 'next-intl'
 import { useCategoriesPage } from '@/lib/hooks/useCategoriesPage'
 import { KpiStrip, KpiTile, SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -21,6 +22,7 @@ export interface CategoriesContentProps {
 }
 
 export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none' } }: CategoriesContentProps) {
+  const t = useTranslations('categories')
   const queryClient = useQueryClient()
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'budget' })
   const [selectedCatId, setSelectedCatId] = useQueryState('categoryId', parseAsInteger)
@@ -52,8 +54,8 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Categorías y Presupuestos</h1>
-          <p className="text-sm text-muted-foreground">Control presupuestario, asignación y reglas automáticas</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
@@ -74,21 +76,21 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
           <KpiStrip>
             <div data-testid="cat-kpi-spent">
               <KpiTile
-                label="Gastos acumulados"
+                label={t('budget.accumulated')}
                 value={kpiData.spent ? <Money value={kpiData.spent} /> : '—'}
               />
             </div>
             <div data-testid="cat-kpi-available">
               <KpiTile
-                label="Disponible"
+                label={t('budget.available')}
                 value={kpiData.available ? <Money value={kpiData.available} /> : '—'}
               />
             </div>
             <div data-testid="cat-kpi-over-count">
-              <KpiTile label="Excedidos" value={String(kpiData.overBudgetCount ?? 0)} />
+              <KpiTile label={t('budget.over')} value={String(kpiData.overBudgetCount ?? 0)} />
             </div>
             <div data-testid="cat-kpi-pace">
-              <KpiTile label="Ritmo del mes" value={`${(kpiData.pacePct ?? 0).toFixed(2)} %`} />
+              <KpiTile label={t('pace')} value={`${(kpiData.pacePct ?? 0).toFixed(2)} %`} />
             </div>
           </KpiStrip>
         )}
@@ -96,9 +98,9 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
-          <TabsTrigger value="budget">Presupuesto</TabsTrigger>
-          <TabsTrigger value="rules">Reglas</TabsTrigger>
-          <TabsTrigger value="income">Ingresos</TabsTrigger>
+          <TabsTrigger value="budget">{t('tabs.budget')}</TabsTrigger>
+          <TabsTrigger value="rules">{t('tabs.rules')}</TabsTrigger>
+          <TabsTrigger value="income">{t('tabs.income')}</TabsTrigger>
         </TabsList>
 
         <SplitLayout
@@ -134,7 +136,7 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
           }
           rail={
             <div className="space-y-6">
-              <RailSection title="Análisis de Categoría">
+              <RailSection title={t('railTitle')}>
                 <CategoryTrendCard
                   categoryName={selectedCategoryName}
                   points={selectedTrend?.data?.points ?? []}

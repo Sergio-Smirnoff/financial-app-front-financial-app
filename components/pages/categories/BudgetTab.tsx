@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
 import { formatMoney } from '@/lib/format'
@@ -23,6 +24,8 @@ export function BudgetTab({
   selectedCategoryId,
   onSelectCategory,
 }: BudgetTabProps) {
+  const t = useTranslations('categories')
+
   return (
     <SectionState
       section={section}
@@ -54,12 +57,12 @@ export function BudgetTab({
                     <span className="font-medium text-sm">{cat.name}</span>
                     {isOver && (
                       <span data-testid="budget-over-flag" className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-destructive/10 text-destructive">
-                        Excedido
+                        {t('overBudget')}
                       </span>
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : 'Sin límite'}
+                    {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
                   </span>
                 </div>
                 {budgetCap > 0 && (

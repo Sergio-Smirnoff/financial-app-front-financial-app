@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { Sparkline } from '@/components/charts/Sparkline'
 import type { CategoriesBff } from '@/lib/api/bff/types'
 
@@ -14,11 +15,13 @@ export interface CategoryTrendCardProps {
 }
 
 export function CategoryTrendCard({ categoryName, points = [] }: CategoryTrendCardProps) {
+  const t = useTranslations('categories')
+
   if (!categoryName) {
     return (
       <div className="elev-sm rounded-xl border bg-card p-5 space-y-2">
-        <h3 className="section-head">Tendencia</h3>
-        <p className="text-sm text-muted-foreground">Seleccioná una categoría para ver su tendencia mensual.</p>
+        <h3 className="section-head">{t('trend.title')}</h3>
+        <p className="text-sm text-muted-foreground">{t('trend.empty')}</p>
       </div>
     )
   }
@@ -34,12 +37,12 @@ export function CategoryTrendCard({ categoryName, points = [] }: CategoryTrendCa
 
   return (
     <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-      <h3 className="section-head">Tendencia {categoryName}</h3>
+      <h3 className="section-head">{t('trend.titleFor', { name: categoryName })}</h3>
       {series.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sin datos históricos suficientes.</p>
+        <p className="text-sm text-muted-foreground">{t('trend.noData')}</p>
       ) : (
-        <div className="py-2" role="img" aria-label={`Tendencia ${categoryName}`}>
-          <Sparkline series={series} ariaLabel={`Tendencia ${categoryName}`} height={60} />
+        <div className="py-2" role="img" aria-label={t('trend.titleFor', { name: categoryName })}>
+          <Sparkline series={series} ariaLabel={t('trend.titleFor', { name: categoryName })} height={60} />
         </div>
       )}
     </div>

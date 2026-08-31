@@ -190,7 +190,49 @@
     "subtitle": "Budget control, allocation and automatic rules",
     "pace": "Monthly pace",
     "overBudget": "Over budget",
-    "rules": "Automatic Rules"
+    "rulesTitle": "Automatic Rules",
+    "railTitle": "Category Analysis",
+    "budget": {
+      "accumulated": "Accumulated spending",
+      "available": "Available",
+      "over": "Over budget",
+      "noCap": "No limit"
+    },
+    "tabs": {
+      "budget": "Budget",
+      "rules": "Rules",
+      "income": "Income"
+    },
+    "trend": {
+      "title": "Trend",
+      "titleFor": "Trend {name}",
+      "empty": "Select a category to see its monthly trend.",
+      "noData": "Not enough historical data."
+    },
+    "income": {
+      "empty": "No income recorded this month."
+    },
+    "rules": {
+      "new": "New rule",
+      "newTitle": "New categorization rule",
+      "newDescription": "Create a rule to automatically categorize future and existing transactions.",
+      "matches": "Matches",
+      "patternPlaceholder": "e.g. UBER",
+      "assigned": "Assigned category",
+      "selectCategory": "Select a category",
+      "matchCount": "{count, plural, one {# transaction matches} other {# transactions match}}",
+      "loading": "Loading...",
+      "preview": "Preview",
+      "creating": "Creating...",
+      "create": "Create rule",
+      "priority": "Priority",
+      "actionsHeader": "Actions",
+      "caption": "Categorization rules",
+      "deleteTitle": "Delete rule?",
+      "deleteDescription": "This action will delete the categorization rule. Past transactions will keep their current category.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
   },
   "investments": {
     "title": "Investments",

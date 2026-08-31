@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import type { CategoriesBff, Section } from '@/lib/api/bff/types'
@@ -14,6 +15,8 @@ export interface IncomeTabProps {
 }
 
 export function IncomeTab({ section, isLoading, onRetry }: IncomeTabProps) {
+  const t = useTranslations('categories')
+
   return (
     <SectionState
       section={section}
@@ -38,7 +41,7 @@ export function IncomeTab({ section, isLoading, onRetry }: IncomeTabProps) {
         return (
           <div className="space-y-3">
             {incomeCategories.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin ingresos registrados este mes.</p>
+              <p className="text-sm text-muted-foreground">{t('income.empty')}</p>
             ) : (
               incomeCategories.map((cat) => (
                 <div

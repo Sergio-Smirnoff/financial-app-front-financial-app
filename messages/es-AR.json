@@ -190,7 +190,49 @@
     "subtitle": "Control presupuestario, asignación y reglas automáticas",
     "pace": "Ritmo del mes",
     "overBudget": "Excedido",
-    "rules": "Reglas Automáticas"
+    "rulesTitle": "Reglas Automáticas",
+    "railTitle": "Análisis de Categoría",
+    "budget": {
+      "accumulated": "Gastos acumulados",
+      "available": "Disponible",
+      "over": "Excedidos",
+      "noCap": "Sin límite"
+    },
+    "tabs": {
+      "budget": "Presupuesto",
+      "rules": "Reglas",
+      "income": "Ingresos"
+    },
+    "trend": {
+      "title": "Tendencia",
+      "titleFor": "Tendencia {name}",
+      "empty": "Seleccioná una categoría para ver su tendencia mensual.",
+      "noData": "Sin datos históricos suficientes."
+    },
+    "income": {
+      "empty": "Sin ingresos registrados este mes."
+    },
+    "rules": {
+      "new": "Nueva regla",
+      "newTitle": "Nueva regla de categorización",
+      "newDescription": "Crea una regla para categorizar automáticamente transacciones futuras y existentes.",
+      "matches": "Coincide con",
+      "patternPlaceholder": "p.ej. UBER",
+      "assigned": "Categoría asignada",
+      "selectCategory": "Seleccionar categoría",
+      "matchCount": "{count, plural, one {# movimiento coincide} other {# movimientos coinciden}}",
+      "loading": "Cargando...",
+      "preview": "Previsualizar",
+      "creating": "Creando...",
+      "create": "Crear regla",
+      "priority": "Prioridad",
+      "actionsHeader": "Acciones",
+      "caption": "Reglas de categorización",
+      "deleteTitle": "¿Eliminar regla?",
+      "deleteDescription": "Esta acción eliminará la regla de categorización. Las transacciones pasadas mantendrán su categoría actual.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    }
   },
   "investments": {
     "title": "Inversiones",
