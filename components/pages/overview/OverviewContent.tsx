@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { useOverviewPage } from '@/lib/hooks/useOverviewPage'
 import { SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
 import { NetWorthHero } from './NetWorthHero'
@@ -20,6 +21,7 @@ export interface OverviewContentProps {
 }
 
 export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' } }: OverviewContentProps) {
+  const t = useTranslations('overview')
   const { data, isLoading, refetch } = useOverviewPage(query)
 
   const observedAt = data?.kpis?.observedAt
@@ -28,8 +30,8 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Resumen</h1>
-          <p className="text-sm text-muted-foreground">Estado financiero general y proyecciones</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
@@ -49,7 +51,7 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
         }
         rail={
           <div className="space-y-6">
-            <RailSection title="Actividad y Alertas">
+            <RailSection title={t('railTitle')}>
               <div className="space-y-6">
                 <UpcomingRail section={data?.upcomingPayments} isLoading={isLoading} onRetry={refetch} />
                 <SpendByCategoryCard section={data?.spendByCategory} isLoading={isLoading} onRetry={refetch} />

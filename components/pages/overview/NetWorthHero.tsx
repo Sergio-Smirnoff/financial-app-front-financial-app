@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
@@ -16,6 +17,8 @@ export interface NetWorthHeroProps {
 }
 
 export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -35,7 +38,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
           <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <span className="kicker">Patrimonio Neto</span>
+                <span className="kicker">{t('netWorthKicker')}</span>
                 <div className="flex items-baseline gap-3 mt-1">
                   {latestPoint && <Money value={latestPoint.value} className="text-3xl font-bold" />}
                   {data.delta?.pct != null && (
@@ -45,7 +48,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
               </div>
               {data.allTimeHigh && (
                 <span className="tag tag-accent text-xs font-semibold px-2.5 py-1 rounded-full">
-                  ★ Máximo histórico
+                  {t('allTimeHigh')}
                 </span>
               )}
             </div>
@@ -55,7 +58,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
                 <AreaChart
                   series={chartPoints}
                   currency={latestPoint?.value?.currency || 'ARS'}
-                  ariaLabel="Evolución del patrimonio neto"
+                  ariaLabel={t('netWorthAria')}
                 />
               </div>
             )}

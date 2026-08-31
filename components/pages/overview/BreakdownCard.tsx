@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { CompositionBar } from '@/components/charts/CompositionBar'
 import { formatMoney } from '@/lib/format'
@@ -21,6 +22,8 @@ export interface BreakdownCardProps {
 }
 
 export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -38,15 +41,15 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
         const total = invAmt + cashAmt + debtAmt + savAmt || 1
 
         const slices = [
-          { label: 'Inversiones', amount: fmt(data.investments), pct: (invAmt / total) * 100 },
-          { label: 'Efectivo', amount: fmt(data.cash), pct: (cashAmt / total) * 100 },
-          { label: 'Ahorro', amount: fmt(data.savings), pct: (savAmt / total) * 100 },
-          { label: 'Deuda', amount: fmt(data.debt), pct: (debtAmt / total) * 100 },
+          { label: t('breakdown.investments'), amount: fmt(data.investments), pct: (invAmt / total) * 100 },
+          { label: t('cash'), amount: fmt(data.cash), pct: (cashAmt / total) * 100 },
+          { label: t('breakdown.savings'), amount: fmt(data.savings), pct: (savAmt / total) * 100 },
+          { label: t('breakdown.debt'), amount: fmt(data.debt), pct: (debtAmt / total) * 100 },
         ].filter((s) => s.pct > 0)
 
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-            <h3 className="section-head">Composición Patrimonial</h3>
+            <h3 className="section-head">{t('breakdownTitle')}</h3>
             <CompositionBar slices={slices} />
           </div>
         )

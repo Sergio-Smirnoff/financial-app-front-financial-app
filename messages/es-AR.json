@@ -102,7 +102,36 @@
     "cash": "Efectivo",
     "income": "Ingresos",
     "expense": "Gastos",
-    "committed": "Comprometido"
+    "committed": "Comprometido",
+    "netWorthKicker": "Patrimonio Neto",
+    "allTimeHigh": "★ Máximo histórico",
+    "netWorthAria": "Evolución del patrimonio neto",
+    "breakdownTitle": "Composición Patrimonial",
+    "breakdown": {
+      "investments": "Inversiones",
+      "savings": "Ahorro",
+      "debt": "Deuda"
+    },
+    "flowTitle": "Flujo Mensual (Ingresos vs Gastos)",
+    "flowAria": "Flujo mensual de ingresos y gastos",
+    "committedTitle": "Gastos Comprometidos por Mes",
+    "committedAria": "Gastos comprometidos por mes",
+    "railTitle": "Actividad y Alertas",
+    "upcomingTitle": "Próximos Vencimientos",
+    "upcomingEmpty": "Sin vencimientos próximos.",
+    "spendTitle": "Gastos por Categoría",
+    "spendEmpty": "Sin gastos registrados este mes.",
+    "latestTitle": "Últimos Movimientos",
+    "latest": {
+      "caption": "Últimos movimientos",
+      "seeAll": "Ver todos →",
+      "date": "Fecha",
+      "description": "Descripción",
+      "category": "Categoría",
+      "uncategorised": "Sin categoría",
+      "amount": "Monto",
+      "emptyAction": "Registrar movimiento"
+    }
   },
   "transactions": {
     "title": "Movimientos",

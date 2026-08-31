@@ -102,7 +102,36 @@
     "cash": "Cash",
     "income": "Income",
     "expense": "Expenses",
-    "committed": "Committed"
+    "committed": "Committed",
+    "netWorthKicker": "Net Worth",
+    "allTimeHigh": "★ All-time high",
+    "netWorthAria": "Net worth evolution",
+    "breakdownTitle": "Net Worth Composition",
+    "breakdown": {
+      "investments": "Investments",
+      "savings": "Savings",
+      "debt": "Debt"
+    },
+    "flowTitle": "Monthly Flow (Income vs Expenses)",
+    "flowAria": "Monthly flow of income and expenses",
+    "committedTitle": "Committed Expenses by Month",
+    "committedAria": "Committed expenses by month",
+    "railTitle": "Activity & Alerts",
+    "upcomingTitle": "Upcoming Payments",
+    "upcomingEmpty": "No upcoming payments.",
+    "spendTitle": "Spending by Category",
+    "spendEmpty": "No expenses recorded this month.",
+    "latestTitle": "Latest Transactions",
+    "latest": {
+      "caption": "Latest transactions",
+      "seeAll": "See all →",
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "uncategorised": "Uncategorized",
+      "amount": "Amount",
+      "emptyAction": "Record transaction"
+    }
   },
   "transactions": {
     "title": "Transactions",

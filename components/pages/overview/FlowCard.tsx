@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { BarPairChart } from '@/components/charts/BarPairChart'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -14,6 +15,8 @@ export interface FlowCardProps {
 }
 
 export function FlowCard({ section, isLoading, onRetry }: FlowCardProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -32,8 +35,8 @@ export function FlowCard({ section, isLoading, onRetry }: FlowCardProps) {
 
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-            <h3 className="section-head">Flujo Mensual (Ingresos vs Gastos)</h3>
-            <BarPairChart months={months} currency={currency} ariaLabel="Flujo mensual de ingresos y gastos" />
+            <h3 className="section-head">{t('flowTitle')}</h3>
+            <BarPairChart months={months} currency={currency} ariaLabel={t('flowAria')} />
           </div>
         )
       }}

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { HorizonBars } from '@/components/charts/HorizonBars'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -14,6 +15,8 @@ export interface CommittedCardProps {
 }
 
 export function CommittedCard({ section, isLoading, onRetry }: CommittedCardProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -30,8 +33,8 @@ export function CommittedCard({ section, isLoading, onRetry }: CommittedCardProp
 
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-            <h3 className="section-head">Gastos Comprometidos por Mes</h3>
-            <HorizonBars months={months} currency={currency} ariaLabel="Gastos comprometidos por mes" />
+            <h3 className="section-head">{t('committedTitle')}</h3>
+            <HorizonBars months={months} currency={currency} ariaLabel={t('committedAria')} />
           </div>
         )
       }}

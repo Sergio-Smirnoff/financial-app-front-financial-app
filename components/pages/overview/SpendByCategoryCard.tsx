@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -16,6 +17,8 @@ export interface SpendByCategoryCardProps {
 }
 
 export function SpendByCategoryCard({ section, isLoading, onRetry }: SpendByCategoryCardProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -25,9 +28,9 @@ export function SpendByCategoryCard({ section, isLoading, onRetry }: SpendByCate
     >
       {(data) => (
         <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-          <h3 className="section-head">Gastos por Categoría</h3>
+          <h3 className="section-head">{t('spendTitle')}</h3>
           {data.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sin gastos registrados este mes.</p>
+            <p className="text-sm text-muted-foreground">{t('spendEmpty')}</p>
           ) : (
             <div className="space-y-3">
               {data.map((item) => {
