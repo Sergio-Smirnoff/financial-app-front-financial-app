@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import { CompositionBar } from '@/components/charts/CompositionBar'
@@ -43,6 +44,8 @@ export function PortfolioTab({
   isLoading,
   onRetry,
 }: PortfolioTabProps) {
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
   const slices = compositionSection?.data?.map((a) => ({
     label: a.label ?? '',
     amount: a.amount ? formatMoney(a.amount) : '0',
@@ -55,30 +58,30 @@ export function PortfolioTab({
         section={positionsSection}
         isLoading={isLoading}
         onRetry={onRetry}
-        emptyTitle="Sin posiciones"
-        emptyDescription="Sin posiciones. Agregá tu primera tenencia en la pestaña Mercados."
+        emptyTitle={t('tabs.positionsEmptyTitle')}
+        emptyDescription={t('tabs.positionsEmptyDescription')}
         emptyTestId="positions-empty"
         skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
       >
         {(positions) => (
           <div className="space-y-4">
-            <h3 className="section-head">Posiciones en Cartera</h3>
+            <h3 className="section-head">{t('tabs.positionsHeading')}</h3>
             {positions.length === 0 ? (
               <p data-testid="positions-empty" className="text-sm text-muted-foreground">
-                Sin posiciones. Agregá tu primera tenencia en la pestaña Mercados.
+                {t('tabs.positionsEmptyDescription')}
               </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <caption className="sr-only">Posiciones de inversión</caption>
+                  <caption className="sr-only">{t('tabs.positionsCaption')}</caption>
                   <thead>
                     <tr className="border-b text-left text-muted-foreground">
-                      <th className="py-2 px-2">Ticker</th>
-                      <th className="py-2 px-2">Nombre</th>
-                      <th className="py-2 px-2 text-right">Cantidad</th>
-                      <th className="py-2 px-2 text-right">Costo prom.</th>
-                      <th className="py-2 px-2 text-right">Precio</th>
-                      <th className="py-2 px-2 text-right">Valor total</th>
+                      <th className="py-2 px-2">{tc('ticker')}</th>
+                      <th className="py-2 px-2">{t('tabs.colName')}</th>
+                      <th className="py-2 px-2 text-right">{tc('quantity')}</th>
+                      <th className="py-2 px-2 text-right">{t('tabs.colAvgCost')}</th>
+                      <th className="py-2 px-2 text-right">{t('tabs.colPrice')}</th>
+                      <th className="py-2 px-2 text-right">{t('shared.totalValue')}</th>
                       <th className="py-2 px-2 text-right">P&amp;L</th>
                     </tr>
                   </thead>
@@ -119,7 +122,7 @@ export function PortfolioTab({
         >
           {(compSlices) => (
             <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-              <h3 className="section-head">Distribución por Tipo de Activo</h3>
+              <h3 className="section-head">{t('tabs.compositionHeading')}</h3>
               <CompositionBar slices={slices} />
               <LegendList slices={slices} />
             </div>

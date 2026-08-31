@@ -121,9 +121,41 @@
   "investments": {
     "title": "Investments",
     "subtitle": "Portfolio, market quotes and performance",
-    "totalInvested": "Total invested",
+    "totalInvested": "Invested cost",
     "totalPnl": "Total P&L",
-    "portfolio": "Portfolio"
+    "portfolio": "Portfolio",
+    "shared": {
+      "totalValue": "Total value"
+    },
+    "tabs": {
+      "operations": "Operations",
+      "kpiMarketValue": "Market value",
+      "kpiPerformance": "Return",
+      "positionsHeading": "Portfolio positions",
+      "positionsCaption": "Investment positions",
+      "positionsEmptyTitle": "No positions",
+      "positionsEmptyDescription": "No positions yet. Add your first holding from the Markets tab.",
+      "colName": "Name",
+      "colAvgCost": "Avg. cost",
+      "colPrice": "Price",
+      "compositionHeading": "Breakdown by asset type",
+      "performancePlaceholder": "Portfolio evolution is shown in the Portfolio tab."
+    },
+    "market": {
+      "addHoldingFor": "Add holding for {ticker}"
+    },
+    "operations": {
+      "heading": "Latest operations",
+      "subheading": "Operations inferred from your current positions",
+      "empty": "No operations recorded.",
+      "caption": "Operation history",
+      "colDate": "Date",
+      "colKind": "Operation",
+      "colAmount": "Amount"
+    },
+    "alerts": {
+      "tabPlaceholder": "Market alerts are shown in the notifications side panel."
+    }
   },
   "imports": {
     "title": "Imports",

@@ -121,9 +121,41 @@
   "investments": {
     "title": "Inversiones",
     "subtitle": "Portafolio, cotizaciones y rendimiento",
-    "totalInvested": "Total invertido",
+    "totalInvested": "Costo invertido",
     "totalPnl": "Resultado P&L",
-    "portfolio": "Cartera"
+    "portfolio": "Cartera",
+    "shared": {
+      "totalValue": "Valor total"
+    },
+    "tabs": {
+      "operations": "Operaciones",
+      "kpiMarketValue": "Valor de mercado",
+      "kpiPerformance": "Rendimiento",
+      "positionsHeading": "Posiciones en Cartera",
+      "positionsCaption": "Posiciones de inversión",
+      "positionsEmptyTitle": "Sin posiciones",
+      "positionsEmptyDescription": "Sin posiciones. Agregá tu primera tenencia en la pestaña Mercados.",
+      "colName": "Nombre",
+      "colAvgCost": "Costo prom.",
+      "colPrice": "Precio",
+      "compositionHeading": "Distribución por Tipo de Activo",
+      "performancePlaceholder": "La evolución de cartera se visualiza en la pestaña Cartera."
+    },
+    "market": {
+      "addHoldingFor": "Agregar tenencia de {ticker}"
+    },
+    "operations": {
+      "heading": "Últimas Operaciones",
+      "subheading": "Operaciones inferidas a partir de tus posiciones actuales",
+      "empty": "Sin operaciones registradas.",
+      "caption": "Historial de operaciones",
+      "colDate": "Fecha",
+      "colKind": "Operación",
+      "colAmount": "Monto"
+    },
+    "alerts": {
+      "tabPlaceholder": "Las alertas de mercado se visualizan en el panel lateral de notificaciones."
+    }
   },
   "imports": {
     "title": "Importaciones",
