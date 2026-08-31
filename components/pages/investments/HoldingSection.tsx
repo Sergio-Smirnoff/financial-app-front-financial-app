@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ChevronDown } from 'lucide-react'
@@ -16,6 +17,7 @@ interface HoldingSectionProps {
 }
 
 export function HoldingSection({ label, holdings, onEdit, onSell, onViewDetail }: HoldingSectionProps) {
+  const t = useTranslations('investments')
   const [open, setOpen] = useState(true)
 
   return (
@@ -23,7 +25,7 @@ export function HoldingSection({ label, holdings, onEdit, onSell, onViewDetail }
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium">
-            {label} ({holdings.length})
+            {t('holdings.sectionLabel', { label, count: holdings.length })}
           </CardTitle>
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setOpen(!open)}>
             <ChevronDown className={`h-4 w-4 transition-transform ${open ? 'rotate-180' : ''}`} />
