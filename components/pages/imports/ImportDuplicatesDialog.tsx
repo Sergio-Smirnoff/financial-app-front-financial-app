@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
@@ -23,6 +24,8 @@ interface Props {
 }
 
 export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, sessionId, onResolved }: Props) {
+  const t = useTranslations('imports')
+  const tc = useTranslations('common')
   const [checked, setChecked] = useState<Set<string>>(new Set())
   const resolve = useResolveDuplicates()
 
@@ -39,7 +42,7 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
       onOpenChange(false)
       onResolved()
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to resolve duplicates')
+      toast.error(error instanceof Error ? error.message : t('wizard.duplicates.toastResolveFailed'))
     }
   }
 
@@ -47,10 +50,10 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Possible duplicates found</DialogTitle>
-          <DialogDescription className="sr-only">Review duplicate rows detected in this import.</DialogDescription>
+          <DialogTitle>{t('wizard.duplicates.title')}</DialogTitle>
+          <DialogDescription className="sr-only">{t('wizard.duplicates.srDescription')}</DialogDescription>
           <p className="text-sm text-muted-foreground">
-            {duplicates.length} transaction{duplicates.length !== 1 ? 's' : ''} already exist with the same date and amount. Select which ones to import anyway.
+            {t('wizard.duplicates.body', { count: duplicates.length })}
           </p>
         </DialogHeader>
 
@@ -59,10 +62,10 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10" />
-                <TableHead>Date</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Currency</TableHead>
+                <TableHead>{t('wizard.cols.date')}</TableHead>
+                <TableHead>{t('wizard.cols.description')}</TableHead>
+                <TableHead className="text-right">{tc('amount')}</TableHead>
+                <TableHead>{t('wizard.cols.currency')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,20 +93,20 @@ export function ImportDuplicatesDialog({ open, onOpenChange, duplicates, session
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => handleResolve([])}>
-            Skip all
+            {t('wizard.duplicates.skipAll')}
           </Button>
           <Button
             variant="outline"
             onClick={() => handleResolve(Array.from(checked))}
             disabled={checked.size === 0 || resolve.isPending}
           >
-            Import checked ({checked.size})
+            {t('wizard.duplicates.importChecked', { count: checked.size })}
           </Button>
           <Button
             onClick={() => handleResolve(duplicates.map(d => d.id))}
             disabled={resolve.isPending}
           >
-            Import all
+            {t('wizard.duplicates.importAll')}
           </Button>
         </DialogFooter>
       </DialogContent>

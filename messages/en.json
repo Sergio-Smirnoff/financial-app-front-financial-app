@@ -261,7 +261,28 @@
     "activeRunProgressLabel": "Import progress for {fileName}",
     "activeRunUnnamedFile": "file",
     "wizard": {
-      "title": "Import wizard"
+      "title": "Import wizard",
+      "heading": "Import transactions",
+      "back": "Back",
+      "next": "Next",
+      "toastParseFailed": "Failed to parse file",
+      "toastImported": "{count, plural, one {Imported # transaction} other {Imported # transactions}}",
+      "toastImportFailed": "Import failed",
+      "toastFinished": "Import finished",
+      "cols": {
+        "date": "Date",
+        "description": "Description",
+        "currency": "Currency"
+      },
+      "duplicates": {
+        "title": "Possible duplicates found",
+        "srDescription": "Review duplicate rows detected in this import.",
+        "body": "{count, plural, one {# transaction already exists} other {# transactions already exist}} with the same date and amount. Select which ones to import anyway.",
+        "skipAll": "Skip all",
+        "importChecked": "Import checked ({count})",
+        "importAll": "Import all",
+        "toastResolveFailed": "Failed to resolve duplicates"
+      }
     },
     "history": {
       "title": "Import History",

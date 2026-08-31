@@ -261,7 +261,28 @@
     "activeRunProgressLabel": "Progreso de importación de {fileName}",
     "activeRunUnnamedFile": "archivo",
     "wizard": {
-      "title": "Asistente de Importación"
+      "title": "Asistente de Importación",
+      "heading": "Importar movimientos",
+      "back": "Atrás",
+      "next": "Continuar",
+      "toastParseFailed": "No se pudo leer el archivo",
+      "toastImported": "{count, plural, one {Se importó # movimiento} other {Se importaron # movimientos}}",
+      "toastImportFailed": "No se pudo completar la importación",
+      "toastFinished": "Importación finalizada",
+      "cols": {
+        "date": "Fecha",
+        "description": "Descripción",
+        "currency": "Moneda"
+      },
+      "duplicates": {
+        "title": "Se encontraron posibles duplicados",
+        "srDescription": "Revisá las filas duplicadas detectadas en esta importación.",
+        "body": "{count, plural, one {Ya existe # movimiento} other {Ya existen # movimientos}} con la misma fecha e importe. Seleccioná cuáles querés importar igual.",
+        "skipAll": "Omitir todos",
+        "importChecked": "Importar seleccionados ({count})",
+        "importAll": "Importar todos",
+        "toastResolveFailed": "No se pudieron resolver los duplicados"
+      }
     },
     "history": {
       "title": "Historial de Importaciones",

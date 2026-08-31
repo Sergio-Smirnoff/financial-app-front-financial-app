@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { ImportFileType, ParsedRow, CurrencyCounts, ColumnMapping } from '@/types/import'
 import { StepFileSelect } from './steps/StepFileSelect'
 import { StepColumnMapper } from './steps/StepColumnMapper'
@@ -57,6 +58,7 @@ const INITIAL_STATE: WizardState = {
 }
 
 export function ImportWizard() {
+  const t = useTranslations('imports')
   const { banks } = useBanks()
   const [state, setState] = useState<WizardState>(INITIAL_STATE)
 
@@ -92,7 +94,7 @@ export function ImportWizard() {
         step: 'preview'
       })
     } catch (error) {
-      toast.error('Failed to parse file')
+      toast.error(t('wizard.toastParseFailed'))
     }
   }
 
@@ -142,18 +144,18 @@ export function ImportWizard() {
         setDuplicates(res.duplicates)
         setSessionId(res.sessionId || null)
       } else {
-        toast.success(`Imported ${res.imported} transactions`)
+        toast.success(t('wizard.toastImported', { count: res.imported }))
         reset()
       }
     } catch (error) {
-      toast.error('Import failed')
+      toast.error(t('wizard.toastImportFailed'))
     }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-bold">Import Transactions</h2>
+        <h2 className="text-xl font-bold">{t('wizard.heading')}</h2>
         <div className="flex gap-1">
           {['file_select', 'preview', 'account_link', 'confirm'].map((s, i) => (
             <div
@@ -235,7 +237,7 @@ export function ImportWizard() {
           onOpenChange={(open) => !open && setDuplicates([])}
           duplicates={duplicates}
           sessionId={sessionId!}
-          onResolved={() => { toast.success('Import finished'); reset(); }}
+          onResolved={() => { toast.success(t('wizard.toastFinished')); reset(); }}
         />
       )}
     </div>
