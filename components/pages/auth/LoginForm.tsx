@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -12,6 +13,7 @@ export interface LoginFormProps {
 }
 
 export function LoginForm({ onLogin }: LoginFormProps) {
+  const t = useTranslations('auth')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
@@ -29,11 +31,11 @@ export function LoginForm({ onLogin }: LoginFormProps) {
       await onLogin({ email, password, rememberMe })
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 401) {
-        setError('Email o contraseña incorrectos')
+        setError(t('errors.invalidCredentials'))
       } else if (err instanceof Error && err.message) {
         setError(err.message)
       } else {
-        setError('No se pudo iniciar sesión. Intentá de nuevo.')
+        setError(t('errors.generic'))
       }
     } finally {
       setSubmitting(false)
@@ -43,9 +45,9 @@ export function LoginForm({ onLogin }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2 text-center sm:text-left">
-        <h1 className="text-2xl font-bold tracking-tight">Iniciar Sesión</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('login.title')}</h1>
         <p className="text-sm text-muted-foreground">
-          Ingresá tus credenciales para acceder a tu plataforma
+          {t('login.subtitle')}
         </p>
       </div>
 
@@ -57,20 +59,20 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
       <div className="space-y-4">
         <div className="space-y-1.5">
-          <label htmlFor="login-email" className="text-sm font-medium">Email</label>
+          <label htmlFor="login-email" className="text-sm font-medium">{t('email')}</label>
           <Input
             id="login-email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="usuario@ejemplo.com"
+            placeholder={t('emailPlaceholder')}
             required
           />
         </div>
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="login-password" className="text-sm font-medium">Contraseña</label>
+            <label htmlFor="login-password" className="text-sm font-medium">{t('password')}</label>
           </div>
           <Input
             id="login-password"
@@ -88,20 +90,23 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             onCheckedChange={(checked) => setRememberMe(!!checked)}
           />
           <label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
-            Mantener sesión iniciada
+            {t('rememberMe')}
           </label>
         </div>
       </div>
 
       <Button type="submit" className="w-full" disabled={submitting || !email || !password}>
-        {submitting ? 'Ingresando...' : 'Ingresar'}
+        {submitting ? t('login.submitting') : t('login.submit')}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        ¿No tenés una cuenta?{' '}
-        <Link href="/register" className="font-semibold text-primary hover:underline">
-          Registrate
-        </Link>
+        {t.rich('login.noAccount', {
+          link: (chunks) => (
+            <Link href="/register" className="font-semibold text-primary hover:underline">
+              {chunks}
+            </Link>
+          ),
+        })}
       </p>
     </form>
   )

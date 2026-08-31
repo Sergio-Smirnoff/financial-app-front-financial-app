@@ -595,10 +595,56 @@
     }
   },
   "auth": {
-    "login": "Sign In",
-    "register": "Create Account",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
     "rememberMe": "Remember me",
-    "invalidCredentials": "Incorrect email or password"
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Jane Doe",
+    "primaryCurrency": "Primary currency",
+    "currencies": {
+      "ars": "Argentine pesos (ARS)",
+      "usd": "US dollars (USD)"
+    },
+    "passwordRules": {
+      "label": "Password requirements",
+      "minLength": "At least {n} characters",
+      "uppercase": "One uppercase letter",
+      "digit": "One number"
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password",
+      "generic": "Could not sign in. Please try again.",
+      "emailTaken": "An account with that email already exists",
+      "registerFailed": "Something went wrong creating the account"
+    },
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Enter your credentials to access your platform",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don’t have an account? <link>Sign up</link>",
+      "pageTitle": "Welcome to financial-app",
+      "pageSubtitle": "Access your net worth summary, bank accounts and investments"
+    },
+    "register": {
+      "title": "Create Account",
+      "step": "Step {step} of 2 — {label}",
+      "step1Label": "Access credentials",
+      "step2Label": "User profile",
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Create account",
+      "submitting": "Creating...",
+      "haveAccount": "Already have an account? <link>Sign in</link>",
+      "pageTitle": "Join financial-app",
+      "pageSubtitle": "Start managing your accounts, cards and budget in one place"
+    },
+    "split": {
+      "defaultTitle": "Financial Platform",
+      "defaultSubtitle": "Smart management of your personal and banking finances",
+      "footer": "© 2026 financial-app. Argentine market."
+    }
   },
   "banks": {
     "title": "Banks & Accounts",

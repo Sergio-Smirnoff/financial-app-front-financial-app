@@ -1,15 +1,23 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { NextIntlClientProvider } from 'next-intl'
 import { LoginForm } from '../LoginForm'
 import { ApiError } from '@/lib/api/client'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    {children}
+  </NextIntlClientProvider>
+)
 
 describe('LoginForm', () => {
   it('sends remember-me with the credentials', async () => {
     const user = userEvent.setup()
     const onLogin = vi.fn().mockResolvedValue(undefined)
-    render(<LoginForm onLogin={onLogin} />)
+    render(<LoginForm onLogin={onLogin} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta123')
@@ -26,7 +34,7 @@ describe('LoginForm', () => {
   it('gives the same message for a wrong email and a wrong password', async () => {
     const user = userEvent.setup()
     const onLogin = vi.fn().mockRejectedValue(new ApiError('Bad credentials', 401))
-    render(<LoginForm onLogin={onLogin} />)
+    render(<LoginForm onLogin={onLogin} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'incorrecta')
@@ -38,7 +46,7 @@ describe('LoginForm', () => {
   it('surfaces a non-credential failure with its own message', async () => {
     const user = userEvent.setup()
     const onLogin = vi.fn().mockRejectedValue(new Error('Failed to fetch'))
-    render(<LoginForm onLogin={onLogin} />)
+    render(<LoginForm onLogin={onLogin} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta123')
@@ -50,7 +58,7 @@ describe('LoginForm', () => {
   it('keeps the field values after a failed attempt', async () => {
     const user = userEvent.setup()
     const onLogin = vi.fn().mockRejectedValue(new ApiError('Bad credentials', 401))
-    render(<LoginForm onLogin={onLogin} />)
+    render(<LoginForm onLogin={onLogin} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'incorrecta')
@@ -60,7 +68,7 @@ describe('LoginForm', () => {
   })
 
   it('offers no Google button', () => {
-    render(<LoginForm onLogin={vi.fn()} />)
+    render(<LoginForm onLogin={vi.fn()} />, { wrapper })
     expect(screen.queryByRole('button', { name: /Google/i })).not.toBeInTheDocument()
   })
 })

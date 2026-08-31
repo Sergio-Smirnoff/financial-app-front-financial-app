@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 
 export interface AuthSplitProps {
   children: React.ReactNode
@@ -8,7 +9,9 @@ export interface AuthSplitProps {
   subtitle?: string
 }
 
-export function AuthSplit({ children, title = 'Plataforma Financiera', subtitle = 'Gestión inteligente de tus finanzas personales y bancarias' }: AuthSplitProps) {
+export function AuthSplit({ children, title, subtitle }: AuthSplitProps) {
+  const t = useTranslations('auth')
+
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
       <div className="hidden md:flex flex-col justify-between bg-primary p-12 text-primary-foreground relative overflow-hidden">
@@ -23,12 +26,12 @@ export function AuthSplit({ children, title = 'Plataforma Financiera', subtitle 
         </div>
 
         <div className="relative z-10 space-y-4 max-w-md">
-          <h2 className="text-3xl font-extrabold tracking-tight leading-tight">{title}</h2>
-          <p className="text-primary-foreground/80 text-base">{subtitle}</p>
+          <h2 className="text-3xl font-extrabold tracking-tight leading-tight">{title ?? t('split.defaultTitle')}</h2>
+          <p className="text-primary-foreground/80 text-base">{subtitle ?? t('split.defaultSubtitle')}</p>
         </div>
 
         <div className="relative z-10 text-xs text-primary-foreground/60">
-          © 2026 financial-app. Mercado argentino.
+          {t('split.footer')}
         </div>
       </div>
 

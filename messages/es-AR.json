@@ -595,10 +595,56 @@
     }
   },
   "auth": {
-    "login": "Iniciar Sesión",
-    "register": "Crear Cuenta",
+    "email": "Email",
+    "emailPlaceholder": "usuario@ejemplo.com",
+    "password": "Contraseña",
     "rememberMe": "Mantener sesión iniciada",
-    "invalidCredentials": "Email o contraseña incorrectos"
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Ana Pérez",
+    "primaryCurrency": "Moneda principal",
+    "currencies": {
+      "ars": "Pesos Argentinos (ARS)",
+      "usd": "Dólares (USD)"
+    },
+    "passwordRules": {
+      "label": "Requisitos de contraseña",
+      "minLength": "Mínimo {n} caracteres",
+      "uppercase": "Una mayúscula",
+      "digit": "Un número"
+    },
+    "errors": {
+      "invalidCredentials": "Email o contraseña incorrectos",
+      "generic": "No se pudo iniciar sesión. Intentá de nuevo.",
+      "emailTaken": "Ya existe una cuenta con ese email",
+      "registerFailed": "Ocurrió un error al registrar la cuenta"
+    },
+    "login": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Ingresá tus credenciales para acceder a tu plataforma",
+      "submit": "Ingresar",
+      "submitting": "Ingresando...",
+      "noAccount": "¿No tenés una cuenta? <link>Registrate</link>",
+      "pageTitle": "Bienvenido a financial-app",
+      "pageSubtitle": "Accedé a tu resumen patrimonial, cuentas bancarias e inversiones"
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "step": "Paso {step} de 2 — {label}",
+      "step1Label": "Credenciales de acceso",
+      "step2Label": "Perfil de usuario",
+      "continue": "Continuar",
+      "back": "Volver",
+      "submit": "Crear cuenta",
+      "submitting": "Creando...",
+      "haveAccount": "¿Ya tenés una cuenta? <link>Iniciá sesión</link>",
+      "pageTitle": "Sumate a financial-app",
+      "pageSubtitle": "Comenzá a gestionar tus cuentas, tarjetas y presupuesto en un solo lugar"
+    },
+    "split": {
+      "defaultTitle": "Plataforma Financiera",
+      "defaultSubtitle": "Gestión inteligente de tus finanzas personales y bancarias",
+      "footer": "© 2026 financial-app. Mercado argentino."
+    }
   },
   "banks": {
     "title": "Bancos y Cuentas",
