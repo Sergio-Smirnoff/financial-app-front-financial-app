@@ -38,7 +38,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
     if (!selectedRevoke?.id) return
     setIsRevoking(true)
     try {
-      await api.delete(`/api/v1/users/me/sessions/\${selectedRevoke.id}`)
+      await api.delete(`/api/v1/users/me/sessions/${selectedRevoke.id}`)
       await queryClient.invalidateQueries({ queryKey: ['bff', 'settings'] })
     } catch {
       // session revoked or endpoint non-responsive
