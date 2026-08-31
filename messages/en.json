@@ -317,6 +317,72 @@
       "unmatched": "Balance does not match",
       "expected": "Expected:",
       "computed": "Computed:"
+    },
+    "steps": {
+      "fileTypes": {
+        "VISA_PDF": "ICBC Visa statement",
+        "BANK_PDF": "ICBC bank movements",
+        "CSV": "Generic CSV"
+      },
+      "fileSelect": {
+        "question": "What are you importing?",
+        "hintCsv": "Any CSV with headers",
+        "parsing": "Parsing file…",
+        "dropPrompt": "Drop file here or click to browse",
+        "acceptedFormats": "{formats} files only"
+      },
+      "accountLink": {
+        "bank": "Bank",
+        "selectBank": "Select bank…",
+        "card": "Card",
+        "selectCard": "Select card…",
+        "selectBankFirst": "Select a bank first",
+        "arsAccount": "ARS account",
+        "selectArsAccount": "Select ARS account…",
+        "usdAccount": "USD account",
+        "selectUsdAccount": "Select USD account (optional)…",
+        "usdHint": "{count, plural, one {# USD transaction found} other {# USD transactions found}}. If no account is selected, they will be skipped.",
+        "account": "Account",
+        "selectAccount": "Select account…"
+      },
+      "columnMapper": {
+        "modeTitle": "Amount mode",
+        "modeSigned": "One signed column",
+        "modeSeparate": "Separate columns",
+        "date": "Date *",
+        "description": "Description *",
+        "amount": "Amount *",
+        "debit": "Debit *",
+        "credit": "Credit *",
+        "balance": "Balance (optional)",
+        "selectColumn": "Select column...",
+        "colFallback": "Col {index}",
+        "noBalanceCheck": "Not checked",
+        "balanceCheckHint": "We will verify that the balance matches"
+      },
+      "pdfPreview": {
+        "summary": "{count, plural, one {Found <strong>#</strong> transaction} other {Found <strong>#</strong> transactions}}. {shown, plural, one {Showing the first one} other {Showing the first #}}.",
+        "arsCount": "ARS: {count}",
+        "usdCount": "USD: {count}",
+        "skippedCount": "Skipped: {count}",
+        "colType": "Type",
+        "type": {
+          "INCOME": "Income",
+          "EXPENSE": "Expense"
+        }
+      },
+      "confirm": {
+        "type": "Type",
+        "bank": "Bank",
+        "card": "Card",
+        "arsAccount": "ARS account",
+        "usdAccount": "USD account",
+        "account": "Account",
+        "transactionsToImport": "Transactions to import",
+        "skippedUnsupported": "Skipped (unsupported currency)",
+        "importing": "Importing…",
+        "confirm": "Import →"
+      }
     }
   },
   "settings": {

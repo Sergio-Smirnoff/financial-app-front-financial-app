@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ export function StepColumnMapper({
   onNext,
   onBack,
 }: Props) {
+  const t = useTranslations('imports')
   const [mode, setMode] = useState<'signed' | 'separate'>('signed')
   const [balanceCol, setBalanceCol] = useState<string>('')
 
@@ -43,7 +45,7 @@ export function StepColumnMapper({
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <h3 className="text-sm font-medium">Modo de importe</h3>
+        <h3 className="text-sm font-medium">{t('steps.columnMapper.modeTitle')}</h3>
         <div className="flex items-center gap-6">
           <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
             <input
@@ -52,7 +54,7 @@ export function StepColumnMapper({
               checked={mode === 'signed'}
               onChange={() => setMode('signed')}
             />
-            Una columna con signo
+            {t('steps.columnMapper.modeSigned')}
           </label>
           <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
             <input
@@ -61,24 +63,24 @@ export function StepColumnMapper({
               checked={mode === 'separate'}
               onChange={() => setMode('separate')}
             />
-            Columnas separadas
+            {t('steps.columnMapper.modeSeparate')}
           </label>
         </div>
 
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="space-y-1.5">
-            <Label htmlFor="date-select" className="text-xs">Fecha *</Label>
+            <Label htmlFor="date-select" className="text-xs">{t('steps.columnMapper.date')}</Label>
             <Select
               value={mapping.dateCol >= 0 ? String(mapping.dateCol) : ''}
               onValueChange={(v) => set('dateCol', Number(v))}
             >
               <SelectTrigger id="date-select" className="h-8 text-xs">
-                <SelectValue placeholder="Seleccionar columna..." />
+                <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
               </SelectTrigger>
               <SelectContent>
                 {headers.map((h, i) => (
                   <SelectItem key={i} value={String(i)} className="text-xs">
-                    {h || `Col ${i + 1}`}
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -86,18 +88,18 @@ export function StepColumnMapper({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="desc-select" className="text-xs">Descripción *</Label>
+            <Label htmlFor="desc-select" className="text-xs">{t('steps.columnMapper.description')}</Label>
             <Select
               value={mapping.descCol >= 0 ? String(mapping.descCol) : ''}
               onValueChange={(v) => set('descCol', Number(v))}
             >
               <SelectTrigger id="desc-select" className="h-8 text-xs">
-                <SelectValue placeholder="Seleccionar columna..." />
+                <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
               </SelectTrigger>
               <SelectContent>
                 {headers.map((h, i) => (
                   <SelectItem key={i} value={String(i)} className="text-xs">
-                    {h || `Col ${i + 1}`}
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -106,7 +108,7 @@ export function StepColumnMapper({
 
           {mode === 'signed' ? (
             <div className="space-y-1.5">
-              <Label htmlFor="amount-select" className="text-xs">Importe *</Label>
+              <Label htmlFor="amount-select" className="text-xs">{t('steps.columnMapper.amount')}</Label>
               <Select
                 value={expenseColChosen ? String(mapping.expenseCol) : ''}
                 onValueChange={(v) => {
@@ -115,12 +117,12 @@ export function StepColumnMapper({
                 }}
               >
                 <SelectTrigger id="amount-select" className="h-8 text-xs">
-                  <SelectValue placeholder="Seleccionar columna..." />
+                  <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
                 </SelectTrigger>
                 <SelectContent>
                   {headers.map((h, i) => (
                     <SelectItem key={i} value={String(i)} className="text-xs">
-                      {h || `Col ${i + 1}`}
+                      {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -129,18 +131,18 @@ export function StepColumnMapper({
           ) : (
             <>
               <div className="space-y-1.5">
-                <Label htmlFor="debit-select" className="text-xs">Débito *</Label>
+                <Label htmlFor="debit-select" className="text-xs">{t('steps.columnMapper.debit')}</Label>
                 <Select
                   value={expenseColChosen ? String(mapping.expenseCol) : ''}
                   onValueChange={(v) => set('expenseCol', Number(v))}
                 >
                   <SelectTrigger id="debit-select" className="h-8 text-xs">
-                    <SelectValue placeholder="Seleccionar columna..." />
+                    <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
                   </SelectTrigger>
                   <SelectContent>
                     {headers.map((h, i) => (
                       <SelectItem key={i} value={String(i)} className="text-xs">
-                        {h || `Col ${i + 1}`}
+                        {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -148,18 +150,18 @@ export function StepColumnMapper({
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="credit-select" className="text-xs">Crédito *</Label>
+                <Label htmlFor="credit-select" className="text-xs">{t('steps.columnMapper.credit')}</Label>
                 <Select
                   value={incomeColChosen ? String(mapping.incomeCol) : ''}
                   onValueChange={(v) => set('incomeCol', Number(v))}
                 >
                   <SelectTrigger id="credit-select" className="h-8 text-xs">
-                    <SelectValue placeholder="Seleccionar columna..." />
+                    <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
                   </SelectTrigger>
                   <SelectContent>
                     {headers.map((h, i) => (
                       <SelectItem key={i} value={String(i)} className="text-xs">
-                        {h || `Col ${i + 1}`}
+                        {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -169,15 +171,15 @@ export function StepColumnMapper({
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="balance-select" className="text-xs">Saldo (opcional)</Label>
+            <Label htmlFor="balance-select" className="text-xs">{t('steps.columnMapper.balance')}</Label>
             <Select value={balanceCol} onValueChange={setBalanceCol}>
               <SelectTrigger id="balance-select" className="h-8 text-xs">
-                <SelectValue placeholder="Sin verificar" />
+                <SelectValue placeholder={t('steps.columnMapper.noBalanceCheck')} />
               </SelectTrigger>
               <SelectContent>
                 {headers.map((h, i) => (
                   <SelectItem key={i} value={String(i)} className="text-xs">
-                    {h || `Col ${i + 1}`}
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -187,14 +189,14 @@ export function StepColumnMapper({
 
         {balanceCol !== '' && (
           <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-            Verificaremos que el saldo coincida
+            {t('steps.columnMapper.balanceCheckHint')}
           </p>
         )}
       </div>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={onBack}>Atrás</Button>
-        <Button onClick={onNext} disabled={!canProceed}>Continuar</Button>
+        <Button variant="outline" onClick={onBack}>{t('wizard.back')}</Button>
+        <Button onClick={onNext} disabled={!canProceed}>{t('wizard.next')}</Button>
       </div>
     </div>
   )
