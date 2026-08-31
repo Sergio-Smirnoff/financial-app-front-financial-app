@@ -142,7 +142,27 @@
       "performancePlaceholder": "La evolución de cartera se visualiza en la pestaña Cartera."
     },
     "market": {
-      "addHoldingFor": "Agregar tenencia de {ticker}"
+      "addHoldingFor": "Agregar tenencia de {ticker}",
+      "scanning": "Escaneando el mercado…",
+      "unavailable": "Los datos de mercado no están disponibles en este momento. Probá de nuevo más tarde.",
+      "noOpportunities": "¡Ya tenés todos los activos en tendencia!",
+      "discoveryTitle": "Descubrimiento de mercado",
+      "iolTrending": "IOL en tendencia",
+      "searchPlaceholder": "Buscá un ticker para investigar…",
+      "ranges": {
+        "all": "Todo"
+      },
+      "seriesError": "No se pudo cargar la serie de precios.",
+      "priceChartAria": "Evolución de precio de {ticker}",
+      "evolutionHeading": "Evolución de Cartera",
+      "evolutionEmpty": "Sin datos de evolución disponibles.",
+      "evolutionAria": "Evolución del valor de cartera y costo acumulado",
+      "readOnly": "solo lectura",
+      "summaryEmpty": "Todavía no hay tenencias. Agregá tu primera tenencia en la pestaña Tenencias.",
+      "portfolioTotal": "Total de cartera",
+      "alertsTitle": "Alertas de Mercado",
+      "bankFilterLabel": "Cuenta",
+      "allBanks": "Todos los bancos"
     },
     "operations": {
       "heading": "Últimas Operaciones",
@@ -156,7 +176,10 @@
     "alerts": {
       "tabPlaceholder": "Las alertas de mercado se visualizan en el panel lateral de notificaciones.",
       "onGain": "Alertar a ganancia %",
-      "onLoss": "Alertar a pérdida %"
+      "onLoss": "Alertar a pérdida %",
+      "activeThresholds": "Umbrales activos",
+      "unreadCount": "{count} sin leer",
+      "empty": "Sin alertas activas."
     },
     "holdings": {
       "assetType": {

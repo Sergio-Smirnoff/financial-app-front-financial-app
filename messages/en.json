@@ -142,7 +142,27 @@
       "performancePlaceholder": "Portfolio evolution is shown in the Portfolio tab."
     },
     "market": {
-      "addHoldingFor": "Add holding for {ticker}"
+      "addHoldingFor": "Add holding for {ticker}",
+      "scanning": "Scanning the market…",
+      "unavailable": "Market data is currently unavailable. Please try again later.",
+      "noOpportunities": "You own all trending assets!",
+      "discoveryTitle": "Market discovery",
+      "iolTrending": "IOL trending",
+      "searchPlaceholder": "Search a ticker to research…",
+      "ranges": {
+        "all": "All"
+      },
+      "seriesError": "We couldn't load the price series.",
+      "priceChartAria": "Price evolution for {ticker}",
+      "evolutionHeading": "Portfolio evolution",
+      "evolutionEmpty": "No evolution data available.",
+      "evolutionAria": "Portfolio value and accumulated cost evolution",
+      "readOnly": "read-only",
+      "summaryEmpty": "No holdings yet. Add your first holding in the Holdings tab.",
+      "portfolioTotal": "Portfolio total",
+      "alertsTitle": "Market alerts",
+      "bankFilterLabel": "Account",
+      "allBanks": "All banks"
     },
     "operations": {
       "heading": "Latest operations",
@@ -156,7 +176,10 @@
     "alerts": {
       "tabPlaceholder": "Market alerts are shown in the notifications side panel.",
       "onGain": "Alert on gain %",
-      "onLoss": "Alert on loss %"
+      "onLoss": "Alert on loss %",
+      "activeThresholds": "Active thresholds",
+      "unreadCount": "{count} unread",
+      "empty": "No active alerts."
     },
     "holdings": {
       "assetType": {

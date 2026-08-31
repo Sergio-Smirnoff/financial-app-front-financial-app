@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -39,17 +40,20 @@ function CurrencyPanel({
   currency: string
   divider?: boolean
 }) {
+  const t = useTranslations('investments')
+
   return (
     <div className={cn('space-y-1 px-2', divider && 'sm:border-l sm:border-border sm:pl-6')}>
       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{label}</p>
       <p className="text-2xl font-black tracking-tight">{formatCurrency(totalValue, currency)}</p>
       <PlValue amount={plAmount} percent={plPercent} currency={currency} />
-      <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">read-only</p>
+      <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">{t('market.readOnly')}</p>
     </div>
   )
 }
 
 export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
+  const t = useTranslations('investments')
   const hasArs = summary.totalValueArs > 0 || summary.totalPlArs !== 0
   const hasUsd = summary.totalValueUsd > 0 || summary.totalPlUsd !== 0
 
@@ -58,7 +62,7 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
       <Surface className="bg-gradient-to-b from-muted/40 to-card">
         <CardContent className="py-8">
           <p className="text-sm text-muted-foreground text-center">
-            No holdings yet. Add your first holding in the Holdings tab.
+            {t('market.summaryEmpty')}
           </p>
         </CardContent>
       </Surface>
@@ -69,7 +73,7 @@ export function PortfolioSummaryCard({ summary }: PortfolioSummaryCardProps) {
     <Surface className="bg-gradient-to-b from-muted/40 to-card">
       <CardHeader className="pb-2">
         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          Portfolio Total
+          {t('market.portfolioTotal')}
         </CardTitle>
       </CardHeader>
       <CardContent>

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import type { Section } from '@/lib/api/bff/types'
 
@@ -19,6 +20,8 @@ export interface AlertsRailProps {
 }
 
 export function AlertsRail({ section, isLoading, onRetry }: AlertsRailProps) {
+  const t = useTranslations('investments')
+
   return (
     <SectionState
       section={section}
@@ -32,15 +35,15 @@ export function AlertsRail({ section, isLoading, onRetry }: AlertsRailProps) {
         return (
           <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="section-head">Alertas de Mercado</h3>
+              <h3 className="section-head">{t('market.alertsTitle')}</h3>
               {unreadCount > 0 && (
                 <span className="text-xs font-semibold bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                  {unreadCount} sin leer
+                  {t('alerts.unreadCount', { count: unreadCount })}
                 </span>
               )}
             </div>
             {alerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sin alertas activas.</p>
+              <p className="text-sm text-muted-foreground">{t('alerts.empty')}</p>
             ) : (
               <div className="space-y-3">
                 {alerts.map((a) => (
