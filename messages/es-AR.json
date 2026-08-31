@@ -256,8 +256,47 @@
     "title": "Importaciones",
     "subtitle": "Importación de extractos bancarios y archivos CSV",
     "activeRun": "Importación en progreso",
-    "wizard": "Asistente de Importación",
-    "history": "Historial de Importaciones"
+    "activeRunProcessed": "Procesados: {count}",
+    "activeRunTotal": "Total: {count}",
+    "activeRunProgressLabel": "Progreso de importación de {fileName}",
+    "activeRunUnnamedFile": "archivo",
+    "wizard": {
+      "title": "Asistente de Importación"
+    },
+    "history": {
+      "title": "Historial de Importaciones",
+      "tableLabel": "Historial de archivos importados",
+      "colSourceCbu": "Origen / CBU",
+      "colInserted": "Insertados",
+      "colDuplicates": "Duplicados",
+      "colFailed": "Fallidos",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "colActions": "Acciones",
+      "empty": "No hay historial de importaciones",
+      "status": {
+        "PENDING": "Pendiente",
+        "COMPLETED": "Completada",
+        "PARTIAL": "Parcial",
+        "FAILED": "Fallida",
+        "UNDONE": "Deshecha"
+      },
+      "undo": "Deshacer",
+      "undoBlocked": "Hay movimientos editados manualmente",
+      "undoTitle": "¿Deshacer importación?",
+      "undoDescription": "Se eliminarán los movimientos importados de {fileName} ({count, plural, one {# movimiento} other {# movimientos}}).",
+      "undoCount": "{count, plural, one {# movimiento será removido} other {# movimientos serán removidos}}.",
+      "undoConfirm": "Deshacer importación"
+    },
+    "reconcile": {
+      "railTitle": "Verificación",
+      "title": "Verificación de Conciliación",
+      "empty": "Sin conciliación registrada",
+      "matched": "Saldo coincide",
+      "unmatched": "Saldo no coincide",
+      "expected": "Esperado:",
+      "computed": "Calculado:"
+    }
   },
   "settings": {
     "title": "Ajustes",

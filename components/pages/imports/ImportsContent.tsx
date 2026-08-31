@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { useImportsPage } from '@/lib/hooks/useImportsPage'
 import { SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
 import { ImportHistoryTable } from './ImportHistoryTable'
@@ -30,6 +31,7 @@ function SkeletonCard() {
 }
 
 export function ImportsContent({ query }: ImportsContentProps) {
+  const t = useTranslations('imports')
   const queryClient = useQueryClient()
   const { data, isLoading, refetch } = useImportsPage()
 
@@ -51,8 +53,8 @@ export function ImportsContent({ query }: ImportsContentProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Importaciones</h1>
-          <p className="text-sm text-muted-foreground">Importación de extractos bancarios y archivos CSV</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
@@ -61,7 +63,7 @@ export function ImportsContent({ query }: ImportsContentProps) {
         <div data-testid="active-run-card" className="p-4 rounded-xl border bg-card space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Importación en progreso</span>
+              <span className="text-sm font-medium">{t('activeRun')}</span>
               {activeData.fileName && (
                 <span className="text-sm text-muted-foreground">({activeData.fileName})</span>
               )}
@@ -70,8 +72,8 @@ export function ImportsContent({ query }: ImportsContentProps) {
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Procesados: {activeData.processed ?? 0}</span>
-              <span>Total: {activeData.total ?? 0}</span>
+              <span>{t('activeRunProcessed', { count: activeData.processed ?? 0 })}</span>
+              <span>{t('activeRunTotal', { count: activeData.total ?? 0 })}</span>
             </div>
             <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
               <div
@@ -87,7 +89,9 @@ export function ImportsContent({ query }: ImportsContentProps) {
                 aria-valuenow={activeData.processed ?? 0}
                 aria-valuemin={0}
                 aria-valuemax={activeData.total ?? 100}
-                aria-label={`Progreso de importación de ${activeData.fileName ?? 'archivo'}`}
+                aria-label={t('activeRunProgressLabel', {
+                  fileName: activeData.fileName ?? t('activeRunUnnamedFile'),
+                })}
               />
             </div>
           </div>
@@ -98,7 +102,7 @@ export function ImportsContent({ query }: ImportsContentProps) {
         main={
           <div className="space-y-6">
             <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-              <h3 className="section-head">Asistente de Importación</h3>
+              <h3 className="section-head">{t('wizard.title')}</h3>
               <ImportWizard />
             </div>
 
@@ -116,7 +120,7 @@ export function ImportsContent({ query }: ImportsContentProps) {
         }
         rail={
           <div className="space-y-6">
-            <RailSection title="Verificación">
+            <RailSection title={t('reconcile.railTitle')}>
               <SectionState
                 section={reconciliation}
                 isLoading={isLoading}

@@ -256,8 +256,47 @@
     "title": "Imports",
     "subtitle": "Bank statement PDF and generic CSV import wizard",
     "activeRun": "Import in progress",
-    "wizard": "Import Wizard",
-    "history": "Import History"
+    "activeRunProcessed": "Processed: {count}",
+    "activeRunTotal": "Total: {count}",
+    "activeRunProgressLabel": "Import progress for {fileName}",
+    "activeRunUnnamedFile": "file",
+    "wizard": {
+      "title": "Import wizard"
+    },
+    "history": {
+      "title": "Import History",
+      "tableLabel": "Imported files history",
+      "colSourceCbu": "Source / CBU",
+      "colInserted": "Inserted",
+      "colDuplicates": "Duplicates",
+      "colFailed": "Failed",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "empty": "No import history yet",
+      "status": {
+        "PENDING": "Pending",
+        "COMPLETED": "Completed",
+        "PARTIAL": "Partial",
+        "FAILED": "Failed",
+        "UNDONE": "Undone"
+      },
+      "undo": "Undo",
+      "undoBlocked": "Some transactions were edited manually",
+      "undoTitle": "Undo this import?",
+      "undoDescription": "The transactions imported from {fileName} will be deleted ({count, plural, one {# transaction} other {# transactions}}).",
+      "undoCount": "{count, plural, one {# transaction will be removed} other {# transactions will be removed}}.",
+      "undoConfirm": "Undo import"
+    },
+    "reconcile": {
+      "railTitle": "Verification",
+      "title": "Reconciliation Check",
+      "empty": "No reconciliation recorded",
+      "matched": "Balance matches",
+      "unmatched": "Balance does not match",
+      "expected": "Expected:",
+      "computed": "Computed:"
+    }
   },
   "settings": {
     "title": "Settings",
