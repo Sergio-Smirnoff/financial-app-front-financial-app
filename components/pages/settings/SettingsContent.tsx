@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { useSettingsPage } from '@/lib/hooks/useSettingsPage'
 import { ProfileSection } from './ProfileSection'
 import { SecuritySection } from './SecuritySection'
@@ -20,6 +21,7 @@ export interface SettingsContentProps {
 }
 
 export function SettingsContent({ query }: SettingsContentProps) {
+  const t = useTranslations('settings')
   const queryClient = useQueryClient()
   const { data, isLoading, refetch } = useSettingsPage()
 
@@ -87,21 +89,24 @@ export function SettingsContent({ query }: SettingsContentProps) {
     setUseColors(initialUseColors)
   }
 
-  const navLinks = [
-    { href: '#profile', label: 'Perfil' },
-    { href: '#security', label: 'Seguridad' },
-    { href: '#currency', label: 'Moneda y formato' },
-    { href: '#notifications', label: 'Notificaciones' },
-    { href: '#fees', label: 'Comisiones y costos' },
-    { href: '#data', label: 'Datos' },
-  ]
+  const navLinks = React.useMemo(
+    () => [
+      { href: '#profile', label: t('nav.profile') },
+      { href: '#security', label: t('nav.security') },
+      { href: '#currency', label: t('nav.currency') },
+      { href: '#notifications', label: t('nav.notifications') },
+      { href: '#fees', label: t('nav.fees') },
+      { href: '#data', label: t('nav.data') },
+    ],
+    [t],
+  )
 
   return (
     <div className="space-y-6 pb-20">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Ajustes</h1>
-          <p className="text-sm text-muted-foreground">Preferencias de cuenta, seguridad y configuración</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {profile?.observedAt && <FreshnessStamp observedAt={profile.observedAt} />}
       </div>

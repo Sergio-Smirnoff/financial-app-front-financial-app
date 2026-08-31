@@ -504,9 +504,95 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Account preferences, security and configuration",
-    "profile": "User Profile",
-    "security": "Security & Sessions",
-    "currency": "Currency & Format"
+    "nav": {
+      "profile": "Profile",
+      "security": "Security",
+      "currency": "Currency & format",
+      "notifications": "Notifications",
+      "fees": "Fees & costs",
+      "data": "Data"
+    },
+    "profile": {
+      "title": "User Profile",
+      "email": "Email address",
+      "name": "Name"
+    },
+    "security": {
+      "title": "Security & Sessions",
+      "activeSessions": "Active Sessions",
+      "unknownDevice": "Unknown device",
+      "currentSession": "This session",
+      "revoke": "Sign out",
+      "changePassword": "Change Password",
+      "newPassword": "New password",
+      "minLength": "At least {n} characters",
+      "revokeDialog": {
+        "title": "Sign out this session?",
+        "description": "The session on {device} will be signed out.",
+        "fallbackDevice": "the selected device"
+      }
+    },
+    "currency": {
+      "title": "Currency & Format",
+      "primary": "Primary currency",
+      "secondary": "Secondary currency",
+      "none": "None",
+      "decimals": "Decimals",
+      "twoDecimals": "2 decimals (.00)",
+      "noDecimals": "No decimals",
+      "preview": "Preview: {value}",
+      "sample": {
+        "withDecimals": "$1,284,000.00",
+        "noDecimals": "$1,284,000"
+      },
+      "gainLossColors": {
+        "label": "Use green and red for amounts",
+        "description": "Highlight income in green and expenses in red. When off, colors stay neutral."
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "fallbackLabel": "Notification",
+      "noChannels": "None",
+      "activeChannels": "Active channels: {channels}",
+      "categories": {
+        "PAYMENT_DUE": "Card and installment due dates",
+        "BUDGET": "Budget overrun",
+        "PORTFOLIO_ALERTS": "Portfolio and investment alerts",
+        "SUMMARY": "Periodic summary",
+        "IMPORT_HEALTH": "Import status",
+        "ACCOUNT": "Account alerts",
+        "SYSTEM": "System notifications"
+      }
+    },
+    "fees": {
+      "title": "Fees & Costs",
+      "debitCreditTax": "Debit/credit tax: {pct} % ({rate})",
+      "accounts": "Accounts",
+      "emptyAccounts": "No account fees configured",
+      "cards": "Cards",
+      "emptyCards": "No card fees configured",
+      "brokers": "Brokers & Investments",
+      "emptyBrokers": "No broker fees configured",
+      "scope": {
+        "accounts": "Accounts",
+        "cards": "Cards",
+        "brokers": "Brokers"
+      }
+    },
+    "data": {
+      "title": "Data & Export",
+      "soon": "Coming soon",
+      "deleteAccount": "Delete account",
+      "export": {
+        "label": "Data export",
+        "description": "Download your full history of transactions and accounts as CSV.",
+        "button": "Export data (CSV)"
+      },
+      "delete": {
+        "description": "Permanently delete your user and all associated data."
+      }
+    }
   },
   "auth": {
     "login": "Sign In",

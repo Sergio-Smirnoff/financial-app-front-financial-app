@@ -504,9 +504,95 @@
   "settings": {
     "title": "Ajustes",
     "subtitle": "Preferencias de cuenta, seguridad y configuración",
-    "profile": "Perfil de Usuario",
-    "security": "Seguridad y Sesiones",
-    "currency": "Moneda y Formato"
+    "nav": {
+      "profile": "Perfil",
+      "security": "Seguridad",
+      "currency": "Moneda y formato",
+      "notifications": "Notificaciones",
+      "fees": "Comisiones y costos",
+      "data": "Datos"
+    },
+    "profile": {
+      "title": "Perfil de Usuario",
+      "email": "Correo Electrónico",
+      "name": "Nombre"
+    },
+    "security": {
+      "title": "Seguridad y Sesiones",
+      "activeSessions": "Sesiones Activas",
+      "unknownDevice": "Dispositivo desconocido",
+      "currentSession": "Esta sesión",
+      "revoke": "Cerrar sesión",
+      "changePassword": "Cambiar Contraseña",
+      "newPassword": "Nueva contraseña",
+      "minLength": "Mínimo {n} caracteres",
+      "revokeDialog": {
+        "title": "¿Cerrar sesión?",
+        "description": "Se cerrará la sesión en {device}.",
+        "fallbackDevice": "dispositivo seleccionado"
+      }
+    },
+    "currency": {
+      "title": "Moneda y Formato",
+      "primary": "Moneda principal",
+      "secondary": "Moneda secundaria",
+      "none": "Ninguna",
+      "decimals": "Decimales",
+      "twoDecimals": "2 decimales (,00)",
+      "noDecimals": "Sin decimales",
+      "preview": "Vista previa: {value}",
+      "sample": {
+        "withDecimals": "$ 1.284.000,00",
+        "noDecimals": "$ 1.284.000"
+      },
+      "gainLossColors": {
+        "label": "Usar verde y rojo para importes",
+        "description": "Resaltar ingresos en verde y egresos en rojo. Al desactivar, los colores se mantienen neutros."
+      }
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "fallbackLabel": "Notificación",
+      "noChannels": "Ninguno",
+      "activeChannels": "Canales activos: {channels}",
+      "categories": {
+        "PAYMENT_DUE": "Vencimiento de tarjetas y cuotas",
+        "BUDGET": "Exceso de presupuesto",
+        "PORTFOLIO_ALERTS": "Alertas de portafolio e inversiones",
+        "SUMMARY": "Resumen periódico",
+        "IMPORT_HEALTH": "Estado de importaciones",
+        "ACCOUNT": "Alertas de cuenta",
+        "SYSTEM": "Notificaciones del sistema"
+      }
+    },
+    "fees": {
+      "title": "Comisiones y Costos",
+      "debitCreditTax": "Impuesto débito/crédito: {pct} % ({rate})",
+      "accounts": "Cuentas",
+      "emptyAccounts": "Sin comisiones de cuentas configuradas",
+      "cards": "Tarjetas",
+      "emptyCards": "Sin comisiones de tarjetas configuradas",
+      "brokers": "Brokers e Inversiones",
+      "emptyBrokers": "Sin comisiones de brokers configuradas",
+      "scope": {
+        "accounts": "Cuentas",
+        "cards": "Tarjetas",
+        "brokers": "Brokers"
+      }
+    },
+    "data": {
+      "title": "Datos y Exportación",
+      "soon": "Próximamente",
+      "deleteAccount": "Eliminar cuenta",
+      "export": {
+        "label": "Exportación de datos",
+        "description": "Descargar todo el historial de movimientos y cuentas en formato CSV.",
+        "button": "Exportar datos (CSV)"
+      },
+      "delete": {
+        "description": "Eliminar permanentemente tu usuario y todos los datos asociados."
+      }
+    }
   },
   "auth": {
     "login": "Iniciar Sesión",

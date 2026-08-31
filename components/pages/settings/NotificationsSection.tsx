@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { ToggleRow } from '@/components/ui-kit/controls/Toolbar'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import type { Section } from '@/lib/api/bff/types'
@@ -14,17 +15,24 @@ export interface NotificationsSectionProps {
   onRetry?: () => void
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  PAYMENT_DUE: 'Vencimiento de tarjetas y cuotas',
-  BUDGET: 'Exceso de presupuesto',
-  PORTFOLIO_ALERTS: 'Alertas de portafolio e inversiones',
-  SUMMARY: 'Resumen periódico',
-  IMPORT_HEALTH: 'Estado de importaciones',
-  ACCOUNT: 'Alertas de cuenta',
-  SYSTEM: 'Notificaciones del sistema',
-}
+const CATEGORY_KEYS = [
+  'PAYMENT_DUE',
+  'BUDGET',
+  'PORTFOLIO_ALERTS',
+  'SUMMARY',
+  'IMPORT_HEALTH',
+  'ACCOUNT',
+  'SYSTEM',
+] as const
 
 export function NotificationsSection({ section, isLoading, onRetry }: NotificationsSectionProps) {
+  const t = useTranslations('settings')
+
+  const categoryLabels: Record<string, string> = React.useMemo(
+    () => Object.fromEntries(CATEGORY_KEYS.map((key) => [key, t(`notifications.categories.${key}`)])),
+    [t],
+  )
+
   return (
     <SectionState
       section={section}
@@ -34,12 +42,14 @@ export function NotificationsSection({ section, isLoading, onRetry }: Notificati
     >
       {(prefs: any) => (
         <div id="notifications" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
-          <h3 className="section-head">Notificaciones</h3>
+          <h3 className="section-head">{t('notifications.title')}</h3>
 
           <div className="space-y-4">
             {((prefs as any[]) ?? []).map((pref: any) => {
-              const label = CATEGORY_LABELS[pref.category ?? ''] ?? pref.category ?? 'Notificación'
-              const channelsText = pref.channels?.length ? pref.channels.join(', ') : 'Ninguno'
+              const label = categoryLabels[pref.category ?? ''] ?? pref.category ?? t('notifications.fallbackLabel')
+              const channelsText = pref.channels?.length
+                ? pref.channels.join(', ')
+                : t('notifications.noChannels')
               return (
                 <div
                   key={pref.category}
@@ -49,7 +59,7 @@ export function NotificationsSection({ section, isLoading, onRetry }: Notificati
                   <ToggleRow
                     id={`notification-toggle-${pref.category}`}
                     label={label}
-                    description={`Canales activos: ${channelsText}`}
+                    description={t('notifications.activeChannels', { channels: channelsText })}
                     checked={(pref.channels?.length ?? 0) > 0}
                     onCheckedChange={() => {}}
                   />
