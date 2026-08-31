@@ -2,6 +2,7 @@
 
 import React, { useCallback } from 'react'
 import { useQueryState } from 'nuqs'
+import { useTranslations } from 'next-intl'
 import { FilterBar, FilterChip } from '@/components/ui-kit/controls/FilterBar'
 import { formatPaymentMethod } from '@/lib/format'
 import { SearchBar } from '@/components/ui-kit/controls/SearchBar'
@@ -17,6 +18,7 @@ export interface TransactionFiltersProps {
 }
 
 export function TransactionFilters({ options }: TransactionFiltersProps) {
+  const t = useTranslations('transactions')
   const [q, setQ] = useQueryState('q', { defaultValue: '' })
   const [category, setCategory] = useQueryState('categories', { defaultValue: '' })
   const [account, setAccount] = useQueryState('accounts', { defaultValue: '' })
@@ -36,16 +38,16 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   if (q) {
     activeChips.push({
       key: 'q',
-      label: `Búsqueda: ${q}`,
+      label: t('filters.chipSearch', { q }),
       onRemove: () => { setQ(null); setPage('1') },
     })
   }
 
   if (category) {
-    const catName = options?.categories?.find((c) => String(c.id) === category)?.name || (category === 'none' ? 'Sin categorizar' : category)
+    const catName = options?.categories?.find((c) => String(c.id) === category)?.name || (category === 'none' ? t('uncategorisedValue') : category)
     activeChips.push({
       key: 'cat',
-      label: `Categoría: ${catName}`,
+      label: t('filters.chipCategory', { name: catName }),
       onRemove: () => { setCategory(null); setPage('1') },
     })
   }
@@ -54,7 +56,7 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
     const accAlias = options?.accounts?.find((a) => a.cbu === account)?.alias || account
     activeChips.push({
       key: 'acc',
-      label: `Cuenta: ${accAlias}`,
+      label: t('filters.chipAccount', { name: accAlias }),
       onRemove: () => { setAccount(null); setPage('1') },
     })
   }
@@ -62,7 +64,7 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
   if (method) {
     activeChips.push({
       key: 'method',
-      label: `Método: ${formatPaymentMethod(method)}`,
+      label: t('filters.chipMethod', { name: formatPaymentMethod(method) }),
       onRemove: () => { setMethod(null); setPage('1') },
     })
   }
@@ -75,11 +77,11 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
         <div className="flex flex-wrap items-center gap-2">
           <select
             value={account}
-            aria-label="Filtrar por cuenta"
+            aria-label={t('filters.byAccount')}
             onChange={(e) => { setAccount(e.target.value || null); setPage('1') }}
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="">Todas las cuentas</option>
+            <option value="">{t('filters.allAccounts')}</option>
             {(options?.accounts ?? []).map((acc) => (
               <option key={acc.cbu} value={acc.cbu}>
                 {acc.alias || acc.cbu}
@@ -89,12 +91,12 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
 
           <select
             value={category}
-            aria-label="Filtrar por categoría"
+            aria-label={t('filters.byCategory')}
             onChange={(e) => { setCategory(e.target.value || null); setPage('1') }}
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="">Todas las categorías</option>
-            <option value="none">Sin categorizar</option>
+            <option value="">{t('filters.allCategories')}</option>
+            <option value="none">{t('uncategorisedValue')}</option>
             {(options?.categories ?? []).map((cat) => (
               <option key={cat.id} value={String(cat.id)}>
                 {cat.name}
@@ -104,11 +106,11 @@ export function TransactionFilters({ options }: TransactionFiltersProps) {
 
           <select
             value={method}
-            aria-label="Filtrar por método"
+            aria-label={t('filters.byMethod')}
             onChange={(e) => { setMethod(e.target.value || null); setPage('1') }}
             className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <option value="">Todos los métodos</option>
+            <option value="">{t('filters.allMethods')}</option>
             {(options?.methods ?? []).map((m) => (
               <option key={m} value={m}>
                 {formatPaymentMethod(m)}

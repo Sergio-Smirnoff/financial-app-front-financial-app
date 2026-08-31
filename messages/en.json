@@ -136,9 +136,54 @@
   "transactions": {
     "title": "Transactions",
     "subtitle": "Transaction history, income, expenses and categorization",
-    "uncategorised": "Uncategorized transactions",
     "method": "Method",
-    "manual": "Manual"
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# uncategorised transaction} other {# uncategorised transactions}}",
+    "uncategorisedTitle": "Uncategorized transactions",
+    "uncategorisedBody": "{count, plural, one {You have # uncategorised transaction.} other {You have # uncategorised transactions.}}",
+    "uncategorisedLink": "See uncategorised →",
+    "uncategorisedValue": "Uncategorized",
+    "summary": {
+      "income": "Income",
+      "expense": "Expenses",
+      "net": "Net",
+      "count": "Transactions"
+    },
+    "filters": {
+      "byAccount": "Filter by account",
+      "allAccounts": "All accounts",
+      "byCategory": "Filter by category",
+      "allCategories": "All categories",
+      "byMethod": "Filter by method",
+      "allMethods": "All methods",
+      "chipSearch": "Search: {q}",
+      "chipCategory": "Category: {name}",
+      "chipAccount": "Account: {name}",
+      "chipMethod": "Method: {name}"
+    },
+    "table": {
+      "caption": "Transactions table",
+      "date": "Date",
+      "description": "Description",
+      "account": "Account",
+      "category": "Category",
+      "amount": "Amount"
+    },
+    "detail": {
+      "title": "Transaction detail",
+      "amount": "Amount",
+      "account": "Account",
+      "category": "Category",
+      "note": "Note",
+      "origin": "Origin",
+      "run": "Run #{id}",
+      "status": "Status",
+      "reconciled": "Reconciled",
+      "pending": "Pending"
+    },
+    "bulk": {
+      "categorise": "Categorize"
+    }
   },
   "categories": {
     "title": "Categories & Budgets",

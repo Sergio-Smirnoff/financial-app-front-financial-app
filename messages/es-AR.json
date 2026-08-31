@@ -136,9 +136,54 @@
   "transactions": {
     "title": "Movimientos",
     "subtitle": "Historial de ingresos, egresos y categorización",
-    "uncategorised": "Movimientos sin categorizar",
     "method": "Método",
-    "manual": "Manual"
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# movimiento sin categorizar} other {# movimientos sin categorizar}}",
+    "uncategorisedTitle": "Movimientos sin categorizar",
+    "uncategorisedBody": "{count, plural, one {Tenés # movimiento sin categorizar.} other {Tenés # movimientos sin categorizar.}}",
+    "uncategorisedLink": "Ver sin categorizar →",
+    "uncategorisedValue": "Sin categorizar",
+    "summary": {
+      "income": "Ingresos",
+      "expense": "Egresos",
+      "net": "Neto",
+      "count": "Movimientos"
+    },
+    "filters": {
+      "byAccount": "Filtrar por cuenta",
+      "allAccounts": "Todas las cuentas",
+      "byCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "byMethod": "Filtrar por método",
+      "allMethods": "Todos los métodos",
+      "chipSearch": "Búsqueda: {q}",
+      "chipCategory": "Categoría: {name}",
+      "chipAccount": "Cuenta: {name}",
+      "chipMethod": "Método: {name}"
+    },
+    "table": {
+      "caption": "Tabla de movimientos",
+      "date": "Fecha",
+      "description": "Descripción",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "amount": "Importe"
+    },
+    "detail": {
+      "title": "Detalle del movimiento",
+      "amount": "Importe",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "note": "Nota",
+      "origin": "Origen",
+      "run": "Run #{id}",
+      "status": "Estado",
+      "reconciled": "Conciliado",
+      "pending": "Pendiente"
+    },
+    "bulk": {
+      "categorise": "Categorizar"
+    }
   },
   "categories": {
     "title": "Categorías y Presupuestos",

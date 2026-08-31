@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SidePanel } from '@/components/ui-kit/overlay/SidePanel'
 import { DetailList } from '@/components/ui-kit/row/DetailList'
 import { Money } from '@/components/ui-kit/money/Money'
@@ -15,6 +16,7 @@ export interface TransactionDetailPanelProps {
 }
 
 export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionDetailPanelProps) {
+  const t = useTranslations('transactions')
   const targetId = selectedId ?? id ?? null
   const handleClose = onClose ?? (() => {})
   const { data: bff } = useTransactionDetail(targetId)
@@ -26,7 +28,7 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
   const items = tx
     ? [
         {
-          term: 'Importe',
+          term: t('detail.amount'),
           detail: (
             <Money
               value={tx.amount}
@@ -34,24 +36,24 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
             />
           ),
         },
-        { term: 'Cuenta', detail: tx.accountAlias || tx.accountCbu || '–' },
-        { term: 'Categoría', detail: tx.categoryName || 'Sin categorizar' },
-        { term: 'Método', detail: formatPaymentMethod(tx.method) },
-        { term: 'Nota', detail: tx.note && tx.note !== 'null' ? tx.note : '–' },
+        { term: t('detail.account'), detail: tx.accountAlias || tx.accountCbu || '–' },
+        { term: t('detail.category'), detail: tx.categoryName || t('uncategorisedValue') },
+        { term: t('method'), detail: formatPaymentMethod(tx.method) },
+        { term: t('detail.note'), detail: tx.note && tx.note !== 'null' ? tx.note : '–' },
         {
-          term: 'Origen',
+          term: t('detail.origin'),
           detail: (
             <span data-testid="tx-origin-file">
-              {origin?.fileName || (origin ? `Run #${origin.runId ?? ''}` : 'Manual')}
+              {origin?.fileName || (origin ? t('detail.run', { id: origin.runId ?? '' }) : t('manual'))}
             </span>
           ),
         },
         {
-          term: 'Estado',
+          term: t('detail.status'),
           detail: (
             <StatusDot
               tone={origin?.reconciled ? 'ok' : 'neutral'}
-              label={origin?.reconciled ? 'Conciliado' : 'Pendiente'}
+              label={origin?.reconciled ? t('detail.reconciled') : t('detail.pending')}
             />
           ),
         },
@@ -62,7 +64,7 @@ export function TransactionDetailPanel({ selectedId, id, onClose }: TransactionD
     <SidePanel
       open={targetId !== null && targetId !== undefined}
       onClose={handleClose}
-      title={tx?.description || 'Detalle del movimiento'}
+      title={tx?.description || t('detail.title')}
     >
       <div className="space-y-4 pt-2">
         <DetailList items={items} />

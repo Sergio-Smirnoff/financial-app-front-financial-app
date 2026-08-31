@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { useQueryState, parseAsInteger } from 'nuqs'
+import { useTranslations } from 'next-intl'
 import { useTransactionsPage } from '@/lib/hooks/useTransactionsPage'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Pagination } from '@/components/ui-kit/table/Pagination'
@@ -30,6 +31,7 @@ const SkeletonKpi = () => (
 )
 
 export function TransactionsContent({ query = { currency: 'ARS', secondary: 'none' } }: TransactionsContentProps) {
+  const t = useTranslations('transactions')
   const queryClient = useQueryClient()
   const [q] = useQueryState('q', { defaultValue: '' })
   const [category] = useQueryState('categories', { defaultValue: '' })
@@ -77,8 +79,8 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Movimientos</h1>
-          <p className="text-sm text-muted-foreground">Historial de ingresos, egresos y categorización</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {observedAt && <FreshnessStamp observedAt={observedAt} />}
       </div>
@@ -91,25 +93,25 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
         {(s) => (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Ingresos</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('summary.income')}</p>
               <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-income">
                 <Money value={s.income} tone="gain" />
               </p>
             </div>
             <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Egresos</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('summary.expense')}</p>
               <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-expense">
                 <Money value={s.expense} tone="loss" />
               </p>
             </div>
             <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Neto</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('summary.net')}</p>
               <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-net">
                 <Money value={s.net} tone="neutral" />
               </p>
             </div>
             <div className="rounded-xl border bg-card p-4 text-card-foreground shadow-sm">
-              <p className="text-xs font-medium text-muted-foreground">Movimientos</p>
+              <p className="text-xs font-medium text-muted-foreground">{t('summary.count')}</p>
               <p className="text-xl font-bold tracking-tight mt-1" data-testid="tx-summary-count">
                 {s.count ?? 0}
               </p>

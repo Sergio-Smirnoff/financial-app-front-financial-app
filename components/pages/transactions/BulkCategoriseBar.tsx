@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { BulkActionBar } from '@/components/ui-kit/table/BulkActionBar'
 
 export interface BulkCategoriseBarProps {
@@ -11,6 +12,7 @@ export interface BulkCategoriseBarProps {
 }
 
 export function BulkCategoriseBar({ count, categories, onCategorise, onClear }: BulkCategoriseBarProps) {
+  const t = useTranslations('transactions')
   const [open, setOpen] = useState(false)
 
   if (count <= 0) return null
@@ -21,7 +23,7 @@ export function BulkCategoriseBar({ count, categories, onCategorise, onClear }: 
         count={count}
         actions={[
           {
-            label: 'Categorizar',
+            label: t('bulk.categorise'),
             onSelect: () => setOpen((prev) => !prev),
           },
         ]}
