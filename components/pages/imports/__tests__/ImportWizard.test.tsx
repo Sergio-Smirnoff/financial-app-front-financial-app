@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { NextIntlClientProvider } from 'next-intl'
 import { StepColumnMapper } from '../steps/StepColumnMapper'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
 
 if (typeof window !== 'undefined') {
   if (!Element.prototype.hasPointerCapture) {
@@ -19,6 +21,12 @@ if (typeof window !== 'undefined') {
 const headers = ['fecha', 'descripcion', 'monto', 'debito', 'credito', 'saldo']
 const rows = [['2026-08-01', 'Super', '100', '100', '0', '5000']]
 
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    {children}
+  </NextIntlClientProvider>
+)
+
 describe('StepColumnMapper', () => {
   it('accepts a single signed amount column', async () => {
     const user = userEvent.setup()
@@ -33,7 +41,8 @@ describe('StepColumnMapper', () => {
         onMappingChange={vi.fn()}
         onNext={onNext}
         onBack={vi.fn()}
-      />
+      />,
+      { wrapper }
     )
 
     await user.click(screen.getByRole('radio', { name: 'Una columna con signo' }))
@@ -50,7 +59,8 @@ describe('StepColumnMapper', () => {
         onMappingChange={vi.fn()}
         onNext={vi.fn()}
         onBack={vi.fn()}
-      />
+      />,
+      { wrapper }
     )
 
     await user.click(screen.getByRole('radio', { name: 'Columnas separadas' }))
@@ -68,7 +78,8 @@ describe('StepColumnMapper', () => {
         onMappingChange={vi.fn()}
         onNext={vi.fn()}
         onBack={vi.fn()}
-      />
+      />,
+      { wrapper }
     )
 
     await user.click(screen.getByLabelText('Saldo (opcional)'))
@@ -85,7 +96,8 @@ describe('StepColumnMapper', () => {
         onMappingChange={vi.fn()}
         onNext={vi.fn()}
         onBack={vi.fn()}
-      />
+      />,
+      { wrapper }
     )
 
     expect(screen.getByRole('button', { name: 'Continuar' })).toBeDisabled()

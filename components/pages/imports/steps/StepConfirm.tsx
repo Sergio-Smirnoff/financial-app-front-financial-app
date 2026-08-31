@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -23,33 +24,36 @@ interface Props {
   onBack: () => void
 }
 
-const FILE_TYPE_LABELS: Record<ImportFileType, string> = {
-  VISA_PDF: 'ICBC Visa Statement',
-  BANK_PDF: 'ICBC Bank Movements',
-  CSV: 'Generic CSV',
+const FILE_TYPE_LABEL_KEYS: Record<ImportFileType, string> = {
+  VISA_PDF: 'steps.fileTypes.VISA_PDF',
+  BANK_PDF: 'steps.fileTypes.BANK_PDF',
+  CSV: 'steps.fileTypes.CSV',
 }
 
 export function StepConfirm({
   file, fileType, bank, account, card, usdAccount,
   totalCount, currencyCounts, isLoading, onConfirm, onBack,
 }: Props) {
+  const t = useTranslations('imports')
+  const tc = useTranslations('common')
+
   const rows: { label: string; value: string }[] = [
-    { label: 'File', value: file.name },
-    { label: 'Type', value: FILE_TYPE_LABELS[fileType] },
-    { label: 'Bank', value: bank?.name ?? '—' },
+    { label: tc('file'), value: file.name },
+    { label: t('steps.confirm.type'), value: t(FILE_TYPE_LABEL_KEYS[fileType]) },
+    { label: t('steps.confirm.bank'), value: bank?.name ?? '—' },
   ]
 
   if (fileType === 'VISA_PDF') {
     rows.push(
-      { label: 'Card', value: card ? `${card.displayName} ···${card.cardNumber.slice(-4)}` : '—' },
-      { label: 'ARS Account', value: account?.name ?? '—' },
+      { label: t('steps.confirm.card'), value: card ? `${card.displayName} ···${card.cardNumber.slice(-4)}` : '—' },
+      { label: t('steps.confirm.arsAccount'), value: account?.name ?? '—' },
     )
-    if (usdAccount) rows.push({ label: 'USD Account', value: usdAccount.name })
+    if (usdAccount) rows.push({ label: t('steps.confirm.usdAccount'), value: usdAccount.name })
   } else {
-    rows.push({ label: 'Account', value: account ? `${account.name} (${account.currency})` : '—' })
+    rows.push({ label: t('steps.confirm.account'), value: account ? `${account.name} (${account.currency})` : '—' })
   }
 
-  rows.push({ label: 'Transactions to import', value: String(totalCount) })
+  rows.push({ label: t('steps.confirm.transactionsToImport'), value: String(totalCount) })
 
   if (currencyCounts && fileType === 'VISA_PDF') {
     rows.push(
@@ -57,7 +61,7 @@ export function StepConfirm({
       { label: 'USD', value: String(currencyCounts.USD) },
     )
     if (currencyCounts.skipped > 0)
-      rows.push({ label: 'Skipped (unsupported currency)', value: String(currencyCounts.skipped) })
+      rows.push({ label: t('steps.confirm.skippedUnsupported'), value: String(currencyCounts.skipped) })
   }
 
   return (
@@ -77,9 +81,9 @@ export function StepConfirm({
       </Card>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={onBack} disabled={isLoading}>Back</Button>
+        <Button variant="outline" onClick={onBack} disabled={isLoading}>{t('wizard.back')}</Button>
         <Button onClick={onConfirm} disabled={isLoading}>
-          {isLoading ? 'Importing…' : 'Import →'}
+          {isLoading ? t('steps.confirm.importing') : t('steps.confirm.confirm')}
         </Button>
       </div>
     </div>

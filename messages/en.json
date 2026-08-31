@@ -256,8 +256,134 @@
     "title": "Imports",
     "subtitle": "Bank statement PDF and generic CSV import wizard",
     "activeRun": "Import in progress",
-    "wizard": "Import Wizard",
-    "history": "Import History"
+    "activeRunProcessed": "Processed: {count}",
+    "activeRunTotal": "Total: {count}",
+    "activeRunProgressLabel": "Import progress for {fileName}",
+    "activeRunUnnamedFile": "file",
+    "wizard": {
+      "title": "Import wizard",
+      "heading": "Import transactions",
+      "back": "Back",
+      "next": "Next",
+      "toastParseFailed": "Failed to parse file",
+      "toastImported": "{count, plural, one {Imported # transaction} other {Imported # transactions}}",
+      "toastImportFailed": "Import failed",
+      "toastFinished": "Import finished",
+      "cols": {
+        "date": "Date",
+        "description": "Description",
+        "currency": "Currency"
+      },
+      "duplicates": {
+        "title": "Possible duplicates found",
+        "srDescription": "Review duplicate rows detected in this import.",
+        "body": "{count, plural, one {# transaction already exists} other {# transactions already exist}} with the same date and amount. Select which ones to import anyway.",
+        "skipAll": "Skip all",
+        "importChecked": "Import checked ({count})",
+        "importAll": "Import all",
+        "toastResolveFailed": "Failed to resolve duplicates"
+      }
+    },
+    "history": {
+      "title": "Import History",
+      "tableLabel": "Imported files history",
+      "colSourceCbu": "Source / CBU",
+      "colInserted": "Inserted",
+      "colDuplicates": "Duplicates",
+      "colFailed": "Failed",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "empty": "No import history yet",
+      "status": {
+        "PENDING": "Pending",
+        "COMPLETED": "Completed",
+        "PARTIAL": "Partial",
+        "FAILED": "Failed",
+        "UNDONE": "Undone"
+      },
+      "undo": "Undo",
+      "undoBlocked": "Some transactions were edited manually",
+      "undoTitle": "Undo this import?",
+      "undoDescription": "The transactions imported from {fileName} will be deleted ({count, plural, one {# transaction} other {# transactions}}).",
+      "undoCount": "{count, plural, one {# transaction will be removed} other {# transactions will be removed}}.",
+      "undoConfirm": "Undo import"
+    },
+    "reconcile": {
+      "railTitle": "Verification",
+      "title": "Reconciliation Check",
+      "empty": "No reconciliation recorded",
+      "matched": "Balance matches",
+      "unmatched": "Balance does not match",
+      "expected": "Expected:",
+      "computed": "Computed:"
+    },
+    "steps": {
+      "fileTypes": {
+        "VISA_PDF": "ICBC Visa statement",
+        "BANK_PDF": "ICBC bank movements",
+        "CSV": "Generic CSV"
+      },
+      "fileSelect": {
+        "question": "What are you importing?",
+        "hintCsv": "Any CSV with headers",
+        "parsing": "Parsing file…",
+        "dropPrompt": "Drop file here or click to browse",
+        "acceptedFormats": "{formats} files only"
+      },
+      "accountLink": {
+        "bank": "Bank",
+        "selectBank": "Select bank…",
+        "card": "Card",
+        "selectCard": "Select card…",
+        "selectBankFirst": "Select a bank first",
+        "arsAccount": "ARS account",
+        "selectArsAccount": "Select ARS account…",
+        "usdAccount": "USD account",
+        "selectUsdAccount": "Select USD account (optional)…",
+        "usdHint": "{count, plural, one {# USD transaction found} other {# USD transactions found}}. If no account is selected, they will be skipped.",
+        "account": "Account",
+        "selectAccount": "Select account…"
+      },
+      "columnMapper": {
+        "modeTitle": "Amount mode",
+        "modeSigned": "One signed column",
+        "modeSeparate": "Separate columns",
+        "date": "Date *",
+        "description": "Description *",
+        "amount": "Amount *",
+        "debit": "Debit *",
+        "credit": "Credit *",
+        "balance": "Balance (optional)",
+        "selectColumn": "Select column...",
+        "colFallback": "Col {index}",
+        "noBalanceCheck": "Not checked",
+        "balanceCheckHint": "We will verify that the balance matches"
+      },
+      "pdfPreview": {
+        "summary": "{count, plural, one {Found <strong>#</strong> transaction} other {Found <strong>#</strong> transactions}}. {shown, plural, one {Showing the first one} other {Showing the first #}}.",
+        "arsCount": "ARS: {count}",
+        "usdCount": "USD: {count}",
+        "skippedCount": "Skipped: {count}",
+        "colType": "Type",
+        "type": {
+          "INCOME": "Income",
+          "EXPENSE": "Expense"
+        }
+      },
+      "confirm": {
+        "type": "Type",
+        "bank": "Bank",
+        "card": "Card",
+        "arsAccount": "ARS account",
+        "usdAccount": "USD account",
+        "account": "Account",
+        "transactionsToImport": "Transactions to import",
+        "skippedUnsupported": "Skipped (unsupported currency)",
+        "importing": "Importing…",
+        "confirm": "Import →"
+      }
+    }
   },
   "settings": {
     "title": "Settings",
