@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { DueRow } from '@/components/ui-kit/row/ListRow'
@@ -17,6 +18,8 @@ export interface UpcomingRailProps {
 }
 
 export function UpcomingRail({ section, isLoading, onRetry }: UpcomingRailProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -26,9 +29,9 @@ export function UpcomingRail({ section, isLoading, onRetry }: UpcomingRailProps)
     >
       {(data) => (
         <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-          <h3 className="section-head">Próximos Vencimientos</h3>
+          <h3 className="section-head">{t('upcomingTitle')}</h3>
           {data.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sin vencimientos próximos.</p>
+            <p className="text-sm text-muted-foreground">{t('upcomingEmpty')}</p>
           ) : (
             <div className="space-y-3">
               {data.map((item) => (

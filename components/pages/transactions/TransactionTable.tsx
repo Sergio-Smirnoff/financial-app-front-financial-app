@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { DataTable } from '@/components/ui-kit/table/DataTable'
 import { Money } from '@/components/ui-kit/money/Money'
 import type { TransactionRow } from '@/lib/api/bff/types'
@@ -17,46 +18,6 @@ export interface TransactionTableProps {
   onRowClick?: (row: TransactionRow) => void
 }
 
-const columns: ColumnDef<TransactionRow, unknown>[] = [
-  {
-    id: 'date',
-    accessorKey: 'date',
-    header: 'Fecha',
-    enableSorting: true,
-    cell: ({ getValue }) => <span data-testid="tx-row">{String(getValue() ?? '')}</span>,
-  },
-  {
-    id: 'description',
-    accessorKey: 'description',
-    header: 'Descripción',
-    enableSorting: true,
-  },
-  {
-    id: 'account',
-    accessorFn: (row) => row.accountAlias || row.accountCbu || '–',
-    header: 'Cuenta',
-  },
-  {
-    id: 'category',
-    accessorFn: (row) => row.categoryName || 'Sin categorizar',
-    header: 'Categoría',
-  },
-  {
-    id: 'method',
-    accessorFn: (row) => formatPaymentMethod(row.method),
-    header: 'Método',
-  },
-  {
-    id: 'amount',
-    accessorFn: (row) => row,
-    header: 'Importe',
-    cell: ({ getValue }) => {
-      const row = getValue() as TransactionRow
-      return <Money value={row.amount} tone={row.direction === 'IN' ? 'gain' : 'loss'} />
-    },
-  },
-]
-
 export function TransactionTable({
   rows,
   selection,
@@ -65,11 +26,56 @@ export function TransactionTable({
   onSortingChange,
   onRowClick,
 }: TransactionTableProps) {
+  const t = useTranslations('transactions')
+
+  const columns: ColumnDef<TransactionRow, unknown>[] = React.useMemo(
+    () => [
+      {
+        id: 'date',
+        accessorKey: 'date',
+        header: t('table.date'),
+        enableSorting: true,
+        cell: ({ getValue }) => <span data-testid="tx-row">{String(getValue() ?? '')}</span>,
+      },
+      {
+        id: 'description',
+        accessorKey: 'description',
+        header: t('table.description'),
+        enableSorting: true,
+      },
+      {
+        id: 'account',
+        accessorFn: (row) => row.accountAlias || row.accountCbu || '–',
+        header: t('table.account'),
+      },
+      {
+        id: 'category',
+        accessorFn: (row) => row.categoryName || t('uncategorisedValue'),
+        header: t('table.category'),
+      },
+      {
+        id: 'method',
+        accessorFn: (row) => formatPaymentMethod(row.method),
+        header: t('method'),
+      },
+      {
+        id: 'amount',
+        accessorFn: (row) => row,
+        header: t('table.amount'),
+        cell: ({ getValue }) => {
+          const row = getValue() as TransactionRow
+          return <Money value={row.amount} tone={row.direction === 'IN' ? 'gain' : 'loss'} />
+        },
+      },
+    ],
+    [t],
+  )
+
   return (
     <DataTable
       columns={columns}
       rows={rows}
-      caption="Tabla de movimientos"
+      caption={t('table.caption')}
       selection={selection}
       onSelectionChange={onSelectionChange}
       sorting={sorting}

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { DataTable } from '@/components/ui-kit/table/DataTable'
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,7 @@ export function RulesTab({
   onAddRule,
   onDeleteRule,
 }: RulesTabProps) {
+  const t = useTranslations('categories')
   const [newRuleOpen, setNewRuleOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<number | null>(null)
 
@@ -45,22 +47,22 @@ export function RulesTab({
     {
       id: 'matcher',
       accessorKey: 'matcher',
-      header: 'Coincide con',
+      header: t('rules.matches'),
     },
     {
       id: 'categoryName',
       accessorKey: 'categoryName',
-      header: 'Categoría asignada',
+      header: t('rules.assigned'),
     },
     {
       id: 'priority',
       accessorFn: (row) => row.priority ?? 0,
-      header: 'Prioridad',
+      header: t('rules.priority'),
     },
     {
       id: 'actions',
       accessorFn: (row) => row,
-      header: 'Acciones',
+      header: t('rules.actionsHeader'),
       cell: ({ getValue }) => {
         const row = getValue() as RuleRowResponse
         return (
@@ -74,7 +76,7 @@ export function RulesTab({
                 if (row.id != null) setDeleteId(row.id)
               }}
             >
-              Acciones
+              {t('rules.actionsHeader')}
             </Button>
           </div>
         )
@@ -92,13 +94,13 @@ export function RulesTab({
       {(rules) => (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <h3 className="section-head">Reglas Automáticas</h3>
+            <h3 className="section-head">{t('rulesTitle')}</h3>
             <Button size="sm" onClick={() => setNewRuleOpen(true)}>
-              Nueva regla
+              {t('rules.new')}
             </Button>
           </div>
 
-          <DataTable columns={columns} rows={rules} caption="Reglas de categorización" />
+          <DataTable columns={columns} rows={rules} caption={t('rules.caption')} />
 
           <RuleFormDialog
             open={newRuleOpen}
@@ -110,13 +112,13 @@ export function RulesTab({
           <AlertDialog open={deleteId !== null} onOpenChange={(o) => !o && setDeleteId(null)}>
             <AlertDialogContent aria-describedby="delete-rule-desc">
               <AlertDialogHeader>
-                <AlertDialogTitle>¿Eliminar regla?</AlertDialogTitle>
+                <AlertDialogTitle>{t('rules.deleteTitle')}</AlertDialogTitle>
                 <AlertDialogDescription id="delete-rule-desc">
-                  Esta acción eliminará la regla de categorización. Las transacciones pasadas mantendrán su categoría actual.
+                  {t('rules.deleteDescription')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDeleteId(null)}>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel onClick={() => setDeleteId(null)}>{t('rules.cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={async () => {
                     if (deleteId !== null) {
@@ -125,7 +127,7 @@ export function RulesTab({
                     }
                   }}
                 >
-                  Eliminar
+                  {t('rules.delete')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 
 export interface UncategorisedBannerProps {
@@ -9,18 +10,20 @@ export interface UncategorisedBannerProps {
 }
 
 export function UncategorisedBanner({ count }: UncategorisedBannerProps) {
+  const t = useTranslations('transactions')
+
   if (count <= 0) return null
 
   return (
-    <div role="status" aria-label={`${count} movimientos sin categorizar`}>
+    <div role="status" aria-label={t('uncategorised', { count })}>
       <InlineBanner
         tone="warn"
-        title="Movimientos sin categorizar"
+        title={t('uncategorisedTitle')}
         description={
           <span>
-            Tenés {count} movimientos sin categorizar.{' '}
+            {t('uncategorisedBody', { count })}{' '}
             <Link href="/transactions?categories=none" className="underline font-medium hover:text-foreground">
-              Ver sin categorizar →
+              {t('uncategorisedLink')}
             </Link>
           </span>
         }

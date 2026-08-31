@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { Money } from '@/components/ui-kit/money/Money'
@@ -21,6 +22,8 @@ export interface KpiRowProps {
 }
 
 export function KpiRow({ section, isLoading, onRetry }: KpiRowProps) {
+  const t = useTranslations('overview')
+
   return (
     <SectionState
       section={section}
@@ -31,16 +34,16 @@ export function KpiRow({ section, isLoading, onRetry }: KpiRowProps) {
       {(data) => (
         <KpiStrip>
           <div data-testid="overview-kpi-cash">
-            <KpiTile label="Efectivo" value={<Money value={data.cash} />} />
+            <KpiTile label={t('cash')} value={<Money value={data.cash} />} />
           </div>
           <div data-testid="overview-kpi-income">
-            <KpiTile label="Ingresos" value={<Money value={data.income} tone="gain" />} />
+            <KpiTile label={t('income')} value={<Money value={data.income} tone="gain" />} />
           </div>
           <div data-testid="overview-kpi-expense">
-            <KpiTile label="Gastos" value={<Money value={data.expense} tone="loss" />} />
+            <KpiTile label={t('expense')} value={<Money value={data.expense} tone="loss" />} />
           </div>
           <div data-testid="overview-kpi-committed">
-            <KpiTile label="Comprometido" value={<Money value={data.committed} />} />
+            <KpiTile label={t('committed')} value={<Money value={data.committed} />} />
           </div>
         </KpiStrip>
       )}

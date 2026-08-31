@@ -102,21 +102,137 @@
     "cash": "Cash",
     "income": "Income",
     "expense": "Expenses",
-    "committed": "Committed"
+    "committed": "Committed",
+    "netWorthKicker": "Net Worth",
+    "allTimeHigh": "★ All-time high",
+    "netWorthAria": "Net worth evolution",
+    "breakdownTitle": "Net Worth Composition",
+    "breakdown": {
+      "investments": "Investments",
+      "savings": "Savings",
+      "debt": "Debt"
+    },
+    "flowTitle": "Monthly Flow (Income vs Expenses)",
+    "flowAria": "Monthly flow of income and expenses",
+    "committedTitle": "Committed Expenses by Month",
+    "committedAria": "Committed expenses by month",
+    "railTitle": "Activity & Alerts",
+    "upcomingTitle": "Upcoming Payments",
+    "upcomingEmpty": "No upcoming payments.",
+    "spendTitle": "Spending by Category",
+    "spendEmpty": "No expenses recorded this month.",
+    "latestTitle": "Latest Transactions",
+    "latest": {
+      "caption": "Latest transactions",
+      "seeAll": "See all →",
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "uncategorised": "Uncategorized",
+      "amount": "Amount",
+      "emptyAction": "Record transaction"
+    }
   },
   "transactions": {
     "title": "Transactions",
     "subtitle": "Transaction history, income, expenses and categorization",
-    "uncategorised": "Uncategorized transactions",
     "method": "Method",
-    "manual": "Manual"
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# uncategorised transaction} other {# uncategorised transactions}}",
+    "uncategorisedTitle": "Uncategorized transactions",
+    "uncategorisedBody": "{count, plural, one {You have # uncategorised transaction.} other {You have # uncategorised transactions.}}",
+    "uncategorisedLink": "See uncategorised →",
+    "uncategorisedValue": "Uncategorized",
+    "summary": {
+      "income": "Income",
+      "expense": "Expenses",
+      "net": "Net",
+      "count": "Transactions"
+    },
+    "filters": {
+      "byAccount": "Filter by account",
+      "allAccounts": "All accounts",
+      "byCategory": "Filter by category",
+      "allCategories": "All categories",
+      "byMethod": "Filter by method",
+      "allMethods": "All methods",
+      "chipSearch": "Search: {q}",
+      "chipCategory": "Category: {name}",
+      "chipAccount": "Account: {name}",
+      "chipMethod": "Method: {name}"
+    },
+    "table": {
+      "caption": "Transactions table",
+      "date": "Date",
+      "description": "Description",
+      "account": "Account",
+      "category": "Category",
+      "amount": "Amount"
+    },
+    "detail": {
+      "title": "Transaction detail",
+      "amount": "Amount",
+      "account": "Account",
+      "category": "Category",
+      "note": "Note",
+      "origin": "Origin",
+      "run": "Run #{id}",
+      "status": "Status",
+      "reconciled": "Reconciled",
+      "pending": "Pending"
+    },
+    "bulk": {
+      "categorise": "Categorize"
+    }
   },
   "categories": {
     "title": "Categories & Budgets",
     "subtitle": "Budget control, allocation and automatic rules",
     "pace": "Monthly pace",
     "overBudget": "Over budget",
-    "rules": "Automatic Rules"
+    "rulesTitle": "Automatic Rules",
+    "railTitle": "Category Analysis",
+    "budget": {
+      "accumulated": "Accumulated spending",
+      "available": "Available",
+      "over": "Over budget",
+      "noCap": "No limit"
+    },
+    "tabs": {
+      "budget": "Budget",
+      "rules": "Rules",
+      "income": "Income"
+    },
+    "trend": {
+      "title": "Trend",
+      "titleFor": "Trend {name}",
+      "empty": "Select a category to see its monthly trend.",
+      "noData": "Not enough historical data."
+    },
+    "income": {
+      "empty": "No income recorded this month."
+    },
+    "rules": {
+      "new": "New rule",
+      "newTitle": "New categorization rule",
+      "newDescription": "Create a rule to automatically categorize future and existing transactions.",
+      "matches": "Matches",
+      "patternPlaceholder": "e.g. UBER",
+      "assigned": "Assigned category",
+      "selectCategory": "Select a category",
+      "matchCount": "{count, plural, one {# transaction matches} other {# transactions match}}",
+      "loading": "Loading...",
+      "preview": "Preview",
+      "creating": "Creating...",
+      "create": "Create rule",
+      "priority": "Priority",
+      "actionsHeader": "Actions",
+      "caption": "Categorization rules",
+      "deleteTitle": "Delete rule?",
+      "deleteDescription": "This action will delete the categorization rule. Past transactions will keep their current category.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
   },
   "investments": {
     "title": "Investments",

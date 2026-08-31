@@ -102,21 +102,137 @@
     "cash": "Efectivo",
     "income": "Ingresos",
     "expense": "Gastos",
-    "committed": "Comprometido"
+    "committed": "Comprometido",
+    "netWorthKicker": "Patrimonio Neto",
+    "allTimeHigh": "★ Máximo histórico",
+    "netWorthAria": "Evolución del patrimonio neto",
+    "breakdownTitle": "Composición Patrimonial",
+    "breakdown": {
+      "investments": "Inversiones",
+      "savings": "Ahorro",
+      "debt": "Deuda"
+    },
+    "flowTitle": "Flujo Mensual (Ingresos vs Gastos)",
+    "flowAria": "Flujo mensual de ingresos y gastos",
+    "committedTitle": "Gastos Comprometidos por Mes",
+    "committedAria": "Gastos comprometidos por mes",
+    "railTitle": "Actividad y Alertas",
+    "upcomingTitle": "Próximos Vencimientos",
+    "upcomingEmpty": "Sin vencimientos próximos.",
+    "spendTitle": "Gastos por Categoría",
+    "spendEmpty": "Sin gastos registrados este mes.",
+    "latestTitle": "Últimos Movimientos",
+    "latest": {
+      "caption": "Últimos movimientos",
+      "seeAll": "Ver todos →",
+      "date": "Fecha",
+      "description": "Descripción",
+      "category": "Categoría",
+      "uncategorised": "Sin categoría",
+      "amount": "Monto",
+      "emptyAction": "Registrar movimiento"
+    }
   },
   "transactions": {
     "title": "Movimientos",
     "subtitle": "Historial de ingresos, egresos y categorización",
-    "uncategorised": "Movimientos sin categorizar",
     "method": "Método",
-    "manual": "Manual"
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# movimiento sin categorizar} other {# movimientos sin categorizar}}",
+    "uncategorisedTitle": "Movimientos sin categorizar",
+    "uncategorisedBody": "{count, plural, one {Tenés # movimiento sin categorizar.} other {Tenés # movimientos sin categorizar.}}",
+    "uncategorisedLink": "Ver sin categorizar →",
+    "uncategorisedValue": "Sin categorizar",
+    "summary": {
+      "income": "Ingresos",
+      "expense": "Egresos",
+      "net": "Neto",
+      "count": "Movimientos"
+    },
+    "filters": {
+      "byAccount": "Filtrar por cuenta",
+      "allAccounts": "Todas las cuentas",
+      "byCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "byMethod": "Filtrar por método",
+      "allMethods": "Todos los métodos",
+      "chipSearch": "Búsqueda: {q}",
+      "chipCategory": "Categoría: {name}",
+      "chipAccount": "Cuenta: {name}",
+      "chipMethod": "Método: {name}"
+    },
+    "table": {
+      "caption": "Tabla de movimientos",
+      "date": "Fecha",
+      "description": "Descripción",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "amount": "Importe"
+    },
+    "detail": {
+      "title": "Detalle del movimiento",
+      "amount": "Importe",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "note": "Nota",
+      "origin": "Origen",
+      "run": "Run #{id}",
+      "status": "Estado",
+      "reconciled": "Conciliado",
+      "pending": "Pendiente"
+    },
+    "bulk": {
+      "categorise": "Categorizar"
+    }
   },
   "categories": {
     "title": "Categorías y Presupuestos",
     "subtitle": "Control presupuestario, asignación y reglas automáticas",
     "pace": "Ritmo del mes",
     "overBudget": "Excedido",
-    "rules": "Reglas Automáticas"
+    "rulesTitle": "Reglas Automáticas",
+    "railTitle": "Análisis de Categoría",
+    "budget": {
+      "accumulated": "Gastos acumulados",
+      "available": "Disponible",
+      "over": "Excedidos",
+      "noCap": "Sin límite"
+    },
+    "tabs": {
+      "budget": "Presupuesto",
+      "rules": "Reglas",
+      "income": "Ingresos"
+    },
+    "trend": {
+      "title": "Tendencia",
+      "titleFor": "Tendencia {name}",
+      "empty": "Seleccioná una categoría para ver su tendencia mensual.",
+      "noData": "Sin datos históricos suficientes."
+    },
+    "income": {
+      "empty": "Sin ingresos registrados este mes."
+    },
+    "rules": {
+      "new": "Nueva regla",
+      "newTitle": "Nueva regla de categorización",
+      "newDescription": "Crea una regla para categorizar automáticamente transacciones futuras y existentes.",
+      "matches": "Coincide con",
+      "patternPlaceholder": "p.ej. UBER",
+      "assigned": "Categoría asignada",
+      "selectCategory": "Seleccionar categoría",
+      "matchCount": "{count, plural, one {# movimiento coincide} other {# movimientos coinciden}}",
+      "loading": "Cargando...",
+      "preview": "Previsualizar",
+      "creating": "Creando...",
+      "create": "Crear regla",
+      "priority": "Prioridad",
+      "actionsHeader": "Acciones",
+      "caption": "Reglas de categorización",
+      "deleteTitle": "¿Eliminar regla?",
+      "deleteDescription": "Esta acción eliminará la regla de categorización. Las transacciones pasadas mantendrán su categoría actual.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    }
   },
   "investments": {
     "title": "Inversiones",
