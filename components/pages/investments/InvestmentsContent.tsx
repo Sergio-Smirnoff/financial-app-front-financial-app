@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useQueryState } from 'nuqs'
+import { useTranslations } from 'next-intl'
 import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
 import { KpiStrip, KpiTile, SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -21,6 +22,8 @@ export interface InvestmentsContentProps {
 }
 
 export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none' } }: InvestmentsContentProps) {
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'portfolio' })
   const { data, isLoading, refetch } = useInvestmentsPage(query)
 
@@ -36,8 +39,8 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Inversiones</h1>
-          <p className="text-sm text-muted-foreground">Portafolio, cotizaciones y rendimiento</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
         {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
       </div>
@@ -74,19 +77,19 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
         {(kpisData) => (
           <KpiStrip>
             <KpiTile
-              label="Valor de mercado"
+              label={t('tabs.kpiMarketValue')}
               value={<span data-testid="inv-kpi-market-value">{kpisData?.marketValue && <Money value={kpisData.marketValue} />}</span>}
             />
             <KpiTile
-              label="Costo invertido"
+              label={t('totalInvested')}
               value={<span data-testid="inv-kpi-cost">{kpisData?.cost && <Money value={kpisData.cost} />}</span>}
             />
             <KpiTile
-              label="Resultado P&L"
+              label={t('totalPnl')}
               value={<span data-testid="inv-kpi-pnl">{kpisData?.pnl && <Money value={kpisData.pnl} />}</span>}
             />
             <KpiTile
-              label="Rendimiento"
+              label={t('tabs.kpiPerformance')}
               value={
                 <span data-testid="inv-kpi-pnl-pct" className={kpisData?.pnlPct != null && kpisData.pnlPct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
                   {kpisData?.pnlPct != null ? `${kpisData.pnlPct >= 0 ? '+' : ''}${kpisData.pnlPct.toFixed(2)}%` : '—'}
@@ -99,8 +102,8 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
 
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
-          <TabsTrigger value="portfolio">Cartera</TabsTrigger>
-          <TabsTrigger value="operations">Operaciones</TabsTrigger>
+          <TabsTrigger value="portfolio">{t('portfolio')}</TabsTrigger>
+          <TabsTrigger value="operations">{t('tabs.operations')}</TabsTrigger>
         </TabsList>
 
         <SplitLayout
@@ -131,7 +134,7 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
           }
           rail={
             <div className="space-y-6">
-              <RailSection title="Notificaciones">
+              <RailSection title={tc('notifications')}>
                 <AlertsRail
                   section={alerts}
                   isLoading={isLoading}

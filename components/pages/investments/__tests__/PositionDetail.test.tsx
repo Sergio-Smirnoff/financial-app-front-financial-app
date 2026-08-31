@@ -2,6 +2,14 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
+import { NextIntlClientProvider } from 'next-intl'
+import esAR from '@/messages/es-AR.json'
+
+function renderWithIntl(ui: React.ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="es-AR" messages={esAR}>{ui}</NextIntlClientProvider>
+  )
+}
 
 const holdingFixture = {
   id: 42,
@@ -22,12 +30,12 @@ const holdingFixture = {
 
 describe('PositionDetail', () => {
   it('renders the price chart with axes', () => {
-    render(<PositionDetail holding={holdingFixture} />)
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
     expect(screen.getAllByTestId('tick-y').length).toBeGreaterThan(2)
   })
 
   it('plots exactly the delivered price points', () => {
-    const { container } = render(<PositionDetail holding={holdingFixture} />)
+    const { container } = renderWithIntl(<PositionDetail holding={holdingFixture} />)
     const path = container.querySelector('path[data-role="line"]')!.getAttribute('d')!
     expect(path.match(/[MC]/g)?.length).toBeGreaterThanOrEqual(1)
   })

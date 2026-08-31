@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useTickerSearch } from '@/lib/hooks/useInvestments'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function TickerSearchBox({ onSelect }: Props) {
+  const t = useTranslations('investments')
   const [query, setQuery] = useState('')
   const { data: results = [] } = useTickerSearch(query)
   const visible = results.slice(0, 8)
@@ -19,7 +21,7 @@ export function TickerSearchBox({ onSelect }: Props) {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         onBlur={() => setTimeout(() => setQuery(''), 150)}
-        placeholder="Search a ticker to research…"
+        placeholder={t('market.searchPlaceholder')}
         className="h-11 rounded-xl"
       />
       {query && visible.length > 0 && (

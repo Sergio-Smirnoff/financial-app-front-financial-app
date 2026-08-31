@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ interface ActiveAlertsCardProps {
 }
 
 export function ActiveAlertsCard({ holdings }: ActiveAlertsCardProps) {
+  const t = useTranslations('investments')
   const alertedHoldings = useMemo(() => {
     return holdings.filter(h => h.notifyGainThresholdPct != null || h.notifyLossThresholdPct != null)
       .map(h => {
@@ -34,7 +36,7 @@ export function ActiveAlertsCard({ holdings }: ActiveAlertsCardProps) {
       <CardHeader className="pb-2">
         <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           <AlertCircle className="h-3.5 w-3.5" />
-          Active Thresholds
+          {t('alerts.activeThresholds')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">

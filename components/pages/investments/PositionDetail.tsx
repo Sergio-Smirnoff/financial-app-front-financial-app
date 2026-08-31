@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { AreaChart } from '@/components/charts/AreaChart'
 import { Money } from '@/components/ui-kit/money/Money'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
@@ -26,12 +27,15 @@ export interface PositionDetailProps {
 }
 
 export function PositionDetail({ holding }: PositionDetailProps) {
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <Link href="/investments" className="text-xs text-primary hover:underline font-medium mb-1 inline-block">
-            ← Volver a Inversiones
+            ← {t('holdings.backToInvestments')}
           </Link>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-mono font-bold tracking-tight">{holding.ticker}</h1>
@@ -42,18 +46,18 @@ export function PositionDetail({ holding }: PositionDetailProps) {
       </div>
 
       <KpiStrip>
-        <KpiTile label="Cantidad" value={String(holding.quantity)} />
-        <KpiTile label="Precio promedio" value={<Money value={holding.avgPrice} />} />
-        <KpiTile label="Precio actual" value={<Money value={holding.currentPrice} />} />
-        <KpiTile label="Valor total" value={<Money value={holding.totalValue} />} />
+        <KpiTile label={tc('quantity')} value={String(holding.quantity)} />
+        <KpiTile label={t('holdings.avgPrice')} value={<Money value={holding.avgPrice} />} />
+        <KpiTile label={t('holdings.currentPrice')} value={<Money value={holding.currentPrice} />} />
+        <KpiTile label={t('shared.totalValue')} value={<Money value={holding.totalValue} />} />
       </KpiStrip>
 
       <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
-        <h3 className="section-head">Histórico de Precios</h3>
+        <h3 className="section-head">{t('holdings.priceHistoryHeading')}</h3>
         <AreaChart
           series={holding.prices}
           currency={holding.currentPrice.currency}
-          ariaLabel={`Histórico de precios de ${holding.ticker}`}
+          ariaLabel={t('holdings.priceHistoryAria', { ticker: holding.ticker })}
         />
       </div>
     </div>
