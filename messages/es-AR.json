@@ -267,6 +267,10 @@
       "description": "Elegí la cuenta desde la que querés pagar esta cuota.",
       "account": "Cuenta de origen",
       "confirm": "Confirmar pago"
+    },
+    "deleteDialog": {
+      "title": "Eliminar préstamo",
+      "body": "¿Eliminar {label}? Esta acción no se puede deshacer."
     }
   },
   "investments": {

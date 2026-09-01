@@ -267,6 +267,10 @@
       "description": "Choose the account you want to pay this installment from.",
       "account": "Pay from account",
       "confirm": "Confirm payment"
+    },
+    "deleteDialog": {
+      "title": "Delete loan",
+      "body": "Delete {label}? This cannot be undone."
     }
   },
   "investments": {
