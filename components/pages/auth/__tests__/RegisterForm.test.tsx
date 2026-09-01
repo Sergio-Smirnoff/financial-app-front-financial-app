@@ -1,14 +1,22 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { NextIntlClientProvider } from 'next-intl'
 import { RegisterForm } from '../RegisterForm'
 import { ApiError } from '@/lib/api/client'
 import React from 'react'
+import esAR from '@/messages/es-AR.json'
+
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <NextIntlClientProvider locale="es-AR" messages={esAR}>
+    {children}
+  </NextIntlClientProvider>
+)
 
 describe('RegisterForm', () => {
   it('marks each password rule as it is met', async () => {
     const user = userEvent.setup()
-    render(<RegisterForm onRegister={vi.fn()} />)
+    render(<RegisterForm onRegister={vi.fn()} />, { wrapper })
 
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta1')
     expect(screen.getByText(/Mínimo 8 caracteres/)).toHaveAttribute('data-met', 'true')
@@ -18,7 +26,7 @@ describe('RegisterForm', () => {
 
   it('blocks step 2 until every rule is met', async () => {
     const user = userEvent.setup()
-    render(<RegisterForm onRegister={vi.fn()} />)
+    render(<RegisterForm onRegister={vi.fn()} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'corta')
@@ -26,13 +34,13 @@ describe('RegisterForm', () => {
   })
 
   it('announces rule changes politely', () => {
-    render(<RegisterForm onRegister={vi.fn()} />)
+    render(<RegisterForm onRegister={vi.fn()} />, { wrapper })
     expect(screen.getByRole('status', { name: 'Requisitos de contraseña' })).toBeInTheDocument()
   })
 
   it('goes back to step 1 without losing what was typed', async () => {
     const user = userEvent.setup()
-    render(<RegisterForm onRegister={vi.fn()} />)
+    render(<RegisterForm onRegister={vi.fn()} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta123')
@@ -46,7 +54,7 @@ describe('RegisterForm', () => {
   it('surfaces a duplicate-email error on the field, not as a page error', async () => {
     const user = userEvent.setup()
     const onRegister = vi.fn().mockRejectedValue(new ApiError('Email already registered', 409))
-    render(<RegisterForm onRegister={onRegister} />)
+    render(<RegisterForm onRegister={onRegister} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'duplicate@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta123')
@@ -62,7 +70,7 @@ describe('RegisterForm', () => {
   it('hands the collected profile to the registration handler', async () => {
     const user = userEvent.setup()
     const onRegister = vi.fn().mockResolvedValue(undefined)
-    render(<RegisterForm onRegister={onRegister} />)
+    render(<RegisterForm onRegister={onRegister} />, { wrapper })
 
     await user.type(screen.getByLabelText('Email'), 'ana@example.com')
     await user.type(screen.getByLabelText('Contraseña'), 'Secreta123')

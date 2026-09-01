@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -28,7 +29,11 @@ export interface SecuritySectionProps {
   onRetry?: () => void
 }
 
+const MIN_PASSWORD_LENGTH = 8
+
 export function SecuritySection({ section, isLoading, onRetry }: SecuritySectionProps) {
+  const t = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const queryClient = useQueryClient()
   const [newPassword, setNewPassword] = useState('')
   const [selectedRevoke, setSelectedRevoke] = useState<SessionRowResponse | null>(null)
@@ -38,7 +43,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
     if (!selectedRevoke?.id) return
     setIsRevoking(true)
     try {
-      await api.delete(`/api/v1/users/me/sessions/\${selectedRevoke.id}`)
+      await api.delete(`/api/v1/users/me/sessions/${selectedRevoke.id}`)
       await queryClient.invalidateQueries({ queryKey: ['bff', 'settings'] })
     } catch {
       // session revoked or endpoint non-responsive
@@ -48,7 +53,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
     }
   }
 
-  const isMinLength = newPassword.length >= 8
+  const isMinLength = newPassword.length >= MIN_PASSWORD_LENGTH
 
   return (
     <SectionState
@@ -63,10 +68,10 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
 
         return (
           <div id="security" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
-            <h3 className="section-head">Seguridad y Sesiones</h3>
+            <h3 className="section-head">{t('security.title')}</h3>
 
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold">Sesiones Activas</h4>
+              <h4 className="text-sm font-semibold">{t('security.activeSessions')}</h4>
               <div className="space-y-3">
                 {sessionList.map((s, idx) => {
                   const isCurrent = Boolean(s.current || (!hasCurrent && idx === 0))
@@ -79,13 +84,13 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
                     >
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{s.device || 'Dispositivo desconocido'}</span>
+                          <span className="font-medium text-sm">{s.device || t('security.unknownDevice')}</span>
                           {isCurrent && (
                             <span
                               data-testid="session-current"
                               className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded"
                             >
-                              Esta sesión
+                              {t('security.currentSession')}
                             </span>
                           )}
                         </div>
@@ -95,7 +100,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
                         {s.lastSeenAt && <FreshnessStamp observedAt={s.lastSeenAt} />}
                         {!isCurrent && (
                           <Button variant="outline" size="sm" onClick={() => setSelectedRevoke(s)}>
-                            Cerrar sesión
+                            {t('security.revoke')}
                           </Button>
                         )}
                       </div>
@@ -106,11 +111,11 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
             </div>
 
             <div className="space-y-4 pt-4 border-t">
-              <h4 className="text-sm font-semibold">Cambiar Contraseña</h4>
+              <h4 className="text-sm font-semibold">{t('security.changePassword')}</h4>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-1.5">
                   <label htmlFor="new-password-input" className="text-sm font-medium">
-                    Nueva contraseña
+                    {t('security.newPassword')}
                   </label>
                   <Input
                     id="new-password-input"
@@ -119,7 +124,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <p className="text-xs font-medium text-muted-foreground" data-met={isMinLength ? 'true' : 'false'}>
-                    Mínimo 8 caracteres
+                    {t('security.minLength', { n: MIN_PASSWORD_LENGTH })}
                   </p>
                 </div>
               </div>
@@ -128,15 +133,17 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
             <AlertDialog open={selectedRevoke !== null} onOpenChange={(o) => !o && setSelectedRevoke(null)}>
               <AlertDialogContent aria-describedby="revoke-session-desc">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+                  <AlertDialogTitle>{t('security.revokeDialog.title')}</AlertDialogTitle>
                   <AlertDialogDescription id="revoke-session-desc">
-                    Se cerrará la sesión en {selectedRevoke?.device || 'dispositivo seleccionado'}.
+                    {t('security.revokeDialog.description', {
+                      device: selectedRevoke?.device || t('security.revokeDialog.fallbackDevice'),
+                    })}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setSelectedRevoke(null)}>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel onClick={() => setSelectedRevoke(null)}>{tCommon('cancel')}</AlertDialogCancel>
                   <AlertDialogAction disabled={isRevoking} onClick={handleRevoke}>
-                    Cerrar sesión
+                    {t('security.revoke')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

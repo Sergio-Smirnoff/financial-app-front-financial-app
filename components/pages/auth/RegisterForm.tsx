@@ -2,17 +2,19 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ApiError } from '@/lib/api/client'
-import { PasswordRules } from './PasswordRules'
+import { PasswordRules, MIN_PASSWORD_LENGTH } from './PasswordRules'
 
 export interface RegisterFormProps {
   onRegister: (data: { email: string; password: string; name: string; preferredCurrency: string }) => Promise<void>
 }
 
 export function RegisterForm({ onRegister }: RegisterFormProps) {
+  const t = useTranslations('auth')
   const [step, setStep] = useState<1 | 2>(1)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +23,8 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
   const [emailError, setEmailError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  const isPasswordValid = password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)
+  const isPasswordValid =
+    password.length >= MIN_PASSWORD_LENGTH && /[A-Z]/.test(password) && /[0-9]/.test(password)
   const canProceedStep1 = email.includes('@') && isPasswordValid
 
   const handleNextStep = (e: React.FormEvent) => {
@@ -42,12 +45,12 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
       await onRegister({ email, password, name, preferredCurrency: currency })
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 409) {
-        setEmailError('Ya existe una cuenta con ese email')
+        setEmailError(t('errors.emailTaken'))
         setStep(1)
       } else if (err instanceof Error && err.message) {
         setEmailError(err.message)
       } else {
-        setEmailError('Ocurrió un error al registrar la cuenta')
+        setEmailError(t('errors.registerFailed'))
       }
     } finally {
       setSubmitting(false)
@@ -57,9 +60,12 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center sm:text-left">
-        <h1 className="text-2xl font-bold tracking-tight">Crear Cuenta</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('register.title')}</h1>
         <p className="text-sm text-muted-foreground">
-          Paso {step} de 2 — {step === 1 ? 'Credenciales de acceso' : 'Perfil de usuario'}
+          {t('register.step', {
+            step,
+            label: step === 1 ? t('register.step1Label') : t('register.step2Label'),
+          })}
         </p>
       </div>
 
@@ -67,7 +73,7 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
         <form onSubmit={handleNextStep} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="reg-email" className="text-sm font-medium">Email</label>
+              <label htmlFor="reg-email" className="text-sm font-medium">{t('email')}</label>
               <Input
                 id="reg-email"
                 type="email"
@@ -76,7 +82,7 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
                   setEmail(e.target.value)
                   setEmailError(null)
                 }}
-                placeholder="usuario@ejemplo.com"
+                placeholder={t('emailPlaceholder')}
                 aria-invalid={!!emailError}
                 required
               />
@@ -86,7 +92,7 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="reg-password" className="text-sm font-medium">Contraseña</label>
+              <label htmlFor="reg-password" className="text-sm font-medium">{t('password')}</label>
               <Input
                 id="reg-password"
                 type="password"
@@ -99,32 +105,32 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
           </div>
 
           <Button type="submit" className="w-full" disabled={!canProceedStep1}>
-            Continuar
+            {t('register.continue')}
           </Button>
         </form>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="reg-name" className="text-sm font-medium">Nombre completo</label>
+              <label htmlFor="reg-name" className="text-sm font-medium">{t('fullName')}</label>
               <Input
                 id="reg-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ana Pérez"
+                placeholder={t('fullNamePlaceholder')}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="reg-currency" className="text-sm font-medium">Moneda principal</label>
+              <label htmlFor="reg-currency" className="text-sm font-medium">{t('primaryCurrency')}</label>
               <Select value={currency} onValueChange={setCurrency}>
                 <SelectTrigger id="reg-currency">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ARS">Pesos Argentinos (ARS)</SelectItem>
-                  <SelectItem value="USD">Dólares (USD)</SelectItem>
+                  <SelectItem value="ARS">{t('currencies.ars')}</SelectItem>
+                  <SelectItem value="USD">{t('currencies.usd')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -132,20 +138,23 @@ export function RegisterForm({ onRegister }: RegisterFormProps) {
 
           <div className="flex items-center gap-3">
             <Button type="button" variant="outline" className="w-1/3" onClick={() => setStep(1)}>
-              Volver
+              {t('register.back')}
             </Button>
             <Button type="submit" className="w-2/3" disabled={submitting || !name.trim()}>
-              {submitting ? 'Creando...' : 'Crear cuenta'}
+              {submitting ? t('register.submitting') : t('register.submit')}
             </Button>
           </div>
         </form>
       )}
 
       <p className="text-center text-sm text-muted-foreground">
-        ¿Ya tenés una cuenta?{' '}
-        <Link href="/login" className="font-semibold text-primary hover:underline">
-          Iniciá sesión
-        </Link>
+        {t.rich('register.haveAccount', {
+          link: (chunks) => (
+            <Link href="/login" className="font-semibold text-primary hover:underline">
+              {chunks}
+            </Link>
+          ),
+        })}
       </p>
     </div>
   )

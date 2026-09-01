@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { FeeTable, type FeeRowData } from '@/components/ui-kit/data/FeeTable'
 import type { Section } from '@/lib/api/bff/types'
@@ -26,6 +27,8 @@ function mapRows(rows?: FeeRowResponse[] | null, scopeDefault: string = ''): Fee
 }
 
 export function FeesSection({ section, isLoading, onRetry }: FeesSectionProps) {
+  const t = useTranslations('settings')
+
   return (
     <SectionState
       section={section}
@@ -34,45 +37,48 @@ export function FeesSection({ section, isLoading, onRetry }: FeesSectionProps) {
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
     >
       {(fees: any) => {
-        const accountsRows = mapRows(fees.accounts, 'Cuentas')
-        const cardsRows = mapRows(fees.cards, 'Tarjetas')
-        const brokersRows = mapRows(fees.brokers, 'Brokers')
+        const accountsRows = mapRows(fees.accounts, t('fees.scope.accounts'))
+        const cardsRows = mapRows(fees.cards, t('fees.scope.cards'))
+        const brokersRows = mapRows(fees.brokers, t('fees.scope.brokers'))
         const taxRate = fees.debitCreditTaxRate ?? 0
 
         return (
           <div id="fees" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
             <div className="flex items-center justify-between gap-4 flex-wrap">
-              <h3 className="section-head">Comisiones y Costos</h3>
+              <h3 className="section-head">{t('fees.title')}</h3>
               <div data-testid="debit-credit-tax" className="text-xs text-muted-foreground font-mono">
-                Impuesto débito/crédito: {(taxRate * 100).toFixed(2).replace('.', ',')} % ({taxRate})
+                {t('fees.debitCreditTax', {
+                  pct: (taxRate * 100).toFixed(2).replace('.', ','),
+                  rate: String(taxRate),
+                })}
               </div>
             </div>
 
             <div className="space-y-6">
               <div data-testid="fees-accounts" className="space-y-2">
-                <h4 className="text-sm font-semibold">Cuentas</h4>
+                <h4 className="text-sm font-semibold">{t('fees.accounts')}</h4>
                 {accountsRows.length > 0 ? (
                   <FeeTable rows={accountsRows} />
                 ) : (
-                  <p className="text-xs text-muted-foreground italic">Sin comisiones de cuentas configuradas</p>
+                  <p className="text-xs text-muted-foreground italic">{t('fees.emptyAccounts')}</p>
                 )}
               </div>
 
               <div data-testid="fees-cards" className="space-y-2">
-                <h4 className="text-sm font-semibold">Tarjetas</h4>
+                <h4 className="text-sm font-semibold">{t('fees.cards')}</h4>
                 {cardsRows.length > 0 ? (
                   <FeeTable rows={cardsRows} />
                 ) : (
-                  <p className="text-xs text-muted-foreground italic">Sin comisiones de tarjetas configuradas</p>
+                  <p className="text-xs text-muted-foreground italic">{t('fees.emptyCards')}</p>
                 )}
               </div>
 
               <div data-testid="fees-brokers" className="space-y-2">
-                <h4 className="text-sm font-semibold">Brokers e Inversiones</h4>
+                <h4 className="text-sm font-semibold">{t('fees.brokers')}</h4>
                 {brokersRows.length > 0 ? (
                   <FeeTable rows={brokersRows} />
                 ) : (
-                  <p className="text-xs text-muted-foreground italic">Sin comisiones de brokers configuradas</p>
+                  <p className="text-xs text-muted-foreground italic">{t('fees.emptyBrokers')}</p>
                 )}
               </div>
             </div>
