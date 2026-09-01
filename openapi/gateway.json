@@ -144,27 +144,6 @@
         },
         "type": "object"
       },
-      "ApiResponseDashboardResponse": {
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/DashboardResponse"
-          },
-          "message": {
-            "type": "string"
-          },
-          "status": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "title": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "ApiResponseImportsBffResponse": {
         "properties": {
           "code": {
@@ -193,6 +172,48 @@
           },
           "data": {
             "$ref": "#/components/schemas/InvestmentsBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseLoanScheduleBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoanScheduleBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseLoansBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoansBffResponse"
           },
           "message": {
             "type": "string"
@@ -585,40 +606,6 @@
         },
         "type": "object"
       },
-      "CurrencySummary": {
-        "properties": {
-          "balance": {
-            "type": "string"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "totalExpense": {
-            "type": "string"
-          },
-          "totalIncome": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "DashboardResponse": {
-        "properties": {
-          "activeLoans": {
-            "$ref": "#/components/schemas/SectionResponseListLoan"
-          },
-          "month": {
-            "$ref": "#/components/schemas/SectionResponseListCurrencySummary"
-          },
-          "upcomingPayments": {
-            "$ref": "#/components/schemas/SectionResponseListUpcomingPayment"
-          },
-          "yearToDate": {
-            "$ref": "#/components/schemas/SectionResponseListCurrencySummary"
-          }
-        },
-        "type": "object"
-      },
       "EvolutionPointResponse": {
         "properties": {
           "cost": {
@@ -787,6 +774,33 @@
         },
         "type": "object"
       },
+      "InstallmentRowResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "dueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "number": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "paid": {
+            "type": "boolean"
+          },
+          "paidDate": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "InvestmentsBffResponse": {
         "properties": {
           "alerts": {
@@ -830,31 +844,44 @@
         },
         "type": "object"
       },
-      "Loan": {
+      "LoanDetailRowResponse": {
         "properties": {
           "active": {
             "type": "boolean"
           },
-          "currency": {
+          "bankNumber": {
             "type": "string"
           },
           "id": {
             "format": "int64",
             "type": "integer"
           },
-          "name": {
+          "installmentsPaid": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "installmentsTotal": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "interestRate": {
+            "type": "number"
+          },
+          "label": {
             "type": "string"
+          },
+          "nextInstallmentAmount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "nextInstallmentDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/MoneyView"
           },
           "principal": {
-            "type": "string"
-          },
-          "remainingInstallments": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "totalInstallments": {
-            "format": "int32",
-            "type": "integer"
+            "$ref": "#/components/schemas/MoneyView"
           }
         },
         "type": "object"
@@ -885,6 +912,47 @@
           },
           "principal": {
             "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "LoanScheduleBffResponse": {
+        "properties": {
+          "installments": {
+            "$ref": "#/components/schemas/SectionResponseListInstallmentRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "LoansBffResponse": {
+        "properties": {
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseLoansKpisResponse"
+          },
+          "loans": {
+            "$ref": "#/components/schemas/SectionResponseListLoanDetailRowResponse"
+          },
+          "payFromAccounts": {
+            "$ref": "#/components/schemas/SectionResponseListAccountOptionResponse"
+          }
+        },
+        "type": "object"
+      },
+      "LoansKpisResponse": {
+        "properties": {
+          "activeLoans": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "monthlyPayment": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "nextDueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "totalOutstanding": {
+            "$ref": "#/components/schemas/MoneyView"
           }
         },
         "type": "object"
@@ -1322,6 +1390,28 @@
         ],
         "type": "object"
       },
+      "SectionResponseListAccountOptionResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AccountOptionResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
       "SectionResponseListAccountRowResponse": {
         "properties": {
           "data": {
@@ -1498,24 +1588,6 @@
         ],
         "type": "object"
       },
-      "SectionResponseListCurrencySummary": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/CurrencySummary"
-            },
-            "type": "array"
-          },
-          "observedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "status": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "SectionResponseListEvolutionPointResponse": {
         "properties": {
           "data": {
@@ -1604,11 +1676,11 @@
         ],
         "type": "object"
       },
-      "SectionResponseListLoan": {
+      "SectionResponseListInstallmentRowResponse": {
         "properties": {
-          "items": {
+          "data": {
             "items": {
-              "$ref": "#/components/schemas/Loan"
+              "$ref": "#/components/schemas/InstallmentRowResponse"
             },
             "type": "array"
           },
@@ -1620,6 +1692,32 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListLoanDetailRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/LoanDetailRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
       "SectionResponseListLoanRowResponse": {
@@ -1842,11 +1940,11 @@
         ],
         "type": "object"
       },
-      "SectionResponseListUpcomingPayment": {
+      "SectionResponseListUpcomingPaymentResponse": {
         "properties": {
-          "items": {
+          "data": {
             "items": {
-              "$ref": "#/components/schemas/UpcomingPayment"
+              "$ref": "#/components/schemas/UpcomingPaymentResponse"
             },
             "type": "array"
           },
@@ -1858,15 +1956,16 @@
             "type": "string"
           }
         },
+        "required": [
+          "observedAt",
+          "status"
+        ],
         "type": "object"
       },
-      "SectionResponseListUpcomingPaymentResponse": {
+      "SectionResponseLoansKpisResponse": {
         "properties": {
           "data": {
-            "items": {
-              "$ref": "#/components/schemas/UpcomingPaymentResponse"
-            },
-            "type": "array"
+            "$ref": "#/components/schemas/LoansKpisResponse"
           },
           "observedAt": {
             "format": "date-time",
@@ -2225,42 +2324,6 @@
         },
         "type": "object"
       },
-      "UpcomingPayment": {
-        "properties": {
-          "amount": {
-            "type": "string"
-          },
-          "currency": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "dueDate": {
-            "format": "date",
-            "type": "string"
-          },
-          "id": {
-            "format": "int64",
-            "type": "integer"
-          },
-          "installmentNumber": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "paid": {
-            "type": "boolean"
-          },
-          "totalInstallments": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "type": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "UpcomingPaymentResponse": {
         "properties": {
           "amount": {
@@ -2540,6 +2603,115 @@
         ]
       }
     },
+    "/api/v1/bff/loans": {
+      "get": {
+        "operationId": "getLoans",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLoansBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get loans page composed sections",
+        "tags": [
+          "BFF - Loans"
+        ]
+      }
+    },
+    "/api/v1/bff/loans/{id}": {
+      "get": {
+        "operationId": "getSchedule",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLoanScheduleBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get one loan's installment schedule",
+        "tags": [
+          "BFF - Loans"
+        ]
+      }
+    },
     "/api/v1/bff/overview": {
       "get": {
         "operationId": "getOverview",
@@ -2812,44 +2984,12 @@
           "BFF - Transactions"
         ]
       }
-    },
-    "/api/v1/dashboard/data": {
-      "get": {
-        "operationId": "data",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "X-User-Id",
-            "required": true,
-            "schema": {
-              "format": "int64",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseDashboardResponse"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "summary": "Get composed dashboard data for the authenticated user",
-        "tags": [
-          "Dashboard"
-        ]
-      }
     }
   },
   "servers": [
     {
       "description": "Generated server url",
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8090"
     }
   ],
   "tags": [
@@ -2860,6 +3000,10 @@
     {
       "description": "Inversiones Page BFF Composition Endpoint",
       "name": "BFF - Investments"
+    },
+    {
+      "description": "Prestamos Page BFF Composition Endpoint",
+      "name": "BFF - Loans"
     },
     {
       "description": "Global ⌘K Search BFF Composition Endpoint",
@@ -2888,10 +3032,6 @@
     {
       "description": "Resumen Page BFF Composition Endpoint",
       "name": "BFF - Overview"
-    },
-    {
-      "description": "Aggregated dashboard data (BFF)",
-      "name": "Dashboard"
     }
   ]
 }
