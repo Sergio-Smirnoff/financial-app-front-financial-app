@@ -234,6 +234,41 @@
       "delete": "Eliminar"
     }
   },
+  "loans": {
+    "title": "Préstamos",
+    "kpis": {
+      "totalOutstanding": "Saldo pendiente",
+      "monthlyPayment": "Cuota mensual",
+      "activeLoans": "Préstamos activos",
+      "nextDue": "Próximo vencimiento"
+    },
+    "table": {
+      "loan": "Préstamo",
+      "bank": "Banco",
+      "principal": "Capital",
+      "outstanding": "Saldo",
+      "rate": "Tasa",
+      "nextInstallment": "Próxima cuota",
+      "progress": "{paid} de {total, plural, one {# cuota} other {# cuotas}}",
+      "empty": "Sin préstamos activos",
+      "viewSchedule": "Ver cuotas"
+    },
+    "schedule": {
+      "title": "Cronograma de cuotas",
+      "number": "N°",
+      "amount": "Importe",
+      "dueDate": "Vencimiento",
+      "paid": "Pagada",
+      "pending": "Pendiente",
+      "pay": "Pagar cuota"
+    },
+    "payDialog": {
+      "title": "Pagar cuota",
+      "description": "Elegí la cuenta desde la que querés pagar esta cuota.",
+      "account": "Cuenta de origen",
+      "confirm": "Confirmar pago"
+    }
+  },
   "investments": {
     "title": "Inversiones",
     "subtitle": "Portafolio, cotizaciones y rendimiento",
