@@ -89,6 +89,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bff/loans": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get loans page composed sections */
+        get: operations["getLoans"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bff/loans/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get one loan's installment schedule */
+        get: operations["getSchedule"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/bff/overview": {
         parameters: {
             query?: never;
@@ -174,23 +208,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/dashboard/data": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get composed dashboard data for the authenticated user */
-        get: operations["data"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -251,14 +268,6 @@ export interface components {
             status?: number;
             title?: string;
         };
-        ApiResponseDashboardResponse: {
-            code?: string;
-            data?: components["schemas"]["DashboardResponse"];
-            message?: string;
-            /** Format: int32 */
-            status?: number;
-            title?: string;
-        };
         ApiResponseImportsBffResponse: {
             code?: string;
             data?: components["schemas"]["ImportsBffResponse"];
@@ -270,6 +279,22 @@ export interface components {
         ApiResponseInvestmentsBffResponse: {
             code?: string;
             data?: components["schemas"]["InvestmentsBffResponse"];
+            message?: string;
+            /** Format: int32 */
+            status?: number;
+            title?: string;
+        };
+        ApiResponseLoanScheduleBffResponse: {
+            code?: string;
+            data?: components["schemas"]["LoanScheduleBffResponse"];
+            message?: string;
+            /** Format: int32 */
+            status?: number;
+            title?: string;
+        };
+        ApiResponseLoansBffResponse: {
+            code?: string;
+            data?: components["schemas"]["LoansBffResponse"];
             message?: string;
             /** Format: int32 */
             status?: number;
@@ -413,18 +438,6 @@ export interface components {
             label?: string;
             pct?: number;
         };
-        CurrencySummary: {
-            balance?: string;
-            currency?: string;
-            totalExpense?: string;
-            totalIncome?: string;
-        };
-        DashboardResponse: {
-            activeLoans?: components["schemas"]["SectionResponseListLoan"];
-            month?: components["schemas"]["SectionResponseListCurrencySummary"];
-            upcomingPayments?: components["schemas"]["SectionResponseListUpcomingPayment"];
-            yearToDate?: components["schemas"]["SectionResponseListCurrencySummary"];
-        };
         EvolutionPointResponse: {
             cost?: components["schemas"]["MoneyView"];
             /** Format: date */
@@ -483,6 +496,18 @@ export interface components {
             history?: components["schemas"]["SectionResponseListImportRunRowResponse"];
             reconciliation?: components["schemas"]["SectionResponseListReconciliationRowResponse"];
         };
+        InstallmentRowResponse: {
+            amount?: components["schemas"]["MoneyView"];
+            /** Format: date */
+            dueDate?: string;
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            number?: number;
+            paid?: boolean;
+            /** Format: date */
+            paidDate?: string;
+        };
         InvestmentsBffResponse: {
             alerts?: components["schemas"]["SectionResponseListAlertRowResponse"];
             composition?: components["schemas"]["SectionResponseListCompositionSliceResponse"];
@@ -498,17 +523,22 @@ export interface components {
             pnl?: components["schemas"]["MoneyView"];
             pnlPct?: number;
         };
-        Loan: {
+        LoanDetailRowResponse: {
             active?: boolean;
-            currency?: string;
+            bankNumber?: string;
             /** Format: int64 */
             id?: number;
-            name?: string;
-            principal?: string;
             /** Format: int32 */
-            remainingInstallments?: number;
+            installmentsPaid?: number;
             /** Format: int32 */
-            totalInstallments?: number;
+            installmentsTotal?: number;
+            interestRate?: number;
+            label?: string;
+            nextInstallmentAmount?: components["schemas"]["MoneyView"];
+            /** Format: date */
+            nextInstallmentDate?: string;
+            outstanding?: components["schemas"]["MoneyView"];
+            principal?: components["schemas"]["MoneyView"];
         };
         LoanRowResponse: {
             /** Format: int64 */
@@ -522,6 +552,22 @@ export interface components {
             nextInstallmentDate?: string;
             outstanding?: components["schemas"]["MoneyView"];
             principal?: number;
+        };
+        LoanScheduleBffResponse: {
+            installments?: components["schemas"]["SectionResponseListInstallmentRowResponse"];
+        };
+        LoansBffResponse: {
+            kpis?: components["schemas"]["SectionResponseLoansKpisResponse"];
+            loans?: components["schemas"]["SectionResponseListLoanDetailRowResponse"];
+            payFromAccounts?: components["schemas"]["SectionResponseListAccountOptionResponse"];
+        };
+        LoansKpisResponse: {
+            /** Format: int32 */
+            activeLoans?: number;
+            monthlyPayment?: components["schemas"]["MoneyView"];
+            /** Format: date */
+            nextDueDate?: string;
+            totalOutstanding?: components["schemas"]["MoneyView"];
         };
         MarketQuoteResponse: {
             code?: string;
@@ -670,6 +716,12 @@ export interface components {
             observedAt: string;
             status: string;
         };
+        SectionResponseListAccountOptionResponse: {
+            data?: components["schemas"]["AccountOptionResponse"][];
+            /** Format: date-time */
+            observedAt: string;
+            status: string;
+        };
         SectionResponseListAccountRowResponse: {
             data?: components["schemas"]["AccountRowResponse"][];
             /** Format: date-time */
@@ -718,12 +770,6 @@ export interface components {
             observedAt: string;
             status: string;
         };
-        SectionResponseListCurrencySummary: {
-            items?: components["schemas"]["CurrencySummary"][];
-            /** Format: date-time */
-            observedAt?: string;
-            status?: string;
-        };
         SectionResponseListEvolutionPointResponse: {
             data?: components["schemas"]["EvolutionPointResponse"][];
             /** Format: date-time */
@@ -748,11 +794,17 @@ export interface components {
             observedAt: string;
             status: string;
         };
-        SectionResponseListLoan: {
-            items?: components["schemas"]["Loan"][];
+        SectionResponseListInstallmentRowResponse: {
+            data?: components["schemas"]["InstallmentRowResponse"][];
             /** Format: date-time */
-            observedAt?: string;
-            status?: string;
+            observedAt: string;
+            status: string;
+        };
+        SectionResponseListLoanDetailRowResponse: {
+            data?: components["schemas"]["LoanDetailRowResponse"][];
+            /** Format: date-time */
+            observedAt: string;
+            status: string;
         };
         SectionResponseListLoanRowResponse: {
             data?: components["schemas"]["LoanRowResponse"][];
@@ -814,14 +866,14 @@ export interface components {
             observedAt: string;
             status: string;
         };
-        SectionResponseListUpcomingPayment: {
-            items?: components["schemas"]["UpcomingPayment"][];
-            /** Format: date-time */
-            observedAt?: string;
-            status?: string;
-        };
         SectionResponseListUpcomingPaymentResponse: {
             data?: components["schemas"]["UpcomingPaymentResponse"][];
+            /** Format: date-time */
+            observedAt: string;
+            status: string;
+        };
+        SectionResponseLoansKpisResponse: {
+            data?: components["schemas"]["LoansKpisResponse"];
             /** Format: date-time */
             observedAt: string;
             status: string;
@@ -947,21 +999,6 @@ export interface components {
         UncategorisedSummaryResponse: {
             /** Format: int64 */
             count?: number;
-        };
-        UpcomingPayment: {
-            amount?: string;
-            currency?: string;
-            description?: string;
-            /** Format: date */
-            dueDate?: string;
-            /** Format: int64 */
-            id?: number;
-            /** Format: int32 */
-            installmentNumber?: number;
-            paid?: boolean;
-            /** Format: int32 */
-            totalInstallments?: number;
-            type?: string;
         };
         UpcomingPaymentResponse: {
             amount?: components["schemas"]["MoneyView"];
@@ -1113,6 +1150,58 @@ export interface operations {
             };
         };
     };
+    getLoans: {
+        parameters: {
+            query?: {
+                currency?: string;
+                secondary?: string;
+            };
+            header: {
+                "X-User-Id": number;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLoansBffResponse"];
+                };
+            };
+        };
+    };
+    getSchedule: {
+        parameters: {
+            query?: {
+                currency?: string;
+                secondary?: string;
+            };
+            header: {
+                "X-User-Id": number;
+            };
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApiResponseLoanScheduleBffResponse"];
+                };
+            };
+        };
+    };
     getOverview: {
         parameters: {
             query?: {
@@ -1235,28 +1324,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ApiResponseTransactionDetailBffResponse"];
-                };
-            };
-        };
-    };
-    data: {
-        parameters: {
-            query?: never;
-            header: {
-                "X-User-Id": number;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ApiResponseDashboardResponse"];
                 };
             };
         };

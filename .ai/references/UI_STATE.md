@@ -27,7 +27,7 @@ BFF endpoints deliver sections wrapped in `{ status: 'OK' | 'UNAVAILABLE', obser
 - `useBanks.ts`: Accounts, bank list, catalog metadata.
 - `useTransactions.ts`: Transaction list & mutation invalidations (`['transactions']`).
 - `useCategories.ts`: Categories tree & subcategories invalidations.
-- `useLoans.ts`: Loans list & installment payment.
+- `useLoans.ts`: Loan mutations only (create, delete, pay installment); each invalidates `['bff','loans']` + `['bff','banks']`. Loan reads live in `useLoansPage.ts` / `useLoanSchedule.ts`.
 - `useInvestments.ts`: Holdings, portfolio summary, price history.
 - `useDashboard.ts`: Gateway BFF aggregated dashboard view.
 - `useNotifications.ts`: Notification list & unread count.
@@ -41,7 +41,9 @@ BFF endpoints deliver sections wrapped in `{ status: 'OK' | 'UNAVAILABLE', obser
 Manages transient client UI state:
 
 - **Modals:** `modal` name, `modalData`, `openModal()`, `closeModal()`.
-- **Confirm Dialog:** `confirmDelete` state, target entity info, `openConfirmDelete()`, `closeConfirmDelete()`.
 - **Mobile Sidebar:** `sidebarOpen`, `setSidebarOpen()`, `toggleSidebar()`.
 
-Modal names: `create-transaction`, `edit-transaction`, `create-category`, `create-subcategory`, `create-loan`, `create-card-expense`, `confirm-delete`.
+Modal names: `create-transaction`, `edit-transaction`, `create-category`, `create-subcategory`, `create-loan`, `create-card-expense`.
+
+Confirmation dialogs are local component state over the ui-kit `Dialog` (see
+`components/pages/loans/LoansContent.tsx`) — there is no shared confirm-delete store slice.

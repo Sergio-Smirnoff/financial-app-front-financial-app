@@ -234,6 +234,45 @@
       "delete": "Delete"
     }
   },
+  "loans": {
+    "title": "Loans",
+    "kpis": {
+      "totalOutstanding": "Outstanding balance",
+      "monthlyPayment": "Monthly payment",
+      "activeLoans": "Active loans",
+      "nextDue": "Next due date"
+    },
+    "table": {
+      "loan": "Loan",
+      "bank": "Bank",
+      "principal": "Principal",
+      "outstanding": "Balance",
+      "rate": "Rate",
+      "nextInstallment": "Next installment",
+      "progress": "{paid} of {total, plural, one {# installment} other {# installments}}",
+      "empty": "No active loans",
+      "viewSchedule": "View schedule"
+    },
+    "schedule": {
+      "title": "Installment schedule",
+      "number": "No.",
+      "amount": "Amount",
+      "dueDate": "Due date",
+      "paid": "Paid",
+      "pending": "Pending",
+      "pay": "Pay installment"
+    },
+    "payDialog": {
+      "title": "Pay installment",
+      "description": "Choose the account you want to pay this installment from.",
+      "account": "Pay from account",
+      "confirm": "Confirm payment"
+    },
+    "deleteDialog": {
+      "title": "Delete loan",
+      "body": "Delete {label}? This cannot be undone."
+    }
+  },
   "investments": {
     "title": "Investments",
     "subtitle": "Portfolio, market quotes and performance",

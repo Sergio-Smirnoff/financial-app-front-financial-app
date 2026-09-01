@@ -7,14 +7,7 @@ type Modal =
   | 'create-subcategory'
   | 'create-loan'
   | 'create-card-expense'
-  | 'confirm-delete'
   | null
-
-interface ConfirmDeletePayload {
-  title: string
-  description: string
-  onConfirm: () => void
-}
 
 interface UiState {
   // Active modal
@@ -22,11 +15,6 @@ interface UiState {
   modalData: unknown
   openModal: (modal: Modal, data?: unknown) => void
   closeModal: () => void
-
-  // Confirm delete dialog
-  confirmDelete: ConfirmDeletePayload | null
-  openConfirmDelete: (payload: ConfirmDeletePayload) => void
-  closeConfirmDelete: () => void
 
   // Sidebar collapsed (mobile)
   sidebarOpen: boolean
@@ -39,10 +27,6 @@ export const useUiStore = create<UiState>((set) => ({
   modalData: null,
   openModal: (modal, data = null) => set({ modal, modalData: data }),
   closeModal: () => set({ modal: null, modalData: null }),
-
-  confirmDelete: null,
-  openConfirmDelete: (payload) => set({ confirmDelete: payload }),
-  closeConfirmDelete: () => set({ confirmDelete: null }),
 
   sidebarOpen: false,
   setSidebarOpen: (sidebarOpen) => set({ sidebarOpen }),

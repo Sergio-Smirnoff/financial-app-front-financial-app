@@ -40,7 +40,7 @@ front/financial-app/
 ├── components/
 │   ├── layout/                     # Header, Sidebar, MobileSidebar, NotificationBell, ThemeToggle
 │   ├── pages/                      # Domain-scoped components (banks/, dashboard/, investments/, ...)
-│   ├── shared/                     # App-wide building blocks (ConfirmDialog, Surface, QueryBoundary, ...)
+│   ├── shared/                     # App-wide building blocks (Surface, MultiCurrencyAmount, ...)
 │   └── ui/                         # shadcn/ui primitives
 ├── lib/
 │   ├── api/                        # Domain API modules + client.ts + config.ts
