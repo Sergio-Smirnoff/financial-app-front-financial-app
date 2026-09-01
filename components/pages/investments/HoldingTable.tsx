@@ -8,9 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Pencil, Banknote } from 'lucide-react'
-import { formatCurrency, formatAmount } from '@/lib/utils/currency'
+import { formatCurrency, formatAmount } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { HoldingWithPrice } from '@/types/investments'
 
@@ -22,17 +23,20 @@ interface HoldingTableProps {
 }
 
 export function HoldingTable({ holdings, onEdit, onSell, onViewDetail }: HoldingTableProps) {
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
+
   return (
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Ticker</TableHead>
-            <TableHead className="hidden sm:table-cell">Name</TableHead>
-            <TableHead className="text-right">Qty</TableHead>
-            <TableHead className="text-right hidden md:table-cell">Avg Price</TableHead>
-            <TableHead className="text-right">Current</TableHead>
-            <TableHead className="text-right hidden sm:table-cell">Value</TableHead>
+            <TableHead>{tc('ticker')}</TableHead>
+            <TableHead className="hidden sm:table-cell">{t('holdings.colName')}</TableHead>
+            <TableHead className="text-right">{t('holdings.colQty')}</TableHead>
+            <TableHead className="text-right hidden md:table-cell">{t('holdings.colAvgPrice')}</TableHead>
+            <TableHead className="text-right">{t('holdings.colCurrent')}</TableHead>
+            <TableHead className="text-right hidden sm:table-cell">{t('holdings.colValue')}</TableHead>
             <TableHead className="text-right">P&L</TableHead>
             <TableHead className="text-right hidden md:table-cell">P&L %</TableHead>
             <TableHead className="w-20" />
@@ -79,7 +83,7 @@ export function HoldingTable({ holdings, onEdit, onSell, onViewDetail }: Holding
                     variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-green-600 hover:text-green-500 hover:bg-green-500/10"
-                    title="Sell Holding"
+                    title={t('holdings.sellAction')}
                     onClick={() => onSell(h)}
                   >
                     <Banknote className="h-4 w-4" />

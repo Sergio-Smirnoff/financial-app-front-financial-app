@@ -1,0 +1,857 @@
+{
+  "common": {
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading…",
+    "close": "Close",
+    "seeAll": "See all",
+    "saving": "Saving…",
+    "discard": "Discard",
+    "unsavedChanges": "Unsaved changes",
+    "unsavedChangesHint": "You have unsaved changes.",
+    "clearFilters": "Clear filters",
+    "removeFilter": "Remove filter {label}",
+    "rowActions": "Row actions",
+    "searchPlaceholder": "Search transactions, positions, categories…",
+    "searchError": "We couldn't load the search results",
+    "noResults": "No results",
+    "resultCount": "{count, plural, one {# result} other {# results}}",
+    "movements": "Transactions",
+    "positions": "Positions",
+    "categories": "Categories",
+    "category": "Category",
+    "concept": "Concept",
+    "amount": "Amount",
+    "iva": "IVA",
+    "ivaTaxed21": "IVA 21%",
+    "ivaTaxed105": "IVA 10.5%",
+    "ivaExempt": "Exempt",
+    "feesTableCaption": "Fee schedule",
+    "noRowsSelected": "No rows selected",
+    "rowsSelected": "{count, plural, one {# selected} other {# selected}}",
+    "clearSelection": "Clear selection",
+    "selectAllRows": "Select all rows",
+    "selectRow": "Select row {row}",
+    "pagination": "Pagination",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "pageOf": "Page {page} of {total}",
+    "paginationPageOf": "Page <hl>{page}</hl> of {total}",
+    "add": "Add",
+    "flagDuplicate": "Duplicate",
+    "flagFailed": "Failed",
+    "flagWarning": "Warning",
+    "used": "Used",
+    "percentOfLimit": "{pct}% of limit",
+    "creditLimitUsage": "Credit limit usage",
+    "limitLabel": "Limit:",
+    "closesOnDay": "Closes on day <hl>{day}</hl>",
+    "dueOnDay": "Due on day <hl>{day}</hl>",
+    "file": "File",
+    "unsupportedFormat": "Unsupported format",
+    "dropzonePrompt": "Drag a file here or click to select one",
+    "acceptedFormats": "Accepted formats: {formats}",
+    "fileStatus": "{file}: {status}",
+    "fileStatusUploading": "Uploading",
+    "fileStatusProcessing": "Processing",
+    "fileStatusDone": "Done",
+    "fileStatusError": "Error",
+    "uploadProgress": "Upload progress",
+    "processSteps": "Process steps",
+    "market": "Market",
+    "addPosition": "Add position",
+    "editPosition": "Edit position",
+    "ticker": "Ticker",
+    "tickerPlaceholder": "e.g. GGAL",
+    "quantity": "Quantity",
+    "purchasePrice": "Purchase price",
+    "mainNavigation": "Main navigation",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "logout": "Log out",
+    "notifications": "Notifications",
+    "unreadNotifications": "{count, plural, one {# unread notification} other {# unread notifications}}",
+    "markAll": "Mark all",
+    "noNotifications": "No notifications",
+    "unread": "Unread",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "sections": {
+    "unavailable": "We couldn't load this section",
+    "unavailableHint": "The rest of the page remains available",
+    "empty": "No data yet",
+    "asOf": "Updated {relative}"
+  },
+  "nav": {
+    "overview": "Overview",
+    "banks": "Banks",
+    "transactions": "Transactions",
+    "categories": "Categories",
+    "loans": "Loans",
+    "investments": "Investments",
+    "imports": "Imports",
+    "settings": "Settings"
+  },
+  "overview": {
+    "title": "Overview",
+    "subtitle": "General financial status and projections",
+    "cash": "Cash",
+    "income": "Income",
+    "expense": "Expenses",
+    "committed": "Committed",
+    "netWorthKicker": "Net Worth",
+    "allTimeHigh": "★ All-time high",
+    "netWorthAria": "Net worth evolution",
+    "breakdownTitle": "Net Worth Composition",
+    "breakdown": {
+      "investments": "Investments",
+      "savings": "Savings",
+      "debt": "Debt"
+    },
+    "flowTitle": "Monthly Flow (Income vs Expenses)",
+    "flowAria": "Monthly flow of income and expenses",
+    "committedTitle": "Committed Expenses by Month",
+    "committedAria": "Committed expenses by month",
+    "railTitle": "Activity & Alerts",
+    "upcomingTitle": "Upcoming Payments",
+    "upcomingEmpty": "No upcoming payments.",
+    "spendTitle": "Spending by Category",
+    "spendEmpty": "No expenses recorded this month.",
+    "latestTitle": "Latest Transactions",
+    "latest": {
+      "caption": "Latest transactions",
+      "seeAll": "See all →",
+      "date": "Date",
+      "description": "Description",
+      "category": "Category",
+      "uncategorised": "Uncategorized",
+      "amount": "Amount",
+      "emptyAction": "Record transaction"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "subtitle": "Transaction history, income, expenses and categorization",
+    "method": "Method",
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# uncategorised transaction} other {# uncategorised transactions}}",
+    "uncategorisedTitle": "Uncategorized transactions",
+    "uncategorisedBody": "{count, plural, one {You have # uncategorised transaction.} other {You have # uncategorised transactions.}}",
+    "uncategorisedLink": "See uncategorised →",
+    "uncategorisedValue": "Uncategorized",
+    "summary": {
+      "income": "Income",
+      "expense": "Expenses",
+      "net": "Net",
+      "count": "Transactions"
+    },
+    "filters": {
+      "byAccount": "Filter by account",
+      "allAccounts": "All accounts",
+      "byCategory": "Filter by category",
+      "allCategories": "All categories",
+      "byMethod": "Filter by method",
+      "allMethods": "All methods",
+      "chipSearch": "Search: {q}",
+      "chipCategory": "Category: {name}",
+      "chipAccount": "Account: {name}",
+      "chipMethod": "Method: {name}"
+    },
+    "table": {
+      "caption": "Transactions table",
+      "date": "Date",
+      "description": "Description",
+      "account": "Account",
+      "category": "Category",
+      "amount": "Amount"
+    },
+    "detail": {
+      "title": "Transaction detail",
+      "amount": "Amount",
+      "account": "Account",
+      "category": "Category",
+      "note": "Note",
+      "origin": "Origin",
+      "run": "Run #{id}",
+      "status": "Status",
+      "reconciled": "Reconciled",
+      "pending": "Pending"
+    },
+    "bulk": {
+      "categorise": "Categorize"
+    }
+  },
+  "categories": {
+    "title": "Categories & Budgets",
+    "subtitle": "Budget control, allocation and automatic rules",
+    "pace": "Monthly pace",
+    "overBudget": "Over budget",
+    "rulesTitle": "Automatic Rules",
+    "railTitle": "Category Analysis",
+    "budget": {
+      "accumulated": "Accumulated spending",
+      "available": "Available",
+      "over": "Over budget",
+      "noCap": "No limit"
+    },
+    "tabs": {
+      "budget": "Budget",
+      "rules": "Rules",
+      "income": "Income"
+    },
+    "trend": {
+      "title": "Trend",
+      "titleFor": "Trend {name}",
+      "empty": "Select a category to see its monthly trend.",
+      "noData": "Not enough historical data."
+    },
+    "income": {
+      "empty": "No income recorded this month."
+    },
+    "rules": {
+      "new": "New rule",
+      "newTitle": "New categorization rule",
+      "newDescription": "Create a rule to automatically categorize future and existing transactions.",
+      "matches": "Matches",
+      "patternPlaceholder": "e.g. UBER",
+      "assigned": "Assigned category",
+      "selectCategory": "Select a category",
+      "matchCount": "{count, plural, one {# transaction matches} other {# transactions match}}",
+      "loading": "Loading...",
+      "preview": "Preview",
+      "creating": "Creating...",
+      "create": "Create rule",
+      "priority": "Priority",
+      "actionsHeader": "Actions",
+      "caption": "Categorization rules",
+      "deleteTitle": "Delete rule?",
+      "deleteDescription": "This action will delete the categorization rule. Past transactions will keep their current category.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
+  },
+  "loans": {
+    "title": "Loans",
+    "kpis": {
+      "totalOutstanding": "Outstanding balance",
+      "monthlyPayment": "Monthly payment",
+      "activeLoans": "Active loans",
+      "nextDue": "Next due date"
+    },
+    "table": {
+      "loan": "Loan",
+      "bank": "Bank",
+      "principal": "Principal",
+      "outstanding": "Balance",
+      "rate": "Rate",
+      "nextInstallment": "Next installment",
+      "progress": "{paid} of {total, plural, one {# installment} other {# installments}}",
+      "empty": "No active loans",
+      "viewSchedule": "View schedule"
+    },
+    "schedule": {
+      "title": "Installment schedule",
+      "number": "No.",
+      "amount": "Amount",
+      "dueDate": "Due date",
+      "paid": "Paid",
+      "pending": "Pending",
+      "pay": "Pay installment"
+    },
+    "payDialog": {
+      "title": "Pay installment",
+      "description": "Choose the account you want to pay this installment from.",
+      "account": "Pay from account",
+      "confirm": "Confirm payment"
+    },
+    "deleteDialog": {
+      "title": "Delete loan",
+      "body": "Delete {label}? This cannot be undone."
+    }
+  },
+  "investments": {
+    "title": "Investments",
+    "subtitle": "Portfolio, market quotes and performance",
+    "totalInvested": "Invested cost",
+    "totalPnl": "Total P&L",
+    "portfolio": "Portfolio",
+    "shared": {
+      "totalValue": "Total value"
+    },
+    "tabs": {
+      "operations": "Operations",
+      "kpiMarketValue": "Market value",
+      "kpiPerformance": "Return",
+      "positionsHeading": "Portfolio positions",
+      "positionsCaption": "Investment positions",
+      "positionsEmptyTitle": "No positions",
+      "positionsEmptyDescription": "No positions yet. Add your first holding from the Markets tab.",
+      "colName": "Name",
+      "colAvgCost": "Avg. cost",
+      "colPrice": "Price",
+      "compositionHeading": "Breakdown by asset type",
+      "performancePlaceholder": "Portfolio evolution is shown in the Portfolio tab."
+    },
+    "market": {
+      "addHoldingFor": "Add holding for {ticker}",
+      "scanning": "Scanning the market…",
+      "unavailable": "Market data is currently unavailable. Please try again later.",
+      "noOpportunities": "You own all trending assets!",
+      "discoveryTitle": "Market discovery",
+      "iolTrending": "IOL trending",
+      "searchPlaceholder": "Search a ticker to research…",
+      "ranges": {
+        "all": "All"
+      },
+      "seriesError": "We couldn't load the price series.",
+      "priceChartAria": "Price evolution for {ticker}",
+      "evolutionHeading": "Portfolio evolution",
+      "evolutionEmpty": "No evolution data available.",
+      "evolutionAria": "Portfolio value and accumulated cost evolution",
+      "readOnly": "read-only",
+      "summaryEmpty": "No holdings yet. Add your first holding in the Holdings tab.",
+      "portfolioTotal": "Portfolio total",
+      "alertsTitle": "Market alerts",
+      "bankFilterLabel": "Account",
+      "allBanks": "All banks"
+    },
+    "operations": {
+      "heading": "Latest operations",
+      "subheading": "Operations inferred from your current positions",
+      "empty": "No operations recorded.",
+      "caption": "Operation history",
+      "colDate": "Date",
+      "colKind": "Operation",
+      "colAmount": "Amount"
+    },
+    "alerts": {
+      "tabPlaceholder": "Market alerts are shown in the notifications side panel.",
+      "onGain": "Alert on gain %",
+      "onLoss": "Alert on loss %",
+      "activeThresholds": "Active thresholds",
+      "unreadCount": "{count} unread",
+      "empty": "No active alerts."
+    },
+    "holdings": {
+      "assetType": {
+        "STOCK": "Stock",
+        "CEDEAR": "CEDEAR",
+        "BOND": "Bond",
+        "FCI": "FCI (mutual fund)"
+      },
+      "assetTypePlural": {
+        "STOCK": "Stocks",
+        "CEDEAR": "CEDEARs",
+        "BOND": "Bonds",
+        "FCI": "Mutual funds (FCI)"
+      },
+      "validation": {
+        "required": "Required",
+        "requiredForTransaction": "Required for transaction",
+        "mustBePositive": "Must be positive",
+        "mustBeZeroOrPositive": "Must be zero or positive"
+      },
+      "new": "New holding",
+      "empty": "No holdings yet.",
+      "loadError": "We couldn't load your holdings.",
+      "editTitle": "Edit holding",
+      "editDescription": "Update the details of this holding.",
+      "newDescription": "Add a holding to your portfolio.",
+      "sectionLabel": "{label} ({count})",
+      "colName": "Name",
+      "colQty": "Qty",
+      "colAvgPrice": "Avg price",
+      "colCurrent": "Current",
+      "colValue": "Value",
+      "sellAction": "Sell holding",
+      "fieldCurrency": "Currency",
+      "fieldBank": "Bank",
+      "selectBankPlaceholder": "Select a bank",
+      "fieldFundingAccount": "Funding account",
+      "fundingPlaceholder": "Pay from…",
+      "pickBankFirst": "Pick a bank first",
+      "noAccountInBank": "No {currency} account in this bank",
+      "fieldAssetType": "Asset type",
+      "namePlaceholder": "e.g. Grupo Financiero Galicia",
+      "fieldAvgPurchasePrice": "Avg purchase price",
+      "notificationsSection": "Notifications (optional)",
+      "thresholdPlaceholder": "e.g. 10",
+      "updating": "Updating…",
+      "creating": "Creating…",
+      "update": "Update holding",
+      "create": "Create holding",
+      "toastCreated": "Holding created",
+      "toastCreateFailed": "We couldn't create the holding",
+      "toastUpdated": "Holding updated",
+      "toastUpdateFailed": "We couldn't update the holding",
+      "avgPrice": "Average price",
+      "currentPrice": "Current price",
+      "priceHistoryHeading": "Price history",
+      "priceHistoryAria": "Price history for {ticker}",
+      "backToInvestments": "Back to Investments",
+      "sellTitle": "Sell holding: {ticker}",
+      "sellDescription": "Sell part or all of this holding.",
+      "quantityToSell": "Quantity to sell",
+      "marketPrice": "Market price",
+      "estimatedLiquidation": "Estimated liquidation",
+      "receiveFundsIn": "Receive funds in",
+      "selectDestinationAccount": "Select destination account",
+      "noAccountsForCurrency": "No available accounts in {currency} to receive funds.",
+      "processing": "Processing…",
+      "confirmSale": "Confirm sale",
+      "toastSold": "Sold {ticker} for {amount}",
+      "toastSellFailed": "We couldn't sell the holding"
+    }
+  },
+  "imports": {
+    "title": "Imports",
+    "subtitle": "Bank statement PDF and generic CSV import wizard",
+    "activeRun": "Import in progress",
+    "activeRunProcessed": "Processed: {count}",
+    "activeRunTotal": "Total: {count}",
+    "activeRunProgressLabel": "Import progress for {fileName}",
+    "activeRunUnnamedFile": "file",
+    "wizard": {
+      "title": "Import wizard",
+      "heading": "Import transactions",
+      "back": "Back",
+      "next": "Next",
+      "toastParseFailed": "Failed to parse file",
+      "toastImported": "{count, plural, one {Imported # transaction} other {Imported # transactions}}",
+      "toastImportFailed": "Import failed",
+      "toastFinished": "Import finished",
+      "cols": {
+        "date": "Date",
+        "description": "Description",
+        "currency": "Currency"
+      },
+      "duplicates": {
+        "title": "Possible duplicates found",
+        "srDescription": "Review duplicate rows detected in this import.",
+        "body": "{count, plural, one {# transaction already exists} other {# transactions already exist}} with the same date and amount. Select which ones to import anyway.",
+        "skipAll": "Skip all",
+        "importChecked": "Import checked ({count})",
+        "importAll": "Import all",
+        "toastResolveFailed": "Failed to resolve duplicates"
+      }
+    },
+    "history": {
+      "title": "Import History",
+      "tableLabel": "Imported files history",
+      "colSourceCbu": "Source / CBU",
+      "colInserted": "Inserted",
+      "colDuplicates": "Duplicates",
+      "colFailed": "Failed",
+      "colDate": "Date",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "empty": "No import history yet",
+      "status": {
+        "PENDING": "Pending",
+        "COMPLETED": "Completed",
+        "PARTIAL": "Partial",
+        "FAILED": "Failed",
+        "UNDONE": "Undone"
+      },
+      "undo": "Undo",
+      "undoBlocked": "Some transactions were edited manually",
+      "undoTitle": "Undo this import?",
+      "undoDescription": "The transactions imported from {fileName} will be deleted ({count, plural, one {# transaction} other {# transactions}}).",
+      "undoCount": "{count, plural, one {# transaction will be removed} other {# transactions will be removed}}.",
+      "undoConfirm": "Undo import"
+    },
+    "reconcile": {
+      "railTitle": "Verification",
+      "title": "Reconciliation Check",
+      "empty": "No reconciliation recorded",
+      "matched": "Balance matches",
+      "unmatched": "Balance does not match",
+      "expected": "Expected:",
+      "computed": "Computed:"
+    },
+    "steps": {
+      "fileTypes": {
+        "VISA_PDF": "ICBC Visa statement",
+        "BANK_PDF": "ICBC bank movements",
+        "CSV": "Generic CSV"
+      },
+      "fileSelect": {
+        "question": "What are you importing?",
+        "hintCsv": "Any CSV with headers",
+        "parsing": "Parsing file…",
+        "dropPrompt": "Drop file here or click to browse",
+        "acceptedFormats": "{formats} files only"
+      },
+      "accountLink": {
+        "bank": "Bank",
+        "selectBank": "Select bank…",
+        "card": "Card",
+        "selectCard": "Select card…",
+        "selectBankFirst": "Select a bank first",
+        "arsAccount": "ARS account",
+        "selectArsAccount": "Select ARS account…",
+        "usdAccount": "USD account",
+        "selectUsdAccount": "Select USD account (optional)…",
+        "usdHint": "{count, plural, one {# USD transaction found} other {# USD transactions found}}. If no account is selected, they will be skipped.",
+        "account": "Account",
+        "selectAccount": "Select account…"
+      },
+      "columnMapper": {
+        "modeTitle": "Amount mode",
+        "modeSigned": "One signed column",
+        "modeSeparate": "Separate columns",
+        "date": "Date *",
+        "description": "Description *",
+        "amount": "Amount *",
+        "debit": "Debit *",
+        "credit": "Credit *",
+        "balance": "Balance (optional)",
+        "selectColumn": "Select column...",
+        "colFallback": "Col {index}",
+        "noBalanceCheck": "Not checked",
+        "balanceCheckHint": "We will verify that the balance matches"
+      },
+      "pdfPreview": {
+        "summary": "{count, plural, one {Found <strong>#</strong> transaction} other {Found <strong>#</strong> transactions}}. {shown, plural, one {Showing the first one} other {Showing the first #}}.",
+        "arsCount": "ARS: {count}",
+        "usdCount": "USD: {count}",
+        "skippedCount": "Skipped: {count}",
+        "colType": "Type",
+        "type": {
+          "INCOME": "Income",
+          "EXPENSE": "Expense"
+        }
+      },
+      "confirm": {
+        "type": "Type",
+        "bank": "Bank",
+        "card": "Card",
+        "arsAccount": "ARS account",
+        "usdAccount": "USD account",
+        "account": "Account",
+        "transactionsToImport": "Transactions to import",
+        "skippedUnsupported": "Skipped (unsupported currency)",
+        "importing": "Importing…",
+        "confirm": "Import →"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Account preferences, security and configuration",
+    "nav": {
+      "profile": "Profile",
+      "security": "Security",
+      "currency": "Currency & format",
+      "notifications": "Notifications",
+      "fees": "Fees & costs",
+      "data": "Data"
+    },
+    "profile": {
+      "title": "User Profile",
+      "email": "Email address",
+      "name": "Name"
+    },
+    "security": {
+      "title": "Security & Sessions",
+      "activeSessions": "Active Sessions",
+      "unknownDevice": "Unknown device",
+      "currentSession": "This session",
+      "revoke": "Sign out",
+      "changePassword": "Change Password",
+      "newPassword": "New password",
+      "minLength": "At least {n} characters",
+      "revokeDialog": {
+        "title": "Sign out this session?",
+        "description": "The session on {device} will be signed out.",
+        "fallbackDevice": "the selected device"
+      }
+    },
+    "currency": {
+      "title": "Currency & Format",
+      "primary": "Primary currency",
+      "secondary": "Secondary currency",
+      "none": "None",
+      "decimals": "Decimals",
+      "twoDecimals": "2 decimals (.00)",
+      "noDecimals": "No decimals",
+      "preview": "Preview: {value}",
+      "sample": {
+        "withDecimals": "$1,284,000.00",
+        "noDecimals": "$1,284,000"
+      },
+      "gainLossColors": {
+        "label": "Use green and red for amounts",
+        "description": "Highlight income in green and expenses in red. When off, colors stay neutral."
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "fallbackLabel": "Notification",
+      "noChannels": "None",
+      "activeChannels": "Active channels: {channels}",
+      "categories": {
+        "PAYMENT_DUE": "Card and installment due dates",
+        "BUDGET": "Budget overrun",
+        "PORTFOLIO_ALERTS": "Portfolio and investment alerts",
+        "SUMMARY": "Periodic summary",
+        "IMPORT_HEALTH": "Import status",
+        "ACCOUNT": "Account alerts",
+        "SYSTEM": "System notifications"
+      }
+    },
+    "fees": {
+      "title": "Fees & Costs",
+      "debitCreditTax": "Debit/credit tax: {pct} % ({rate})",
+      "accounts": "Accounts",
+      "emptyAccounts": "No account fees configured",
+      "cards": "Cards",
+      "emptyCards": "No card fees configured",
+      "brokers": "Brokers & Investments",
+      "emptyBrokers": "No broker fees configured",
+      "scope": {
+        "accounts": "Accounts",
+        "cards": "Cards",
+        "brokers": "Brokers"
+      }
+    },
+    "data": {
+      "title": "Data & Export",
+      "soon": "Coming soon",
+      "deleteAccount": "Delete account",
+      "export": {
+        "label": "Data export",
+        "description": "Download your full history of transactions and accounts as CSV.",
+        "button": "Export data (CSV)"
+      },
+      "delete": {
+        "description": "Permanently delete your user and all associated data."
+      }
+    }
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Jane Doe",
+    "primaryCurrency": "Primary currency",
+    "currencies": {
+      "ars": "Argentine pesos (ARS)",
+      "usd": "US dollars (USD)"
+    },
+    "passwordRules": {
+      "label": "Password requirements",
+      "minLength": "At least {n} characters",
+      "uppercase": "One uppercase letter",
+      "digit": "One number"
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password",
+      "generic": "Could not sign in. Please try again.",
+      "emailTaken": "An account with that email already exists",
+      "registerFailed": "Something went wrong creating the account"
+    },
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Enter your credentials to access your platform",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "noAccount": "Don’t have an account? <link>Sign up</link>",
+      "pageTitle": "Welcome to financial-app",
+      "pageSubtitle": "Access your net worth summary, bank accounts and investments"
+    },
+    "register": {
+      "title": "Create Account",
+      "step": "Step {step} of 2 — {label}",
+      "step1Label": "Access credentials",
+      "step2Label": "User profile",
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Create account",
+      "submitting": "Creating...",
+      "haveAccount": "Already have an account? <link>Sign in</link>",
+      "pageTitle": "Join financial-app",
+      "pageSubtitle": "Start managing your accounts, cards and budget in one place"
+    },
+    "split": {
+      "defaultTitle": "Financial Platform",
+      "defaultSubtitle": "Smart management of your personal and banking finances",
+      "footer": "© 2026 financial-app. Argentine market."
+    }
+  },
+  "banks": {
+    "title": "Banks & Accounts",
+    "subtitle": "Manage accounts, cards and bank obligations",
+    "tabAccounts": "Accounts",
+    "tabCards": "Cards",
+    "tabLoans": "Loans",
+    "railTitle": "Information & Imports",
+    "kpis": {
+      "totalCash": "Total cash",
+      "cardDebt": "Card debt",
+      "loanBalance": "Loans balance",
+      "accountCount": "Active accounts"
+    },
+    "accounts": {
+      "add": "Add account",
+      "fallbackName": "Account",
+      "fallbackBank": "Bank"
+    },
+    "cards": {
+      "add": "Add card",
+      "fallbackBrand": "Card",
+      "closesOn": "Closes:",
+      "dueOn": "Due:"
+    },
+    "loans": {
+      "activeTitle": "Active Loans",
+      "tableCaption": "Loans summary",
+      "columnLabel": "Loan",
+      "columnOutstanding": "Outstanding balance",
+      "columnInstallments": "Installments",
+      "columnNextDue": "Next due date",
+      "installmentsOfTotal": "{paid} / {total, plural, one {# installment} other {# installments}}"
+    },
+    "cashDistribution": {
+      "title": "Balance Distribution",
+      "empty": "No balances recorded."
+    },
+    "calendar": {
+      "title": "Upcoming Bank Due Dates",
+      "empty": "No upcoming due dates.",
+      "dueFallback": "Due date"
+    },
+    "importHealth": {
+      "title": "Import Status",
+      "importAction": "Import",
+      "empty": "No imports",
+      "goToImports": "Go to Imports",
+      "statusNever": "No imports",
+      "statusStale": "Out of date",
+      "statusOk": "Up to date"
+    },
+    "dialogs": {
+      "shared": {
+        "fieldBank": "Bank",
+        "selectBankPlaceholder": "Select bank",
+        "fieldType": "Type",
+        "fieldCurrency": "Currency",
+        "fieldDescription": "Description",
+        "create": "Create",
+        "update": "Update",
+        "behavior": {
+          "INSTANT_PAYMENT": "Instant payment",
+          "CREDIT": "Credit (installments)"
+        }
+      },
+      "addAccount": {
+        "addTitle": "Add account",
+        "editTitle": "Edit account",
+        "description": "Create or edit a bank account.",
+        "errorSave": "We couldn't save the account",
+        "fieldName": "Account name",
+        "namePlaceholder": "Salary",
+        "fieldAlias": "Alias (optional)",
+        "aliasPlaceholder": "sergi.sueldo",
+        "fieldCbu": "CBU (22 digits)",
+        "accountType": {
+          "CHECKING": "Checking account",
+          "SAVINGS": "Savings account"
+        },
+        "noAliasTitle": "No alias provided",
+        "noAliasDescription": "You didn't enter an alias. The account's CBU will be used as its alias. Do you want to continue?",
+        "goBack": "Go back",
+        "useCbuAsAlias": "Use CBU as alias"
+      },
+      "cardForm": {
+        "newTitle": "New card",
+        "editTitle": "Edit card",
+        "description": "Add or edit a card.",
+        "errorSave": "We couldn't save the card",
+        "fieldBrand": "Brand",
+        "cardType": {
+          "STANDARD": "Standard",
+          "SILVER": "Silver",
+          "GOLD": "Gold",
+          "BLACK": "Black",
+          "PLATINUM": "Platinum"
+        },
+        "fieldBehavior": "Behavior",
+        "fieldCardNumber": "Card number (16 digits, or 15 to auto-complete)",
+        "fieldExpiry": "Expiry (MM/YY)",
+        "fieldClosingDay": "Closing day",
+        "fieldDueDay": "Due day"
+      },
+      "cardExpense": {
+        "title": "New card expense",
+        "description": "Add or edit a card expense.",
+        "errorSave": "We couldn't save the card expense",
+        "fieldTotalAmount": "Total amount",
+        "fieldInstallments": "Installments",
+        "fieldFirstDueDate": "First due date"
+      },
+      "cardDetail": {
+        "description": "Details and expenses for this card.",
+        "addExpense": "Add expense",
+        "loadingInstallments": "Loading installments…",
+        "noPurchases": "No purchases recorded for this card.",
+        "purchases": "Purchases",
+        "paidOfTotal": "{paid} of {total, plural, one {# installment} other {# installments}} paid",
+        "fullyPaid": "Fully paid",
+        "dueOnDate": "Due {date}",
+        "paidOnDate": "Paid {date}",
+        "accountPlaceholder": "Account...",
+        "noAccounts": "No accounts",
+        "installmentPaid": "Installment paid",
+        "errorPayment": "We couldn't record the payment",
+        "pay": "Pay",
+        "upcomingDueDates": "Upcoming Due Dates",
+        "dueWithInstallment": "Due {date} (#{number}/{total})"
+      },
+      "record": {
+        "title": {
+          "DEPOSIT": "Deposit Funds",
+          "WITHDRAW": "Withdraw Funds",
+          "TRANSFER": "Transfer Funds"
+        },
+        "success": {
+          "DEPOSIT": "Deposit recorded",
+          "WITHDRAW": "Withdrawal recorded",
+          "TRANSFER": "Transfer recorded"
+        },
+        "description": "Record a movement for this account.",
+        "errorSelectCounterpart": "Select a counterpart account",
+        "errorCounterpartCbu": "Counterpart CBU must be 22 digits",
+        "errorAmountPositive": "Amount must be greater than zero",
+        "errorCategoryRequired": "Category is required",
+        "errorRecord": "We couldn't record the transaction",
+        "counterpartSource": "Source",
+        "counterpartDestination": "Destination",
+        "counterpartOwn": "Own account",
+        "counterpartExternal": "External CBU",
+        "selectAccountPlaceholder": "Select account",
+        "noMatchingAccounts": "No matching accounts",
+        "cbuPlaceholder": "22-digit CBU",
+        "selectPlaceholder": "Select",
+        "fieldSubcategory": "Subcategory",
+        "categoryFirst": "Pick a category first",
+        "reasonPlaceholder": "Reason...",
+        "fieldDate": "Date",
+        "processing": "Processing…",
+        "recordAction": "Record"
+      },
+      "history": {
+        "title": "Recent Activity: {account}",
+        "description": "Transaction history for this account.",
+        "noTransactions": "No transactions recorded for this account.",
+        "transactionFallback": "Transaction"
+      }
+    }
+  }
+}

@@ -1,12 +1,14 @@
 'use client'
 
-import { PortfolioPerformanceChart } from './PortfolioPerformanceChart'
+import React from 'react'
+import { useTranslations } from 'next-intl'
 
-interface PerformanceTabProps {
-  enabled?: boolean
-}
+export function PerformanceTab() {
+  const t = useTranslations('investments')
 
-export function PerformanceTab({ enabled }: PerformanceTabProps) {
-  if (!enabled) return null
-  return <PortfolioPerformanceChart />
+  return (
+    <div className="p-4 rounded-lg border bg-card text-muted-foreground text-sm">
+      {t('tabs.performancePlaceholder')}
+    </div>
+  )
 }

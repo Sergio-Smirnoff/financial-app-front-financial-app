@@ -1,17 +1,15 @@
 'use client'
 
-import { NotificationSettings } from '@/components/pages/settings/NotificationSettings'
+import React from 'react'
+import { useBffQuery } from '@/lib/hooks/useBffQuery'
+import { SettingsContent } from '@/components/pages/settings/SettingsContent'
 
 export default function SettingsPage() {
+  const query = useBffQuery()
+
   return (
-    <div className="container max-w-2xl py-8">
-      <h1 className="text-2xl font-bold mb-6">Configuración</h1>
-      <div className="space-y-6">
-        <section className="border rounded-lg p-6">
-          <h2 className="text-lg font-semibold mb-4">Notificaciones</h2>
-          <NotificationSettings />
-        </section>
-      </div>
-    </div>
+    <main className="flex-1 overflow-auto p-6">
+      <SettingsContent query={query} />
+    </main>
   )
 }

@@ -2,23 +2,23 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner'
-import { ErrorMessage } from '@/components/shared/ErrorMessage'
+import { InlineBanner } from '@/components/ui-kit/feedback/InlineBanner'
 import { HoldingForm } from './HoldingForm'
 import { HoldingSection } from './HoldingSection'
 import { SellHoldingDialog } from './SellHoldingDialog'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus } from 'lucide-react'
 import type { HoldingWithPrice, AssetType } from '@/types/investments'
 
 const ASSET_TYPE_ORDER: AssetType[] = ['STOCK', 'CEDEAR', 'BOND', 'FCI']
-const ASSET_TYPE_LABELS: Record<AssetType, string> = {
-  STOCK: 'Stocks',
-  CEDEAR: 'CEDEARs',
-  BOND: 'Bonds',
-  FCI: 'Mutual Funds (FCI)',
+const ASSET_TYPE_LABEL_KEYS: Record<AssetType, string> = {
+  STOCK: 'holdings.assetTypePlural.STOCK',
+  CEDEAR: 'holdings.assetTypePlural.CEDEAR',
+  BOND: 'holdings.assetTypePlural.BOND',
+  FCI: 'holdings.assetTypePlural.FCI',
 }
 
 interface HoldingsContentProps {
@@ -28,6 +28,8 @@ interface HoldingsContentProps {
 
 export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentProps) {
   const { data: holdings, isLoading, isError } = usePortfolioHoldings({ enabled })
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
   const router = useRouter()
   const [formOpen, setFormOpen] = useState(false)
   const [editingHolding, setEditingHolding] = useState<HoldingWithPrice | null>(null)
@@ -43,24 +45,24 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
     setEditingHolding(null)
   }
 
-  if (isLoading) return <LoadingSpinner />
-  if (isError) return <ErrorMessage message="Failed to load holdings." />
+  if (isLoading) return <div className="p-8 text-center text-sm text-muted-foreground">{tc('loading')}</div>
+  if (isError) return <InlineBanner tone="error" description={t('holdings.loadError')} />
 
   const visibleHoldings = (holdings ?? []).filter((holding) => !bankNumber || holding.bankNumber === bankNumber)
   const grouped = ASSET_TYPE_ORDER
-    .map((type) => ({ type, label: ASSET_TYPE_LABELS[type], items: visibleHoldings.filter((holding) => holding.assetType === type) }))
+    .map((type) => ({ type, label: t(ASSET_TYPE_LABEL_KEYS[type]), items: visibleHoldings.filter((holding) => holding.assetType === type) }))
     .filter((group) => group.items.length > 0)
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end shrink-0">
         <Button size="sm" onClick={() => { setEditingHolding(null); setFormOpen(true) }}>
-          <Plus className="mr-1 h-4 w-4" /> New holding
+          <Plus className="mr-1 h-4 w-4" /> {t('holdings.new')}
         </Button>
       </div>
 
       {visibleHoldings.length === 0 && (
-        <p className="text-sm text-muted-foreground text-center py-8">No holdings yet.</p>
+        <p className="text-sm text-muted-foreground text-center py-8">{t('holdings.empty')}</p>
       )}
 
       {grouped.map((group) => (
@@ -77,7 +79,8 @@ export function HoldingsContent({ enabled = true, bankNumber }: HoldingsContentP
       <Dialog open={formOpen} onOpenChange={handleFormClose}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{editingHolding ? 'Edit holding' : 'New holding'}</DialogTitle>
+            <DialogTitle>{editingHolding ? t('holdings.editTitle') : t('holdings.new')}</DialogTitle>
+            <DialogDescription>{editingHolding ? t('holdings.editDescription') : t('holdings.newDescription')}</DialogDescription>
           </DialogHeader>
           <HoldingForm
             holding={editingHolding}

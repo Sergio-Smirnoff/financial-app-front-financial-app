@@ -1,16 +1,11 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { UploadCloud } from 'lucide-react'
 import { ImportFileType } from '@/types/import'
 import { cn } from '@/lib/utils'
-
-const FILE_TYPES: { value: ImportFileType; label: string; accept: string; hint: string }[] = [
-  { value: 'VISA_PDF', label: 'ICBC Visa Statement', accept: '.pdf', hint: 'ERESUMEN VISA.PDF' },
-  { value: 'BANK_PDF', label: 'ICBC Bank Movements', accept: '.pdf', hint: 'EXT.DE.MOVIMIENTOS.pdf' },
-  { value: 'CSV', label: 'Generic CSV', accept: '.csv', hint: 'Any CSV with headers' },
-]
 
 interface Props {
   isLoading: boolean
@@ -18,11 +13,18 @@ interface Props {
 }
 
 export function StepFileSelect({ isLoading, onFileSelected }: Props) {
+  const t = useTranslations('imports')
   const [selectedType, setSelectedType] = useState<ImportFileType>('VISA_PDF')
   const [dragging, setDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const accept = FILE_TYPES.find(t => t.value === selectedType)?.accept ?? '.pdf'
+  const fileTypes: { value: ImportFileType; label: string; accept: string; hint: string }[] = [
+    { value: 'VISA_PDF', label: t('steps.fileTypes.VISA_PDF'), accept: '.pdf', hint: 'ERESUMEN VISA.PDF' },
+    { value: 'BANK_PDF', label: t('steps.fileTypes.BANK_PDF'), accept: '.pdf', hint: 'EXT.DE.MOVIMIENTOS.pdf' },
+    { value: 'CSV', label: t('steps.fileTypes.CSV'), accept: '.csv', hint: t('steps.fileSelect.hintCsv') },
+  ]
+
+  const accept = fileTypes.find(ft => ft.value === selectedType)?.accept ?? '.pdf'
 
   const handleFile = (file: File) => {
     if (!file) return
@@ -32,14 +34,14 @@ export function StepFileSelect({ isLoading, onFileSelected }: Props) {
   return (
     <div className="space-y-6">
       <div>
-        <Label className="text-sm font-medium mb-3 block">What are you importing?</Label>
+        <Label className="text-sm font-medium mb-3 block">{t('steps.fileSelect.question')}</Label>
         <div className="space-y-2">
-          {FILE_TYPES.map(t => (
+          {fileTypes.map(ft => (
             <label
-              key={t.value}
+              key={ft.value}
               className={cn(
                 'flex items-start gap-3 rounded-md border p-3 cursor-pointer transition-colors',
-                selectedType === t.value
+                selectedType === ft.value
                   ? 'border-primary bg-primary/5'
                   : 'border-border hover:bg-muted/50',
               )}
@@ -47,14 +49,14 @@ export function StepFileSelect({ isLoading, onFileSelected }: Props) {
               <input
                 type="radio"
                 name="fileType"
-                value={t.value}
-                checked={selectedType === t.value}
-                onChange={() => setSelectedType(t.value)}
+                value={ft.value}
+                checked={selectedType === ft.value}
+                onChange={() => setSelectedType(ft.value)}
                 className="mt-0.5"
               />
               <div>
-                <p className="text-sm font-medium">{t.label}</p>
-                <p className="text-xs text-muted-foreground">{t.hint}</p>
+                <p className="text-sm font-medium">{ft.label}</p>
+                <p className="text-xs text-muted-foreground">{ft.hint}</p>
               </div>
             </label>
           ))}
@@ -81,12 +83,12 @@ export function StepFileSelect({ isLoading, onFileSelected }: Props) {
         />
         <UploadCloud className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
         {isLoading ? (
-          <p className="text-sm text-muted-foreground animate-pulse">Parsing file…</p>
+          <p className="text-sm text-muted-foreground animate-pulse">{t('steps.fileSelect.parsing')}</p>
         ) : (
           <>
-            <p className="text-sm font-medium">Drop file here or click to browse</p>
+            <p className="text-sm font-medium">{t('steps.fileSelect.dropPrompt')}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {accept.toUpperCase().replace('.', '')} files only
+              {t('steps.fileSelect.acceptedFormats', { formats: accept.toUpperCase().replace('.', '') })}
             </p>
           </>
         )}

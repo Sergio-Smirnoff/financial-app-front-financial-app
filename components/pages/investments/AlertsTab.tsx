@@ -1,14 +1,14 @@
 'use client'
 
-import { ActiveAlertsCard } from './ActiveAlertsCard'
-import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
+import React from 'react'
+import { useTranslations } from 'next-intl'
 
-interface AlertsTabProps {
-  enabled?: boolean
-}
+export function AlertsTab() {
+  const t = useTranslations('investments')
 
-export function AlertsTab({ enabled }: AlertsTabProps) {
-  const { data: holdings = [] } = usePortfolioHoldings({ enabled: !!enabled })
-  if (!enabled) return null
-  return <ActiveAlertsCard holdings={holdings} />
+  return (
+    <div className="p-4 rounded-lg border bg-card text-muted-foreground text-sm">
+      {t('alerts.tabPlaceholder')}
+    </div>
+  )
 }

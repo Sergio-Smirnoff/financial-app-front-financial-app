@@ -2,19 +2,18 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { MarketDiscoveryCard } from './MarketDiscoveryCard'
 import { TickerSearchBox } from './TickerSearchBox'
 import { TickerChartPanel } from './TickerChartPanel'
-import { TopMovers } from '@/components/pages/dashboard/TopMovers'
 import { Button } from '@/components/ui/button'
-import { usePortfolioHoldings } from '@/lib/hooks/useInvestments'
 
 interface MarketsTabProps {
   enabled?: boolean
 }
 
 export function MarketsTab({ enabled }: MarketsTabProps) {
-  const { data: holdings = [] } = usePortfolioHoldings({ enabled: !!enabled })
+  const t = useTranslations('investments')
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
   const router = useRouter()
   if (!enabled) return null
@@ -28,12 +27,11 @@ export function MarketsTab({ enabled }: MarketsTabProps) {
             type="button"
             onClick={() => router.push(`/investments?add=${encodeURIComponent(selectedTicker)}`)}
           >
-            Add holding for {selectedTicker}
+            {t('market.addHoldingFor', { ticker: selectedTicker })}
           </Button>
         </div>
       )}
       <MarketDiscoveryCard />
-      <TopMovers holdings={holdings} />
     </div>
   )
 }

@@ -1,27 +1,36 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
+import { Inter } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import './globals.css'
 
-const geist = Geist({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
   title: 'FinanceApp',
   description: 'Personal finance tracker',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const messages = await getMessages()
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={geist.className}>
-        <ThemeProvider>
-          <QueryProvider>
-            {children}
-            <Toaster richColors />
-          </QueryProvider>
-        </ThemeProvider>
+    <html lang="es-AR" className={inter.variable} suppressHydrationWarning>
+      <body className={inter.className}>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <QueryProvider>
+              <NuqsAdapter>
+                {children}
+                <Toaster richColors />
+              </NuqsAdapter>
+            </QueryProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

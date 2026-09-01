@@ -1,19 +1,15 @@
-import { BanksContent } from "@/components/pages/banks/BanksContent";
-import { Header } from "@/components/layout/Header";
-import { Metadata } from "next";
+'use client'
 
-export const metadata: Metadata = {
-  title: "Banks | Financial App",
-  description: "Manage your banks and accounts",
-};
+import React from 'react'
+import { useBffQuery } from '@/lib/hooks/useBffQuery'
+import { BanksContent } from '@/components/pages/banks/BanksContent'
 
 export default function BanksPage() {
+  const query = useBffQuery()
+
   return (
-    <div className="flex h-full w-full flex-col">
-      <Header title="Banks" />
-      <main className="flex-1 overflow-y-auto">
-        <BanksContent />
-      </main>
-    </div>
-  );
+    <main className="flex-1 overflow-y-auto p-6">
+      <BanksContent query={query} />
+    </main>
+  )
 }

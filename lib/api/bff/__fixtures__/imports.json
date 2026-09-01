@@ -1,0 +1,46 @@
+{
+  "activeRun": {
+    "data": {
+      "fileName": "Extracto …0017 2026-08-11 – 2026-08-12",
+      "processed": 0,
+      "runId": 1,
+      "startedAt": "2026-08-23T16:13:36.278944Z",
+      "status": "PARTIAL",
+      "total": 2
+    },
+    "observedAt": "2026-08-23T16:33:44.850937174Z",
+    "status": "OK"
+  },
+  "history": {
+    "data": [
+      {
+        "accountCbu": "0170099200000000000017",
+        "duplicates": 2,
+        "failed": 0,
+        "fileName": "Extracto …0017 2026-08-11 – 2026-08-12",
+        "importedAt": "2026-08-23T16:13:36.278944Z",
+        "inserted": 0,
+        "runId": 1,
+        "status": "PARTIAL"
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.850875338Z",
+    "status": "OK"
+  },
+  "reconciliation": {
+    "data": [
+      {
+        "computedBalance": {
+          "amount": "-31300.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "expectedBalance": null,
+        "matches": false,
+        "runId": 1
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.850662318Z",
+    "status": "OK"
+  }
+}

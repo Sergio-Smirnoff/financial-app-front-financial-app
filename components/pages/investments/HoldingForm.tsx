@@ -3,6 +3,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import { useCreateHolding, useUpdateHolding } from '@/lib/hooks/useInvestments'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useMemo } from 'react'
@@ -18,32 +19,45 @@ import {
 } from '@/components/ui/form'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import type { HoldingWithPrice } from '@/types/investments'
 
-const ASSET_TYPES = [
-  { value: 'STOCK', label: 'Stock' },
-  { value: 'CEDEAR', label: 'CEDEAR' },
-  { value: 'BOND', label: 'Bond' },
-  { value: 'FCI', label: 'FCI (Mutual Fund)' },
-]
+const ASSET_TYPE_OPTIONS = [
+  { value: 'STOCK', labelKey: 'holdings.assetType.STOCK' },
+  { value: 'CEDEAR', labelKey: 'holdings.assetType.CEDEAR' },
+  { value: 'BOND', labelKey: 'holdings.assetType.BOND' },
+  { value: 'FCI', labelKey: 'holdings.assetType.FCI' },
+] as const
 
 const CURRENCIES = ['ARS', 'USD'] as const
 
-const schema = z.object({
-  bankNumber: z.string().regex(/^\d{3}$/, 'Required'),
-  fundingCbu: z.string().regex(/^\d{22}$/, 'Required for transaction').optional().nullable(),
-  ticker: z.string().min(1, 'Required').max(20),
-  name: z.string().min(1, 'Required').max(100),
-  assetType: z.enum(['STOCK', 'BOND', 'CEDEAR', 'FCI']),
-  quantity: z.number({ error: 'Required' }).positive('Must be positive'),
-  avgPurchasePrice: z.number({ error: 'Required' }).min(0, 'Must be zero or positive'),
-  currency: z.enum(CURRENCIES),
-  notifyGainThresholdPct: z.number().positive('Must be positive').max(1000).optional().nullable(),
-  notifyLossThresholdPct: z.number().positive('Must be positive').max(1000).optional().nullable(),
-})
+type InvestmentsTranslator = ReturnType<typeof useTranslations<'investments'>>
 
-type FormValues = z.infer<typeof schema>
+function makeHoldingSchema(t: InvestmentsTranslator) {
+  const required = t('holdings.validation.required')
+  const mustBePositive = t('holdings.validation.mustBePositive')
+
+  return z.object({
+    bankNumber: z.string().regex(/^\d{3}$/, required),
+    fundingCbu: z
+      .string()
+      .regex(/^\d{22}$/, t('holdings.validation.requiredForTransaction'))
+      .optional()
+      .nullable(),
+    ticker: z.string().min(1, required).max(20),
+    name: z.string().min(1, required).max(100),
+    assetType: z.enum(['STOCK', 'BOND', 'CEDEAR', 'FCI']),
+    quantity: z.number({ error: required }).positive(mustBePositive),
+    avgPurchasePrice: z
+      .number({ error: required })
+      .min(0, t('holdings.validation.mustBeZeroOrPositive')),
+    currency: z.enum(CURRENCIES),
+    notifyGainThresholdPct: z.number().positive(mustBePositive).max(1000).optional().nullable(),
+    notifyLossThresholdPct: z.number().positive(mustBePositive).max(1000).optional().nullable(),
+  })
+}
+
+type FormValues = z.infer<ReturnType<typeof makeHoldingSchema>>
 
 interface HoldingFormProps {
   holding?: HoldingWithPrice | null
@@ -51,10 +65,14 @@ interface HoldingFormProps {
 }
 
 export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
+  const t = useTranslations('investments')
+  const tc = useTranslations('common')
   const { banks, isLoading: banksLoading } = useBanks()
   const createHolding = useCreateHolding()
   const updateHolding = useUpdateHolding()
   const isEditing = !!holding
+
+  const schema = useMemo(() => makeHoldingSchema(t), [t])
 
   const form = useForm<FormValues, unknown, FormValues>({
     resolver: zodResolver(schema),
@@ -101,14 +119,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
       updateHolding.mutate(
         { id: holding.id, data },
         {
-          onSuccess: () => { toast.success('Holding updated'); onSuccess() },
-          onError: (e: any) => { toast.error(e.message || 'Failed to update holding') },
+          onSuccess: () => { toast.success(t('holdings.toastUpdated')); onSuccess() },
+          onError: (e: any) => { toast.error(e.message || t('holdings.toastUpdateFailed')) },
         },
       )
     } else {
       createHolding.mutate(data, {
-        onSuccess: () => { toast.success('Holding created'); onSuccess() },
-        onError: (e: any) => { toast.error(e.message || 'Failed to create holding') },
+        onSuccess: () => { toast.success(t('holdings.toastCreated')); onSuccess() },
+        onError: (e: any) => { toast.error(e.message || t('holdings.toastCreateFailed')) },
       })
     }
   }
@@ -139,7 +157,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="currency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Currency</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.fieldCurrency')}</FormLabel>
                 <Select
                   value={field.value}
                   onValueChange={(currency) => { field.onChange(currency); form.setValue('fundingCbu', null) }}
@@ -160,13 +178,13 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="bankNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Bank</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.fieldBank')}</FormLabel>
                 <Select
                   value={field.value}
                   onValueChange={(bankNumber) => { field.onChange(bankNumber); form.setValue('fundingCbu', null) }}
                   disabled={isEditing}
                 >
-                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder="Select Bank" /></SelectTrigger></FormControl>
+                  <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={t('holdings.selectBankPlaceholder')} /></SelectTrigger></FormControl>
                   <SelectContent className="bg-popover border-border">
                     {banks.map((bank) => <SelectItem key={bank.bankNumber} value={bank.bankNumber}>{bank.name}</SelectItem>)}
                   </SelectContent>
@@ -182,17 +200,17 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
           name="fundingCbu"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Funding Account</FormLabel>
+              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.fieldFundingAccount')}</FormLabel>
               <Select
                 value={field.value ?? ''}
                 onValueChange={field.onChange}
                 disabled={!selectedBankNumber}
               >
-                <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? 'Pay from...' : 'Pick bank first'} /></SelectTrigger></FormControl>
+                <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue placeholder={selectedBankNumber ? t('holdings.fundingPlaceholder') : t('holdings.pickBankFirst')} /></SelectTrigger></FormControl>
                 <SelectContent className="bg-popover border-border">
                   {fundingAccounts.length === 0 ? (
                     <SelectItem value="__none" disabled>
-                      No {selectedCurrency} account in this bank
+                      {t('holdings.noAccountInBank', { currency: selectedCurrency })}
                     </SelectItem>
                   ) : (
                     fundingAccounts.map((account) => (
@@ -214,9 +232,9 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="ticker"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Ticker</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{tc('ticker')}</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="e.g. GGAL" className="h-11 uppercase rounded-xl bg-background border-border placeholder:text-muted-foreground/50" />
+                  <Input {...field} placeholder={tc('tickerPlaceholder')} className="h-11 uppercase rounded-xl bg-background border-border placeholder:text-muted-foreground/50" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -227,12 +245,12 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="assetType"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Asset Type</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.fieldAssetType')}</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl><SelectTrigger className="rounded-xl h-11 w-full bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                   <SelectContent className="bg-popover border-border">
-                    {ASSET_TYPES.map((assetType) => (
-                      <SelectItem key={assetType.value} value={assetType.value}>{assetType.label}</SelectItem>
+                    {ASSET_TYPE_OPTIONS.map((assetType) => (
+                      <SelectItem key={assetType.value} value={assetType.value}>{t(assetType.labelKey)}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -247,8 +265,8 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Name</FormLabel>
-              <FormControl><Input {...field} placeholder="e.g. Grupo Financiero Galicia" className="h-11 rounded-xl bg-background border-border placeholder:text-muted-foreground/50" /></FormControl>
+              <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.colName')}</FormLabel>
+              <FormControl><Input {...field} placeholder={t('holdings.namePlaceholder')} className="h-11 rounded-xl bg-background border-border placeholder:text-muted-foreground/50" /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -260,7 +278,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="quantity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Quantity</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{tc('quantity')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -280,7 +298,7 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
             name="avgPurchasePrice"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">Avg purchase price</FormLabel>
+                <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground tracking-widest ml-1">{t('holdings.fieldAvgPurchasePrice')}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -298,21 +316,21 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
         </div>
 
         <div className="space-y-3 pt-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 border-b border-border pb-1">Notifications (optional)</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 border-b border-border pb-1">{t('holdings.notificationsSection')}</p>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="notifyGainThresholdPct"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Alert on gain %</FormLabel>
+                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{t('alerts.onGain')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
                       className="h-10 rounded-xl bg-background border-border placeholder:text-muted-foreground/30"
-                      placeholder="e.g. 10"
+                      placeholder={t('holdings.thresholdPlaceholder')}
                       value={field.value ?? ''}
                       onChange={(e) =>
                         field.onChange(e.target.value === '' ? null : e.target.valueAsNumber)
@@ -328,14 +346,14 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
               name="notifyLossThresholdPct"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">Alert on loss %</FormLabel>
+                  <FormLabel className="text-[9px] font-bold uppercase text-muted-foreground tracking-wider">{t('alerts.onLoss')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
                       min="0"
                       className="h-10 rounded-xl bg-background border-border placeholder:text-muted-foreground/30"
-                      placeholder="e.g. 10"
+                      placeholder={t('holdings.thresholdPlaceholder')}
                       value={field.value ?? ''}
                       onChange={(e) =>
                         field.onChange(e.target.value === '' ? null : e.target.valueAsNumber)
@@ -350,7 +368,9 @@ export function HoldingForm({ holding, onSuccess }: HoldingFormProps) {
         </div>
 
         <Button type="submit" className="w-full h-12 rounded-xl text-base font-bold shadow-none bg-primary text-primary-foreground hover:opacity-90" disabled={isPending}>
-          {isPending ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update holding' : 'Create holding')}
+          {isPending
+            ? isEditing ? t('holdings.updating') : t('holdings.creating')
+            : isEditing ? t('holdings.update') : t('holdings.create')}
         </Button>
       </form>
     </Form>

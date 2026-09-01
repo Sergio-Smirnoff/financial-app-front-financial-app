@@ -1,0 +1,26 @@
+{
+  "detail": {
+    "data": {
+      "origin": null,
+      "transaction": {
+        "accountAlias": "",
+        "accountCbu": "",
+        "amount": {
+          "amount": "645000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "categoryId": 12,
+        "categoryName": "Inversiones",
+        "date": "2026-08-23",
+        "description": "Investment purchase",
+        "direction": "OUT",
+        "id": 108,
+        "method": "",
+        "note": "null"
+      }
+    },
+    "observedAt": "2026-08-23T16:33:44.913796200Z",
+    "status": "OK"
+  }
+}

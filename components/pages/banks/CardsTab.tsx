@@ -1,101 +1,98 @@
 'use client'
 
-import { useState } from 'react'
-import { useCards, useDeleteCard } from '@/lib/hooks/useCards'
-import { useBanks } from '@/lib/hooks/useBanks'
-import { useUiStore } from '@/lib/store/ui.store'
+import React from 'react'
+import { useTranslations } from 'next-intl'
+import { SectionState } from '@/components/ui-kit/feedback/SectionState'
+import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { QueryBoundary } from '@/components/shared/QueryBoundary'
-import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
-import { Plus, CreditCard } from 'lucide-react'
-import type { Card } from '@/types/cards'
-import { CardList } from './CardList'
-import { CardFormDialog } from './CardFormDialog'
-import { CardDetailDialog } from './CardDetailDialog'
-import { toast } from 'sonner'
+import { cn } from '@/lib/utils'
+import type { Section, CardRow } from '@/lib/api/bff/types'
 
-export function CardsTab() {
-  const { banks } = useBanks()
-  const [filterBank, setFilterBank] = useState<string>('ALL')
-  const { data: cards, isLoading, isError } = useCards(filterBank === 'ALL' ? undefined : filterBank)
-  const del = useDeleteCard()
-  const { openConfirmDelete } = useUiStore()
+export interface CardsTabProps {
+  section?: Section<CardRow[]>
+  isLoading: boolean
+  onRetry?: () => void
+  onAddCard?: () => void
+}
 
-  const [creatingOpen, setCreatingOpen] = useState(false)
-  const [editingCard, setEditingCard] = useState<Card | null>(null)
-  const [viewingCard, setViewingCard] = useState<Card | null>(null)
-
-  const handleDelete = (card: Card) => {
-    openConfirmDelete({
-      title: 'Delete card',
-      description: `Delete card ending in ${card.cardNumber.slice(-4)}? This action cannot be undone.`,
-      onConfirm: () => del.mutate(card.cardNumber, {
-        onSuccess: () => toast.success('Card deleted'),
-        onError: (e) => toast.error(e.message || 'Failed to delete card'),
-      }),
-    })
-  }
+export function CardsTab({ section, isLoading, onRetry, onAddCard }: CardsTabProps) {
+  const t = useTranslations('banks')
+  const tc = useTranslations('common')
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <Select value={filterBank} onValueChange={setFilterBank}>
-          <SelectTrigger className="w-[180px] h-9 rounded-xl border-border bg-background text-xs font-bold text-muted-foreground">
-            <SelectValue placeholder="Bank" />
-          </SelectTrigger>
-          <SelectContent className="bg-popover border-border">
-            <SelectItem value="ALL">All Banks</SelectItem>
-            {banks.map((b) => <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-        <Button onClick={() => { setEditingCard(null); setCreatingOpen(true); }} className="h-11 px-6 gap-2 rounded-xl font-bold">
-          <Plus className="h-5 w-5" /> Add Card
-        </Button>
-      </div>
+    <SectionState
+      section={section}
+      isLoading={isLoading}
+      onRetry={onRetry}
+      emptyAction={
+        onAddCard ? (
+          <Button size="sm" onClick={onAddCard}>
+            {t('cards.add')}
+          </Button>
+        ) : undefined
+      }
+      skeleton={
+        <div className="grid gap-4 md:grid-cols-2">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-44 rounded-xl bg-muted animate-pulse" />
+          ))}
+        </div>
+      }
+    >
+      {(cards) => (
+        <div className="grid gap-4 md:grid-cols-2">
+          {cards.map((card) => {
+            const lastFour = card.cardNumber ? card.cardNumber.slice(-4) : '••••'
+            const usedPct = card.usedPct ?? 0
+            const clamped = Math.min(usedPct, 100)
+            const cardName = card.alias || `${card.brand || t('cards.fallbackBrand')} •••• ${lastFour}`
+            const cardUsed = card.used || { amount: '0', currency: 'ARS', secondary: null }
+            const limitVal = { amount: String(card.limit ?? 0), currency: cardUsed.currency, secondary: null }
 
-      <QueryBoundary
-        isLoading={isLoading}
-        isError={!!isError}
-        loadingComponent={
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => <div key={i} className="aspect-[1.58/1] rounded-2xl animate-pulse bg-muted" />)}
-          </div>
-        }
-      >
-        {!cards || cards.length === 0 ? (
-          <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-muted/20 p-12 text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border mb-6">
-              <CreditCard className="h-10 w-10 text-muted-foreground/50" />
-            </div>
-            <h2 className="text-2xl font-bold mb-2">No cards yet</h2>
-            <p className="max-w-[340px] text-muted-foreground mb-8">Add a card to one of your banks to track expenses and installments.</p>
-            <Button onClick={() => { setEditingCard(null); setCreatingOpen(true); }} size="lg" className="gap-2 rounded-xl font-bold">
-              <Plus className="h-5 w-5" /> Add Card
-            </Button>
-          </div>
-        ) : (
-          <CardList
-            cards={cards}
-            onView={setViewingCard}
-            onEdit={setEditingCard}
-            onDelete={handleDelete}
-          />
-        )}
-      </QueryBoundary>
-
-      <CardFormDialog
-        open={creatingOpen || !!editingCard}
-        onOpenChange={(o) => { if (!o) { setCreatingOpen(false); setEditingCard(null); } }}
-        bankNumber={filterBank === 'ALL' ? undefined : filterBank}
-        card={editingCard}
-      />
-      <CardDetailDialog
-        card={viewingCard}
-        open={viewingCard != null}
-        onOpenChange={(o) => !o && setViewingCard(null)}
-      />
-      <ConfirmDialog />
-    </div>
+            return (
+              <div key={card.cardNumber || card.alias || card.brand} className="rounded-xl border bg-card p-5 flex flex-col gap-3 shadow-sm">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-foreground">{cardName}</p>
+                    <p className="text-xs text-muted-foreground">{card.brand || t('cards.fallbackBrand')} •••• {lastFour}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">{cardUsed.currency}</span>
+                </div>
+                <Money value={cardUsed} className="text-2xl font-bold" />
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>{tc('used')}</span>
+                    <span className="n">{tc('percentOfLimit', { pct: usedPct })}</span>
+                  </div>
+                  <div
+                    role="progressbar"
+                    aria-label={tc('creditLimitUsage')}
+                    aria-valuenow={usedPct}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    className="h-1.5 w-full rounded-full bg-muted overflow-hidden"
+                  >
+                    <div
+                      className={cn(
+                        'h-full rounded-full transition-all',
+                        usedPct > 90 ? 'bg-destructive' : usedPct > 70 ? 'bg-warning' : 'bg-primary'
+                      )}
+                      style={{ width: `${clamped}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>{tc('limitLabel')} <Money value={limitVal} className="text-xs" /></span>
+                  </div>
+                </div>
+                <div className="flex gap-4 text-xs text-muted-foreground">
+                  {card.closingDate && <span>{t('cards.closesOn')} <span className="font-medium text-foreground n">{card.closingDate}</span></span>}
+                  {card.dueDate && <span>{t('cards.dueOn')} <span className="font-medium text-foreground n">{card.dueDate}</span></span>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </SectionState>
   )
 }

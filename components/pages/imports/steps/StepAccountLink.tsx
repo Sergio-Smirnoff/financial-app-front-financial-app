@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -31,6 +32,7 @@ export function StepAccountLink({
   onBankChange, onAccountChange, onCardChange, onUsdAccountChange,
   onNext, onBack,
 }: Props) {
+  const t = useTranslations('imports')
   const { banks } = useBanks()
   const { data: cards = [] } = useCards(bankNumber ?? undefined)
 
@@ -53,13 +55,13 @@ export function StepAccountLink({
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-1.5">
-          <Label className="text-xs">Bank <span className="text-destructive">*</span></Label>
+          <Label className="text-xs">{t('steps.accountLink.bank')} <span className="text-destructive">*</span></Label>
           <Select
             value={bankNumber ?? ''}
             onValueChange={(v) => onBankChange(v)}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select bank…" />
+              <SelectValue placeholder={t('steps.accountLink.selectBank')} />
             </SelectTrigger>
             <SelectContent>
               {banks.map(b => (
@@ -72,14 +74,14 @@ export function StepAccountLink({
         {isVisa ? (
           <>
             <div className="space-y-1.5">
-              <Label className="text-xs">Card <span className="text-destructive">*</span></Label>
+              <Label className="text-xs">{t('steps.accountLink.card')} <span className="text-destructive">*</span></Label>
               <Select
                 value={cardNumber ?? ''}
                 onValueChange={(v) => onCardChange(v)}
                 disabled={!bankNumber}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={bankNumber ? 'Select card…' : 'Select a bank first'} />
+                  <SelectValue placeholder={bankNumber ? t('steps.accountLink.selectCard') : t('steps.accountLink.selectBankFirst')} />
                 </SelectTrigger>
                 <SelectContent>
                   {cards.map(c => (
@@ -92,14 +94,14 @@ export function StepAccountLink({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs">ARS Account <span className="text-destructive">*</span></Label>
+              <Label className="text-xs">{t('steps.accountLink.arsAccount')} <span className="text-destructive">*</span></Label>
               <Select
                 value={accountCbu ?? ''}
                 onValueChange={(v) => onAccountChange(v)}
                 disabled={!bankNumber}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={bankNumber ? 'Select ARS account…' : 'Select a bank first'} />
+                  <SelectValue placeholder={bankNumber ? t('steps.accountLink.selectArsAccount') : t('steps.accountLink.selectBankFirst')} />
                 </SelectTrigger>
                 <SelectContent>
                   {arsAccounts.map(a => (
@@ -111,14 +113,14 @@ export function StepAccountLink({
 
             {hasUsd && (
               <div className="space-y-1.5">
-                <Label className="text-xs">USD Account</Label>
+                <Label className="text-xs">{t('steps.accountLink.usdAccount')}</Label>
                 <Select
                   value={usdAccountCbu ?? ''}
                   onValueChange={(v) => onUsdAccountChange(v ? v : null)}
                   disabled={!bankNumber}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select USD account (optional)…" />
+                    <SelectValue placeholder={t('steps.accountLink.selectUsdAccount')} />
                   </SelectTrigger>
                   <SelectContent>
                     {usdAccounts.map(a => (
@@ -127,22 +129,21 @@ export function StepAccountLink({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  {currencyCounts?.USD} USD transaction{currencyCounts?.USD !== 1 ? 's' : ''} found.
-                  If no account selected, they will be skipped.
+                  {t('steps.accountLink.usdHint', { count: currencyCounts?.USD ?? 0 })}
                 </p>
               </div>
             )}
           </>
         ) : (
           <div className="space-y-1.5">
-            <Label className="text-xs">Account <span className="text-destructive">*</span></Label>
+            <Label className="text-xs">{t('steps.accountLink.account')} <span className="text-destructive">*</span></Label>
             <Select
               value={accountCbu ?? ''}
               onValueChange={(v) => onAccountChange(v)}
               disabled={!bankNumber}
             >
               <SelectTrigger>
-                <SelectValue placeholder={bankNumber ? 'Select account…' : 'Select a bank first'} />
+                <SelectValue placeholder={bankNumber ? t('steps.accountLink.selectAccount') : t('steps.accountLink.selectBankFirst')} />
               </SelectTrigger>
               <SelectContent>
                 {accounts.filter(a => a.isActive).map(a => (
@@ -157,8 +158,8 @@ export function StepAccountLink({
       </div>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button onClick={onNext} disabled={!canProceed}>Next</Button>
+        <Button variant="outline" onClick={onBack}>{t('wizard.back')}</Button>
+        <Button onClick={onNext} disabled={!canProceed}>{t('wizard.next')}</Button>
       </div>
     </div>
   )

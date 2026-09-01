@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useCardInstallments, useMarkInstallmentPaid } from '@/lib/hooks/useCards'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { Badge } from '@/components/ui/badge'
 import { CardInstallment, Card } from '@/types/cards'
 import { AccountResponse } from '@/types/banks'
-import { formatCurrency } from '@/lib/utils/currency'
+import { formatCurrency } from '@/lib/format'
 import { formatDate } from '@/lib/utils/dates'
 import { ChevronDown, ChevronRight, CreditCard, Plus, CalendarClock } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -21,10 +21,17 @@ import {
 } from '@/components/ui/select'
 import { CardExpenseDialog } from './CardExpenseDialog'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 interface Props { card: Card | null; open: boolean; onOpenChange: (o: boolean) => void }
 
+const BEHAVIOR_KEYS: Record<string, string> = {
+  INSTANT_PAYMENT: 'dialogs.shared.behavior.INSTANT_PAYMENT',
+  CREDIT: 'dialogs.shared.behavior.CREDIT',
+}
+
 export function CardDetailDialog({ card, open, onOpenChange }: Props) {
+  const t = useTranslations('banks')
   const { data: installments, isLoading } = useCardInstallments(open ? card?.cardNumber ?? null : null)
   const { banks } = useBanks()
   const markPaid = useMarkInstallmentPaid(card?.cardNumber ?? '')
@@ -96,6 +103,8 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
 
   if (!card) return null
 
+  const behaviorKey = BEHAVIOR_KEYS[card.behavior]
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,13 +118,14 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                   </div>
                   <div>
                     <DialogTitle className="text-xl font-bold">{card.displayName}</DialogTitle>
+                    <DialogDescription className="sr-only">{t('dialogs.cardDetail.description')}</DialogDescription>
                     <p className="text-xs text-muted-foreground font-mono tracking-tight mt-0.5">
-                      {card.brand} •••• {card.cardNumber.slice(-4)} | {card.behavior.replace('_', ' ')}
+                      {card.brand} •••• {card.cardNumber.slice(-4)} | {behaviorKey ? t(behaviorKey) : card.behavior.replace('_', ' ')}
                     </p>
                   </div>
                 </div>
                 <Button size="sm" className="gap-2 rounded-xl font-bold" onClick={() => setExpenseOpen(true)}>
-                  <Plus className="h-4 w-4" /> Add Expense
+                  <Plus className="h-4 w-4" /> {t('dialogs.cardDetail.addExpense')}
                 </Button>
               </div>
             </DialogHeader>
@@ -124,12 +134,12 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
           <ScrollArea className="flex-1 p-6">
             <div className="space-y-6">
               {isLoading ? (
-                <p className="py-4 text-center text-sm text-muted-foreground italic">Loading installments…</p>
+                <p className="py-4 text-center text-sm text-muted-foreground italic">{t('dialogs.cardDetail.loadingInstallments')}</p>
               ) : purchases.length === 0 ? (
-                <p className="py-8 text-center text-sm text-muted-foreground italic">No purchases recorded for this card.</p>
+                <p className="py-8 text-center text-sm text-muted-foreground italic">{t('dialogs.cardDetail.noPurchases')}</p>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Purchases</h3>
+                  <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t('dialogs.cardDetail.purchases')}</h3>
                   {purchases.map((p) => {
                     const key = `${p.description}-${p.totalAmount}`
                     const isExpanded = expandedPurchases[key]
@@ -146,11 +156,11 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                             <div>
                               <p className="font-bold">{p.description}</p>
                               <p className="text-xs text-muted-foreground font-medium">
-                                {p.paidCount} of {p.totalInstallments} paid • <span className="text-muted-foreground font-bold">{formatCurrency(Number(p.totalAmount), p.currency)}</span>
+                                {t('dialogs.cardDetail.paidOfTotal', { paid: p.paidCount, total: p.totalInstallments })} • <span className="text-muted-foreground font-bold">{formatCurrency(Number(p.totalAmount), p.currency)}</span>
                               </p>
                             </div>
                           </div>
-                          {isFullyPaid && <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-none uppercase text-[9px] font-bold">Fully Paid</Badge>}
+                          {isFullyPaid && <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-none uppercase text-[9px] font-bold">{t('dialogs.cardDetail.fullyPaid')}</Badge>}
                         </button>
 
                         {isExpanded && (
@@ -162,11 +172,11 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                                     <span className="text-[10px] font-black text-muted-foreground w-8">#{inst.installmentNumber}</span>
                                     <div>
                                       <p className={`text-sm font-bold ${inst.paid ? 'text-muted-foreground' : 'text-foreground'}`}>{formatCurrency(Number(inst.amount), inst.currency)}</p>
-                                      <p className="text-[9px] text-muted-foreground uppercase font-black tracking-tighter">Due {formatDate(inst.dueDate)}</p>
+                                      <p className="text-[9px] text-muted-foreground uppercase font-black tracking-tighter">{t('dialogs.cardDetail.dueOnDate', { date: formatDate(inst.dueDate) })}</p>
                                     </div>
                                   </div>
                                   {inst.paid ? (
-                                    <Badge variant="outline" className="text-[9px] border-border text-muted-foreground font-bold uppercase">Paid {formatDate(inst.paidDate!)}</Badge>
+                                    <Badge variant="outline" className="text-[9px] border-border text-muted-foreground font-bold uppercase">{t('dialogs.cardDetail.paidOnDate', { date: formatDate(inst.paidDate!) })}</Badge>
                                   ) : (
                                     <div className="flex items-center gap-2">
                                       <Select onValueChange={(v) => setSelectedAccounts((prev) => ({ ...prev, [inst.id]: v }))}>
@@ -174,7 +184,7 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                                           className="h-8 w-[140px] text-[10px] font-bold bg-background border-border text-muted-foreground rounded-xl"
                                           disabled={getAvailableAccounts(inst.currency).length === 0}
                                         >
-                                          <SelectValue placeholder={getAvailableAccounts(inst.currency).length > 0 ? 'Account...' : 'No accounts'} />
+                                          <SelectValue placeholder={getAvailableAccounts(inst.currency).length > 0 ? t('dialogs.cardDetail.accountPlaceholder') : t('dialogs.cardDetail.noAccounts')} />
                                         </SelectTrigger>
                                         <SelectContent className="bg-popover border-border">
                                           {getAvailableAccounts(inst.currency).map((a) => (
@@ -191,12 +201,12 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                                         onClick={() => markPaid.mutate(
                                           { installmentId: inst.id, accountCbu: selectedAccounts[inst.id]! },
                                           {
-                                            onSuccess: () => toast.success('Installment paid'),
-                                            onError: (e) => toast.error(e.message || 'Payment failed'),
+                                            onSuccess: () => toast.success(t('dialogs.cardDetail.installmentPaid')),
+                                            onError: (e) => toast.error(e.message || t('dialogs.cardDetail.errorPayment')),
                                           },
                                         )}
                                       >
-                                        Pay
+                                        {t('dialogs.cardDetail.pay')}
                                       </Button>
                                     </div>
                                   )}
@@ -215,14 +225,14 @@ export function CardDetailDialog({ card, open, onOpenChange }: Props) {
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center gap-2">
                     <CalendarClock className="h-4 w-4 text-destructive" />
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-destructive">Upcoming Due Dates</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-destructive">{t('dialogs.cardDetail.upcomingDueDates')}</h3>
                   </div>
                   <div className="bg-destructive/5 border border-destructive/10 rounded-2xl p-4 space-y-2">
                     {upcoming.map((inst) => (
                       <div key={inst.id} className="flex items-center justify-between text-sm">
                         <div className="min-w-0 flex-1 mr-4">
                           <p className="font-bold truncate">{inst.description}</p>
-                          <p className="text-[10px] text-destructive/80 font-bold uppercase">Due {formatDate(inst.dueDate)} (#{inst.installmentNumber}/{inst.totalInstallments})</p>
+                          <p className="text-[10px] text-destructive/80 font-bold uppercase">{t('dialogs.cardDetail.dueWithInstallment', { date: formatDate(inst.dueDate), number: inst.installmentNumber, total: inst.totalInstallments })}</p>
                         </div>
                         <p className="font-black shrink-0">{formatCurrency(Number(inst.amount), inst.currency)}</p>
                       </div>

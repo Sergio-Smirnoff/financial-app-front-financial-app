@@ -1,0 +1,3037 @@
+{
+  "components": {
+    "schemas": {
+      "AccountOptionResponse": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "cbu": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AccountRowResponse": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "balance": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "bankName": {
+            "type": "string"
+          },
+          "cbu": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ActiveRunResponse": {
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "processed": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "runId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "total": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "AlertRowResponse": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseAvailableCurrenciesResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AvailableCurrenciesResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseBanksBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BanksBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseCategoriesBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CategoriesBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseImportsBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ImportsBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseInvestmentsBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/InvestmentsBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseLoanScheduleBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoanScheduleBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseLoansBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoansBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseOverviewBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/OverviewBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseSearchBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SearchBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseSettingsBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/SettingsBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseTransactionDetailBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TransactionDetailBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApiResponseTransactionsBffResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TransactionsBffResponse"
+          },
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AvailableCurrenciesResponse": {
+        "properties": {
+          "available": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "default": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "BanksBffResponse": {
+        "properties": {
+          "accounts": {
+            "$ref": "#/components/schemas/SectionResponseListAccountRowResponse"
+          },
+          "cards": {
+            "$ref": "#/components/schemas/SectionResponseListCardRowResponse"
+          },
+          "cashDistribution": {
+            "$ref": "#/components/schemas/SectionResponseListCompositionSliceResponse"
+          },
+          "importHealth": {
+            "$ref": "#/components/schemas/SectionResponseListImportHealthRowResponse"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseBanksKpisResponse"
+          },
+          "loans": {
+            "$ref": "#/components/schemas/SectionResponseListLoanRowResponse"
+          },
+          "paymentCalendar": {
+            "$ref": "#/components/schemas/SectionResponseListCalendarEntryResponse"
+          }
+        },
+        "type": "object"
+      },
+      "BanksKpisResponse": {
+        "properties": {
+          "accountCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "cardDebt": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "loanBalance": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "totalCash": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "BreakdownResponse": {
+        "properties": {
+          "cash": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "debt": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "investments": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "savings": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "required": [
+          "cash",
+          "debt",
+          "investments",
+          "savings"
+        ],
+        "type": "object"
+      },
+      "BudgetRowResponse": {
+        "properties": {
+          "alertThresholdPct": {
+            "type": "number"
+          },
+          "cap": {
+            "type": "number"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "over": {
+            "type": "boolean"
+          },
+          "pct": {
+            "type": "number"
+          },
+          "spent": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "CalendarEntryResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CardRowResponse": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "cardNumber": {
+            "type": "string"
+          },
+          "closingDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "dueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "used": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "usedPct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "CategoriesBffResponse": {
+        "properties": {
+          "budgets": {
+            "$ref": "#/components/schemas/SectionResponseListBudgetRowResponse"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseCategoriesKpisResponse"
+          },
+          "rules": {
+            "$ref": "#/components/schemas/SectionResponseListRuleRowResponse"
+          },
+          "selectedTrend": {
+            "$ref": "#/components/schemas/SectionResponseCategoryTrendResponse"
+          }
+        },
+        "type": "object"
+      },
+      "CategoriesKpisResponse": {
+        "properties": {
+          "available": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "overBudgetCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "pacePct": {
+            "type": "number"
+          },
+          "spent": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "CategoryOptionResponse": {
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CategorySpendResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "CategoryTrendPointResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "month": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CategoryTrendResponse": {
+        "properties": {
+          "categoryId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryTrendPointResponse"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "CommittedPointResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "month": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CompositionSliceResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "label": {
+            "type": "string"
+          },
+          "pct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "EvolutionPointResponse": {
+        "properties": {
+          "cost": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "marketValue": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "FeeRowResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "ivaTreatment": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "pct": {
+            "type": "number"
+          },
+          "scope": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "FeesSummaryResponse": {
+        "properties": {
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/FeeRowResponse"
+            },
+            "type": "array"
+          },
+          "brokers": {
+            "items": {
+              "$ref": "#/components/schemas/FeeRowResponse"
+            },
+            "type": "array"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/FeeRowResponse"
+            },
+            "type": "array"
+          },
+          "debitCreditTaxRate": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "FilterOptionsResponse": {
+        "properties": {
+          "accounts": {
+            "items": {
+              "$ref": "#/components/schemas/AccountOptionResponse"
+            },
+            "type": "array"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryOptionResponse"
+            },
+            "type": "array"
+          },
+          "methods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "FlowPointResponse": {
+        "properties": {
+          "expense": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "income": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "month": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ImportHealthRowResponse": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "cbu": {
+            "type": "string"
+          },
+          "daysSince": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "lastImportAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ImportRunRowResponse": {
+        "properties": {
+          "accountCbu": {
+            "type": "string"
+          },
+          "duplicates": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "failed": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "importedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "inserted": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "runId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ImportsBffResponse": {
+        "properties": {
+          "activeRun": {
+            "$ref": "#/components/schemas/SectionResponseActiveRunResponse"
+          },
+          "history": {
+            "$ref": "#/components/schemas/SectionResponseListImportRunRowResponse"
+          },
+          "reconciliation": {
+            "$ref": "#/components/schemas/SectionResponseListReconciliationRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "InstallmentRowResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "dueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "number": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "paid": {
+            "type": "boolean"
+          },
+          "paidDate": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "InvestmentsBffResponse": {
+        "properties": {
+          "alerts": {
+            "$ref": "#/components/schemas/SectionResponseListAlertRowResponse"
+          },
+          "composition": {
+            "$ref": "#/components/schemas/SectionResponseListCompositionSliceResponse"
+          },
+          "evolution": {
+            "$ref": "#/components/schemas/SectionResponseListEvolutionPointResponse"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseInvestmentsKpisResponse"
+          },
+          "marketStrip": {
+            "$ref": "#/components/schemas/SectionResponseListMarketQuoteResponse"
+          },
+          "positions": {
+            "$ref": "#/components/schemas/SectionResponseListPositionRowResponse"
+          },
+          "recentOperations": {
+            "$ref": "#/components/schemas/SectionResponseListOperationRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "InvestmentsKpisResponse": {
+        "properties": {
+          "cost": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "marketValue": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "pnl": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "pnlPct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "LoanDetailRowResponse": {
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "bankNumber": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "installmentsPaid": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "installmentsTotal": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "interestRate": {
+            "type": "number"
+          },
+          "label": {
+            "type": "string"
+          },
+          "nextInstallmentAmount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "nextInstallmentDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "principal": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "LoanRowResponse": {
+        "properties": {
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "installmentsPaid": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "installmentsTotal": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "nextInstallmentDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "principal": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "LoanScheduleBffResponse": {
+        "properties": {
+          "installments": {
+            "$ref": "#/components/schemas/SectionResponseListInstallmentRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "LoansBffResponse": {
+        "properties": {
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseLoansKpisResponse"
+          },
+          "loans": {
+            "$ref": "#/components/schemas/SectionResponseListLoanDetailRowResponse"
+          },
+          "payFromAccounts": {
+            "$ref": "#/components/schemas/SectionResponseListAccountOptionResponse"
+          }
+        },
+        "type": "object"
+      },
+      "LoansKpisResponse": {
+        "properties": {
+          "activeLoans": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "monthlyPayment": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "nextDueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "totalOutstanding": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "MarketQuoteResponse": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "variation": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "MoneyView": {
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "secondary": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object"
+      },
+      "NetWorthDeltaResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "pct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "NetWorthPointResponse": {
+        "properties": {
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "NetWorthResponse": {
+        "properties": {
+          "allTimeHigh": {
+            "type": "boolean"
+          },
+          "delta": {
+            "$ref": "#/components/schemas/NetWorthDeltaResponse"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/NetWorthPointResponse"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "NotificationPreferenceResponse": {
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "OperationRowResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "holdingId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "ticker": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OverviewBffResponse": {
+        "properties": {
+          "breakdown": {
+            "$ref": "#/components/schemas/SectionResponseBreakdownResponse"
+          },
+          "committed": {
+            "$ref": "#/components/schemas/SectionResponseListCommittedPointResponse"
+          },
+          "flow": {
+            "$ref": "#/components/schemas/SectionResponseListFlowPointResponse"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/SectionResponseOverviewKpisResponse"
+          },
+          "latestMovements": {
+            "$ref": "#/components/schemas/SectionResponseListTransactionRowResponse"
+          },
+          "netWorth": {
+            "$ref": "#/components/schemas/SectionResponseNetWorthResponse"
+          },
+          "spendByCategory": {
+            "$ref": "#/components/schemas/SectionResponseListCategorySpendResponse"
+          },
+          "upcomingPayments": {
+            "$ref": "#/components/schemas/SectionResponseListUpcomingPaymentResponse"
+          }
+        },
+        "type": "object"
+      },
+      "OverviewKpisResponse": {
+        "properties": {
+          "cash": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "committed": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "expense": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "income": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "required": [
+          "cash",
+          "committed",
+          "expense",
+          "income"
+        ],
+        "type": "object"
+      },
+      "PositionRowResponse": {
+        "properties": {
+          "avgCost": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "bankNumber": {
+            "type": "string"
+          },
+          "holdingId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "marketValue": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pnl": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "pnlPct": {
+            "type": "number"
+          },
+          "price": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "quantity": {
+            "type": "number"
+          },
+          "ticker": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ReconciliationRowResponse": {
+        "properties": {
+          "computedBalance": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "expectedBalance": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "matches": {
+            "type": "boolean"
+          },
+          "runId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RuleRowResponse": {
+        "properties": {
+          "categoryId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "matcher": {
+            "type": "string"
+          },
+          "priority": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SearchBffResponse": {
+        "properties": {
+          "categories": {
+            "$ref": "#/components/schemas/SectionResponseListSearchHitResponse"
+          },
+          "movements": {
+            "$ref": "#/components/schemas/SectionResponseListSearchHitResponse"
+          },
+          "positions": {
+            "$ref": "#/components/schemas/SectionResponseListSearchHitResponse"
+          }
+        },
+        "type": "object"
+      },
+      "SearchHitResponse": {
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "sublabel": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SectionResponseActiveRunResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ActiveRunResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseBanksKpisResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BanksKpisResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseBreakdownResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BreakdownResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseCategoriesKpisResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CategoriesKpisResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseCategoryTrendResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CategoryTrendResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseFeesSummaryResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FeesSummaryResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseFilterOptionsResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FilterOptionsResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseInvestmentsKpisResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/InvestmentsKpisResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListAccountOptionResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AccountOptionResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListAccountRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AccountRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListAlertRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AlertRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListBudgetRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListCalendarEntryResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarEntryResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListCardRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CardRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListCategorySpendResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CategorySpendResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListCommittedPointResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CommittedPointResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListCompositionSliceResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CompositionSliceResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListEvolutionPointResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EvolutionPointResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListFlowPointResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/FlowPointResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListImportHealthRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ImportHealthRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListImportRunRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ImportRunRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListInstallmentRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/InstallmentRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListLoanDetailRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/LoanDetailRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListLoanRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/LoanRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListMarketQuoteResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MarketQuoteResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListNotificationPreferenceResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationPreferenceResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListOperationRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OperationRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListPositionRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/PositionRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListReconciliationRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ReconciliationRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListRuleRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/RuleRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListSearchHitResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SearchHitResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListSessionRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/SessionRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListTransactionRowResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListUpcomingPaymentResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/UpcomingPaymentResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseLoansKpisResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LoansKpisResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseNetWorthResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/NetWorthResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseOverviewKpisResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/OverviewKpisResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseTransactionDetailResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TransactionDetailResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseTransactionsPageResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TransactionsPageResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseTransactionsSummaryResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TransactionsSummaryResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseUncategorisedSummaryResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UncategorisedSummaryResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseUserPreferencesResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserPreferencesResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseUserProfileResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/UserProfileResponse"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SessionRowResponse": {
+        "properties": {
+          "current": {
+            "type": "boolean"
+          },
+          "device": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "lastSeenAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SettingsBffResponse": {
+        "properties": {
+          "fees": {
+            "$ref": "#/components/schemas/SectionResponseFeesSummaryResponse"
+          },
+          "notificationPrefs": {
+            "$ref": "#/components/schemas/SectionResponseListNotificationPreferenceResponse"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/SectionResponseUserPreferencesResponse"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/SectionResponseUserProfileResponse"
+          },
+          "sessions": {
+            "$ref": "#/components/schemas/SectionResponseListSessionRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionDetailBffResponse": {
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/SectionResponseTransactionDetailResponse"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionDetailResponse": {
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/TransactionOriginResponse"
+          },
+          "transaction": {
+            "$ref": "#/components/schemas/TransactionRowResponse"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionOriginResponse": {
+        "properties": {
+          "fileName": {
+            "type": "string"
+          },
+          "importedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reconciled": {
+            "type": "boolean"
+          },
+          "runId": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionRowResponse": {
+        "properties": {
+          "accountAlias": {
+            "type": "string"
+          },
+          "accountCbu": {
+            "type": "string"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "categoryId": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "method": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionsBffResponse": {
+        "properties": {
+          "filterOptions": {
+            "$ref": "#/components/schemas/SectionResponseFilterOptionsResponse"
+          },
+          "page": {
+            "$ref": "#/components/schemas/SectionResponseTransactionsPageResponse"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/SectionResponseTransactionsSummaryResponse"
+          },
+          "uncategorised": {
+            "$ref": "#/components/schemas/SectionResponseUncategorisedSummaryResponse"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionsPageResponse": {
+        "properties": {
+          "page": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/TransactionRowResponse"
+            },
+            "type": "array"
+          },
+          "size": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "totalElements": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "totalPages": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "TransactionsSummaryResponse": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "expense": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "income": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "net": {
+            "$ref": "#/components/schemas/MoneyView"
+          }
+        },
+        "type": "object"
+      },
+      "UncategorisedSummaryResponse": {
+        "properties": {
+          "count": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "UpcomingPaymentResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "dueDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UserPreferencesResponse": {
+        "properties": {
+          "decimals": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "numberFormat": {
+            "type": "string"
+          },
+          "primaryCurrency": {
+            "type": "string"
+          },
+          "secondaryCurrency": {
+            "type": "string"
+          },
+          "useGainLossColors": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "UserProfileResponse": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "OpenAPI definition",
+    "version": "v0"
+  },
+  "openapi": "3.0.1",
+  "paths": {
+    "/api/v1/bff/banks": {
+      "get": {
+        "operationId": "getBanks",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBanksBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get banks page composed sections",
+        "tags": [
+          "BFF - Banks"
+        ]
+      }
+    },
+    "/api/v1/bff/categories": {
+      "get": {
+        "operationId": "getCategories",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoriesBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get categories page composed sections",
+        "tags": [
+          "BFF - Categories"
+        ]
+      }
+    },
+    "/api/v1/bff/currencies": {
+      "get": {
+        "operationId": "getCurrencies",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAvailableCurrenciesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get available currencies and default currency for the authenticated user",
+        "tags": [
+          "BFF Currencies"
+        ]
+      }
+    },
+    "/api/v1/bff/imports": {
+      "get": {
+        "operationId": "getImports",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseImportsBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get imports page composed sections",
+        "tags": [
+          "BFF - Imports"
+        ]
+      }
+    },
+    "/api/v1/bff/investments": {
+      "get": {
+        "operationId": "getInvestments",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseInvestmentsBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get investments page composed sections",
+        "tags": [
+          "BFF - Investments"
+        ]
+      }
+    },
+    "/api/v1/bff/loans": {
+      "get": {
+        "operationId": "getLoans",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLoansBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get loans page composed sections",
+        "tags": [
+          "BFF - Loans"
+        ]
+      }
+    },
+    "/api/v1/bff/loans/{id}": {
+      "get": {
+        "operationId": "getSchedule",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseLoanScheduleBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get one loan's installment schedule",
+        "tags": [
+          "BFF - Loans"
+        ]
+      }
+    },
+    "/api/v1/bff/overview": {
+      "get": {
+        "operationId": "getOverview",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOverviewBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get overview page composed sections",
+        "tags": [
+          "BFF - Overview"
+        ]
+      }
+    },
+    "/api/v1/bff/search": {
+      "get": {
+        "operationId": "search",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseSearchBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Search movements, positions, and categories for ⌘K palette",
+        "tags": [
+          "BFF - Search"
+        ]
+      }
+    },
+    "/api/v1/bff/settings": {
+      "get": {
+        "operationId": "getSettings",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseSettingsBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get settings page composed sections",
+        "tags": [
+          "BFF - Settings"
+        ]
+      }
+    },
+    "/api/v1/bff/transactions": {
+      "get": {
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "size",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categories",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "accounts",
+            "required": false,
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "currency",
+            "required": false,
+            "schema": {
+              "default": "ARS",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "secondary",
+            "required": false,
+            "schema": {
+              "default": "none",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTransactionsBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get paginated transactions list with summary sections",
+        "tags": [
+          "BFF - Transactions"
+        ]
+      }
+    },
+    "/api/v1/bff/transactions/{id}": {
+      "get": {
+        "operationId": "getTransactionDetail",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-User-Id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "int64",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTransactionDetailBffResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get single transaction detail with import run lookup",
+        "tags": [
+          "BFF - Transactions"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "Generated server url",
+      "url": "http://localhost:8090"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Categorías Page BFF Composition Endpoint",
+      "name": "BFF - Categories"
+    },
+    {
+      "description": "Inversiones Page BFF Composition Endpoint",
+      "name": "BFF - Investments"
+    },
+    {
+      "description": "Prestamos Page BFF Composition Endpoint",
+      "name": "BFF - Loans"
+    },
+    {
+      "description": "Global ⌘K Search BFF Composition Endpoint",
+      "name": "BFF - Search"
+    },
+    {
+      "description": "Ajustes Page BFF Composition Endpoint",
+      "name": "BFF - Settings"
+    },
+    {
+      "description": "Movimientos Page BFF Composition Endpoints",
+      "name": "BFF - Transactions"
+    },
+    {
+      "description": "Importaciones Page BFF Composition Endpoint",
+      "name": "BFF - Imports"
+    },
+    {
+      "description": "Bancos Page BFF Composition Endpoint",
+      "name": "BFF - Banks"
+    },
+    {
+      "description": "Available currency selector options (BFF)",
+      "name": "BFF Currencies"
+    },
+    {
+      "description": "Resumen Page BFF Composition Endpoint",
+      "name": "BFF - Overview"
+    }
+  ]
+}

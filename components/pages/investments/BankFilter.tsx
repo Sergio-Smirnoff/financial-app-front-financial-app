@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { cn } from '@/lib/utils'
 
@@ -18,18 +19,19 @@ const pillInactive =
   'border-border bg-muted text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-primary/5'
 
 export function BankFilter({ value, onChange }: BankFilterProps) {
+  const t = useTranslations('investments')
   const { banks } = useBanks()
   return (
     <div className="flex gap-2 flex-wrap items-center mb-4">
       <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-        Account
+        {t('market.bankFilterLabel')}
       </span>
       <button
         type="button"
         onClick={() => onChange(null)}
         className={cn(pillBase, value === null ? pillActive : pillInactive)}
       >
-        All banks
+        {t('market.allBanks')}
       </button>
       {banks.map((bank) => (
         <button

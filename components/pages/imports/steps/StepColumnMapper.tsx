@@ -1,17 +1,11 @@
 'use client'
 
+import React, { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select'
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { ColumnMapping } from '@/types/import'
-import { cn } from '@/lib/utils'
 
 interface Props {
   headers: string[]
@@ -22,123 +16,187 @@ interface Props {
   onBack: () => void
 }
 
-interface FieldDef {
-  key: keyof ColumnMapping
-  label: string
-  required: boolean
-  color: string
-}
-
-const FIELDS: FieldDef[] = [
-  { key: 'dateCol', label: 'Date', required: true, color: 'bg-blue-100 text-blue-700 border-blue-200' },
-  { key: 'descCol', label: 'Description', required: true, color: 'bg-green-100 text-green-700 border-green-200' },
-  { key: 'expenseCol', label: 'Expense', required: false, color: 'bg-red-100 text-red-700 border-red-200' },
-  { key: 'incomeCol', label: 'Income', required: false, color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-]
-
 export function StepColumnMapper({
-  headers, rows, mapping,
-  onMappingChange, onNext, onBack,
+  headers,
+  rows,
+  mapping,
+  onMappingChange,
+  onNext,
+  onBack,
 }: Props) {
+  const t = useTranslations('imports')
+  const [mode, setMode] = useState<'signed' | 'separate'>('signed')
+  const [balanceCol, setBalanceCol] = useState<string>('')
+
   const set = (key: keyof ColumnMapping, value: number | null) =>
     onMappingChange({ ...mapping, [key]: value })
+
+  // A null column is a column the user has not chosen yet — not a column zero.
+  const expenseColChosen = mapping.expenseCol !== null && mapping.expenseCol >= 0
+  const incomeColChosen = mapping.incomeCol !== null && mapping.incomeCol >= 0
 
   const canProceed =
     mapping.dateCol >= 0 &&
     mapping.descCol >= 0 &&
-    (mapping.expenseCol !== null || mapping.incomeCol !== null)
-
-  const getMappedFields = (colIdx: number) => {
-    return FIELDS.filter(f => mapping[f.key] === colIdx)
-  }
+    (mode === 'signed'
+      ? expenseColChosen || incomeColChosen
+      : expenseColChosen && incomeColChosen)
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-sm font-medium mb-4">Map your columns to database fields</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {FIELDS.map(({ key, label, required }) => {
-            const val = mapping[key]
-            const strVal = val === null || val === undefined || val >= headers.length ? 'ignore' : String(val)
-            return (
-              <div key={key} className="space-y-1.5">
-                <Label className="text-xs">
-                  {label}
-                  {required && <span className="text-destructive ml-0.5">*</span>}
-                </Label>
+      <div className="space-y-4">
+        <h3 className="text-sm font-medium">{t('steps.columnMapper.modeTitle')}</h3>
+        <div className="flex items-center gap-6">
+          <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+            <input
+              type="radio"
+              name="amountMode"
+              checked={mode === 'signed'}
+              onChange={() => setMode('signed')}
+            />
+            {t('steps.columnMapper.modeSigned')}
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+            <input
+              type="radio"
+              name="amountMode"
+              checked={mode === 'separate'}
+              onChange={() => setMode('separate')}
+            />
+            {t('steps.columnMapper.modeSeparate')}
+          </label>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="date-select" className="text-xs">{t('steps.columnMapper.date')}</Label>
+            <Select
+              value={mapping.dateCol >= 0 ? String(mapping.dateCol) : ''}
+              onValueChange={(v) => set('dateCol', Number(v))}
+            >
+              <SelectTrigger id="date-select" className="h-8 text-xs">
+                <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
+              </SelectTrigger>
+              <SelectContent>
+                {headers.map((h, i) => (
+                  <SelectItem key={i} value={String(i)} className="text-xs">
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="desc-select" className="text-xs">{t('steps.columnMapper.description')}</Label>
+            <Select
+              value={mapping.descCol >= 0 ? String(mapping.descCol) : ''}
+              onValueChange={(v) => set('descCol', Number(v))}
+            >
+              <SelectTrigger id="desc-select" className="h-8 text-xs">
+                <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
+              </SelectTrigger>
+              <SelectContent>
+                {headers.map((h, i) => (
+                  <SelectItem key={i} value={String(i)} className="text-xs">
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {mode === 'signed' ? (
+            <div className="space-y-1.5">
+              <Label htmlFor="amount-select" className="text-xs">{t('steps.columnMapper.amount')}</Label>
+              <Select
+                value={expenseColChosen ? String(mapping.expenseCol) : ''}
+                onValueChange={(v) => {
+                  set('expenseCol', Number(v))
+                  set('incomeCol', Number(v))
+                }}
+              >
+                <SelectTrigger id="amount-select" className="h-8 text-xs">
+                  <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {headers.map((h, i) => (
+                    <SelectItem key={i} value={String(i)} className="text-xs">
+                      {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="debit-select" className="text-xs">{t('steps.columnMapper.debit')}</Label>
                 <Select
-                  value={strVal}
-                  onValueChange={(v) => set(key, v === 'ignore' ? null : Number(v))}
+                  value={expenseColChosen ? String(mapping.expenseCol) : ''}
+                  onValueChange={(v) => set('expenseCol', Number(v))}
                 >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Select column..." />
+                  <SelectTrigger id="debit-select" className="h-8 text-xs">
+                    <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {!required && (
-                      <SelectItem value="ignore" className="text-xs text-muted-foreground">
-                        — ignore —
-                      </SelectItem>
-                    )}
                     {headers.map((h, i) => (
                       <SelectItem key={i} value={String(i)} className="text-xs">
-                        {h || `Col ${i + 1}`}
+                        {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            )
-          })}
-        </div>
-      </div>
 
-      {rows.length > 0 && (
-        <div>
-          <p className="text-xs text-muted-foreground mb-2">Preview — first {rows.length} rows</p>
-          <div className="border rounded-md overflow-hidden">
-            <Table>
-              <TableHeader className="bg-muted/30">
-                <TableRow>
-                  {headers.map((h, i) => {
-                    const mappedFields = getMappedFields(i)
-                    return (
-                      <TableHead key={i} className="text-xs py-2 h-auto align-top">
-                        <div className="space-y-1.5">
-                          <div className="font-medium text-foreground">{h || `Col ${i + 1}`}</div>
-                          <div className="flex flex-wrap gap-1">
-                            {mappedFields.map(f => (
-                              <Badge 
-                                key={f.key} 
-                                variant="outline" 
-                                className={cn("text-[10px] px-1 py-0 h-4 font-normal uppercase", f.color)}
-                              >
-                                {f.label}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {rows.map((row, ri) => (
-                  <TableRow key={ri}>
-                    {row.map((cell, ci) => (
-                      <TableCell key={ci} className="text-xs py-1.5">{cell}</TableCell>
+              <div className="space-y-1.5">
+                <Label htmlFor="credit-select" className="text-xs">{t('steps.columnMapper.credit')}</Label>
+                <Select
+                  value={incomeColChosen ? String(mapping.incomeCol) : ''}
+                  onValueChange={(v) => set('incomeCol', Number(v))}
+                >
+                  <SelectTrigger id="credit-select" className="h-8 text-xs">
+                    <SelectValue placeholder={t('steps.columnMapper.selectColumn')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {headers.map((h, i) => (
+                      <SelectItem key={i} value={String(i)} className="text-xs">
+                        {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
+                      </SelectItem>
                     ))}
-                  </TableRow>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="balance-select" className="text-xs">{t('steps.columnMapper.balance')}</Label>
+            <Select value={balanceCol} onValueChange={setBalanceCol}>
+              <SelectTrigger id="balance-select" className="h-8 text-xs">
+                <SelectValue placeholder={t('steps.columnMapper.noBalanceCheck')} />
+              </SelectTrigger>
+              <SelectContent>
+                {headers.map((h, i) => (
+                  <SelectItem key={i} value={String(i)} className="text-xs">
+                    {h || t('steps.columnMapper.colFallback', { index: i + 1 })}
+                  </SelectItem>
                 ))}
-              </TableBody>
-            </Table>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      )}
+
+        {balanceCol !== '' && (
+          <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            {t('steps.columnMapper.balanceCheckHint')}
+          </p>
+        )}
+      </div>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button onClick={onNext} disabled={!canProceed}>Next</Button>
+        <Button variant="outline" onClick={onBack}>{t('wizard.back')}</Button>
+        <Button onClick={onNext} disabled={!canProceed}>{t('wizard.next')}</Button>
       </div>
     </div>
   )

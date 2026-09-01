@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -7,6 +8,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { ParsedRow, CurrencyCounts, ImportFileType } from '@/types/import'
 import { format } from 'date-fns'
+
+const TYPE_KEYS: Record<string, string> = {
+  INCOME: 'steps.pdfPreview.type.INCOME',
+  EXPENSE: 'steps.pdfPreview.type.EXPENSE',
+}
 
 interface Props {
   preview: ParsedRow[]
@@ -18,19 +24,25 @@ interface Props {
 }
 
 export function StepPdfPreview({ preview, totalCount, currencyCounts, fileType, onNext, onBack }: Props) {
+  const t = useTranslations('imports')
+  const tc = useTranslations('common')
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
         <p className="text-sm text-muted-foreground">
-          Found <span className="font-medium text-foreground">{totalCount}</span> transactions.
-          Showing first {preview.length}.
+          {t.rich('steps.pdfPreview.summary', {
+            count: totalCount,
+            shown: preview.length,
+            strong: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+          })}
         </p>
         {fileType === 'VISA_PDF' && (
           <div className="flex gap-2">
-            <Badge variant="outline" className="text-xs">ARS: {currencyCounts.ARS}</Badge>
-            <Badge variant="outline" className="text-xs">USD: {currencyCounts.USD}</Badge>
+            <Badge variant="outline" className="text-xs">{t('steps.pdfPreview.arsCount', { count: currencyCounts.ARS })}</Badge>
+            <Badge variant="outline" className="text-xs">{t('steps.pdfPreview.usdCount', { count: currencyCounts.USD })}</Badge>
             {currencyCounts.skipped > 0 && (
-              <Badge variant="secondary" className="text-xs">Skipped: {currencyCounts.skipped}</Badge>
+              <Badge variant="secondary" className="text-xs">{t('steps.pdfPreview.skippedCount', { count: currencyCounts.skipped })}</Badge>
             )}
           </div>
         )}
@@ -40,11 +52,11 @@ export function StepPdfPreview({ preview, totalCount, currencyCounts, fileType, 
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Currency</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead>{t('wizard.cols.date')}</TableHead>
+              <TableHead>{t('wizard.cols.description')}</TableHead>
+              <TableHead className="text-right">{tc('amount')}</TableHead>
+              <TableHead>{t('wizard.cols.currency')}</TableHead>
+              <TableHead>{t('steps.pdfPreview.colType')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -65,7 +77,7 @@ export function StepPdfPreview({ preview, totalCount, currencyCounts, fileType, 
                     variant={row.type === 'INCOME' ? 'default' : 'secondary'}
                     className="text-xs"
                   >
-                    {row.type}
+                    {TYPE_KEYS[row.type] ? t(TYPE_KEYS[row.type]) : row.type}
                   </Badge>
                 </TableCell>
               </TableRow>
@@ -75,8 +87,8 @@ export function StepPdfPreview({ preview, totalCount, currencyCounts, fileType, 
       </div>
 
       <div className="flex justify-between pt-2">
-        <Button variant="outline" onClick={onBack}>Back</Button>
-        <Button onClick={onNext}>Next</Button>
+        <Button variant="outline" onClick={onBack}>{t('wizard.back')}</Button>
+        <Button onClick={onNext}>{t('wizard.next')}</Button>
       </div>
     </div>
   )

@@ -1,0 +1,541 @@
+{
+  "fees": {
+    "data": {
+      "accounts": [],
+      "brokers": [],
+      "cards": [],
+      "debitCreditTaxRate": 0.006
+    },
+    "observedAt": "2026-08-23T16:33:44.867665046Z",
+    "status": "OK"
+  },
+  "notificationPrefs": {
+    "data": [
+      {
+        "category": "PAYMENT_DUE",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "BUDGET",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "PORTFOLIO_ALERTS",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "SUMMARY",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "IMPORT_HEALTH",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "ACCOUNT",
+        "channels": [
+          "EMAIL"
+        ]
+      },
+      {
+        "category": "SYSTEM",
+        "channels": [
+          "EMAIL"
+        ]
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.870434939Z",
+    "status": "OK"
+  },
+  "preferences": {
+    "data": {
+      "decimals": 2,
+      "numberFormat": "es-AR",
+      "primaryCurrency": "ARS",
+      "secondaryCurrency": "null",
+      "useGainLossColors": true
+    },
+    "observedAt": "2026-08-23T16:33:44.864597183Z",
+    "status": "OK"
+  },
+  "profile": {
+    "data": {
+      "createdAt": "2026-08-10T23:18:19.125928Z",
+      "email": "demo@financial.app",
+      "name": "Demo Usuario"
+    },
+    "observedAt": "2026-08-23T16:33:44.864324341Z",
+    "status": "OK"
+  },
+  "sessions": {
+    "data": [
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "65",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "64",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "63",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "62",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "61",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "60",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "59",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "58",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "57",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "56",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "55",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "54",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "53",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "52",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "51",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "50",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "49",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "48",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "47",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "46",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "45",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "44",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "43",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "42",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "41",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "40",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "39",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "38",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "37",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "36",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "35",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "34",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "33",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "32",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "31",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "30",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "29",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "28",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "27",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "26",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "25",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "24",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "23",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "22",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "21",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "20",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "19",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "18",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "17",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "16",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "15",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "14",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Chrome · Linux",
+        "id": "13",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "12",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "11",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "10",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "9",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "8",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "7",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "6",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "5",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "4",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "3",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "2",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      },
+      {
+        "current": false,
+        "device": "Unknown device",
+        "id": "1",
+        "ip": "",
+        "lastSeenAt": "1970-01-01T00:00:00Z"
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.868040131Z",
+    "status": "OK"
+  }
+}

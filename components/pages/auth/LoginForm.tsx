@@ -1,101 +1,113 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { login } from '@/lib/api/auth'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { ApiError } from '@/lib/api/client'
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(1, 'Password is required'),
-})
+export interface LoginFormProps {
+  onLogin: (credentials: { email: string; password: string; rememberMe: boolean }) => Promise<void>
+}
 
-type LoginFormValues = z.infer<typeof loginSchema>
-
-export function LoginForm() {
-  const router = useRouter()
+export function LoginForm({ onLogin }: LoginFormProps) {
+  const t = useTranslations('auth')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
-  })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !password) return
 
-  async function onSubmit(values: LoginFormValues) {
+    setSubmitting(true)
     setError(null)
-    setLoading(true)
+
     try {
-      await login(values)
-      router.push('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      await onLogin({ email, password, rememberMe })
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 401) {
+        setError(t('errors.invalidCredentials'))
+      } else if (err instanceof Error && err.message) {
+        setError(err.message)
+      } else {
+        setError(t('errors.generic'))
+      }
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader className="text-center">
-        <CardTitle className="text-xl">FinanceApp</CardTitle>
-        <CardDescription>Sign in to your account</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {error && (
-              <p className="text-sm text-destructive text-center">{error}</p>
-            )}
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="********" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
-            </Button>
-          </form>
-        </Form>
-
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-primary underline-offset-4 hover:underline">
-            Register
-          </Link>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2 text-center sm:text-left">
+        <h1 className="text-2xl font-bold tracking-tight">{t('login.title')}</h1>
+        <p className="text-sm text-muted-foreground">
+          {t('login.subtitle')}
         </p>
-      </CardContent>
-    </Card>
+      </div>
+
+      {error && (
+        <div role="alert" className="p-3 rounded-lg bg-destructive/10 border border-destructive text-destructive text-sm font-medium">
+          {error}
+        </div>
+      )}
+
+      <div className="space-y-4">
+        <div className="space-y-1.5">
+          <label htmlFor="login-email" className="text-sm font-medium">{t('email')}</label>
+          <Input
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t('emailPlaceholder')}
+            required
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label htmlFor="login-password" className="text-sm font-medium">{t('password')}</label>
+          </div>
+          <Input
+            id="login-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex items-center gap-2 pt-1">
+          <Checkbox
+            id="remember-me"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(!!checked)}
+          />
+          <label htmlFor="remember-me" className="text-sm text-muted-foreground cursor-pointer">
+            {t('rememberMe')}
+          </label>
+        </div>
+      </div>
+
+      <Button type="submit" className="w-full" disabled={submitting || !email || !password}>
+        {submitting ? t('login.submitting') : t('login.submit')}
+      </Button>
+
+      <p className="text-center text-sm text-muted-foreground">
+        {t.rich('login.noAccount', {
+          link: (chunks) => (
+            <Link href="/register" className="font-semibold text-primary hover:underline">
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
+    </form>
   )
 }

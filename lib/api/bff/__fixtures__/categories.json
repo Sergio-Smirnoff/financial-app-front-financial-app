@@ -1,0 +1,109 @@
+{
+  "budgets": {
+    "data": [
+      {
+        "alertThresholdPct": 80.00,
+        "cap": 250000.00,
+        "categoryId": 1106,
+        "name": "Supermercado",
+        "over": true,
+        "pct": 131.00,
+        "spent": {
+          "amount": "327500.50",
+          "currency": "ARS",
+          "secondary": null
+        }
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.820274115Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "available": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "overBudgetCount": 1,
+      "pacePct": 131.00,
+      "spent": {
+        "amount": "327500.50",
+        "currency": "ARS",
+        "secondary": null
+      }
+    },
+    "observedAt": "2026-08-23T16:33:44.820318579Z",
+    "status": "OK"
+  },
+  "rules": {
+    "data": [],
+    "observedAt": "2026-08-23T16:33:44.819864375Z",
+    "status": "OK"
+  },
+  "selectedTrend": {
+    "data": {
+      "categoryId": null,
+      "points": [
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-02"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-03"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-04"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-05"
+        },
+        {
+          "amount": {
+            "amount": "0.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-06"
+        },
+        {
+          "amount": {
+            "amount": "189400.00",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-07"
+        },
+        {
+          "amount": {
+            "amount": "2632450.50",
+            "currency": "ARS",
+            "secondary": null
+          },
+          "month": "2026-08"
+        }
+      ]
+    },
+    "observedAt": "2026-08-23T16:33:44.820013786Z",
+    "status": "OK"
+  }
+}

@@ -38,7 +38,10 @@ export function useTransactionSummary(filters: SummaryFilters = {}) {
 // refetches so a later one catches the propagated update.
 function syncBalancesEventually(queryClient: ReturnType<typeof useQueryClient>) {
   for (const ms of [300, 1200, 2500, 4500]) {
-    setTimeout(() => queryClient.invalidateQueries({ queryKey: ['banks'] }), ms)
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['banks'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
+    }, ms)
   }
 }
 
@@ -48,7 +51,7 @@ export function useRecordTransaction() {
     mutationFn: (data: RecordTransactionRequest) => transactionsApi.record(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['bff'] })
       syncBalancesEventually(queryClient)
     },
   })
@@ -60,7 +63,7 @@ export function useDeleteTransaction() {
     mutationFn: (id: number) => transactionsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['bff'] })
       syncBalancesEventually(queryClient)
     },
   })

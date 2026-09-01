@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Form,
@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 import { ApiError } from '@/lib/api/client'
 import { useCreateCard, useUpdateCard } from '@/lib/hooks/useCards'
 import { useAvailableBanks } from '@/lib/hooks/useBanks'
@@ -41,6 +42,8 @@ const DEFAULTS: CardFormValues = {
 }
 
 export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) {
+  const t = useTranslations('banks')
+  const tc = useTranslations('common')
   const isEditing = !!card
   const { data: availableBanks } = useAvailableBanks()
   const createMutation = useCreateCard()
@@ -82,7 +85,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
       }
       onOpenChange(false)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to save card'
+      const message = error instanceof Error ? error.message : t('dialogs.cardForm.errorSave')
       if (
         error instanceof ApiError &&
         (error.code === 'invalid_card_number' || error.code === 'invalid_card_check_digit')
@@ -97,7 +100,8 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-popover border-border">
         <DialogHeader>
-          <DialogTitle>{isEditing ? 'Edit Card' : 'New Card'}</DialogTitle>
+          <DialogTitle>{isEditing ? t('dialogs.cardForm.editTitle') : t('dialogs.cardForm.newTitle')}</DialogTitle>
+          <DialogDescription>{t('dialogs.cardForm.description')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4 py-4">
@@ -106,9 +110,9 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
               name="bankNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-muted-foreground">Bank</FormLabel>
+                  <FormLabel className="text-muted-foreground">{t('dialogs.shared.fieldBank')}</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange} disabled={isEditing}>
-                    <FormControl><SelectTrigger className="bg-background border-border"><SelectValue placeholder="Select bank" /></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger className="bg-background border-border"><SelectValue placeholder={t('dialogs.shared.selectBankPlaceholder')} /></SelectTrigger></FormControl>
                     <SelectContent className="bg-popover border-border">
                       {(availableBanks ?? []).map((b) => (
                         <SelectItem key={b.bankNumber} value={b.bankNumber}>{b.bankNumber} — {b.name}</SelectItem>
@@ -126,7 +130,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="brand"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Brand</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldBrand')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled={isEditing}>
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
@@ -144,15 +148,15 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="cardType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Type</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.shared.fieldType')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled={isEditing}>
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
-                        <SelectItem value="STANDARD">Standard</SelectItem>
-                        <SelectItem value="SILVER">Silver</SelectItem>
-                        <SelectItem value="GOLD">Gold</SelectItem>
-                        <SelectItem value="BLACK">Black</SelectItem>
-                        <SelectItem value="PLATINUM">Platinum</SelectItem>
+                        <SelectItem value="STANDARD">{t('dialogs.cardForm.cardType.STANDARD')}</SelectItem>
+                        <SelectItem value="SILVER">{t('dialogs.cardForm.cardType.SILVER')}</SelectItem>
+                        <SelectItem value="GOLD">{t('dialogs.cardForm.cardType.GOLD')}</SelectItem>
+                        <SelectItem value="BLACK">{t('dialogs.cardForm.cardType.BLACK')}</SelectItem>
+                        <SelectItem value="PLATINUM">{t('dialogs.cardForm.cardType.PLATINUM')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -164,12 +168,12 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="behavior"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Behavior</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldBehavior')}</FormLabel>
                     <Select value={field.value} onValueChange={field.onChange} disabled={isEditing}>
                       <FormControl><SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent className="bg-popover border-border">
-                        <SelectItem value="INSTANT_PAYMENT">Instant payment</SelectItem>
-                        <SelectItem value="CREDIT">Credit (installments)</SelectItem>
+                        <SelectItem value="INSTANT_PAYMENT">{t('dialogs.shared.behavior.INSTANT_PAYMENT')}</SelectItem>
+                        <SelectItem value="CREDIT">{t('dialogs.shared.behavior.CREDIT')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -184,7 +188,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="cardNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Card number (16 digits, or 15 to auto-complete)</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldCardNumber')}</FormLabel>
                     <FormControl>
                       <Input {...field} inputMode="numeric" maxLength={16} disabled={isEditing} className="bg-background border-border tracking-widest" />
                     </FormControl>
@@ -197,7 +201,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="expiringDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Expiry (MM/YY)</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldExpiry')}</FormLabel>
                     <FormControl>
                       <Input {...field} maxLength={5} placeholder="08/30" className="bg-background border-border" />
                     </FormControl>
@@ -213,7 +217,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="closingDay"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Closing day</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldClosingDay')}</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" min={1} max={31} className="bg-background border-border" onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} />
                     </FormControl>
@@ -226,7 +230,7 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
                 name="dueDay"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-muted-foreground">Due day</FormLabel>
+                    <FormLabel className="text-muted-foreground">{t('dialogs.cardForm.fieldDueDay')}</FormLabel>
                     <FormControl>
                       <Input {...field} type="number" min={1} max={31} className="bg-background border-border" onChange={(e) => field.onChange(parseInt(e.target.value) || 0)} />
                     </FormControl>
@@ -237,8 +241,8 @@ export function CardFormDialog({ open, onOpenChange, bankNumber, card }: Props) 
             </div>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">Cancel</Button>
-              <Button type="submit" disabled={isPending}>{isPending ? 'Saving…' : (isEditing ? 'Update' : 'Create')}</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-border">{tc('cancel')}</Button>
+              <Button type="submit" disabled={isPending}>{isPending ? tc('saving') : (isEditing ? t('dialogs.shared.update') : t('dialogs.shared.create'))}</Button>
             </DialogFooter>
           </form>
         </Form>

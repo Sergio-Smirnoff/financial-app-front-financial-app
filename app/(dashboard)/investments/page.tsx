@@ -1,13 +1,15 @@
-import { Header } from '@/components/layout/Header'
-import { InvestmentsLayout } from '@/components/pages/investments/InvestmentsLayout'
+'use client'
+
+import React from 'react'
+import { useBffQuery } from '@/lib/hooks/useBffQuery'
+import { InvestmentsContent } from '@/components/pages/investments/InvestmentsContent'
 
 export default function InvestmentsPage() {
+  const query = useBffQuery()
+
   return (
-    <div className="flex flex-col h-full">
-      <Header title="Investments" />
-      <main className="flex-1 overflow-hidden p-4">
-        <InvestmentsLayout />
-      </main>
-    </div>
+    <main className="flex-1 overflow-auto p-6">
+      <InvestmentsContent query={query} />
+    </main>
   )
 }

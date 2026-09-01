@@ -1,0 +1,857 @@
+{
+  "common": {
+    "retry": "Reintentar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "loading": "Cargando…",
+    "close": "Cerrar",
+    "seeAll": "Ver todo",
+    "saving": "Guardando…",
+    "discard": "Descartar",
+    "unsavedChanges": "Cambios sin guardar",
+    "unsavedChangesHint": "Tienes cambios sin guardar.",
+    "clearFilters": "Limpiar filtros",
+    "removeFilter": "Quitar filtro {label}",
+    "rowActions": "Acciones de fila",
+    "searchPlaceholder": "Buscar movimientos, posiciones, categorías…",
+    "searchError": "Error al cargar resultados de búsqueda",
+    "noResults": "Sin resultados",
+    "resultCount": "{count, plural, one {# resultado} other {# resultados}}",
+    "movements": "Movimientos",
+    "positions": "Posiciones",
+    "categories": "Categorías",
+    "category": "Categoría",
+    "concept": "Concepto",
+    "amount": "Importe",
+    "iva": "IVA",
+    "ivaTaxed21": "IVA 21 %",
+    "ivaTaxed105": "IVA 10,5 %",
+    "ivaExempt": "Exento",
+    "feesTableCaption": "Tabla de comisiones",
+    "noRowsSelected": "Sin filas seleccionadas",
+    "rowsSelected": "{count, plural, one {# seleccionado} other {# seleccionados}}",
+    "clearSelection": "Limpiar selección",
+    "selectAllRows": "Seleccionar todas las filas",
+    "selectRow": "Seleccionar fila {row}",
+    "pagination": "Paginación",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "pageOf": "Página {page} de {total}",
+    "paginationPageOf": "Página <hl>{page}</hl> de {total}",
+    "add": "Agregar",
+    "flagDuplicate": "Duplicado",
+    "flagFailed": "Fallido",
+    "flagWarning": "Advertencia",
+    "used": "Usado",
+    "percentOfLimit": "{pct} % de Límite",
+    "creditLimitUsage": "Uso del límite de crédito",
+    "limitLabel": "Límite:",
+    "closesOnDay": "Cierra día <hl>{day}</hl>",
+    "dueOnDay": "Vence día <hl>{day}</hl>",
+    "file": "Archivo",
+    "unsupportedFormat": "Formato no admitido",
+    "dropzonePrompt": "Arrastrá un archivo o hacé clic para seleccionar",
+    "acceptedFormats": "Formatos aceptados: {formats}",
+    "fileStatus": "{file}: {status}",
+    "fileStatusUploading": "Subiendo",
+    "fileStatusProcessing": "Procesando",
+    "fileStatusDone": "Completado",
+    "fileStatusError": "Error",
+    "uploadProgress": "Progreso de carga",
+    "processSteps": "Pasos del proceso",
+    "market": "Mercado",
+    "addPosition": "Agregar posición",
+    "editPosition": "Editar posición",
+    "ticker": "Ticker",
+    "tickerPlaceholder": "p.ej. GGAL",
+    "quantity": "Cantidad",
+    "purchasePrice": "Precio de compra",
+    "mainNavigation": "Navegación principal",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones",
+    "unreadNotifications": "{count, plural, one {# notificación sin leer} other {# notificaciones sin leer}}",
+    "markAll": "Marcar todas",
+    "noNotifications": "No hay notificaciones",
+    "unread": "Sin leer",
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
+  "sections": {
+    "unavailable": "No pudimos cargar esta sección",
+    "unavailableHint": "El resto de la página sigue disponible",
+    "empty": "Todavía no hay datos",
+    "asOf": "Actualizado {relative}"
+  },
+  "nav": {
+    "overview": "Resumen",
+    "banks": "Bancos",
+    "transactions": "Movimientos",
+    "categories": "Categorías",
+    "loans": "Préstamos",
+    "investments": "Inversiones",
+    "imports": "Importaciones",
+    "settings": "Ajustes"
+  },
+  "overview": {
+    "title": "Resumen",
+    "subtitle": "Estado financiero general y proyecciones",
+    "cash": "Efectivo",
+    "income": "Ingresos",
+    "expense": "Gastos",
+    "committed": "Comprometido",
+    "netWorthKicker": "Patrimonio Neto",
+    "allTimeHigh": "★ Máximo histórico",
+    "netWorthAria": "Evolución del patrimonio neto",
+    "breakdownTitle": "Composición Patrimonial",
+    "breakdown": {
+      "investments": "Inversiones",
+      "savings": "Ahorro",
+      "debt": "Deuda"
+    },
+    "flowTitle": "Flujo Mensual (Ingresos vs Gastos)",
+    "flowAria": "Flujo mensual de ingresos y gastos",
+    "committedTitle": "Gastos Comprometidos por Mes",
+    "committedAria": "Gastos comprometidos por mes",
+    "railTitle": "Actividad y Alertas",
+    "upcomingTitle": "Próximos Vencimientos",
+    "upcomingEmpty": "Sin vencimientos próximos.",
+    "spendTitle": "Gastos por Categoría",
+    "spendEmpty": "Sin gastos registrados este mes.",
+    "latestTitle": "Últimos Movimientos",
+    "latest": {
+      "caption": "Últimos movimientos",
+      "seeAll": "Ver todos →",
+      "date": "Fecha",
+      "description": "Descripción",
+      "category": "Categoría",
+      "uncategorised": "Sin categoría",
+      "amount": "Monto",
+      "emptyAction": "Registrar movimiento"
+    }
+  },
+  "transactions": {
+    "title": "Movimientos",
+    "subtitle": "Historial de ingresos, egresos y categorización",
+    "method": "Método",
+    "manual": "Manual",
+    "uncategorised": "{count, plural, one {# movimiento sin categorizar} other {# movimientos sin categorizar}}",
+    "uncategorisedTitle": "Movimientos sin categorizar",
+    "uncategorisedBody": "{count, plural, one {Tenés # movimiento sin categorizar.} other {Tenés # movimientos sin categorizar.}}",
+    "uncategorisedLink": "Ver sin categorizar →",
+    "uncategorisedValue": "Sin categorizar",
+    "summary": {
+      "income": "Ingresos",
+      "expense": "Egresos",
+      "net": "Neto",
+      "count": "Movimientos"
+    },
+    "filters": {
+      "byAccount": "Filtrar por cuenta",
+      "allAccounts": "Todas las cuentas",
+      "byCategory": "Filtrar por categoría",
+      "allCategories": "Todas las categorías",
+      "byMethod": "Filtrar por método",
+      "allMethods": "Todos los métodos",
+      "chipSearch": "Búsqueda: {q}",
+      "chipCategory": "Categoría: {name}",
+      "chipAccount": "Cuenta: {name}",
+      "chipMethod": "Método: {name}"
+    },
+    "table": {
+      "caption": "Tabla de movimientos",
+      "date": "Fecha",
+      "description": "Descripción",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "amount": "Importe"
+    },
+    "detail": {
+      "title": "Detalle del movimiento",
+      "amount": "Importe",
+      "account": "Cuenta",
+      "category": "Categoría",
+      "note": "Nota",
+      "origin": "Origen",
+      "run": "Run #{id}",
+      "status": "Estado",
+      "reconciled": "Conciliado",
+      "pending": "Pendiente"
+    },
+    "bulk": {
+      "categorise": "Categorizar"
+    }
+  },
+  "categories": {
+    "title": "Categorías y Presupuestos",
+    "subtitle": "Control presupuestario, asignación y reglas automáticas",
+    "pace": "Ritmo del mes",
+    "overBudget": "Excedido",
+    "rulesTitle": "Reglas Automáticas",
+    "railTitle": "Análisis de Categoría",
+    "budget": {
+      "accumulated": "Gastos acumulados",
+      "available": "Disponible",
+      "over": "Excedidos",
+      "noCap": "Sin límite"
+    },
+    "tabs": {
+      "budget": "Presupuesto",
+      "rules": "Reglas",
+      "income": "Ingresos"
+    },
+    "trend": {
+      "title": "Tendencia",
+      "titleFor": "Tendencia {name}",
+      "empty": "Seleccioná una categoría para ver su tendencia mensual.",
+      "noData": "Sin datos históricos suficientes."
+    },
+    "income": {
+      "empty": "Sin ingresos registrados este mes."
+    },
+    "rules": {
+      "new": "Nueva regla",
+      "newTitle": "Nueva regla de categorización",
+      "newDescription": "Crea una regla para categorizar automáticamente transacciones futuras y existentes.",
+      "matches": "Coincide con",
+      "patternPlaceholder": "p.ej. UBER",
+      "assigned": "Categoría asignada",
+      "selectCategory": "Seleccionar categoría",
+      "matchCount": "{count, plural, one {# movimiento coincide} other {# movimientos coinciden}}",
+      "loading": "Cargando...",
+      "preview": "Previsualizar",
+      "creating": "Creando...",
+      "create": "Crear regla",
+      "priority": "Prioridad",
+      "actionsHeader": "Acciones",
+      "caption": "Reglas de categorización",
+      "deleteTitle": "¿Eliminar regla?",
+      "deleteDescription": "Esta acción eliminará la regla de categorización. Las transacciones pasadas mantendrán su categoría actual.",
+      "cancel": "Cancelar",
+      "delete": "Eliminar"
+    }
+  },
+  "loans": {
+    "title": "Préstamos",
+    "kpis": {
+      "totalOutstanding": "Saldo pendiente",
+      "monthlyPayment": "Cuota mensual",
+      "activeLoans": "Préstamos activos",
+      "nextDue": "Próximo vencimiento"
+    },
+    "table": {
+      "loan": "Préstamo",
+      "bank": "Banco",
+      "principal": "Capital",
+      "outstanding": "Saldo",
+      "rate": "Tasa",
+      "nextInstallment": "Próxima cuota",
+      "progress": "{paid} de {total, plural, one {# cuota} other {# cuotas}}",
+      "empty": "Sin préstamos activos",
+      "viewSchedule": "Ver cuotas"
+    },
+    "schedule": {
+      "title": "Cronograma de cuotas",
+      "number": "N°",
+      "amount": "Importe",
+      "dueDate": "Vencimiento",
+      "paid": "Pagada",
+      "pending": "Pendiente",
+      "pay": "Pagar cuota"
+    },
+    "payDialog": {
+      "title": "Pagar cuota",
+      "description": "Elegí la cuenta desde la que querés pagar esta cuota.",
+      "account": "Cuenta de origen",
+      "confirm": "Confirmar pago"
+    },
+    "deleteDialog": {
+      "title": "Eliminar préstamo",
+      "body": "¿Eliminar {label}? Esta acción no se puede deshacer."
+    }
+  },
+  "investments": {
+    "title": "Inversiones",
+    "subtitle": "Portafolio, cotizaciones y rendimiento",
+    "totalInvested": "Costo invertido",
+    "totalPnl": "Resultado P&L",
+    "portfolio": "Cartera",
+    "shared": {
+      "totalValue": "Valor total"
+    },
+    "tabs": {
+      "operations": "Operaciones",
+      "kpiMarketValue": "Valor de mercado",
+      "kpiPerformance": "Rendimiento",
+      "positionsHeading": "Posiciones en Cartera",
+      "positionsCaption": "Posiciones de inversión",
+      "positionsEmptyTitle": "Sin posiciones",
+      "positionsEmptyDescription": "Sin posiciones. Agregá tu primera tenencia en la pestaña Mercados.",
+      "colName": "Nombre",
+      "colAvgCost": "Costo prom.",
+      "colPrice": "Precio",
+      "compositionHeading": "Distribución por Tipo de Activo",
+      "performancePlaceholder": "La evolución de cartera se visualiza en la pestaña Cartera."
+    },
+    "market": {
+      "addHoldingFor": "Agregar tenencia de {ticker}",
+      "scanning": "Escaneando el mercado…",
+      "unavailable": "Los datos de mercado no están disponibles en este momento. Probá de nuevo más tarde.",
+      "noOpportunities": "¡Ya tenés todos los activos en tendencia!",
+      "discoveryTitle": "Descubrimiento de mercado",
+      "iolTrending": "IOL en tendencia",
+      "searchPlaceholder": "Buscá un ticker para investigar…",
+      "ranges": {
+        "all": "Todo"
+      },
+      "seriesError": "No se pudo cargar la serie de precios.",
+      "priceChartAria": "Evolución de precio de {ticker}",
+      "evolutionHeading": "Evolución de Cartera",
+      "evolutionEmpty": "Sin datos de evolución disponibles.",
+      "evolutionAria": "Evolución del valor de cartera y costo acumulado",
+      "readOnly": "solo lectura",
+      "summaryEmpty": "Todavía no hay tenencias. Agregá tu primera tenencia en la pestaña Tenencias.",
+      "portfolioTotal": "Total de cartera",
+      "alertsTitle": "Alertas de Mercado",
+      "bankFilterLabel": "Cuenta",
+      "allBanks": "Todos los bancos"
+    },
+    "operations": {
+      "heading": "Últimas Operaciones",
+      "subheading": "Operaciones inferidas a partir de tus posiciones actuales",
+      "empty": "Sin operaciones registradas.",
+      "caption": "Historial de operaciones",
+      "colDate": "Fecha",
+      "colKind": "Operación",
+      "colAmount": "Monto"
+    },
+    "alerts": {
+      "tabPlaceholder": "Las alertas de mercado se visualizan en el panel lateral de notificaciones.",
+      "onGain": "Alertar a ganancia %",
+      "onLoss": "Alertar a pérdida %",
+      "activeThresholds": "Umbrales activos",
+      "unreadCount": "{count} sin leer",
+      "empty": "Sin alertas activas."
+    },
+    "holdings": {
+      "assetType": {
+        "STOCK": "Acción",
+        "CEDEAR": "CEDEAR",
+        "BOND": "Bono",
+        "FCI": "FCI (fondo común)"
+      },
+      "assetTypePlural": {
+        "STOCK": "Acciones",
+        "CEDEAR": "CEDEARs",
+        "BOND": "Bonos",
+        "FCI": "Fondos comunes (FCI)"
+      },
+      "validation": {
+        "required": "Requerido",
+        "requiredForTransaction": "Requerido para la transacción",
+        "mustBePositive": "Debe ser positivo",
+        "mustBeZeroOrPositive": "Debe ser cero o positivo"
+      },
+      "new": "Nueva tenencia",
+      "empty": "Todavía no hay tenencias.",
+      "loadError": "No se pudieron cargar las tenencias.",
+      "editTitle": "Editar tenencia",
+      "editDescription": "Actualizá los datos de esta tenencia.",
+      "newDescription": "Agregá una tenencia a tu cartera.",
+      "sectionLabel": "{label} ({count})",
+      "colName": "Nombre",
+      "colQty": "Cant.",
+      "colAvgPrice": "Precio prom.",
+      "colCurrent": "Actual",
+      "colValue": "Valor",
+      "sellAction": "Vender tenencia",
+      "fieldCurrency": "Moneda",
+      "fieldBank": "Banco",
+      "selectBankPlaceholder": "Seleccioná un banco",
+      "fieldFundingAccount": "Cuenta de origen",
+      "fundingPlaceholder": "Pagar desde…",
+      "pickBankFirst": "Elegí un banco primero",
+      "noAccountInBank": "No hay cuenta en {currency} en este banco",
+      "fieldAssetType": "Tipo de activo",
+      "namePlaceholder": "p.ej. Grupo Financiero Galicia",
+      "fieldAvgPurchasePrice": "Precio de compra prom.",
+      "notificationsSection": "Notificaciones (opcional)",
+      "thresholdPlaceholder": "p.ej. 10",
+      "updating": "Actualizando…",
+      "creating": "Creando…",
+      "update": "Actualizar tenencia",
+      "create": "Crear tenencia",
+      "toastCreated": "Tenencia creada",
+      "toastCreateFailed": "No se pudo crear la tenencia",
+      "toastUpdated": "Tenencia actualizada",
+      "toastUpdateFailed": "No se pudo actualizar la tenencia",
+      "avgPrice": "Precio promedio",
+      "currentPrice": "Precio actual",
+      "priceHistoryHeading": "Histórico de Precios",
+      "priceHistoryAria": "Histórico de precios de {ticker}",
+      "backToInvestments": "Volver a Inversiones",
+      "sellTitle": "Vender tenencia: {ticker}",
+      "sellDescription": "Vendé una parte o toda la tenencia.",
+      "quantityToSell": "Cantidad a vender",
+      "marketPrice": "Precio de mercado",
+      "estimatedLiquidation": "Liquidación estimada",
+      "receiveFundsIn": "Recibir fondos en",
+      "selectDestinationAccount": "Seleccioná la cuenta de destino",
+      "noAccountsForCurrency": "No hay cuentas disponibles en {currency} para recibir los fondos.",
+      "processing": "Procesando…",
+      "confirmSale": "Confirmar venta",
+      "toastSold": "Vendiste {ticker} por {amount}",
+      "toastSellFailed": "No se pudo vender la tenencia"
+    }
+  },
+  "imports": {
+    "title": "Importaciones",
+    "subtitle": "Importación de extractos bancarios y archivos CSV",
+    "activeRun": "Importación en progreso",
+    "activeRunProcessed": "Procesados: {count}",
+    "activeRunTotal": "Total: {count}",
+    "activeRunProgressLabel": "Progreso de importación de {fileName}",
+    "activeRunUnnamedFile": "archivo",
+    "wizard": {
+      "title": "Asistente de Importación",
+      "heading": "Importar movimientos",
+      "back": "Atrás",
+      "next": "Continuar",
+      "toastParseFailed": "No se pudo leer el archivo",
+      "toastImported": "{count, plural, one {Se importó # movimiento} other {Se importaron # movimientos}}",
+      "toastImportFailed": "No se pudo completar la importación",
+      "toastFinished": "Importación finalizada",
+      "cols": {
+        "date": "Fecha",
+        "description": "Descripción",
+        "currency": "Moneda"
+      },
+      "duplicates": {
+        "title": "Se encontraron posibles duplicados",
+        "srDescription": "Revisá las filas duplicadas detectadas en esta importación.",
+        "body": "{count, plural, one {Ya existe # movimiento} other {Ya existen # movimientos}} con la misma fecha e importe. Seleccioná cuáles querés importar igual.",
+        "skipAll": "Omitir todos",
+        "importChecked": "Importar seleccionados ({count})",
+        "importAll": "Importar todos",
+        "toastResolveFailed": "No se pudieron resolver los duplicados"
+      }
+    },
+    "history": {
+      "title": "Historial de Importaciones",
+      "tableLabel": "Historial de archivos importados",
+      "colSourceCbu": "Origen / CBU",
+      "colInserted": "Insertados",
+      "colDuplicates": "Duplicados",
+      "colFailed": "Fallidos",
+      "colDate": "Fecha",
+      "colStatus": "Estado",
+      "colActions": "Acciones",
+      "empty": "No hay historial de importaciones",
+      "status": {
+        "PENDING": "Pendiente",
+        "COMPLETED": "Completada",
+        "PARTIAL": "Parcial",
+        "FAILED": "Fallida",
+        "UNDONE": "Deshecha"
+      },
+      "undo": "Deshacer",
+      "undoBlocked": "Hay movimientos editados manualmente",
+      "undoTitle": "¿Deshacer importación?",
+      "undoDescription": "Se eliminarán los movimientos importados de {fileName} ({count, plural, one {# movimiento} other {# movimientos}}).",
+      "undoCount": "{count, plural, one {# movimiento será removido} other {# movimientos serán removidos}}.",
+      "undoConfirm": "Deshacer importación"
+    },
+    "reconcile": {
+      "railTitle": "Verificación",
+      "title": "Verificación de Conciliación",
+      "empty": "Sin conciliación registrada",
+      "matched": "Saldo coincide",
+      "unmatched": "Saldo no coincide",
+      "expected": "Esperado:",
+      "computed": "Calculado:"
+    },
+    "steps": {
+      "fileTypes": {
+        "VISA_PDF": "Resumen Visa ICBC",
+        "BANK_PDF": "Movimientos bancarios ICBC",
+        "CSV": "CSV genérico"
+      },
+      "fileSelect": {
+        "question": "¿Qué querés importar?",
+        "hintCsv": "Cualquier CSV con encabezados",
+        "parsing": "Procesando archivo…",
+        "dropPrompt": "Arrastrá el archivo acá o hacé clic para buscarlo",
+        "acceptedFormats": "Solo archivos {formats}"
+      },
+      "accountLink": {
+        "bank": "Banco",
+        "selectBank": "Seleccioná un banco…",
+        "card": "Tarjeta",
+        "selectCard": "Seleccioná una tarjeta…",
+        "selectBankFirst": "Seleccioná un banco primero",
+        "arsAccount": "Cuenta ARS",
+        "selectArsAccount": "Seleccioná una cuenta ARS…",
+        "usdAccount": "Cuenta USD",
+        "selectUsdAccount": "Seleccioná una cuenta USD (opcional)…",
+        "usdHint": "{count, plural, one {Se encontró # movimiento en USD} other {Se encontraron # movimientos en USD}}. Si no seleccionás una cuenta, se van a omitir.",
+        "account": "Cuenta",
+        "selectAccount": "Seleccioná una cuenta…"
+      },
+      "columnMapper": {
+        "modeTitle": "Modo de importe",
+        "modeSigned": "Una columna con signo",
+        "modeSeparate": "Columnas separadas",
+        "date": "Fecha *",
+        "description": "Descripción *",
+        "amount": "Importe *",
+        "debit": "Débito *",
+        "credit": "Crédito *",
+        "balance": "Saldo (opcional)",
+        "selectColumn": "Seleccionar columna...",
+        "colFallback": "Col {index}",
+        "noBalanceCheck": "Sin verificar",
+        "balanceCheckHint": "Verificaremos que el saldo coincida"
+      },
+      "pdfPreview": {
+        "summary": "{count, plural, one {Se encontró <strong>#</strong> movimiento} other {Se encontraron <strong>#</strong> movimientos}}. {shown, plural, one {Mostrando el primero} other {Mostrando los primeros #}}.",
+        "arsCount": "ARS: {count}",
+        "usdCount": "USD: {count}",
+        "skippedCount": "Omitidos: {count}",
+        "colType": "Tipo",
+        "type": {
+          "INCOME": "Ingreso",
+          "EXPENSE": "Gasto"
+        }
+      },
+      "confirm": {
+        "type": "Tipo",
+        "bank": "Banco",
+        "card": "Tarjeta",
+        "arsAccount": "Cuenta ARS",
+        "usdAccount": "Cuenta USD",
+        "account": "Cuenta",
+        "transactionsToImport": "Movimientos a importar",
+        "skippedUnsupported": "Omitidos (moneda no soportada)",
+        "importing": "Importando…",
+        "confirm": "Importar →"
+      }
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Preferencias de cuenta, seguridad y configuración",
+    "nav": {
+      "profile": "Perfil",
+      "security": "Seguridad",
+      "currency": "Moneda y formato",
+      "notifications": "Notificaciones",
+      "fees": "Comisiones y costos",
+      "data": "Datos"
+    },
+    "profile": {
+      "title": "Perfil de Usuario",
+      "email": "Correo Electrónico",
+      "name": "Nombre"
+    },
+    "security": {
+      "title": "Seguridad y Sesiones",
+      "activeSessions": "Sesiones Activas",
+      "unknownDevice": "Dispositivo desconocido",
+      "currentSession": "Esta sesión",
+      "revoke": "Cerrar sesión",
+      "changePassword": "Cambiar Contraseña",
+      "newPassword": "Nueva contraseña",
+      "minLength": "Mínimo {n} caracteres",
+      "revokeDialog": {
+        "title": "¿Cerrar sesión?",
+        "description": "Se cerrará la sesión en {device}.",
+        "fallbackDevice": "dispositivo seleccionado"
+      }
+    },
+    "currency": {
+      "title": "Moneda y Formato",
+      "primary": "Moneda principal",
+      "secondary": "Moneda secundaria",
+      "none": "Ninguna",
+      "decimals": "Decimales",
+      "twoDecimals": "2 decimales (,00)",
+      "noDecimals": "Sin decimales",
+      "preview": "Vista previa: {value}",
+      "sample": {
+        "withDecimals": "$ 1.284.000,00",
+        "noDecimals": "$ 1.284.000"
+      },
+      "gainLossColors": {
+        "label": "Usar verde y rojo para importes",
+        "description": "Resaltar ingresos en verde y egresos en rojo. Al desactivar, los colores se mantienen neutros."
+      }
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "fallbackLabel": "Notificación",
+      "noChannels": "Ninguno",
+      "activeChannels": "Canales activos: {channels}",
+      "categories": {
+        "PAYMENT_DUE": "Vencimiento de tarjetas y cuotas",
+        "BUDGET": "Exceso de presupuesto",
+        "PORTFOLIO_ALERTS": "Alertas de portafolio e inversiones",
+        "SUMMARY": "Resumen periódico",
+        "IMPORT_HEALTH": "Estado de importaciones",
+        "ACCOUNT": "Alertas de cuenta",
+        "SYSTEM": "Notificaciones del sistema"
+      }
+    },
+    "fees": {
+      "title": "Comisiones y Costos",
+      "debitCreditTax": "Impuesto débito/crédito: {pct} % ({rate})",
+      "accounts": "Cuentas",
+      "emptyAccounts": "Sin comisiones de cuentas configuradas",
+      "cards": "Tarjetas",
+      "emptyCards": "Sin comisiones de tarjetas configuradas",
+      "brokers": "Brokers e Inversiones",
+      "emptyBrokers": "Sin comisiones de brokers configuradas",
+      "scope": {
+        "accounts": "Cuentas",
+        "cards": "Tarjetas",
+        "brokers": "Brokers"
+      }
+    },
+    "data": {
+      "title": "Datos y Exportación",
+      "soon": "Próximamente",
+      "deleteAccount": "Eliminar cuenta",
+      "export": {
+        "label": "Exportación de datos",
+        "description": "Descargar todo el historial de movimientos y cuentas en formato CSV.",
+        "button": "Exportar datos (CSV)"
+      },
+      "delete": {
+        "description": "Eliminar permanentemente tu usuario y todos los datos asociados."
+      }
+    }
+  },
+  "auth": {
+    "email": "Email",
+    "emailPlaceholder": "usuario@ejemplo.com",
+    "password": "Contraseña",
+    "rememberMe": "Mantener sesión iniciada",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Ana Pérez",
+    "primaryCurrency": "Moneda principal",
+    "currencies": {
+      "ars": "Pesos Argentinos (ARS)",
+      "usd": "Dólares (USD)"
+    },
+    "passwordRules": {
+      "label": "Requisitos de contraseña",
+      "minLength": "Mínimo {n} caracteres",
+      "uppercase": "Una mayúscula",
+      "digit": "Un número"
+    },
+    "errors": {
+      "invalidCredentials": "Email o contraseña incorrectos",
+      "generic": "No se pudo iniciar sesión. Intentá de nuevo.",
+      "emailTaken": "Ya existe una cuenta con ese email",
+      "registerFailed": "Ocurrió un error al registrar la cuenta"
+    },
+    "login": {
+      "title": "Iniciar Sesión",
+      "subtitle": "Ingresá tus credenciales para acceder a tu plataforma",
+      "submit": "Ingresar",
+      "submitting": "Ingresando...",
+      "noAccount": "¿No tenés una cuenta? <link>Registrate</link>",
+      "pageTitle": "Bienvenido a financial-app",
+      "pageSubtitle": "Accedé a tu resumen patrimonial, cuentas bancarias e inversiones"
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "step": "Paso {step} de 2 — {label}",
+      "step1Label": "Credenciales de acceso",
+      "step2Label": "Perfil de usuario",
+      "continue": "Continuar",
+      "back": "Volver",
+      "submit": "Crear cuenta",
+      "submitting": "Creando...",
+      "haveAccount": "¿Ya tenés una cuenta? <link>Iniciá sesión</link>",
+      "pageTitle": "Sumate a financial-app",
+      "pageSubtitle": "Comenzá a gestionar tus cuentas, tarjetas y presupuesto en un solo lugar"
+    },
+    "split": {
+      "defaultTitle": "Plataforma Financiera",
+      "defaultSubtitle": "Gestión inteligente de tus finanzas personales y bancarias",
+      "footer": "© 2026 financial-app. Mercado argentino."
+    }
+  },
+  "banks": {
+    "title": "Bancos y Cuentas",
+    "subtitle": "Gestión de cuentas, tarjetas y obligaciones bancarias",
+    "tabAccounts": "Cuentas",
+    "tabCards": "Tarjetas",
+    "tabLoans": "Préstamos",
+    "railTitle": "Información e Importaciones",
+    "kpis": {
+      "totalCash": "Efectivo total",
+      "cardDebt": "Deuda en tarjetas",
+      "loanBalance": "Saldo de préstamos",
+      "accountCount": "Cuentas activas"
+    },
+    "accounts": {
+      "add": "Agregar cuenta",
+      "fallbackName": "Cuenta",
+      "fallbackBank": "Banco"
+    },
+    "cards": {
+      "add": "Agregar tarjeta",
+      "fallbackBrand": "Tarjeta",
+      "closesOn": "Cierra:",
+      "dueOn": "Vence:"
+    },
+    "loans": {
+      "activeTitle": "Préstamos Activos",
+      "tableCaption": "Resumen de préstamos",
+      "columnLabel": "Préstamo",
+      "columnOutstanding": "Saldo Pendiente",
+      "columnInstallments": "Cuotas",
+      "columnNextDue": "Próximo Vencimiento",
+      "installmentsOfTotal": "{paid} / {total, plural, one {# cuota} other {# cuotas}}"
+    },
+    "cashDistribution": {
+      "title": "Distribución de Saldos",
+      "empty": "Sin saldos registrados."
+    },
+    "calendar": {
+      "title": "Próximos Vencimientos Bancarios",
+      "empty": "Sin vencimientos cercanos.",
+      "dueFallback": "Vencimiento"
+    },
+    "importHealth": {
+      "title": "Estado de Importaciones",
+      "importAction": "Importar",
+      "empty": "Sin importaciones",
+      "goToImports": "Ir a Importaciones",
+      "statusNever": "Sin importaciones",
+      "statusStale": "Desactualizado",
+      "statusOk": "Al día"
+    },
+    "dialogs": {
+      "shared": {
+        "fieldBank": "Banco",
+        "selectBankPlaceholder": "Seleccioná un banco",
+        "fieldType": "Tipo",
+        "fieldCurrency": "Moneda",
+        "fieldDescription": "Descripción",
+        "create": "Crear",
+        "update": "Actualizar",
+        "behavior": {
+          "INSTANT_PAYMENT": "Pago inmediato",
+          "CREDIT": "Crédito (en cuotas)"
+        }
+      },
+      "addAccount": {
+        "addTitle": "Agregar cuenta",
+        "editTitle": "Editar cuenta",
+        "description": "Creá o editá una cuenta bancaria.",
+        "errorSave": "No pudimos guardar la cuenta",
+        "fieldName": "Nombre de la cuenta",
+        "namePlaceholder": "Sueldo",
+        "fieldAlias": "Alias (opcional)",
+        "aliasPlaceholder": "sergi.sueldo",
+        "fieldCbu": "CBU (22 dígitos)",
+        "accountType": {
+          "CHECKING": "Cuenta corriente",
+          "SAVINGS": "Caja de ahorro"
+        },
+        "noAliasTitle": "No ingresaste un alias",
+        "noAliasDescription": "No ingresaste un alias. Se usará el CBU de la cuenta como alias. ¿Querés continuar?",
+        "goBack": "Volver",
+        "useCbuAsAlias": "Usar el CBU como alias"
+      },
+      "cardForm": {
+        "newTitle": "Nueva tarjeta",
+        "editTitle": "Editar tarjeta",
+        "description": "Agregá o editá una tarjeta.",
+        "errorSave": "No pudimos guardar la tarjeta",
+        "fieldBrand": "Marca",
+        "cardType": {
+          "STANDARD": "Standard",
+          "SILVER": "Silver",
+          "GOLD": "Gold",
+          "BLACK": "Black",
+          "PLATINUM": "Platinum"
+        },
+        "fieldBehavior": "Modalidad",
+        "fieldCardNumber": "Número de tarjeta (16 dígitos, o 15 para autocompletar)",
+        "fieldExpiry": "Vencimiento (MM/AA)",
+        "fieldClosingDay": "Día de cierre",
+        "fieldDueDay": "Día de vencimiento"
+      },
+      "cardExpense": {
+        "title": "Nuevo gasto con tarjeta",
+        "description": "Agregá o editá un gasto con tarjeta.",
+        "errorSave": "No pudimos guardar el gasto de la tarjeta",
+        "fieldTotalAmount": "Importe total",
+        "fieldInstallments": "Cuotas",
+        "fieldFirstDueDate": "Primer vencimiento"
+      },
+      "cardDetail": {
+        "description": "Detalle y gastos de esta tarjeta.",
+        "addExpense": "Agregar gasto",
+        "loadingInstallments": "Cargando cuotas…",
+        "noPurchases": "No hay compras registradas en esta tarjeta.",
+        "purchases": "Compras",
+        "paidOfTotal": "{paid} de {total, plural, one {# cuota pagada} other {# cuotas pagadas}}",
+        "fullyPaid": "Pagada por completo",
+        "dueOnDate": "Vence {date}",
+        "paidOnDate": "Pagada {date}",
+        "accountPlaceholder": "Cuenta...",
+        "noAccounts": "Sin cuentas",
+        "installmentPaid": "Cuota pagada",
+        "errorPayment": "No pudimos registrar el pago",
+        "pay": "Pagar",
+        "upcomingDueDates": "Próximos Vencimientos",
+        "dueWithInstallment": "Vence {date} (#{number}/{total})"
+      },
+      "record": {
+        "title": {
+          "DEPOSIT": "Depositar fondos",
+          "WITHDRAW": "Retirar fondos",
+          "TRANSFER": "Transferir fondos"
+        },
+        "success": {
+          "DEPOSIT": "Depósito registrado",
+          "WITHDRAW": "Retiro registrado",
+          "TRANSFER": "Transferencia registrada"
+        },
+        "description": "Registrá un movimiento para esta cuenta.",
+        "errorSelectCounterpart": "Seleccioná una cuenta de contrapartida",
+        "errorCounterpartCbu": "El CBU de contrapartida debe tener 22 dígitos",
+        "errorAmountPositive": "El importe debe ser mayor a cero",
+        "errorCategoryRequired": "La categoría es obligatoria",
+        "errorRecord": "No pudimos registrar el movimiento",
+        "counterpartSource": "Origen",
+        "counterpartDestination": "Destino",
+        "counterpartOwn": "Cuenta propia",
+        "counterpartExternal": "CBU externo",
+        "selectAccountPlaceholder": "Seleccioná una cuenta",
+        "noMatchingAccounts": "No hay cuentas compatibles",
+        "cbuPlaceholder": "CBU de 22 dígitos",
+        "selectPlaceholder": "Seleccionar",
+        "fieldSubcategory": "Subcategoría",
+        "categoryFirst": "Elegí una categoría",
+        "reasonPlaceholder": "Motivo...",
+        "fieldDate": "Fecha",
+        "processing": "Procesando…",
+        "recordAction": "Registrar"
+      },
+      "history": {
+        "title": "Actividad Reciente: {account}",
+        "description": "Historial de movimientos de esta cuenta.",
+        "noTransactions": "No hay movimientos registrados en esta cuenta.",
+        "transactionFallback": "Movimiento"
+      }
+    }
+  }
+}

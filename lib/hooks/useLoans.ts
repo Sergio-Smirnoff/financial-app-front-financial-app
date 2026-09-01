@@ -1,27 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { loansApi } from '@/lib/api/loans'
 import type { LoanRequest } from '@/types/loans'
 
-const QK = {
-  all: ['loans'] as const,
-  byBank: (bankNumber: string) => ['loans', { bankNumber }] as const,
-  installments: (loanId: number) => ['loans', loanId, 'installments'] as const,
-}
-
-export function useLoans(bankNumber?: string) {
-  return useQuery({
-    queryKey: bankNumber ? QK.byBank(bankNumber) : QK.all,
-    queryFn: () => loansApi.list(bankNumber),
-  })
-}
+const BFF_LOANS = ['bff', 'loans'] as const
+const BFF_BANKS = ['bff', 'banks'] as const
+const BFF_TRANSACTIONS = ['bff', 'transactions'] as const
 
 export function useCreateLoan() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: LoanRequest) => loansApi.create(data),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: QK.all });
-      qc.invalidateQueries({ queryKey: ['banks'] });
+      qc.invalidateQueries({ queryKey: BFF_LOANS })
+      qc.invalidateQueries({ queryKey: BFF_BANKS })
     },
   })
 }
@@ -31,17 +22,9 @@ export function useDeleteLoan() {
   return useMutation({
     mutationFn: (id: number) => loansApi.delete(id),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: QK.all });
-      qc.invalidateQueries({ queryKey: ['banks'] });
+      qc.invalidateQueries({ queryKey: BFF_LOANS })
+      qc.invalidateQueries({ queryKey: BFF_BANKS })
     },
-  })
-}
-
-export function useLoanInstallments(loanId: number) {
-  return useQuery({
-    queryKey: QK.installments(loanId),
-    queryFn: () => loansApi.listInstallments(loanId),
-    enabled: loanId > 0,
   })
 }
 
@@ -51,9 +34,9 @@ export function usePayLoanInstallment() {
     mutationFn: (vars: { loanId: number; installmentId: number; accountCbu: string; paidDate?: string }) =>
       loansApi.payInstallment(vars.loanId, vars.installmentId, vars.accountCbu, vars.paidDate),
     onSuccess: (_, vars) => {
-      qc.invalidateQueries({ queryKey: QK.installments(vars.loanId) })
-      qc.invalidateQueries({ queryKey: QK.all })
-      qc.invalidateQueries({ queryKey: ['banks'] })
+      qc.invalidateQueries({ queryKey: BFF_LOANS })
+      qc.invalidateQueries({ queryKey: BFF_BANKS })
+      qc.invalidateQueries({ queryKey: BFF_TRANSACTIONS })
       qc.invalidateQueries({ queryKey: ['transactions', 'account', vars.accountCbu] })
     },
   })

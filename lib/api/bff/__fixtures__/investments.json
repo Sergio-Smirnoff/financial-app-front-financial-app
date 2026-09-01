@@ -1,0 +1,136 @@
+{
+  "alerts": {
+    "data": [],
+    "observedAt": "2026-08-23T16:33:44.835212496Z",
+    "status": "OK"
+  },
+  "composition": {
+    "data": [],
+    "observedAt": "2026-08-23T16:33:44.834336130Z",
+    "status": "OK"
+  },
+  "evolution": {
+    "data": [],
+    "observedAt": "2026-08-23T16:33:44.833873150Z",
+    "status": "OK"
+  },
+  "kpis": {
+    "data": {
+      "cost": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "marketValue": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "pnl": {
+        "amount": "0.00",
+        "currency": "ARS",
+        "secondary": null
+      },
+      "pnlPct": 0
+    },
+    "observedAt": "2026-08-23T16:33:44.834349745Z",
+    "status": "OK"
+  },
+  "marketStrip": {
+    "data": [],
+    "observedAt": "2026-08-23T16:33:44.830499704Z",
+    "status": "UNAVAILABLE"
+  },
+  "positions": {
+    "data": [
+      {
+        "avgCost": {
+          "amount": "21500.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "bankNumber": "017",
+        "holdingId": 2,
+        "marketValue": {
+          "amount": "645000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "name": "Apple Inc. CEDEAR",
+        "pnl": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "pnlPct": 0.0000,
+        "price": {
+          "amount": "21500.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "quantity": 30.000000,
+        "ticker": "AAPL"
+      },
+      {
+        "avgCost": {
+          "amount": "32000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "bankNumber": "017",
+        "holdingId": 1,
+        "marketValue": {
+          "amount": "1600000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "name": "YPF S.A.",
+        "pnl": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "pnlPct": 0.0000,
+        "price": {
+          "amount": "32000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "quantity": 50.000000,
+        "ticker": "YPFD"
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.834690135Z",
+    "status": "OK"
+  },
+  "recentOperations": {
+    "data": [
+      {
+        "amount": {
+          "amount": "645000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "date": "2026-08-23",
+        "holdingId": 2,
+        "kind": "BUY",
+        "quantity": 30.000000,
+        "ticker": "AAPL"
+      },
+      {
+        "amount": {
+          "amount": "1600000.00",
+          "currency": "ARS",
+          "secondary": null
+        },
+        "date": "2026-08-23",
+        "holdingId": 1,
+        "kind": "BUY",
+        "quantity": 50.000000,
+        "ticker": "YPFD"
+      }
+    ],
+    "observedAt": "2026-08-23T16:33:44.834665068Z",
+    "status": "OK"
+  }
+}
