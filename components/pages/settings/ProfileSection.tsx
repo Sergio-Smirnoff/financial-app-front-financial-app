@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import type { components } from '@/lib/api/bff/schema'
@@ -22,6 +23,8 @@ export function ProfileSection({
   nameValue,
   onNameChange,
 }: ProfileSectionProps) {
+  const t = useTranslations('settings')
+
   return (
     <SectionState
       section={section}
@@ -32,7 +35,7 @@ export function ProfileSection({
       {(profile: any) => (
         <div id="profile" className="elev-sm rounded-xl border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between gap-4">
-            <h3 className="section-head">Perfil de Usuario</h3>
+            <h3 className="section-head">{t('profile.title')}</h3>
             {profile.email && (
               <span className="text-xs text-muted-foreground font-mono">
                 {profile.email}
@@ -42,13 +45,13 @@ export function ProfileSection({
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-1.5">
               <label htmlFor="email-input" className="text-sm font-medium">
-                Correo Electrónico
+                {t('profile.email')}
               </label>
               <Input id="email-input" value={profile.email ?? ''} disabled className="bg-muted" />
             </div>
             <div className="space-y-1.5">
               <label htmlFor="name-input" className="text-sm font-medium">
-                Nombre
+                {t('profile.name')}
               </label>
               <Input
                 id="name-input"

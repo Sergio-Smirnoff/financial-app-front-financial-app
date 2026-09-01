@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { ToggleRow } from '@/components/ui-kit/controls/Toolbar'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import type { components } from '@/lib/api/bff/schema'
@@ -34,7 +35,9 @@ export function CurrencyFormatSection({
   useColors,
   onUseColorsChange,
 }: CurrencyFormatSectionProps) {
-  const formattedPreview = decimals === '0' ? '$ 1.284.000' : '$ 1.284.000,00'
+  const t = useTranslations('settings')
+  const formattedPreview =
+    decimals === '0' ? t('currency.sample.noDecimals') : t('currency.sample.withDecimals')
 
   return (
     <SectionState
@@ -45,12 +48,12 @@ export function CurrencyFormatSection({
     >
       {() => (
         <div id="currency" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
-          <h3 className="section-head">Moneda y Formato</h3>
+          <h3 className="section-head">{t('currency.title')}</h3>
 
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-1.5">
               <label htmlFor="primary-curr-select" className="text-sm font-medium">
-                Moneda principal
+                {t('currency.primary')}
               </label>
               <select
                 id="primary-curr-select"
@@ -67,7 +70,7 @@ export function CurrencyFormatSection({
 
             <div className="space-y-1.5">
               <label htmlFor="sec-curr-select" className="text-sm font-medium">
-                Moneda secundaria
+                {t('currency.secondary')}
               </label>
               <select
                 id="sec-curr-select"
@@ -75,8 +78,8 @@ export function CurrencyFormatSection({
                 onChange={(e) => onSecondaryCurrencyChange(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="none">Ninguna</option>
-                <option value="null">Ninguna</option>
+                <option value="none">{t('currency.none')}</option>
+                <option value="null">{t('currency.none')}</option>
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
               </select>
@@ -84,7 +87,7 @@ export function CurrencyFormatSection({
 
             <div className="space-y-1.5">
               <label htmlFor="decimals-select" className="text-sm font-medium">
-                Decimales
+                {t('currency.decimals')}
               </label>
               <select
                 id="decimals-select"
@@ -93,19 +96,19 @@ export function CurrencyFormatSection({
                 onChange={(e) => onDecimalsChange(e.target.value)}
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="2">2 decimales (,00)</option>
-                <option value="0">Sin decimales</option>
+                <option value="2">{t('currency.twoDecimals')}</option>
+                <option value="0">{t('currency.noDecimals')}</option>
               </select>
               <div data-testid="format-preview" className="text-xs text-muted-foreground pt-1 font-mono">
-                Vista previa: {formattedPreview}
+                {t('currency.preview', { value: formattedPreview })}
               </div>
             </div>
           </div>
 
           <ToggleRow
             id="use-colors-toggle"
-            label="Usar verde y rojo para importes"
-            description="Resaltar ingresos en verde y egresos en rojo. Al desactivar, los colores se mantienen neutros."
+            label={t('currency.gainLossColors.label')}
+            description={t('currency.gainLossColors.description')}
             checked={useColors}
             onCheckedChange={onUseColorsChange}
           />
