@@ -23,6 +23,8 @@ export type InvestmentsBff = Normalised<Schemas['InvestmentsBffResponse']>
 export type ImportsBff = Normalised<Schemas['ImportsBffResponse']>
 export type SettingsBff = Normalised<Schemas['SettingsBffResponse']>
 export type SearchBff = Normalised<Schemas['SearchBffResponse']>
+export type LoansBff = Normalised<Schemas['LoansBffResponse']>
+export type LoanScheduleBff = Normalised<Schemas['LoanScheduleBffResponse']>
 
 export type LoanRow = Normalised<Schemas['LoanRowResponse']>
 export type AccountRow = Normalised<Schemas['AccountRowResponse']>
@@ -30,6 +32,11 @@ export type CardRow = Normalised<Schemas['CardRowResponse']>
 export type TransactionRow = Normalised<Schemas['TransactionRowResponse']>
 export type PositionRow = Normalised<Schemas['PositionRowResponse']>
 export type SearchHit = Normalised<Schemas['SearchHitResponse']>
+
+export type LoansKpis = NonNullable<NonNullable<LoansBff['kpis']>['data']>
+export type LoanDetailRow = NonNullable<NonNullable<LoansBff['loans']>['data']>[number]
+export type AccountOption = NonNullable<NonNullable<LoansBff['payFromAccounts']>['data']>[number]
+export type InstallmentRow = NonNullable<NonNullable<LoanScheduleBff['installments']>['data']>[number]
 
 export interface BffQuery {
   currency?: 'ARS' | 'USD_MEP' | 'USD_CCL'
