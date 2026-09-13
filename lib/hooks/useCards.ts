@@ -24,6 +24,7 @@ export function useCreateCard() {
     mutationFn: (body: CardRequest) => cardsApi.create(body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
       toast.success('Card created')
     },
   })
@@ -36,6 +37,7 @@ export function useUpdateCard() {
     onSuccess: (_, { cardNumber }) => {
       queryClient.invalidateQueries({ queryKey: ['cards'] })
       queryClient.invalidateQueries({ queryKey: ['card', cardNumber] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
       toast.success('Card updated')
     },
   })
@@ -47,6 +49,7 @@ export function useDeleteCard() {
     mutationFn: (cardNumber: string) => cardsApi.delete(cardNumber),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
       toast.success('Card deleted')
     },
   })
@@ -70,6 +73,7 @@ export function useCreateCardExpense(cardNumber: string) {
       cardsApi.createExpense(cardNumber, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['card-installments', cardNumber] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
       toast.success('Expense created')
     },
   })
@@ -90,6 +94,8 @@ export function useMarkInstallmentPaid(cardNumber: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['card-installments', cardNumber] })
       queryClient.invalidateQueries({ queryKey: ['banks'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'banks'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
       toast.success('Installment marked as paid')
     },
   })
