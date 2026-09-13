@@ -1,5 +1,5 @@
-import React, { useState, useId } from 'react'
-import { area, line, curveMonotoneX } from 'd3-shape'
+import React, { useState, useId, useMemo } from 'react'
+import { area, line, curveMonotoneX, curveLinear } from 'd3-shape'
 import { ChartFrame } from './primitives/ChartFrame'
 import { Axis } from './primitives/Axis'
 import { HoverMarker } from './primitives/HoverMarker'
@@ -13,6 +13,7 @@ export interface AreaChartProps {
   height?: number
   width?: number
   className?: string
+  curve?: 'linear' | 'monotone' | 'auto'
 }
 
 export function AreaChart({
@@ -22,25 +23,41 @@ export function AreaChart({
   ariaLabel,
   height = 240,
   width = 640,
-  className = ''
+  className = '',
+  curve = 'auto'
 }: AreaChartProps) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
   const gradientId = useId()
 
-  const combinedPoints = comparison && comparison.length > 0 ? [...series, ...comparison] : series
+  const sortedSeries = useMemo(() => {
+    return [...series].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  }, [series])
 
-  const paddingX = 32
+  const sortedComparison = useMemo(() => {
+    if (!comparison) return undefined
+    return [...comparison].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  }, [comparison])
+
+  const combinedPoints = useMemo(() => {
+    return sortedComparison && sortedComparison.length > 0
+      ? [...sortedSeries, ...sortedComparison]
+      : sortedSeries
+  }, [sortedSeries, sortedComparison])
+
+  const paddingLeft = 56
+  const paddingRight = 24
   const paddingY = 32
 
   const { x, y, ticksX, ticksY } = useChartScales({
     points: combinedPoints,
     width,
     height,
-    paddingX,
+    paddingLeft,
+    paddingRight,
     paddingY
   })
 
-  if (!series || series.length === 0) {
+  if (!sortedSeries || sortedSeries.length === 0) {
     return (
       <ChartFrame width={width} height={height} ariaLabel={ariaLabel} className={className}>
         <text x={width / 2} y={height / 2} textAnchor="middle" fill="currentColor" className="text-sm fill-muted-foreground">
@@ -52,30 +69,41 @@ export function AreaChart({
 
   const minY = y.domain()[0]
 
+  // Adaptive curve: for sparse points (<= 4 points), linear interpolation prevents artificial
+  // overshoot/oscillations that depict non-existent prices between actual trade points.
+  const curveType =
+    curve === 'linear'
+      ? curveLinear
+      : curve === 'monotone'
+      ? curveMonotoneX
+      : sortedSeries.length > 4
+      ? curveMonotoneX
+      : curveLinear
+
   const areaGenerator = area<SeriesPoint>()
     .x((d) => x(d.date instanceof Date ? d.date : new Date(d.date)))
     .y0(y(minY))
     .y1((d) => y(d.value))
-    .curve(curveMonotoneX)
+    .curve(curveType)
 
   const lineGenerator = line<SeriesPoint>()
     .x((d) => x(d.date instanceof Date ? d.date : new Date(d.date)))
     .y((d) => y(d.value))
-    .curve(curveMonotoneX)
+    .curve(curveType)
 
-  const areaPath = areaGenerator(series) || ''
-  const linePath = lineGenerator(series) || ''
-  const comparisonLinePath = comparison ? lineGenerator(comparison) || '' : ''
+  const areaPath = areaGenerator(sortedSeries) || ''
+  const linePath = lineGenerator(sortedSeries) || ''
+  const comparisonLinePath = sortedComparison ? lineGenerator(sortedComparison) || '' : ''
 
   const handleMouseMove = (e: React.MouseEvent<SVGRectElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const mouseX = e.clientX - rect.left
-    const svgMouseX = (mouseX / rect.width) * width
+    const svgMouseX = paddingLeft + (mouseX / rect.width) * (width - paddingLeft - paddingRight)
 
     let closestIdx = 0
     let minDistance = Infinity
 
-    series.forEach((pt, i) => {
+    sortedSeries.forEach((pt, i) => {
       const ptX = x(pt.date instanceof Date ? pt.date : new Date(pt.date))
       const dist = Math.abs(ptX - svgMouseX)
       if (dist < minDistance) {
@@ -87,18 +115,18 @@ export function AreaChart({
     setHoverIndex(closestIdx)
   }
 
-  const activeIdx = hoverIndex !== null ? hoverIndex : series.length - 1
-  const activePoint = series[activeIdx]
+  const activeIdx = hoverIndex !== null ? hoverIndex : sortedSeries.length - 1
+  const activePoint = sortedSeries[activeIdx]
 
   // Delta calculation relative to initial point (or zero)
-  const baseValue = series[0]?.value ?? 0
+  const baseValue = sortedSeries[0]?.value ?? 0
   const currentValue = activePoint?.value ?? 0
   const deltaValue = currentValue - baseValue
   const deltaPct = baseValue !== 0 ? (deltaValue / baseValue) * 100 : 0
   const isPositiveDelta = deltaValue >= 0
 
   const activeDate = activePoint?.date instanceof Date ? activePoint.date : new Date(activePoint.date)
-  const month = String(activeDate.getDate()).padStart(2, '0') // or String(activeDate.getMonth() + 1).padStart(2, '0')
+  const month = String(activeDate.getDate()).padStart(2, '0')
   const monthOfYear = String(activeDate.getMonth() + 1).padStart(2, '0')
   const dateText = `${month}/${monthOfYear}`
 
@@ -106,7 +134,7 @@ export function AreaChart({
   const valueText = `${currencySymbol} ${currentValue.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
   const deltaText = `${isPositiveDelta ? '+' : '−'}${Math.abs(deltaPct).toFixed(1)}%`
 
-  const dataTable = series.map((s) => ({
+  const dataTable = sortedSeries.map((s) => ({
     label: s.date instanceof Date ? s.date.toISOString().split('T')[0] : String(s.date),
     value: s.value
   }))
@@ -127,7 +155,8 @@ export function AreaChart({
         ticksY={ticksY}
         width={width}
         height={height}
-        paddingX={paddingX}
+        paddingLeft={paddingLeft}
+        paddingRight={paddingRight}
         paddingY={paddingY}
         formatY={(val) => `${currencySymbol}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`}
       />
@@ -136,7 +165,7 @@ export function AreaChart({
       <path d={areaPath} fill={`url(#${gradientId})`} />
 
       {/* Comparison Series Line if present */}
-      {comparison && (
+      {sortedComparison && (
         <path
           data-role="comparison"
           d={comparisonLinePath}
@@ -159,7 +188,7 @@ export function AreaChart({
       />
 
       {/* Vertex circles (1 per series point) */}
-      {series.map((p, i) => {
+      {sortedSeries.map((p, i) => {
         const cx = x(p.date instanceof Date ? p.date : new Date(p.date))
         const cy = y(p.value)
         return (
@@ -178,9 +207,9 @@ export function AreaChart({
       {/* Interactive hover overlay area */}
       <rect
         data-testid="hover-area"
-        x={paddingX}
+        x={paddingLeft}
         y={0}
-        width={width - 2 * paddingX}
+        width={width - paddingLeft - paddingRight}
         height={height}
         fill="transparent"
         className="cursor-crosshair"

@@ -44,4 +44,31 @@ describe('AreaChart', () => {
     const { container } = render(<AreaChart series={series12} comparison={cost12} currency="ARS" ariaLabel="Cartera" />)
     expect(container.querySelector('path[data-role="comparison"]')).toHaveAttribute('stroke-dasharray')
   })
+
+  it('ensures Y-axis tick labels remain within visible viewport bounds', () => {
+    render(<AreaChart series={series12} currency="ARS" ariaLabel="Patrimonio neto" />)
+    const yTicks = screen.getAllByTestId('tick-y')
+    for (const tick of yTicks) {
+      const text = tick.querySelector('text')
+      const xAttr = parseFloat(text?.getAttribute('x') || '0')
+      expect(xAttr).toBeGreaterThanOrEqual(40)
+    }
+  })
+
+  it('handles unsorted series chronologically and uses straight segments for sparse points', () => {
+    const unsortedSparse = [
+      { date: '2026-03-01', value: 200 },
+      { date: '2026-01-01', value: 100 },
+    ]
+    const { container } = render(<AreaChart series={unsortedSparse} currency="ARS" ariaLabel="Sparse" />)
+    const linePath = container.querySelector('path[data-role="line"]')?.getAttribute('d')
+    expect(linePath).toMatch(/^M[\d.,\s]+L[\d.,\s]+$/)
+  })
+
+  it('handles single point without collapsing scale', () => {
+    const single = [{ date: '2026-01-01', value: 150 }]
+    const { container } = render(<AreaChart series={single} currency="ARS" ariaLabel="Single" />)
+    const vertices = container.querySelectorAll('circle[data-role="vertex"]')
+    expect(vertices).toHaveLength(1)
+  })
 })
