@@ -6,6 +6,7 @@ import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { RowActions } from '@/components/ui-kit/controls/FilterBar'
 import { cn } from '@/lib/utils'
 import type { Section, CardRow } from '@/lib/api/bff/types'
 
@@ -26,6 +27,7 @@ export function CardsTab({
   onAddCard,
   onViewDetail,
   onAddExpense,
+  onDeleteCard,
 }: CardsTabProps) {
   const t = useTranslations('banks')
   const tc = useTranslations('common')
@@ -80,7 +82,20 @@ export function CardsTab({
                       <p className="font-semibold text-foreground">{cardName}</p>
                       <p className="text-xs text-muted-foreground">{card.brand || t('cards.fallbackBrand')} •••• {lastFour}</p>
                     </div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider">{cardUsed.currency}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground uppercase tracking-wider">{cardUsed.currency}</span>
+                      {onDeleteCard && card.cardNumber && (
+                        <RowActions
+                          items={[
+                            {
+                              label: tc('delete'),
+                              onSelect: () => onDeleteCard(card),
+                              tone: 'destructive',
+                            },
+                          ]}
+                        />
+                      )}
+                    </div>
                   </div>
                   <Money value={cardUsed} className="text-2xl font-bold" />
                   <div className="flex flex-col gap-1.5">
