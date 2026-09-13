@@ -46,24 +46,24 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
     e.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) {
-      toast.error(t('rules.patternPlaceholder') || 'El nombre es obligatorio')
+      toast.error(t('dialog.error'))
       return
     }
 
     if (mode === 'SUBCATEGORY') {
       if (!parentId) {
-        toast.error(t('rules.selectCategory'))
+        toast.error(t('dialog.parentSelect'))
         return
       }
       createSubcategory.mutate(
         { parentId, data: { name: trimmed, type } },
         {
           onSuccess: () => {
-            toast.success(tc('save') || 'Subcategoría creada')
+            toast.success(t('dialog.successSubcategory'))
             onOpenChange(false)
           },
           onError: (err: any) => {
-            toast.error(err.message || 'Error al crear subcategoría')
+            toast.error(err.message || t('dialog.error'))
           },
         }
       )
@@ -72,11 +72,11 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
         { name: trimmed, type },
         {
           onSuccess: () => {
-            toast.success(tc('save') || 'Categoría creada')
+            toast.success(t('dialog.successCategory'))
             onOpenChange(false)
           },
           onError: (err: any) => {
-            toast.error(err.message || 'Error al crear categoría')
+            toast.error(err.message || t('dialog.error'))
           },
         }
       )
@@ -89,11 +89,13 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
-          <DialogTitle>{mode === 'SUBCATEGORY' ? t('newSubcategory') : t('newCategory')}</DialogTitle>
+          <DialogTitle>
+            {mode === 'SUBCATEGORY' ? t('dialog.titleSubcategory') : t('dialog.titleCategory')}
+          </DialogTitle>
           <DialogDescription>
             {mode === 'SUBCATEGORY'
-              ? 'Agregá una subcategoría para clasificar mejor tus movimientos.'
-              : 'Creá una nueva categoría principal para organizar tus presupuestos.'}
+              ? t('dialog.descSubcategory')
+              : t('dialog.descCategory')}
           </DialogDescription>
         </DialogHeader>
 
@@ -107,7 +109,7 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
                 mode === 'CATEGORY' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {t('newCategory')}
+              {t('dialog.titleCategory')}
             </button>
             <button
               type="button"
@@ -116,7 +118,7 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
                 mode === 'SUBCATEGORY' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {t('newSubcategory')}
+              {t('dialog.titleSubcategory')}
             </button>
           </div>
         )}
@@ -124,14 +126,14 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
         <form onSubmit={handleSubmit} className="space-y-4 py-2 text-sm">
           {mode === 'SUBCATEGORY' && (
             <div className="space-y-2">
-              <Label className="text-muted-foreground">{t('rules.assigned')}</Label>
+              <Label className="text-muted-foreground">{t('dialog.parent')}</Label>
               <Select
                 value={parentId?.toString() ?? ''}
                 onValueChange={(v) => setParentId(v ? Number(v) : undefined)}
                 disabled={!!initialParentId}
               >
                 <SelectTrigger className="bg-background border-border">
-                  <SelectValue placeholder={t('rules.selectCategory')} />
+                  <SelectValue placeholder={t('dialog.parentSelect')} />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border max-h-[260px]">
                   {(categories ?? []).map((cat) => (
@@ -145,26 +147,26 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
           )}
 
           <div className="space-y-2">
-            <Label className="text-muted-foreground">{tc('concept') || 'Nombre'}</Label>
+            <Label className="text-muted-foreground">{t('dialog.name')}</Label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={mode === 'SUBCATEGORY' ? 'Ej. Delivery, Combustible' : 'Ej. Educación, Mascotas'}
+              placeholder={t('dialog.namePlaceholder')}
               className="bg-background border-border"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-muted-foreground">{tc('category') || 'Tipo'}</Label>
+            <Label className="text-muted-foreground">{t('dialog.type')}</Label>
             <Select value={type} onValueChange={(v) => setType(v as CategoryType)}>
               <SelectTrigger className="bg-background border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border-border">
-                <SelectItem value="EXPENSE">{t('tabs.budget') || 'Gasto'}</SelectItem>
-                <SelectItem value="INCOME">{t('tabs.income') || 'Ingreso'}</SelectItem>
-                <SelectItem value="BOTH">Ambos</SelectItem>
+                <SelectItem value="EXPENSE">{t('dialog.types.EXPENSE')}</SelectItem>
+                <SelectItem value="INCOME">{t('dialog.types.INCOME')}</SelectItem>
+                <SelectItem value="BOTH">{t('dialog.types.BOTH')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -174,7 +176,7 @@ export function CreateCategoryDialog({ open, onOpenChange, initialParentId }: Pr
               {tc('cancel')}
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? tc('saving') : tc('save')}
+              {isPending ? t('dialog.creating') : t('dialog.create')}
             </Button>
           </DialogFooter>
         </form>

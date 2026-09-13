@@ -93,9 +93,19 @@ export function RecordTransactionDialog({ open, onOpenChange, mode: propMode, in
   }, [parentCategoryId, categories, categoryFilterType])
 
   useEffect(() => {
+    if (!account && allAccounts.length > 0 && !selectedCbu) {
+      setSelectedCbu(allAccounts[0].cbu)
+    }
+  }, [account, allAccounts, selectedCbu])
+
+  useEffect(() => {
     if (!open) return
     if (propMode) setMode(propMode)
-    if (account?.cbu) setSelectedCbu(account.cbu)
+    if (account?.cbu) {
+      setSelectedCbu(account.cbu)
+    } else if (allAccounts.length > 0) {
+      setSelectedCbu(allAccounts[0].cbu)
+    }
     setAmount('')
     setDescription('')
     setDate(new Date().toISOString().slice(0, 10))
@@ -104,7 +114,7 @@ export function RecordTransactionDialog({ open, onOpenChange, mode: propMode, in
     setCounterpartMode('OWN')
     setOwnCbu('')
     setExternalCbu('')
-  }, [open, propMode, account])
+  }, [open, propMode, account, allAccounts])
 
   const resolveCounterpartCbu = (): string | null => {
     if (counterpartMode === 'OWN') return ownCbu || null
@@ -242,7 +252,11 @@ export function RecordTransactionDialog({ open, onOpenChange, mode: propMode, in
               <Label className="text-muted-foreground">{tc('category')}</Label>
               <Select
                 value={parentCategoryId?.toString() ?? ''}
-                onValueChange={(v) => { setParentCategoryId(v ? Number(v) : undefined); setCategoryId(undefined) }}
+                onValueChange={(v) => {
+                  const pId = v ? Number(v) : undefined
+                  setParentCategoryId(pId)
+                  setCategoryId(pId)
+                }}
               >
                 <SelectTrigger className="bg-background border-border"><SelectValue placeholder={t('dialogs.record.selectPlaceholder')} /></SelectTrigger>
                 <SelectContent className="bg-popover border-border">
@@ -252,8 +266,22 @@ export function RecordTransactionDialog({ open, onOpenChange, mode: propMode, in
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground">{t('dialogs.record.fieldSubcategory')}</Label>
-              <Select value={categoryId?.toString() ?? ''} onValueChange={(v) => setCategoryId(Number(v))} disabled={!parentCategoryId}>
-                <SelectTrigger className="bg-background border-border"><SelectValue placeholder={parentCategoryId ? t('dialogs.record.selectPlaceholder') : t('dialogs.record.categoryFirst')} /></SelectTrigger>
+              <Select
+                value={categoryId && categoryId !== parentCategoryId ? categoryId.toString() : ''}
+                onValueChange={(v) => setCategoryId(v ? Number(v) : parentCategoryId)}
+                disabled={!parentCategoryId || subcategories.length === 0}
+              >
+                <SelectTrigger className="bg-background border-border">
+                  <SelectValue
+                    placeholder={
+                      !parentCategoryId
+                        ? t('dialogs.record.categoryFirst')
+                        : subcategories.length === 0
+                        ? '—'
+                        : t('dialogs.record.selectPlaceholder')
+                    }
+                  />
+                </SelectTrigger>
                 <SelectContent className="bg-popover border-border max-h-[300px]">
                   {subcategories.map((s) => <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>)}
                 </SelectContent>
