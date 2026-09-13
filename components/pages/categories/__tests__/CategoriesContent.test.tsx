@@ -81,4 +81,13 @@ describe('CategoriesContent renders the real contract', () => {
     await userEvent.click(screen.getAllByTestId('budget-row')[0])
     expect(spy).toHaveBeenLastCalledWith(expect.objectContaining({ categoryId: expect.anything() }))
   })
+
+  it('renders the new category button and triggers dialog', async () => {
+    const user = userEvent.setup()
+    render(<CategoriesContent />, { wrapper })
+    const btn = await screen.findByRole('button', { name: /nueva categoría/i })
+    expect(btn).toBeInTheDocument()
+    await user.click(btn)
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
 })
