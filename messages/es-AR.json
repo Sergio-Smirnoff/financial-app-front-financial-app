@@ -136,6 +136,7 @@
   "transactions": {
     "title": "Movimientos",
     "subtitle": "Historial de ingresos, egresos y categorización",
+    "recordTransaction": "Registrar movimiento",
     "method": "Método",
     "manual": "Manual",
     "uncategorised": "{count, plural, one {# movimiento sin categorizar} other {# movimientos sin categorizar}}",
@@ -188,6 +189,7 @@
   "categories": {
     "title": "Categorías y Presupuestos",
     "subtitle": "Control presupuestario, asignación y reglas automáticas",
+    "newCategory": "Nueva categoría",
     "pace": "Ritmo del mes",
     "overBudget": "Excedido",
     "rulesTitle": "Reglas Automáticas",
@@ -196,7 +198,29 @@
       "accumulated": "Gastos acumulados",
       "available": "Disponible",
       "over": "Excedidos",
-      "noCap": "Sin límite"
+      "noCap": "Sin límite",
+      "addSubcategory": "Subcategoría"
+    },
+    "dialog": {
+      "titleCategory": "Nueva categoría",
+      "titleSubcategory": "Nueva subcategoría",
+      "descCategory": "Crea una categoría principal para agrupar tus gastos o ingresos.",
+      "descSubcategory": "Crea una subcategoría para clasificar con mayor detalle.",
+      "name": "Nombre",
+      "namePlaceholder": "ej. Supermercado, Alquiler...",
+      "type": "Tipo",
+      "parent": "Categoría padre",
+      "parentSelect": "Seleccionar categoría padre",
+      "types": {
+        "EXPENSE": "Gasto",
+        "INCOME": "Ingreso",
+        "BOTH": "Ambos"
+      },
+      "create": "Crear categoría",
+      "creating": "Creando...",
+      "successCategory": "Categoría creada exitosamente",
+      "successSubcategory": "Subcategoría creada exitosamente",
+      "error": "Error al crear la categoría"
     },
     "tabs": {
       "budget": "Presupuesto",
@@ -236,6 +260,7 @@
   },
   "loans": {
     "title": "Préstamos",
+    "addLoan": "Nuevo préstamo",
     "kpis": {
       "totalOutstanding": "Saldo pendiente",
       "monthlyPayment": "Cuota mensual",
@@ -261,6 +286,26 @@
       "paid": "Pagada",
       "pending": "Pendiente",
       "pay": "Pagar cuota"
+    },
+    "createDialog": {
+      "title": "Nuevo préstamo",
+      "description": "Registrá un préstamo para acreditar en tu cuenta y generar el cronograma de amortización.",
+      "account": "Cuenta destino",
+      "accountPlaceholder": "Seleccioná una cuenta",
+      "name": "Nombre / Concepto",
+      "namePlaceholder": "ej. Préstamo personal",
+      "principal": "Monto del préstamo",
+      "principalPlaceholder": "0.00",
+      "interestRate": "Tasa nominal anual (TNA %)",
+      "interestRatePlaceholder": "ej. 75",
+      "installments": "Cantidad de cuotas",
+      "installmentsPlaceholder": "12",
+      "startDate": "Fecha de inicio",
+      "submit": "Crear préstamo",
+      "submitting": "Creando...",
+      "success": "Préstamo creado con éxito",
+      "error": "Error al crear el préstamo",
+      "noAccounts": "No hay cuentas bancarias disponibles"
     },
     "payDialog": {
       "title": "Pagar cuota",
