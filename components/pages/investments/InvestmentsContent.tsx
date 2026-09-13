@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useQueryState } from 'nuqs'
 import { useTranslations } from 'next-intl'
 import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
@@ -9,12 +9,16 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { MarketStrip } from '@/components/ui-kit/page/investments/MarketStrip'
 import { Money } from '@/components/ui-kit/money/Money'
+import { Button } from '@/components/ui/button'
 import { PortfolioTab } from './PortfolioTab'
 import { OperationsTab } from './OperationsTab'
+import { MarketsTab } from './MarketsTab'
 import { EvolutionCard } from './EvolutionCard'
 import { AlertsRail } from './AlertsRail'
+import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import type { BffQuery, InvestmentsBff, Section } from '@/lib/api/bff/types'
+import { Plus } from 'lucide-react'
 
 export interface InvestmentsContentProps {
   query?: BffQuery
@@ -25,6 +29,9 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
   const t = useTranslations('investments')
   const tc = useTranslations('common')
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'portfolio' })
+  const [addTicker, setAddTicker] = useQueryState('add')
+  const [createOpen, setCreateOpen] = useState(false)
+
   const { data, isLoading, refetch } = useInvestmentsPage(query)
 
   const marketStrip = data?.marketStrip as Section<any[]> | undefined
@@ -35,14 +42,26 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
   const recentOperations = data?.recentOperations as Section<any[]> | undefined
   const alerts = data?.alerts as Section<any[]> | undefined
 
+  const isCreateDialogOpen = createOpen || !!addTicker
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
-        {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
+        <div className="flex items-center gap-3">
+          {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
+          <Button
+            size="sm"
+            onClick={() => setCreateOpen(true)}
+            className="font-bold flex items-center gap-1.5 shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            {t('holdings.new')}
+          </Button>
+        </div>
       </div>
 
       <SectionState
@@ -103,6 +122,7 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
       <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList>
           <TabsTrigger value="portfolio">{t('portfolio')}</TabsTrigger>
+          <TabsTrigger value="markets">{t('tabs.markets')}</TabsTrigger>
           <TabsTrigger value="operations">{t('tabs.operations')}</TabsTrigger>
         </TabsList>
 
@@ -115,12 +135,17 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
                   compositionSection={composition}
                   isLoading={isLoading}
                   onRetry={refetch}
+                  onOpenCreate={() => setCreateOpen(true)}
                 />
                 <EvolutionCard
                   section={evolution}
                   isLoading={isLoading}
                   onRetry={refetch}
                 />
+              </TabsContent>
+
+              <TabsContent value="markets" className="m-0 focus-visible:outline-none space-y-6">
+                <MarketsTab initialTicker={addTicker ?? undefined} />
               </TabsContent>
 
               <TabsContent value="operations" className="m-0 focus-visible:outline-none">
@@ -145,6 +170,15 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
           }
         />
       </Tabs>
+
+      <RecordHoldingDialog
+        open={isCreateDialogOpen}
+        onOpenChange={(open) => {
+          setCreateOpen(open)
+          if (!open) setAddTicker(null)
+        }}
+        initialTicker={addTicker ?? undefined}
+      />
     </div>
   )
 }
