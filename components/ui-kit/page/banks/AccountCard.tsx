@@ -17,10 +17,11 @@ export interface AccountCardAccount {
 export interface AccountCardProps {
   account: AccountCardAccount
   onClick?: () => void
+  actions?: React.ReactNode
   className?: string
 }
 
-export function AccountCard({ account, onClick, className }: AccountCardProps) {
+export function AccountCard({ account, onClick, actions, className }: AccountCardProps) {
   return (
     <div
       role={onClick ? 'button' : undefined}
@@ -38,9 +39,12 @@ export function AccountCard({ account, onClick, className }: AccountCardProps) {
           <p className="font-semibold text-foreground">{account.name}</p>
           <p className="text-xs text-muted-foreground">{account.bank}</p>
         </div>
-        <span className="text-xs text-muted-foreground uppercase tracking-wider">
-          {account.currency}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider">
+            {account.currency}
+          </span>
+          {actions}
+        </div>
       </div>
 
       <Money value={account.balance} className="text-2xl font-bold" />

@@ -4,7 +4,8 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
-import { formatMoney } from '@/lib/format'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import type { CategoriesBff, Section } from '@/lib/api/bff/types'
 
 export type BudgetRow = NonNullable<NonNullable<CategoriesBff['budgets']>['data']>[number]
@@ -15,6 +16,7 @@ export interface BudgetTabProps {
   onRetry?: () => void
   selectedCategoryId?: number | null
   onSelectCategory?: (id: number) => void
+  onAddSubcategory?: (categoryId: number) => void
 }
 
 export function BudgetTab({
@@ -23,6 +25,7 @@ export function BudgetTab({
   onRetry,
   selectedCategoryId,
   onSelectCategory,
+  onAddSubcategory,
 }: BudgetTabProps) {
   const t = useTranslations('categories')
 
@@ -61,9 +64,25 @@ export function BudgetTab({
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-muted-foreground">
-                    {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground">
+                      {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
+                    </span>
+                    {onAddSubcategory && catId && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onAddSubcategory(catId)
+                        }}
+                        className="h-7 text-xs px-2 gap-1 text-muted-foreground hover:text-foreground"
+                      >
+                        <Plus className="h-3 w-3" />
+                        {t('newSubcategory')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 {budgetCap > 0 && (
                   <ProgressRow

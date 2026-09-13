@@ -10,14 +10,20 @@ import { LoansContent } from '../LoansContent'
 import { getLoans, getLoanSchedule } from '@/lib/api/bff/loans'
 import type { LoansBff, LoanScheduleBff } from '@/lib/api/bff/types'
 
-const { deleteMutateAsync, payMutateAsync } = vi.hoisted(() => ({
+const { deleteMutateAsync, payMutateAsync, createMutateAsync } = vi.hoisted(() => ({
   deleteMutateAsync: vi.fn(async () => undefined),
   payMutateAsync: vi.fn(async () => undefined),
+  createMutateAsync: vi.fn(async () => undefined),
 }))
 
 vi.mock('@/lib/hooks/useLoans', () => ({
   useDeleteLoan: () => ({ mutateAsync: deleteMutateAsync, isPending: false }),
   usePayLoanInstallment: () => ({ mutateAsync: payMutateAsync, isPending: false }),
+  useCreateLoan: () => ({ mutateAsync: createMutateAsync, isPending: false }),
+}))
+
+vi.mock('@/lib/hooks/useBanks', () => ({
+  useBanks: () => ({ banks: [], isLoading: false, isError: false, error: null }),
 }))
 
 vi.mock('@/lib/api/bff/loans', () => ({
@@ -269,5 +275,15 @@ describe('LoansContent', () => {
 
     expect(await screen.findByText('Sin préstamos activos')).toBeInTheDocument()
     expect(screen.getByText('No pudimos cargar esta sección')).toBeInTheDocument()
+  })
+
+  it('opens the create loan dialog when clicking add loan button', async () => {
+    vi.mocked(getLoans).mockResolvedValueOnce(page)
+    const user = userEvent.setup()
+    render(<LoansContent />, { wrapper })
+    const addBtn = await screen.findByRole('button', { name: /nuevo préstamo/i })
+    expect(addBtn).toBeInTheDocument()
+    await user.click(addBtn)
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
   })
 })

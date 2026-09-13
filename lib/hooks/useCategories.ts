@@ -16,6 +16,8 @@ export function useCreateCategory() {
     mutationFn: (data: CreateCategoryRequest) => categoriesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
     },
   })
 }
@@ -27,6 +29,8 @@ export function useCreateSubcategory() {
       categoriesApi.createSubcategory(parentId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
     },
   })
 }
@@ -37,6 +41,8 @@ export function useDeleteCategory() {
     mutationFn: (id: number) => categoriesApi.deleteCategory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
     },
   })
 }
@@ -48,6 +54,8 @@ export function useDeleteSubcategory() {
       categoriesApi.deleteSubcategory(parentId, subId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'categories'] })
+      queryClient.invalidateQueries({ queryKey: ['bff', 'transactions'] })
     },
   })
 }

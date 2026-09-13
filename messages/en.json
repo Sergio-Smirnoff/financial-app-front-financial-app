@@ -136,6 +136,7 @@
   "transactions": {
     "title": "Transactions",
     "subtitle": "Transaction history, income, expenses and categorization",
+    "recordTransaction": "Record transaction",
     "method": "Method",
     "manual": "Manual",
     "uncategorised": "{count, plural, one {# uncategorised transaction} other {# uncategorised transactions}}",
@@ -188,6 +189,7 @@
   "categories": {
     "title": "Categories & Budgets",
     "subtitle": "Budget control, allocation and automatic rules",
+    "newCategory": "New category",
     "pace": "Monthly pace",
     "overBudget": "Over budget",
     "rulesTitle": "Automatic Rules",
@@ -196,7 +198,29 @@
       "accumulated": "Accumulated spending",
       "available": "Available",
       "over": "Over budget",
-      "noCap": "No limit"
+      "noCap": "No limit",
+      "addSubcategory": "Subcategory"
+    },
+    "dialog": {
+      "titleCategory": "New category",
+      "titleSubcategory": "New subcategory",
+      "descCategory": "Create a main category to group your expenses or income.",
+      "descSubcategory": "Create a subcategory to classify with greater detail.",
+      "name": "Name",
+      "namePlaceholder": "e.g. Groceries, Rent...",
+      "type": "Type",
+      "parent": "Parent category",
+      "parentSelect": "Select parent category",
+      "types": {
+        "EXPENSE": "Expense",
+        "INCOME": "Income",
+        "BOTH": "Both"
+      },
+      "create": "Create category",
+      "creating": "Creating...",
+      "successCategory": "Category created successfully",
+      "successSubcategory": "Subcategory created successfully",
+      "error": "Error creating category"
     },
     "tabs": {
       "budget": "Budget",
@@ -236,6 +260,7 @@
   },
   "loans": {
     "title": "Loans",
+    "addLoan": "New loan",
     "kpis": {
       "totalOutstanding": "Outstanding balance",
       "monthlyPayment": "Monthly payment",
@@ -261,6 +286,26 @@
       "paid": "Paid",
       "pending": "Pending",
       "pay": "Pay installment"
+    },
+    "createDialog": {
+      "title": "New loan",
+      "description": "Register a loan to credit into your account and generate the amortization schedule.",
+      "account": "Destination account",
+      "accountPlaceholder": "Select an account",
+      "name": "Concept / Name",
+      "namePlaceholder": "e.g. Personal loan",
+      "principal": "Loan principal amount",
+      "principalPlaceholder": "0.00",
+      "interestRate": "Annual nominal rate (TNA %)",
+      "interestRatePlaceholder": "e.g. 75",
+      "installments": "Number of installments",
+      "installmentsPlaceholder": "12",
+      "startDate": "Start date",
+      "submit": "Create loan",
+      "submitting": "Creating...",
+      "success": "Loan created successfully",
+      "error": "Failed to create loan",
+      "noAccounts": "No bank accounts available"
     },
     "payDialog": {
       "title": "Pay installment",

@@ -12,6 +12,9 @@ import { IncomeTab } from './IncomeTab'
 import { CategoryTrendCard } from './CategoryTrendCard'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { Money } from '@/components/ui-kit/money/Money'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import { CreateCategoryDialog } from './CreateCategoryDialog'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { useQueryClient } from '@tanstack/react-query'
 import type { BffQuery, CategoriesBff } from '@/lib/api/bff/types'
@@ -26,6 +29,8 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
   const queryClient = useQueryClient()
   const [tab, setTab] = useQueryState('tab', { defaultValue: 'budget' })
   const [selectedCatId, setSelectedCatId] = useQueryState('categoryId', parseAsInteger)
+  const [createOpen, setCreateOpen] = React.useState(false)
+  const [subParentId, setSubParentId] = React.useState<number | undefined>(undefined)
 
   const { data, isLoading, refetch } = useCategoriesPage(query, selectedCatId)
 
@@ -57,7 +62,20 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
-        {observedAt && <FreshnessStamp observedAt={observedAt} />}
+        <div className="flex items-center gap-3">
+          {observedAt && <FreshnessStamp observedAt={observedAt} />}
+          <Button
+            onClick={() => {
+              setSubParentId(undefined)
+              setCreateOpen(true)
+            }}
+            size="sm"
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            {t('newCategory')}
+          </Button>
+        </div>
       </div>
 
       <SectionState
@@ -113,6 +131,10 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
                   onRetry={refetch}
                   selectedCategoryId={selectedCatId}
                   onSelectCategory={(id) => setSelectedCatId(selectedCatId === id ? null : id)}
+                  onAddSubcategory={(parentId) => {
+                    setSubParentId(parentId)
+                    setCreateOpen(true)
+                  }}
                 />
               </TabsContent>
 
@@ -146,6 +168,12 @@ export function CategoriesContent({ query = { currency: 'ARS', secondary: 'none'
           }
         />
       </Tabs>
+
+      <CreateCategoryDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        initialParentId={subParentId}
+      />
     </div>
   )
 }
