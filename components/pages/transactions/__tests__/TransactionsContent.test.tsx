@@ -71,4 +71,9 @@ describe('TransactionsContent renders the real contract', () => {
     expect(await screen.findByTestId('tx-origin-file'))
       .toHaveTextContent(detail.detail?.data?.origin?.fileName ?? 'Manual')
   })
+
+  it('renders the record transaction button', async () => {
+    render(<TransactionsContent />, { wrapper })
+    expect(await screen.findByRole('button', { name: /registrar movimiento/i })).toBeInTheDocument()
+  })
 })

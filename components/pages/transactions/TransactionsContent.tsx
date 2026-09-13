@@ -13,6 +13,9 @@ import { BulkCategoriseBar } from './BulkCategoriseBar'
 import { TransactionDetailPanel } from './TransactionDetailPanel'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { Money } from '@/components/ui-kit/money/Money'
+import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
+import { RecordTransactionDialog } from '@/components/pages/banks/RecordTransactionDialog'
 import { useQueryClient } from '@tanstack/react-query'
 import type { BffQuery } from '@/lib/api/bff/types'
 import type { RowSelectionState } from '@tanstack/react-table'
@@ -53,6 +56,7 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
 
   const [selection, setSelection] = useState<RowSelectionState>({})
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
+  const [recordOpen, setRecordOpen] = useState(false)
 
   const summary = data?.summary
   const pageSection = data?.page
@@ -82,7 +86,13 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
         </div>
-        {observedAt && <FreshnessStamp observedAt={observedAt} />}
+        <div className="flex items-center gap-3">
+          {observedAt && <FreshnessStamp observedAt={observedAt} />}
+          <Button onClick={() => setRecordOpen(true)} className="gap-1.5 font-semibold">
+            <Plus className="h-4 w-4" />
+            {t('recordTransaction')}
+          </Button>
+        </div>
       </div>
 
       <SectionState section={uncategorised} isLoading={isLoading} skeleton={<SkeletonBanner />} onRetry={refetch}>
@@ -151,6 +161,11 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
       </SectionState>
 
       <TransactionDetailPanel selectedId={selectedRowId} onClose={() => setSelectedRowId(null)} />
+
+      <RecordTransactionDialog
+        open={recordOpen}
+        onOpenChange={setRecordOpen}
+      />
     </div>
   )
 }

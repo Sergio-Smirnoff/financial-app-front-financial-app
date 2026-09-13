@@ -18,8 +18,9 @@ export type RecordMode = 'DEPOSIT' | 'WITHDRAW' | 'TRANSFER'
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  mode: RecordMode
-  account: AccountResponse
+  mode?: RecordMode
+  initialMode?: RecordMode
+  account?: AccountResponse | null
 }
 
 const TITLE_KEYS: Record<RecordMode, string> = {
@@ -34,12 +35,26 @@ const SUCCESS_KEYS: Record<RecordMode, string> = {
   TRANSFER: 'dialogs.record.success.TRANSFER',
 }
 
-export function RecordTransactionDialog({ open, onOpenChange, mode, account }: Props) {
+export function RecordTransactionDialog({ open, onOpenChange, mode: propMode, initialMode, account }: Props) {
   const t = useTranslations('banks')
   const tc = useTranslations('common')
   const { banks } = useBanks()
   const { data: categories } = useCategories()
   const record = useRecordTransaction()
+
+  const allAccounts = useMemo(() => {
+    const flat: AccountResponse[] = []
+    for (const b of banks) for (const a of b.accounts) flat.push(a)
+    return flat
+  }, [banks])
+
+  const [mode, setMode] = useState<RecordMode>(propMode || initialMode || 'TRANSFER')
+  const [selectedCbu, setSelectedCbu] = useState<string>(account?.cbu || '')
+
+  const activeAccount = useMemo(() => {
+    if (account) return account
+    return allAccounts.find((a) => a.cbu === selectedCbu) || allAccounts[0]
+  }, [account, allAccounts, selectedCbu])
 
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
@@ -56,10 +71,9 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
 
   // own accounts, same currency, excluding this account
   const ownAccounts = useMemo(() => {
-    const flat: AccountResponse[] = []
-    for (const b of banks) for (const a of b.accounts) flat.push(a)
-    return flat.filter((a) => a.cbu !== account.cbu && a.currency === account.currency)
-  }, [banks, account])
+    if (!activeAccount) return []
+    return allAccounts.filter((a) => a.cbu !== activeAccount.cbu && a.currency === activeAccount.currency)
+  }, [allAccounts, activeAccount])
 
   const categoryFilterType = mode === 'DEPOSIT' ? 'INCOME' : mode === 'WITHDRAW' ? 'EXPENSE' : null
 
@@ -80,6 +94,8 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
 
   useEffect(() => {
     if (!open) return
+    if (propMode) setMode(propMode)
+    if (account?.cbu) setSelectedCbu(account.cbu)
     setAmount('')
     setDescription('')
     setDate(new Date().toISOString().slice(0, 10))
@@ -88,14 +104,21 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
     setCounterpartMode('OWN')
     setOwnCbu('')
     setExternalCbu('')
-  }, [open, mode, account])
+  }, [open, propMode, account])
 
   const resolveCounterpartCbu = (): string | null => {
     if (counterpartMode === 'OWN') return ownCbu || null
+    if (!externalCbu || externalCbu.trim() === '') {
+      return '0000000000000000000000'
+    }
     return /^\d{22}$/.test(externalCbu) ? externalCbu : null
   }
 
   const handleSubmit = () => {
+    if (!activeAccount) {
+      toast.error(t('dialogs.record.errorSelectCounterpart'))
+      return
+    }
     const counterpart = resolveCounterpartCbu()
     if (!counterpart) {
       toast.error(counterpartMode === 'OWN' ? t('dialogs.record.errorSelectCounterpart') : t('dialogs.record.errorCounterpartCbu'))
@@ -104,11 +127,11 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
     if (!amount || Number(amount) <= 0) { toast.error(t('dialogs.record.errorAmountPositive')); return }
     if (!categoryId) { toast.error(t('dialogs.record.errorCategoryRequired')); return }
 
-    const fromCbu = mode === 'DEPOSIT' ? counterpart : account.cbu
-    const toCbu = mode === 'DEPOSIT' ? account.cbu : counterpart
+    const fromCbu = mode === 'DEPOSIT' ? counterpart : activeAccount.cbu
+    const toCbu = mode === 'DEPOSIT' ? activeAccount.cbu : counterpart
 
     record.mutate(
-      { fromCbu, toCbu, amount, currency: account.currency, categoryId, description: description || undefined, date },
+      { fromCbu, toCbu, amount, currency: activeAccount.currency, categoryId, description: description || undefined, date },
       {
         onSuccess: () => {
           toast.success(t(SUCCESS_KEYS[mode]))
@@ -125,11 +148,53 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-popover border-border">
         <DialogHeader>
-          <DialogTitle>{t(TITLE_KEYS[mode])} · {account.name}</DialogTitle>
+          <DialogTitle>{t(TITLE_KEYS[mode])}{activeAccount ? ` · ${activeAccount.name}` : ''}</DialogTitle>
           <DialogDescription>{t('dialogs.record.description')}</DialogDescription>
         </DialogHeader>
 
+        {/* Mode selector */}
+        <div className="grid grid-cols-3 gap-1 bg-muted p-1 rounded-xl text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setMode('DEPOSIT')}
+            className={`py-1.5 rounded-lg transition-colors ${mode === 'DEPOSIT' ? 'bg-card text-emerald-400 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {t('dialogs.record.title.DEPOSIT')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('WITHDRAW')}
+            className={`py-1.5 rounded-lg transition-colors ${mode === 'WITHDRAW' ? 'bg-card text-rose-400 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {t('dialogs.record.title.WITHDRAW')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('TRANSFER')}
+            className={`py-1.5 rounded-lg transition-colors ${mode === 'TRANSFER' ? 'bg-card text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            {t('dialogs.record.title.TRANSFER')}
+          </button>
+        </div>
+
         <div className="space-y-4 py-2">
+          {/* Account selector when not locked to a specific account */}
+          {!account && (
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">{t('accounts.fallbackName')}</Label>
+              <Select value={selectedCbu} onValueChange={setSelectedCbu}>
+                <SelectTrigger className="bg-background border-border"><SelectValue placeholder={t('dialogs.record.selectAccountPlaceholder')} /></SelectTrigger>
+                <SelectContent className="bg-popover border-border">
+                  {allAccounts.map((a) => (
+                    <SelectItem key={a.cbu} value={a.cbu}>
+                      {a.name} ({a.currency}) · ••••{a.cbu.slice(-4)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label className="text-muted-foreground">{tc('amount')}</Label>
@@ -137,7 +202,7 @@ export function RecordTransactionDialog({ open, onOpenChange, mode, account }: P
             </div>
             <div className="space-y-2">
               <Label className="text-muted-foreground">{t('dialogs.shared.fieldCurrency')}</Label>
-              <Input value={account.currency} disabled className="bg-background border-border" />
+              <Input value={activeAccount?.currency ?? 'ARS'} disabled className="bg-background border-border" />
             </div>
           </div>
 
