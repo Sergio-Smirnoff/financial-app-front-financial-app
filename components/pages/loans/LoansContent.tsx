@@ -8,9 +8,11 @@ import { useDeleteLoan } from '@/lib/hooks/useLoans'
 import { Dialog } from '@/components/ui-kit/overlay/Dialog'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import { LoanKpis } from './LoanKpis'
 import { LoanTable } from './LoanTable'
 import { SchedulePanel } from './SchedulePanel'
+import { CreateLoanDialog } from './CreateLoanDialog'
 import type { LoanDetailRow } from '@/lib/api/bff/types'
 
 export function LoansContent() {
@@ -22,6 +24,7 @@ export function LoansContent() {
 
   const [scheduleLoan, setScheduleLoan] = React.useState<LoanDetailRow | null>(null)
   const [deleteTarget, setDeleteTarget] = React.useState<LoanDetailRow | null>(null)
+  const [createOpen, setCreateOpen] = React.useState(false)
 
   const observedAt = data?.kpis?.observedAt
 
@@ -36,8 +39,16 @@ export function LoansContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-        {observedAt && <FreshnessStamp observedAt={observedAt} />}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          {observedAt && <FreshnessStamp observedAt={observedAt} />}
+          <Button onClick={() => setCreateOpen(true)} size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t('addLoan')}
+          </Button>
+        </div>
       </div>
 
       <LoanKpis section={data?.kpis} isLoading={isLoading} onRetry={refetch} />
@@ -81,6 +92,8 @@ export function LoansContent() {
           </Button>
         </div>
       </Dialog>
+
+      <CreateLoanDialog open={createOpen} onOpenChange={setCreateOpen} />
     </div>
   )
 }
