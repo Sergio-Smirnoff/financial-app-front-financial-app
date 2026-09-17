@@ -10,6 +10,10 @@ export interface AxisProps {
   height: number
   paddingX?: number
   paddingY?: number
+  paddingLeft?: number
+  paddingRight?: number
+  paddingTop?: number
+  paddingBottom?: number
   formatX?: (date: Date) => string
   formatY?: (val: number) => string
 }
@@ -20,12 +24,15 @@ export function Axis({
   ticksX,
   ticksY,
   width,
-  height,
-  paddingX = 32,
-  paddingY = 32,
+  paddingX,
+  paddingLeft,
+  paddingRight,
   formatX,
   formatY
 }: AxisProps) {
+  const pl = paddingLeft ?? paddingX ?? 56
+  const pr = paddingRight ?? paddingX ?? 24
+
   const defaultFormatX = (d: Date) => {
     const month = String(d.getMonth() + 1).padStart(2, '0')
     const year = String(d.getFullYear()).slice(-2)
@@ -52,16 +59,16 @@ export function Axis({
         return (
           <g key={`y-${idx}`} data-testid="tick-y">
             <line
-              x1={paddingX}
+              x1={pl}
               y1={yPos}
-              x2={width - paddingX}
+              x2={width - pr}
               y2={yPos}
               stroke="currentColor"
               strokeOpacity={0.1}
               strokeDasharray="2 2"
             />
             <text
-              x={paddingX - 6}
+              x={pl - 8}
               y={yPos + 3}
               textAnchor="end"
               fill="currentColor"

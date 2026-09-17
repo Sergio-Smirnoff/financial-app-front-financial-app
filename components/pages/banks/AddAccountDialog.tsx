@@ -60,7 +60,15 @@ export function AddAccountDialog({ account, open, onOpenChange, onCreate, onUpda
 
   const createAccount = async (v: AccountFormValues) => {
     try {
-      await onCreate({ bankNumber: v.bankNumber, name: v.name, type: v.type, currency: v.currency, cbu: v.cbu, alias: v.alias || undefined, isActive: true });
+      await onCreate({
+        bankNumber: v.bankNumber,
+        name: v.name,
+        type: v.type,
+        currency: v.currency,
+        cbu: v.cbu,
+        alias: v.alias?.trim() || v.name,
+        isActive: true,
+      });
       onOpenChange(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : t("dialogs.addAccount.errorSave");

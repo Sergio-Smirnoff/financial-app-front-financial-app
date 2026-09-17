@@ -1,76 +1,71 @@
 'use client'
 
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import { useMarketDiscovery } from '@/lib/hooks/useInvestments'
-import { CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Flame, TrendingUp, TrendingDown } from 'lucide-react'
 import { formatCurrency } from '@/lib/format'
-import { Surface } from '@/components/shared/Surface'
 import { cn } from '@/lib/utils'
+import { TrendingUp } from 'lucide-react'
 
-export function MarketDiscoveryCard() {
+export interface MarketDiscoveryCardProps {
+  onSelectTicker?: (ticker: string) => void
+}
+
+export function MarketDiscoveryCard({ onSelectTicker }: MarketDiscoveryCardProps) {
   const t = useTranslations('investments')
-  const { data, isLoading } = useMarketDiscovery(5)
+  const { data, isLoading } = useMarketDiscovery(6)
 
   if (isLoading) {
-    return (
-      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
-          {t('market.scanning')}
-        </p>
-      </Surface>
-    )
+    return <div className="h-28 rounded-xl bg-muted animate-pulse" />
   }
 
-  if (data && !data.marketDataAvailable) {
-    return (
-      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
-        <p className="text-sm text-muted-foreground py-6 text-center">
-          {t('market.unavailable')}
-        </p>
-      </Surface>
-    )
-  }
-
-  if (!data || data.opportunities.length === 0) {
-    return (
-      <Surface className="h-[200px] flex items-center justify-center text-center p-4">
-        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground animate-pulse">
-          {t('market.noOpportunities')}
-        </p>
-      </Surface>
-    )
+  const opportunities = data?.opportunities ?? []
+  if (opportunities.length === 0) {
+    return null
   }
 
   return (
-    <Surface>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-          <Flame className="h-3.5 w-3.5 text-orange-500" />
-          {t('market.discoveryTitle')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {data.opportunities.map((op) => (
-          <div key={op.ticker} className="flex items-center justify-between group">
-            <div className="flex flex-col">
-              <span className="text-sm font-black">{op.ticker}</span>
-              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">{t('market.iolTrending')}</span>
-            </div>
+    <div className="bg-card border border-border rounded-xl p-5 space-y-3 shadow-sm">
+      <div className="flex items-center gap-2">
+        <TrendingUp className="w-4 h-4 text-primary" />
+        <h3 className="font-bold text-sm text-foreground">{t('market.discoveryTitle')}</h3>
+      </div>
 
-            <div className="flex flex-col items-end">
-              <span className="text-xs font-black">{formatCurrency(op.price, 'ARS')}</span>
-              <div className={cn(
-                "text-[10px] font-black flex items-center gap-0.5",
-                op.variation >= 0 ? "text-green-500" : "text-red-500"
-              )}>
-                {op.variation >= 0 ? <TrendingUp className="h-2.5 w-2.5" /> : <TrendingDown className="h-2.5 w-2.5" />}
-                {op.variation >= 0 ? '+' : ''}{op.variation.toFixed(2)}%
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {opportunities.map((item) => {
+          const isPos = item.variation >= 0
+          return (
+            <button
+              type="button"
+              key={item.ticker}
+              onClick={() => onSelectTicker?.(item.ticker)}
+              className="p-3.5 rounded-xl border border-border bg-muted/30 hover:border-primary/60 hover:bg-muted/60 transition text-left flex items-center justify-between"
+            >
+              <div>
+                <span className="font-mono font-bold text-foreground text-sm">{item.ticker}</span>
+                {item.name && (
+                  <p className="text-[11px] text-muted-foreground line-clamp-1">{item.name}</p>
+                )}
               </div>
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Surface>
+
+              <div className="text-right">
+                <span className="font-mono font-bold text-foreground text-xs">
+                  {formatCurrency(item.price, item.currency ?? 'ARS')}
+                </span>
+                <p
+                  className={cn(
+                    'text-[11px] font-mono font-bold mt-0.5',
+                    isPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                  )}
+                >
+                  {isPos ? '+' : ''}
+                  {item.variation.toFixed(2)}%
+                </p>
+              </div>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

@@ -1,37 +1,59 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { MarketDiscoveryCard } from './MarketDiscoveryCard'
+import React, { useState } from 'react'
 import { TickerSearchBox } from './TickerSearchBox'
 import { TickerChartPanel } from './TickerChartPanel'
-import { Button } from '@/components/ui/button'
+import { MarketDiscoveryCard } from './MarketDiscoveryCard'
+import { RecordHoldingDialog } from './RecordHoldingDialog'
+import type { TickerSearchResult } from '@/types/investments'
 
-interface MarketsTabProps {
-  enabled?: boolean
+export interface MarketsTabProps {
+  initialTicker?: string
 }
 
-export function MarketsTab({ enabled }: MarketsTabProps) {
-  const t = useTranslations('investments')
-  const [selectedTicker, setSelectedTicker] = useState<string | null>(null)
-  const router = useRouter()
-  if (!enabled) return null
+export function MarketsTab({ initialTicker }: MarketsTabProps) {
+  const [selectedTicker, setSelectedTicker] = useState<string>(initialTicker || 'GGAL')
+  const [selectedName, setSelectedName] = useState<string>('')
+  const [buyDialogOpen, setBuyDialogOpen] = useState(false)
+  const [buyPrice, setBuyPrice] = useState<number | undefined>(undefined)
+  const [buyCurrency, setBuyCurrency] = useState<'ARS' | 'USD'>('ARS')
+
+  const handleSelect = (ticker: string, item?: TickerSearchResult) => {
+    setSelectedTicker(ticker)
+    if (item?.name) {
+      setSelectedName(item.name)
+    }
+  }
+
+  const handleOpenBuy = (ticker: string, price?: number | null, currency?: string) => {
+    setSelectedTicker(ticker)
+    setBuyPrice(price ?? undefined)
+    setBuyCurrency((currency as 'ARS' | 'USD') ?? 'ARS')
+    setBuyDialogOpen(true)
+  }
+
   return (
-    <div className="space-y-4">
-      <TickerSearchBox onSelect={setSelectedTicker} />
+    <div className="space-y-6">
+      <TickerSearchBox onSelect={handleSelect} />
+
       {selectedTicker && (
-        <div className="space-y-3">
-          <TickerChartPanel ticker={selectedTicker} />
-          <Button
-            type="button"
-            onClick={() => router.push(`/investments?add=${encodeURIComponent(selectedTicker)}`)}
-          >
-            {t('market.addHoldingFor', { ticker: selectedTicker })}
-          </Button>
-        </div>
+        <TickerChartPanel
+          ticker={selectedTicker}
+          name={selectedName}
+          onBuy={handleOpenBuy}
+        />
       )}
-      <MarketDiscoveryCard />
+
+      <MarketDiscoveryCard onSelectTicker={handleSelect} />
+
+      <RecordHoldingDialog
+        open={buyDialogOpen}
+        onOpenChange={setBuyDialogOpen}
+        initialTicker={selectedTicker}
+        initialName={selectedName}
+        initialPrice={buyPrice}
+        initialCurrency={buyCurrency}
+      />
     </div>
   )
 }

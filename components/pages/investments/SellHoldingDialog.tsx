@@ -1,12 +1,18 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { useBanks } from '@/lib/hooks/useBanks'
-import { useDeleteHolding } from '@/lib/hooks/useInvestments'
-import type { AccountResponse } from '@/types/banks'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -14,118 +20,168 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useBanks } from '@/lib/hooks/useBanks'
+import { useDeleteHolding } from '@/lib/hooks/useInvestments'
 import { formatCurrency } from '@/lib/format'
-import { toast } from 'sonner'
-import type { HoldingWithPrice } from '@/types/investments'
 
-interface SellHoldingDialogProps {
-  holding: HoldingWithPrice | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSuccess: () => void
+export interface SellHoldingTarget {
+  id: number
+  ticker: string
+  name?: string
+  quantity: number
+  currency?: string
+  currentPrice?: number | null
+  avgPurchasePrice?: number | null
 }
 
-export function SellHoldingDialog({ holding, open, onOpenChange, onSuccess }: SellHoldingDialogProps) {
+export interface SellHoldingDialogProps {
+  holding: SellHoldingTarget | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
+}
+
+export function SellHoldingDialog({
+  holding,
+  open,
+  onOpenChange,
+  onSuccess,
+}: SellHoldingDialogProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
   const { banks } = useBanks()
-  const sellMutation = useDeleteHolding()
-  const [selectedCbu, setSelectedCbu] = useState<string | null>(null)
+  const deleteMutation = useDeleteHolding()
 
-  // Reset selection when dialog opens with a new holding
+  const [selectedCbu, setSelectedCbu] = useState<string>('')
+
+  const currency = holding?.currency ?? 'ARS'
+
+  // Accounts matching holding currency
+  const availableAccounts = useMemo(() => {
+    return banks.flatMap((b) =>
+      (b.accounts ?? []).filter((a) => a.currency.toUpperCase() === currency.toUpperCase())
+    )
+  }, [banks, currency])
+
   useEffect(() => {
     if (open) {
-      setSelectedCbu(null)
+      if (availableAccounts.length > 0) {
+        setSelectedCbu(availableAccounts[0].cbu)
+      } else {
+        setSelectedCbu('')
+      }
     }
-  }, [open, holding?.id])
-
-  const availableAccounts = useMemo(() => {
-    const flat: AccountResponse[] = []
-    for (const b of banks) for (const a of b.accounts) flat.push(a)
-    return flat.filter((account) => account.currency.toUpperCase() === holding?.currency.toUpperCase())
-  }, [banks, holding])
+  }, [open, availableAccounts])
 
   const liquidationValue = useMemo(() => {
     if (!holding) return 0
-    return holding.quantity * (holding.currentPrice ?? holding.avgPurchasePrice)
+    const price = holding.currentPrice ?? holding.avgPurchasePrice ?? 0
+    return holding.quantity * price
   }, [holding])
 
-  const handleSell = () => {
-    if (!holding || !selectedCbu) return
+  const handleSell = async () => {
+    if (!holding) return
 
-    sellMutation.mutate(
-      { id: holding.id, destinationCbu: selectedCbu },
-      {
-        onSuccess: () => {
-          toast.success(
-            t('holdings.toastSold', {
-              ticker: holding.ticker,
-              amount: formatCurrency(liquidationValue, holding.currency),
-            }),
-          )
-          onSuccess()
-        },
-        onError: (e: any) => {
-          toast.error(e.message || t('holdings.toastSellFailed'))
-        },
-      }
-    )
+    try {
+      await deleteMutation.mutateAsync({
+        id: holding.id,
+        destinationCbu: selectedCbu || undefined,
+      })
+
+      toast.success(
+        t('holdings.toastSold', {
+          ticker: holding.ticker,
+          amount: formatCurrency(liquidationValue, currency),
+        })
+      )
+      onOpenChange(false)
+      onSuccess?.()
+    } catch (err: any) {
+      toast.error(err?.message || t('holdings.toastSellFailed'))
+    }
   }
 
   if (!holding) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-popover border-border">
+      <DialogContent className="sm:max-w-md bg-card border-border">
         <DialogHeader>
-          <DialogTitle>{t('holdings.sellTitle', { ticker: holding.ticker })}</DialogTitle>
-          <DialogDescription>{t('holdings.sellDescription')}</DialogDescription>
+          <DialogTitle className="text-foreground">
+            {t('holdings.sellTitle', { ticker: holding.ticker })}
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            {t('holdings.sellDescription')}
+          </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="rounded-2xl bg-muted/40 p-5 space-y-3 border border-border shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
-            <div className="flex justify-between items-center text-xs">
-                <span className="text-muted-foreground font-bold uppercase tracking-wider">{t('holdings.quantityToSell')}</span>
-                <span className="font-black text-sm">{holding.quantity}</span>
+
+        <div className="space-y-4 text-xs">
+          {/* Liquidation Summary Card */}
+          <div className="p-3.5 bg-muted/60 rounded-xl border border-border space-y-2">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('holdings.availableQuantity')}:</span>
+              <span className="font-mono font-bold text-foreground">
+                {holding.quantity} {tc('units')}
+              </span>
             </div>
-            <div className="flex justify-between items-center text-xs">
-                <span className="text-muted-foreground font-bold uppercase tracking-wider">{t('holdings.marketPrice')}</span>
-                <span className="font-black text-sm">{formatCurrency(holding.currentPrice ?? holding.avgPurchasePrice, holding.currency)}</span>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('tabs.colPrice')}:</span>
+              <span className="font-mono font-bold text-foreground">
+                {formatCurrency(holding.currentPrice ?? holding.avgPurchasePrice ?? 0, currency)}
+              </span>
             </div>
-            <div className="pt-3 border-t border-border flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('holdings.estimatedLiquidation')}</span>
-                <span className="text-3xl font-black tracking-tighter">
-                    {formatCurrency(liquidationValue, holding.currency)}
-                </span>
+            <div className="flex justify-between border-t border-border pt-1.5 font-bold">
+              <span className="text-foreground">{t('holdings.liquidationTotal')}:</span>
+              <span className="font-mono text-emerald-600 dark:text-emerald-400 text-sm">
+                {formatCurrency(liquidationValue, currency)}
+              </span>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase text-muted-foreground ml-1 tracking-widest">{t('holdings.receiveFundsIn')}</label>
-            <Select onValueChange={(v) => setSelectedCbu(v)}>
-                <SelectTrigger className="rounded-xl h-11 bg-background border-border text-foreground">
-                    <SelectValue placeholder={t('holdings.selectDestinationAccount')} />
+          {/* Destination CBU account picker */}
+          <div className="space-y-1.5">
+            <Label htmlFor="destination-cbu">{t('holdings.destinationAccountLabel')}</Label>
+            {availableAccounts.length > 0 ? (
+              <Select value={selectedCbu} onValueChange={setSelectedCbu}>
+                <SelectTrigger id="destination-cbu" className="h-9">
+                  <SelectValue placeholder={t('holdings.selectDestinationAccount')} />
                 </SelectTrigger>
-                <SelectContent className="bg-popover border-border">
-                    {availableAccounts.map(a => (
-                        <SelectItem key={a.cbu} value={a.cbu}>
-                            {a.name} ({formatCurrency(Number(a.balance), a.currency)})
-                        </SelectItem>
-                    ))}
+                <SelectContent>
+                  {availableAccounts.map((a) => (
+                    <SelectItem key={a.cbu} value={a.cbu}>
+                      {a.name} ({a.cbu.slice(-4)}) — {formatCurrency(parseFloat(a.balance) || 0, a.currency)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
-            </Select>
-            {availableAccounts.length === 0 && (
-                <p className="text-[10px] text-destructive/80 italic ml-1">{t('holdings.noAccountsForCurrency', { currency: holding.currency.toUpperCase() })}</p>
+              </Select>
+            ) : (
+              <p className="text-[11px] text-amber-500">
+                {t('holdings.noAccountInBank', { currency })}
+              </p>
             )}
+            <p className="text-[11px] text-muted-foreground">
+              {t('holdings.destinationAccountHint')}
+            </p>
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:gap-0">
-          <Button variant="ghost" className="rounded-xl text-muted-foreground hover:bg-muted" onClick={() => onOpenChange(false)}>{tc('cancel')}</Button>
-          <Button 
-            className="rounded-xl font-bold" 
-            disabled={!selectedCbu || sellMutation.isPending}
+
+        <DialogFooter className="pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+          >
+            {tc('cancel')}
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            disabled={deleteMutation.isPending}
             onClick={handleSell}
           >
-            {sellMutation.isPending ? t('holdings.processing') : t('holdings.confirmSale')}
+            {deleteMutation.isPending ? t('holdings.selling') : t('holdings.confirmSell')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,13 +1,34 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
 import { NextIntlClientProvider } from 'next-intl'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import esAR from '@/messages/es-AR.json'
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}))
+
+vi.mock('@/lib/hooks/useBanks', () => ({
+  useBanks: () => ({ banks: [], isLoading: false }),
+}))
+
+vi.mock('@/lib/hooks/useInvestments', () => ({
+  useCreateHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useDeleteHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useHoldings: () => ({ data: [], isLoading: false }),
+  useTickerResearch: () => ({ data: null, isLoading: false }),
+}))
+
 function renderWithIntl(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   return render(
-    <NextIntlClientProvider locale="es-AR" messages={esAR}>{ui}</NextIntlClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="es-AR" messages={esAR}>{ui}</NextIntlClientProvider>
+    </QueryClientProvider>
   )
 }
 
@@ -38,5 +59,11 @@ describe('PositionDetail', () => {
     const { container } = renderWithIntl(<PositionDetail holding={holdingFixture} />)
     const path = container.querySelector('path[data-role="line"]')!.getAttribute('d')!
     expect(path.match(/[MC]/g)?.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders action buttons for sell and buy more', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    expect(screen.getByRole('button', { name: /Vender/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Comprar más/i })).toBeInTheDocument()
   })
 })

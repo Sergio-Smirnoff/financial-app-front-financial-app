@@ -1,61 +1,105 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
+import { Search, Loader2 } from 'lucide-react'
 import { useTickerSearch } from '@/lib/hooks/useInvestments'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import type { TickerSearchResult } from '@/types/investments'
+import { formatCurrency } from '@/lib/format'
 
-interface Props {
-  onSelect: (ticker: string) => void
+export interface TickerSearchBoxProps {
+  onSelect: (ticker: string, item?: TickerSearchResult) => void
+  placeholder?: string
 }
 
-export function TickerSearchBox({ onSelect }: Props) {
+export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps) {
   const t = useTranslations('investments')
   const [query, setQuery] = useState('')
-  const { data: results = [] } = useTickerSearch(query)
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const { data: results = [], isLoading } = useTickerSearch(query)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const visible = results.slice(0, 8)
+
   return (
-    <div className="relative">
-      <Input
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        onBlur={() => setTimeout(() => setQuery(''), 150)}
-        placeholder={t('market.searchPlaceholder')}
-        className="h-11 rounded-xl"
-      />
-      {query && visible.length > 0 && (
-        <div className="mt-1.5 w-full rounded-xl border border-border bg-popover shadow-sm overflow-hidden">
-          {visible.map((result, index) => (
-            <button
-              type="button"
-              key={result.ticker}
-              onClick={() => {
-                setQuery('')
-                onSelect(result.ticker)
-              }}
-              className={cn(
-                'flex w-full items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-muted',
-                index !== visible.length - 1 && 'border-b border-border/50',
-              )}
-            >
-              <div className="flex flex-col items-start">
-                <span className="font-bold text-foreground">{result.ticker}</span>
-                <span className="text-[10px] text-muted-foreground tabular-nums">
-                  {result.currency} {result.price.toLocaleString()}
-                </span>
-              </div>
-              <span
-                className={cn(
-                  'text-xs font-bold tabular-nums',
-                  result.variation >= 0 ? 'text-green-500' : 'text-red-500',
-                )}
-              >
-                {result.variation >= 0 ? '+' : ''}
-                {result.variation.toFixed(2)}%
-              </span>
-            </button>
-          ))}
+    <div ref={containerRef} className="relative w-full">
+      <div className="relative flex items-center">
+        <Search className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value)
+            setIsOpen(true)
+          }}
+          onFocus={() => setIsOpen(true)}
+          placeholder={placeholder ?? t('market.searchPlaceholder')}
+          className="pl-10 pr-10 h-11 rounded-xl bg-card border-border font-medium"
+        />
+        {isLoading && (
+          <Loader2 className="absolute right-3.5 h-4 w-4 text-muted-foreground animate-spin" />
+        )}
+      </div>
+
+      {isOpen && query.trim().length >= 1 && (
+        <div className="absolute z-30 mt-1.5 w-full rounded-xl border border-border bg-card shadow-xl overflow-hidden divide-y divide-border/60">
+          {visible.length > 0 ? (
+            visible.map((item) => {
+              const isPos = item.variation >= 0
+              return (
+                <button
+                  type="button"
+                  key={item.ticker}
+                  onClick={() => {
+                    onSelect(item.ticker, item)
+                    setIsOpen(false)
+                    setQuery('')
+                  }}
+                  className="flex w-full items-center justify-between px-4 py-3 text-sm text-left transition-colors hover:bg-muted/60"
+                >
+                  <div className="flex flex-col items-start">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-foreground">{item.ticker}</span>
+                      {item.name && (
+                        <span className="text-xs text-muted-foreground line-clamp-1">{item.name}</span>
+                      )}
+                    </div>
+                    <span className="text-[11px] font-mono text-muted-foreground mt-0.5">
+                      {formatCurrency(item.price, item.currency)}
+                    </span>
+                  </div>
+
+                  <span
+                    className={cn(
+                      'text-xs font-mono font-bold px-2 py-0.5 rounded',
+                      isPos
+                        ? 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400'
+                        : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
+                    )}
+                  >
+                    {isPos ? '+' : ''}
+                    {item.variation.toFixed(2)}%
+                  </span>
+                </button>
+              )
+            })
+          ) : !isLoading ? (
+            <div className="px-4 py-3 text-xs text-muted-foreground text-center">
+              {t('market.noSearchResults')}
+            </div>
+          ) : null}
         </div>
       )}
     </div>

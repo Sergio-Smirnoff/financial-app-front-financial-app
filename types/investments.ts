@@ -22,8 +22,8 @@ export interface HoldingWithPrice extends Holding {
   currentValue: number | null
   plAmount: number | null
   plPercent: number | null
-  lastGainNotifiedAt: string | null
-  lastLossNotifiedAt: string | null
+  lastGainNotifiedAt?: string | null
+  lastLossNotifiedAt?: string | null
 }
 
 export interface PriceHistory {
@@ -64,7 +64,9 @@ export interface PortfolioEvolution {
 
 export interface MarketQuote {
   ticker: string
+  name?: string
   price: number
+  currency?: string
   variation: number
 }
 
@@ -90,6 +92,7 @@ export type UpdateHoldingRequest = CreateHoldingRequest
 
 export interface TickerSearchResult {
   ticker: string
+  name?: string
   price: number
   currency: string
   variation: number

@@ -2,15 +2,17 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
-import { useDeleteLoan, usePayLoanInstallment } from '../useLoans'
+import { useCreateLoan, useDeleteLoan, usePayLoanInstallment } from '../useLoans'
 
-const { deleteLoan, payInstallment } = vi.hoisted(() => ({
+const { createLoan, deleteLoan, payInstallment } = vi.hoisted(() => ({
+  createLoan: vi.fn(),
   deleteLoan: vi.fn(),
   payInstallment: vi.fn(),
 }))
 
 vi.mock('@/lib/api/loans', () => ({
   loansApi: {
+    create: createLoan,
     delete: deleteLoan,
     payInstallment,
   },
@@ -28,8 +30,37 @@ function renderWithClient<TResult>(hook: () => TResult) {
 
 describe('useLoans mutation cache invalidation', () => {
   beforeEach(() => {
+    createLoan.mockReset().mockResolvedValue({ id: 10 })
     deleteLoan.mockReset().mockResolvedValue(undefined)
     payInstallment.mockReset().mockResolvedValue({ id: 12 })
+  })
+
+  it('refreshes the loans and banks BFF pages after a loan is created', async () => {
+    const { result, invalidatedKeys } = renderWithClient(() => useCreateLoan())
+
+    await result.current.mutateAsync({
+      bankNumber: '017',
+      destinationAccountCbu: '0170099220000012345678',
+      name: 'Préstamo personal',
+      principal: '500000',
+      interestRate: '75',
+      totalInstallments: 12,
+      startDate: '2026-09-01',
+    })
+
+    expect(createLoan).toHaveBeenCalledWith({
+      bankNumber: '017',
+      destinationAccountCbu: '0170099220000012345678',
+      name: 'Préstamo personal',
+      principal: '500000',
+      interestRate: '75',
+      totalInstallments: 12,
+      startDate: '2026-09-01',
+    })
+    const keys = invalidatedKeys()
+    expect(keys).toContain(JSON.stringify(['bff', 'loans']))
+    expect(keys).toContain(JSON.stringify(['bff', 'banks']))
+    expect(keys).not.toContain(JSON.stringify(['loans']))
   })
 
   it('refreshes the loans and banks BFF pages after a loan is deleted', async () => {

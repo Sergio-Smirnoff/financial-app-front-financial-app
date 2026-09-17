@@ -1,98 +1,78 @@
 import { api } from './client'
 import type {
-  AssetType,
-  AllocationBreakdown,
   Holding,
-  HoldingWithPrice,
-  PortfolioSummary,
-  PortfolioEvolution,
-  MarketDiscovery,
-  PriceHistory,
   CreateHoldingRequest,
   UpdateHoldingRequest,
   TickerSearchResult,
   TickerResearch,
+  MarketDiscovery,
+  PriceHistory,
 } from '@/types/investments'
 
-// ── Backend sends all money/numeric fields as decimal strings ("no BigDecimal on
-// the wire"). These helpers parse them safely so undefined/null never reaches
-// `.toFixed`/arithmetic in components.
-const toNum = (v: string | null | undefined): number => Number(v ?? 0)
-const toNumOrNull = (v: string | null | undefined): number | null =>
+const toNum = (v: string | number | null | undefined): number => Number(v ?? 0)
+const toNumOrNull = (v: string | number | null | undefined): number | null =>
   v == null ? null : Number(v)
 
-interface RawAllocationBreakdown {
-  assetType: string
-  totalValue: string
-  percentage: string
-}
-
-interface RawCurrencyTotals {
-  currency: string
-  totalValue: string
-  totalCost: string
-  totalPl: string
-  plPercent: string
-  breakdown: RawAllocationBreakdown[]
-}
-
-interface RawPortfolioSummary {
-  byCurrency: RawCurrencyTotals[]
-}
-
-interface RawHoldingWithPrice {
+interface RawHoldingResponse {
   id: number
   userId: number
   bankNumber: string
+  fundingCbu?: string | null
   ticker: string
   name: string
   assetType: string
-  quantity: string
-  avgPurchasePrice: string
+  quantity: string | number
+  avgPurchasePrice: string | number
   currency: string
-  notifyGainThresholdPct: string | null
-  notifyLossThresholdPct: string | null
-  lastGainNotifiedAt: string | null
-  lastLossNotifiedAt: string | null
+  notifyGainThresholdPct: string | number | null
+  notifyLossThresholdPct: string | number | null
   createdAt: string
   updatedAt: string
-  currentPrice: string | null
-  currentValue: string | null
-  plAmount: string | null
-  plPercent: string | null
 }
-
-interface RawCurrencyTotalsByDay {
-  currency: string
-  totalValue: string
-}
-
-interface RawPortfolioEvolution {
-  date: string
-  totals: RawCurrencyTotalsByDay[]
-}
-
 
 interface RawTickerSearchResult {
   ticker: string
-  price: string
+  name?: string
+  price: string | number
   currency: string
-  variation: string
+  variation: string | number
 }
 
 interface RawTickerResearch {
   ticker: string
   currency: string | null
-  currentPrice: string | null
-  variation: string | null
-  series: Array<{ date: string; price: string }>
+  currentPrice: string | number | null
+  variation: string | number | null
+  series: Array<{ date: string; price: string | number }>
+}
+
+interface RawMarketDiscovery {
+  marketDataAvailable: boolean
+  opportunities: Array<{
+    ticker: string
+    name?: string
+    price: string | number
+    currency?: string
+    variation: string | number
+    volume?: string
+  }>
 }
 
 const BASE = '/api/v1/investments'
 
 export const investmentsApi = {
-  getHoldings: () =>
-    api.get<Holding[]>(`${BASE}/holdings`),
+  getHoldings: async (): Promise<Holding[]> => {
+    const raw = await api.get<{ content?: RawHoldingResponse[] } | RawHoldingResponse[]>(`${BASE}/holdings`)
+    const list = Array.isArray(raw) ? raw : (raw?.content ?? [])
+    return list.map((h) => ({
+      ...h,
+      assetType: h.assetType as Holding['assetType'],
+      quantity: toNum(h.quantity),
+      avgPurchasePrice: toNum(h.avgPurchasePrice),
+      notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
+      notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),
+    }))
+  },
 
   createHolding: (data: CreateHoldingRequest) =>
     api.post<Holding>(`${BASE}/holdings`, data),
@@ -101,81 +81,49 @@ export const investmentsApi = {
     api.put<Holding>(`${BASE}/holdings/${id}`, data),
 
   deleteHolding: (id: number, destinationCbu?: string) =>
-    api.delete<void>(`${BASE}/holdings/${id}${destinationCbu ? `?destinationCbu=${destinationCbu}` : ''}`),
-
-  getPortfolioSummary: async (): Promise<PortfolioSummary> => {
-    // Backend returns { byCurrency: [{ currency, totalValue, totalPl, plPercent, breakdown }] }
-    // with string values; the dashboard wants a flat ARS/USD shape with numbers.
-    const raw = await api.get<RawPortfolioSummary>(`${BASE}/portfolio/summary`)
-    const byCode = (code: string) => raw?.byCurrency?.find((c) => c.currency === code)
-    const mapBreakdown = (c: RawCurrencyTotals | undefined, currency: string): AllocationBreakdown[] =>
-      (c?.breakdown ?? []).map((b) => ({
-        assetType: b.assetType,
-        totalValue: toNum(b.totalValue),
-        percentage: toNum(b.percentage),
-        currency,
-      }))
-    const ars = byCode('ARS')
-    const usd = byCode('USD')
-    return {
-      totalValueArs: toNum(ars?.totalValue),
-      totalValueUsd: toNum(usd?.totalValue),
-      totalPlArs: toNum(ars?.totalPl),
-      totalPlUsd: toNum(usd?.totalPl),
-      plPercentArs: toNum(ars?.plPercent),
-      plPercentUsd: toNum(usd?.plPercent),
-      breakdownArs: mapBreakdown(ars, 'ARS'),
-      breakdownUsd: mapBreakdown(usd, 'USD'),
-    }
-  },
-
-  getPortfolioEvolution: async (days: number = 30): Promise<PortfolioEvolution[]> => {
-    // Backend returns [{ date, totals: [{ currency, totalValue }] }]; chart wants
-    // flat per-day ARS/USD numbers.
-    const raw = await api.get<RawPortfolioEvolution[]>(`${BASE}/portfolio/evolution?days=${days}`)
-    return (raw ?? []).map((d) => {
-      const valueOf = (code: string) => toNum(d.totals?.find((t) => t.currency === code)?.totalValue)
-      return { date: d.date, totalValueArs: valueOf('ARS'), totalValueUsd: valueOf('USD') }
-    })
-  },
-
-  getPortfolioHoldings: async (): Promise<HoldingWithPrice[]> => {
-    const raw = await api.get<RawHoldingWithPrice[]>(`${BASE}/portfolio/holdings`)
-    return (raw ?? []).map((h) => ({
-      id: h.id,
-      userId: h.userId,
-      bankNumber: h.bankNumber,
-      fundingCbu: null,
-      ticker: h.ticker,
-      name: h.name,
-      assetType: h.assetType as AssetType,
-      quantity: toNum(h.quantity),
-      avgPurchasePrice: toNum(h.avgPurchasePrice),
-      currency: h.currency,
-      notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
-      notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),
-      createdAt: h.createdAt,
-      updatedAt: h.updatedAt,
-      currentPrice: toNumOrNull(h.currentPrice),
-      currentValue: toNumOrNull(h.currentValue),
-      plAmount: toNumOrNull(h.plAmount),
-      plPercent: toNumOrNull(h.plPercent),
-      lastGainNotifiedAt: h.lastGainNotifiedAt,
-      lastLossNotifiedAt: h.lastLossNotifiedAt,
-    }))
-  },
+    api.delete<void>(`${BASE}/holdings/${id}${destinationCbu ? `?destinationCbu=${encodeURIComponent(destinationCbu)}` : ''}`),
 
   getMarketDiscovery: async (limit: number = 5): Promise<MarketDiscovery> => {
-    const raw = await api.get<{ marketDataAvailable: boolean; opportunities: Array<{ ticker: string; price: string; currency: string; variation: string; volume: string }> }>(
-      `${BASE}/market/discovery?limit=${limit}`,
-    )
+    const raw = await api.get<RawMarketDiscovery>(`${BASE}/market/discovery?limit=${limit}`)
     const safe = raw ?? { marketDataAvailable: false, opportunities: [] }
     return {
       marketDataAvailable: safe.marketDataAvailable,
       opportunities: (safe.opportunities ?? []).map((o) => ({
         ticker: o.ticker,
+        name: o.name,
         price: toNum(o.price),
+        currency: o.currency ?? 'ARS',
         variation: toNum(o.variation),
+      })),
+    }
+  },
+
+  searchTickers: async (query: string): Promise<TickerSearchResult[]> => {
+    if (!query || query.trim().length === 0) return []
+    const raw = await api.get<RawTickerSearchResult[]>(
+      `${BASE}/market/search?q=${encodeURIComponent(query.trim())}`,
+    )
+    return (raw ?? []).map((r) => ({
+      ticker: r.ticker,
+      name: r.name,
+      price: toNum(r.price),
+      currency: r.currency,
+      variation: toNum(r.variation),
+    }))
+  },
+
+  getTickerResearch: async (ticker: string, range = 'D90', assetType = 'STOCK'): Promise<TickerResearch> => {
+    const raw = await api.get<RawTickerResearch>(
+      `${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`,
+    )
+    return {
+      ticker: raw?.ticker ?? ticker,
+      currency: raw?.currency ?? 'ARS',
+      currentPrice: toNumOrNull(raw?.currentPrice),
+      variation: toNumOrNull(raw?.variation),
+      series: (raw?.series ?? []).map((pt) => ({
+        date: pt.date,
+        price: toNum(pt.price),
       })),
     }
   },
@@ -185,31 +133,6 @@ export const investmentsApi = {
     if (from) params.set('from', from)
     if (to) params.set('to', to)
     const query = params.toString() ? `?${params}` : ''
-    return api.get<PriceHistory[]>(`${BASE}/prices/history/${ticker}${query}`)
-  },
-
-  searchTickers: async (query: string): Promise<TickerSearchResult[]> => {
-    const raw = await api.get<RawTickerSearchResult[]>(
-      `${BASE}/market/search?q=${encodeURIComponent(query)}`,
-    )
-    return (raw ?? []).map((result) => ({
-      ticker: result.ticker,
-      price: toNum(result.price),
-      currency: result.currency,
-      variation: toNum(result.variation),
-    }))
-  },
-
-  getTickerResearch: async (ticker: string, range = 'D90', assetType = 'STOCK'): Promise<TickerResearch> => {
-    const raw = await api.get<RawTickerResearch>(
-      `${BASE}/market/tickers/${encodeURIComponent(ticker)}?range=${range}&assetType=${assetType}`,
-    )
-    return {
-      ticker: raw.ticker,
-      currency: raw.currency,
-      currentPrice: toNumOrNull(raw.currentPrice),
-      variation: toNumOrNull(raw.variation),
-      series: (raw.series ?? []).map((point) => ({ date: point.date, price: toNum(point.price) })),
-    }
+    return api.get<PriceHistory[]>(`${BASE}/prices/history/${encodeURIComponent(ticker)}${query}`)
   },
 }
