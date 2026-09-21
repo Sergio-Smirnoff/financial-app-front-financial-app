@@ -80,13 +80,14 @@ describe('InvestmentsContent renders the real contract', () => {
     expect(screen.getByTestId('positions-empty')).toBeInTheDocument()
   })
 
-  it('degrades the market strip without failing the page', () => {
-    const degraded = {
+  it('renders no error box when the market strip is unavailable', async () => {
+    renderInvestments({
       ...bff,
-      marketStrip: { status: 'UNAVAILABLE', observedAt: new Date().toISOString(), data: null },
-    }
-    renderInvestments(degraded as any)
-    expect(screen.getByTestId('inv-kpi-market-value')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument()
+      marketStrip: { status: 'UNAVAILABLE', observedAt: bff.marketStrip!.observedAt, data: null },
+    } as InvestmentsBff)
+
+    expect(await screen.findByTestId('inv-kpi-market-value')).toBeInTheDocument()
+    expect(screen.queryByText(esAR.sections.unavailable)).not.toBeInTheDocument()
+    expect(screen.queryByTestId('market-strip')).not.toBeInTheDocument()
   })
 })
