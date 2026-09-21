@@ -41,6 +41,7 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
   const [accountCbu] = useQueryState('accounts', { defaultValue: '' })
   const [method] = useQueryState('method', { defaultValue: '' })
   const [pageState, setPageState] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [selectedRowId, setSelectedRowId] = useQueryState('id', parseAsInteger)
 
   const { data, isLoading, refetch } = useTransactionsPage({
     currency: query.currency,
@@ -53,7 +54,6 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
   })
 
   const [selection, setSelection] = useState<RowSelectionState>({})
-  const [selectedRowId, setSelectedRowId] = useState<number | null>(null)
   const [recordOpen, setRecordOpen] = useState(false)
 
   const summary = data?.summary

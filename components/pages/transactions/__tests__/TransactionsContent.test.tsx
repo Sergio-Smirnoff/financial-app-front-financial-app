@@ -76,4 +76,18 @@ describe('TransactionsContent renders the real contract', () => {
     render(<TransactionsContent />, { wrapper })
     expect(await screen.findByRole('button', { name: /registrar movimiento/i })).toBeInTheDocument()
   })
+
+  it('opens the detail panel for the id in the url', async () => {
+    const urlWrapper = ({ children }: { children: React.ReactNode }) => (
+      <NextIntlClientProvider locale="es-AR" messages={esAR}>
+        <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+          <NuqsTestingAdapter searchParams="?id=134">{children}</NuqsTestingAdapter>
+        </QueryClientProvider>
+      </NextIntlClientProvider>
+    )
+
+    render(<TransactionsContent />, { wrapper: urlWrapper })
+
+    expect(await screen.findByRole('complementary')).toBeInTheDocument()
+  })
 })
