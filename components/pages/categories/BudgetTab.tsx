@@ -79,7 +79,7 @@ export function BudgetTab({
                         className="h-7 text-xs px-2 gap-1 text-muted-foreground hover:text-foreground"
                       >
                         <Plus className="h-3 w-3" />
-                        {t('newSubcategory')}
+                        {t('budget.addSubcategory')}
                       </Button>
                     )}
                   </div>
