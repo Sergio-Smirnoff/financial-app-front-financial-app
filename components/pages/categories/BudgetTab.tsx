@@ -38,12 +38,12 @@ export function BudgetTab({
     >
       {(categories) => (
         <div className="space-y-3">
-          {categories.map((cat: any) => {
+          {categories.map((cat: BudgetRow) => {
             const spent = parseFloat(cat.spent?.amount || '0')
-            const budgetCap = cat.cap ? parseFloat(cat.cap.amount || '0') : 0
+            const budgetCap = typeof cat.cap === 'number' ? cat.cap : 0
             const currencySymbol = cat.spent?.currency === 'USD' ? 'US$' : '$'
             const isOver = cat.over ?? (budgetCap > 0 && spent > budgetCap)
-            const catId = cat.categoryId ?? cat.id
+            const catId = cat.categoryId
             const isSelected = selectedCategoryId === catId
 
             return (
@@ -86,7 +86,7 @@ export function BudgetTab({
                 </div>
                 {budgetCap > 0 && (
                   <ProgressRow
-                    label={cat.name}
+                    label={cat.name ?? ''}
                     value={spent}
                     max={budgetCap}
                     caption={`${((spent / budgetCap) * 100).toFixed(0)} %`}
