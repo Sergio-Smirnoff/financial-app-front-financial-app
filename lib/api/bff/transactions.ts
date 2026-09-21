@@ -6,8 +6,8 @@ export interface TransactionsQuery {
   currency?: string
   secondary?: string
   q?: string
-  categoryId?: number
-  accountCbu?: string
+  categories?: string
+  accounts?: string
   method?: string
   page?: number
 }
@@ -16,15 +16,15 @@ export function getTransactions({
   currency = 'ARS',
   secondary = 'none',
   q = '',
-  categoryId,
-  accountCbu,
+  categories,
+  accounts,
   method,
   page = 1,
 }: TransactionsQuery = {}) {
-  const params = new URLSearchParams({ currency, secondary, page: String(page) })
+  const params = new URLSearchParams({ currency, secondary, page: String(Math.max(page - 1, 0)) })
   if (q) params.set('q', q)
-  if (categoryId !== undefined) params.set('categoryId', String(categoryId))
-  if (accountCbu) params.set('accountCbu', accountCbu)
+  if (categories) params.set('categories', categories)
+  if (accounts) params.set('accounts', accounts)
   if (method) params.set('method', method)
   return api.get<TransactionsBff>(`${API_CONFIG.ENDPOINTS.BFF}/transactions?${params.toString()}`)
 }
