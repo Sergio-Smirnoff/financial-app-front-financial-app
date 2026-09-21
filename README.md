@@ -31,6 +31,7 @@ front/financial-app/
 │       ├── page.tsx                # / → Dashboard
 │       ├── banks/page.tsx
 │       ├── transactions/page.tsx
+│       ├── transactions/[id]/page.tsx # Redirects to /transactions?id=
 │       ├── categories/page.tsx
 │       ├── loans/page.tsx
 │       ├── investments/page.tsx
