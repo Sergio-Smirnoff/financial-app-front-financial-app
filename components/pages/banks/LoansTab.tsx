@@ -7,6 +7,7 @@ import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
 import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
+import { Plus } from 'lucide-react'
 import type { Section, LoanRow } from '@/lib/api/bff/types'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
@@ -14,6 +15,7 @@ export interface LoansTabProps {
   section?: Section<LoanRow[]>
   isLoading: boolean
   onRetry?: () => void
+  onAddLoan?: () => void
 }
 
 const LOAN_COLUMN_KEYS = {
@@ -23,9 +25,10 @@ const LOAN_COLUMN_KEYS = {
   nextInstallmentDate: 'loans.columnNextDue',
 } as const
 
-export function LoansTab({ section, isLoading, onRetry }: LoansTabProps) {
+export function LoansTab({ section, isLoading, onRetry, onAddLoan }: LoansTabProps) {
   const t = useTranslations('banks')
   const tc = useTranslations('common')
+  const tLoans = useTranslations('loans')
 
   const loanColumns: ColumnDef<LoanRow, unknown>[] = [
     {
@@ -66,11 +69,19 @@ export function LoansTab({ section, isLoading, onRetry }: LoansTabProps) {
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <h3 className="section-head font-medium">{t('loans.activeTitle')}</h3>
-            <Link href="/loans">
-              <Button variant="ghost" size="sm">
-                {tc('seeAll')} →
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              {onAddLoan && (
+                <Button variant="outline" size="sm" className="gap-2" onClick={onAddLoan}>
+                  <Plus className="h-4 w-4" />
+                  {tLoans('addLoan')}
+                </Button>
+              )}
+              <Link href="/loans">
+                <Button variant="ghost" size="sm">
+                  {tc('seeAll')} →
+                </Button>
+              </Link>
+            </div>
           </div>
           <ScrollTable columns={loanColumns} rows={loans} caption={t('loans.tableCaption')} maxHeight={300} />
         </div>

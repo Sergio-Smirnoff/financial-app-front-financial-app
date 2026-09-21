@@ -23,6 +23,7 @@ import { RecordTransactionDialog, RecordMode } from './RecordTransactionDialog'
 import { TransactionHistoryDialog } from './TransactionHistoryDialog'
 import { CardDetailDialog } from './CardDetailDialog'
 import { CardExpenseDialog } from './CardExpenseDialog'
+import { CreateLoanDialog } from '@/components/pages/loans/CreateLoanDialog'
 import type { BffQuery, BanksBff, AccountRow, CardRow } from '@/lib/api/bff/types'
 import type { AccountResponse } from '@/types/banks'
 import type { Card } from '@/types/cards'
@@ -45,6 +46,7 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
 
   const [addAccountOpen, setAddAccountOpen] = useState(false)
   const [addCardOpen, setAddCardOpen] = useState(false)
+  const [addLoanOpen, setAddLoanOpen] = useState(false)
 
   // Transaction record modal state
   const [recordOpen, setRecordOpen] = useState(false)
@@ -220,6 +222,7 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
                   section={loansData}
                   isLoading={isLoading}
                   onRetry={refetch}
+                  onAddLoan={() => setAddLoanOpen(true)}
                 />
               </TabsContent>
 
@@ -300,6 +303,8 @@ export function BanksContent({ query = { currency: 'ARS', secondary: 'none' } }:
         open={cardExpenseOpen}
         onOpenChange={setCardExpenseOpen}
       />
+
+      <CreateLoanDialog open={addLoanOpen} onOpenChange={setAddLoanOpen} />
     </div>
   )
 }
