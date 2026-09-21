@@ -55,6 +55,8 @@ The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensu
 
 All BFF responses return typed `Section<T>` envelopes allowing resilient partial section rendering.
 
+- **BFF Transactions Client (`transactions.ts`):** Filter parameters are sent pluralized as `categories`/`accounts`/`method`/`q`. `page` is kept 1-based inside the UI and converted to 0-based at the API boundary in `getTransactions()`. `categories='none'` passes through to ms-gateway for uncategorised filtering.
+
 ### BFF Type Generation & Drift Gate
 
 BFF types in `lib/api/bff/schema.d.ts` are generated mechanically from `ms-gateway`'s OpenAPI spec (`openapi/gateway.json`). `lib/api/bff/types.ts` exports named aliases over this schema.

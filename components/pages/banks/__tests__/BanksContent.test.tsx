@@ -127,4 +127,14 @@ describe('BanksContent wires the add-account dialog to the account mutations', (
       isActive: true,
     })
   })
+
+  it('offers loan creation from the loans tab', async () => {
+    const user = userEvent.setup()
+    render(<BanksContent />, { wrapper })
+
+    await user.click(await screen.findByRole('tab', { name: /préstamos/i }))
+    await user.click(await screen.findByRole('button', { name: /nuevo préstamo/i }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
 })

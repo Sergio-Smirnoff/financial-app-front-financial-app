@@ -1284,6 +1284,8 @@ export interface operations {
                 to?: string;
                 currency?: string;
                 secondary?: string;
+                method?: string;
+                q?: string;
             };
             header: {
                 "X-User-Id": number;

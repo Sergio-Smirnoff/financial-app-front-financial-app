@@ -64,28 +64,30 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
         </div>
       </div>
 
-      <SectionState
-        section={marketStrip}
-        isLoading={isLoading}
-        onRetry={refetch}
-        skeleton={<div className="h-12 rounded-lg bg-muted animate-pulse" />}
-      >
-        {(quotes, observedAt) => (
-          <div data-testid="market-strip">
-            <MarketStrip
-              observedAt={observedAt}
-              quotes={(quotes || []).map((q: any) => ({
-                code: q.code ?? '',
-                label: q.label ?? '',
-                value: String(q.value ?? ''),
-                variation: q.variation ?? 0,
-                unit: (q.unit ?? 'PERCENT') as 'PERCENT' | 'POINTS',
-                observedAt: q.observedAt ?? observedAt,
-              }))}
-            />
-          </div>
-        )}
-      </SectionState>
+      {marketStrip?.status !== 'UNAVAILABLE' && (
+        <SectionState
+          section={marketStrip}
+          isLoading={isLoading}
+          onRetry={refetch}
+          skeleton={<div className="h-12 rounded-lg bg-muted animate-pulse" />}
+        >
+          {(quotes, observedAt) => (
+            <div data-testid="market-strip">
+              <MarketStrip
+                observedAt={observedAt}
+                quotes={(quotes || []).map((q: any) => ({
+                  code: q.code ?? '',
+                  label: q.label ?? '',
+                  value: String(q.value ?? ''),
+                  variation: q.variation ?? 0,
+                  unit: (q.unit ?? 'PERCENT') as 'PERCENT' | 'POINTS',
+                  observedAt: q.observedAt ?? observedAt,
+                }))}
+              />
+            </div>
+          )}
+        </SectionState>
+      )}
 
       <SectionState
         section={kpis}

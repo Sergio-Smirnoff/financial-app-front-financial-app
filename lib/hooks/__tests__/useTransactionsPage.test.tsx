@@ -29,13 +29,13 @@ describe('useTransactionsPage & useTransactionDetail', () => {
     )
 
     const { result } = renderHook(
-      () => useTransactionsPage({ page: 2, q: 'super', accountCbu: '0170001' }),
+      () => useTransactionsPage({ page: 2, q: 'super', accounts: '0170001' }),
       { wrapper }
     )
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(queryClient.getQueryCache().findAll({ queryKey: ['bff', 'transactions'] })).toHaveLength(1)
-    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ page: 2, q: 'super', accountCbu: '0170001' }))
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ page: 2, q: 'super', accounts: '0170001' }))
   })
 
   it('does not fetch the detail until a row is selected', () => {

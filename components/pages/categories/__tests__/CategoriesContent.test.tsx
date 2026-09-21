@@ -16,8 +16,8 @@ const bff: CategoriesBff = {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: [
-      { categoryId: 1, name: 'Supermercado', cap: 100000, spent: { amount: '120000', currency: 'ARS', secondary: null }, pct: 120, alertThresholdPct: 80, over: true },
-      { categoryId: 2, name: 'Servicios', cap: 50000, spent: { amount: '30000', currency: 'ARS', secondary: null }, pct: 60, alertThresholdPct: 80, over: false },
+      { categoryId: 1, name: 'Supermercado', cap: 250000, spent: { amount: '120000', currency: 'ARS', secondary: null }, pct: 120, alertThresholdPct: 80, over: true },
+      { categoryId: 2, name: 'Servicios', cap: 0, spent: { amount: '30000', currency: 'ARS', secondary: null }, pct: 60, alertThresholdPct: 80, over: false },
     ],
   },
   rules: {
@@ -89,5 +89,13 @@ describe('CategoriesContent renders the real contract', () => {
     expect(btn).toBeInTheDocument()
     await user.click(btn)
     expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('shows the numeric cap for budgeted rows and the no-cap label for the rest', async () => {
+    render(<CategoriesContent />, { wrapper })
+
+    const rows = await screen.findAllByTestId('budget-row')
+    expect(rows[0]).toHaveTextContent('250.000')
+    expect(rows[0]).not.toHaveTextContent(esAR.categories.budget.noCap)
   })
 })
