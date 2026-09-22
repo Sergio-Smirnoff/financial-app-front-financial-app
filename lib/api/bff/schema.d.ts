@@ -373,6 +373,8 @@ export interface components {
             categoryId?: number;
             name?: string;
             over?: boolean;
+            /** Format: int64 */
+            parentId?: number;
             pct?: number;
             spent?: components["schemas"]["MoneyView"];
         };

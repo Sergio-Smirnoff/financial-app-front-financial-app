@@ -45,6 +45,7 @@ export function BudgetTab({
             const isOver = cat.over ?? (budgetCap > 0 && spent > budgetCap)
             const catId = cat.categoryId
             const isSelected = selectedCategoryId === catId
+            const isRoot = cat.parentId == null
 
             return (
               <div
@@ -68,7 +69,7 @@ export function BudgetTab({
                     <span className="text-xs text-muted-foreground">
                       {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
                     </span>
-                    {onAddSubcategory && catId && (
+                    {onAddSubcategory && catId && isRoot && (
                       <Button
                         variant="ghost"
                         size="sm"
