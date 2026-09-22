@@ -41,6 +41,7 @@
     "nextPage": "Next page",
     "pageOf": "Page {page} of {total}",
     "paginationPageOf": "Page <hl>{page}</hl> of {total}",
+    "actions": "Actions",
     "add": "Add",
     "flagDuplicate": "Duplicate",
     "flagFailed": "Failed",

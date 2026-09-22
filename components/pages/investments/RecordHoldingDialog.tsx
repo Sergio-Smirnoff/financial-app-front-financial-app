@@ -62,21 +62,22 @@ export function RecordHoldingDialog({
   const [notifyLossThresholdPct, setNotifyLossThresholdPct] = useState('')
 
   useEffect(() => {
-    if (open) {
-      setTicker(initialTicker || '')
-      setName(initialName || '')
-      setAssetType(initialAssetType || 'STOCK')
-      setCurrency(initialCurrency || 'ARS')
-      setAvgPurchasePrice(initialPrice ? String(initialPrice) : '')
-      setQuantity('')
-      setNotifyGainThresholdPct('')
-      setNotifyLossThresholdPct('')
-      setFundingCbu('none')
-      if (banks.length > 0) {
-        setBankNumber((prev) => prev || banks[0].bankNumber)
-      }
-    }
-  }, [open, initialTicker, initialName, initialAssetType, initialPrice, initialCurrency, banks])
+    if (!open) return
+    setTicker(initialTicker || '')
+    setName(initialName || '')
+    setAssetType(initialAssetType || 'STOCK')
+    setCurrency(initialCurrency || 'ARS')
+    setAvgPurchasePrice(initialPrice ? String(initialPrice) : '')
+    setQuantity('')
+    setNotifyGainThresholdPct('')
+    setNotifyLossThresholdPct('')
+    setFundingCbu('none')
+  }, [open, initialTicker, initialName, initialAssetType, initialPrice, initialCurrency])
+
+  useEffect(() => {
+    if (!open || banks.length === 0) return
+    setBankNumber((prev) => prev || banks[0].bankNumber)
+  }, [open, banks])
 
   // Available debit accounts matching selected currency
   const availableAccounts = useMemo(() => {

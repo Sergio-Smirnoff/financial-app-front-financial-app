@@ -373,6 +373,8 @@ export interface components {
             categoryId?: number;
             name?: string;
             over?: boolean;
+            /** Format: int64 */
+            parentId?: number;
             pct?: number;
             spent?: components["schemas"]["MoneyView"];
         };
@@ -1284,6 +1286,8 @@ export interface operations {
                 to?: string;
                 currency?: string;
                 secondary?: string;
+                method?: string;
+                q?: string;
             };
             header: {
                 "X-User-Id": number;

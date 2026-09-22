@@ -55,6 +55,12 @@ The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensu
 
 All BFF responses return typed `Section<T>` envelopes allowing resilient partial section rendering.
 
+- **BFF Transactions Client (`transactions.ts`):** Filter parameters are sent as `categories`/`accounts` (pluralized — multi-select) and `method`/`q` (singular — one value each). `page` is kept 1-based inside the UI and converted to 0-based at the API boundary in `getTransactions()`. `categories='none'` passes through to ms-gateway for uncategorised filtering.
+- **`?id=` detail-panel contract:** The transactions page reads `id` from the URL (`useQueryState('id')`) to open the detail side panel for that transaction. `/transactions/[id]` (the standalone route) accepts only a plain decimal positive integer of 1–16 digits (`/^[1-9]\d{0,15}$/` — no sign, leading zero, exponent, hex or whitespace), `notFound()`s otherwise, and redirects to `/transactions?id=<id>` — the search BFF's movement hits link here too (`href: "/transactions?id=" + id`).
+- **Budget rows `parentId`:** each categories-BFF `budgets` row carries a nullable `parentId` — the parent category's id on subcategory rows (labelled `"<parent> / <child>"`), `null` on root-category and orphan rows. `BudgetTab` renders the "+ Subcategoría" action only when `parentId` is `null`; ms-finances rejects a subcategory as a parent.
+- **`LoansTabProps.onAddLoan`:** optional callback on `LoansTab` (`components/pages/banks/LoansTab.tsx`); when provided, renders the "add loan" action button and opens `BanksContent`'s add-loan dialog on click. Omitted, the button does not render.
+- **Market strip degrade rule:** `InvestmentsContent` renders nothing for the market strip section when its `Section.status === 'UNAVAILABLE'` — unlike every other BFF section, which keeps rendering an error box with a retry action.
+
 ### BFF Type Generation & Drift Gate
 
 BFF types in `lib/api/bff/schema.d.ts` are generated mechanically from `ms-gateway`'s OpenAPI spec (`openapi/gateway.json`). `lib/api/bff/types.ts` exports named aliases over this schema.

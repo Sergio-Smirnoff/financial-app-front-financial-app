@@ -432,6 +432,10 @@
           "over": {
             "type": "boolean"
           },
+          "parentId": {
+            "format": "int64",
+            "type": "integer"
+          },
           "pct": {
             "type": "number"
           },
@@ -2922,6 +2926,22 @@
             "required": false,
             "schema": {
               "default": "none",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "method",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
               "type": "string"
             }
           }

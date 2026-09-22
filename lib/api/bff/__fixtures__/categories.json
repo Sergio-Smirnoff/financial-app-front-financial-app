@@ -2,11 +2,26 @@
   "budgets": {
     "data": [
       {
+        "alertThresholdPct": 0,
+        "cap": 0,
+        "categoryId": 1100,
+        "name": "Alimentación",
+        "over": false,
+        "parentId": null,
+        "pct": 0,
+        "spent": {
+          "amount": "0.00",
+          "currency": "ARS",
+          "secondary": null
+        }
+      },
+      {
         "alertThresholdPct": 80.00,
         "cap": 250000.00,
         "categoryId": 1106,
-        "name": "Supermercado",
+        "name": "Alimentación / Supermercado",
         "over": true,
+        "parentId": 1100,
         "pct": 131.00,
         "spent": {
           "amount": "327500.50",
