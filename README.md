@@ -108,6 +108,13 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 | Card list | Layout no longer clips the Expires / behavior row. |
 | Notifications dialog | The close button no longer overlaps the "Mark all as read" action. |
 
+## Recent UX Fixes (2026-09-21, live-testing Round B)
+
+| Area | Fix |
+|---|---|
+| `RecordHoldingDialog` | A banks refetch (identity change on the `banks` query result) no longer clears a quantity the user is mid-typing. |
+| `/transactions/[id]` | Validates the path id is a plain decimal positive integer of 1–16 digits (`/^[1-9]\d{0,15}$/`) before redirecting to `/transactions?id=<id>`; anything else (non-numeric, zero, negative, exponent, hex, padded) 404s instead of redirecting with a bad value. |
+
 ---
 
 ## Run

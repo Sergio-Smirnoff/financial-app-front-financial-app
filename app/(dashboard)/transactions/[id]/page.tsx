@@ -1,6 +1,11 @@
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+
+const TRANSACTION_ID = /^[1-9]\d{0,15}$/
 
 export default async function TransactionByIdPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  redirect(`/transactions?id=${encodeURIComponent(id)}`)
+  if (!TRANSACTION_ID.test(id)) {
+    notFound()
+  }
+  redirect(`/transactions?id=${id}`)
 }

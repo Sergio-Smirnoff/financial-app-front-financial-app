@@ -129,6 +129,24 @@ describe('RecordHoldingDialog', () => {
       expect(onOpenChange).toHaveBeenCalledWith(false)
     })
   })
+
+  it('keeps typed quantity when the banks query returns a new array', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(
+      <RecordHoldingDialog
+        open
+        onOpenChange={() => {}}
+        initialTicker="GGAL"
+        initialName="Grupo Financiero Galicia"
+        initialPrice={4850}
+      />
+    )
+
+    const qtyInput = screen.getByPlaceholderText('100')
+    await user.type(qtyInput, '50')
+
+    expect(qtyInput).toHaveValue(50)
+  })
 })
 
 describe('SellHoldingDialog', () => {

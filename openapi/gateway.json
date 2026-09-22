@@ -432,6 +432,10 @@
           "over": {
             "type": "boolean"
           },
+          "parentId": {
+            "format": "int64",
+            "type": "integer"
+          },
           "pct": {
             "type": "number"
           },

@@ -90,4 +90,13 @@ describe('InvestmentsContent renders the real contract', () => {
     expect(screen.queryByText(esAR.sections.unavailable)).not.toBeInTheDocument()
     expect(screen.queryByTestId('market-strip')).not.toBeInTheDocument()
   })
+
+  it('still shows the error box for other unavailable sections', async () => {
+    renderInvestments({
+      ...bff,
+      kpis: { status: 'UNAVAILABLE', observedAt: bff.kpis!.observedAt, data: null },
+    } as InvestmentsBff)
+
+    expect(await screen.findByText(esAR.sections.unavailable)).toBeInTheDocument()
+  })
 })

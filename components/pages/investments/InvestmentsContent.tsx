@@ -18,7 +18,10 @@ import { AlertsRail } from './AlertsRail'
 import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import type { BffQuery, InvestmentsBff, Section } from '@/lib/api/bff/types'
+import type { components } from '@/lib/api/bff/schema'
 import { Plus } from 'lucide-react'
+
+type MarketQuote = components['schemas']['MarketQuoteResponse']
 
 export interface InvestmentsContentProps {
   query?: BffQuery
@@ -75,7 +78,7 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
             <div data-testid="market-strip">
               <MarketStrip
                 observedAt={observedAt}
-                quotes={(quotes || []).map((q: any) => ({
+                quotes={(quotes || []).map((q: MarketQuote) => ({
                   code: q.code ?? '',
                   label: q.label ?? '',
                   value: String(q.value ?? ''),

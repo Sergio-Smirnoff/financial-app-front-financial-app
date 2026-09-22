@@ -23,8 +23,8 @@ describe('i18n', () => {
 
 describe('catalogue keys referenced from code', () => {
   it('provides common.actions in both locales', () => {
-    expect((esAR.common as any).actions).toBe('Acciones')
-    expect((en.common as any).actions).toBe('Actions')
+    expect(esAR.common.actions).toBe('Acciones')
+    expect(en.common.actions).toBe('Actions')
   })
 
   it('provides the subcategory button label in both locales', () => {
