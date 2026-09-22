@@ -55,7 +55,10 @@ The `refreshing` variable is a module-level `Promise<boolean> | null` mutex ensu
 
 All BFF responses return typed `Section<T>` envelopes allowing resilient partial section rendering.
 
-- **BFF Transactions Client (`transactions.ts`):** Filter parameters are sent pluralized as `categories`/`accounts`/`method`/`q`. `page` is kept 1-based inside the UI and converted to 0-based at the API boundary in `getTransactions()`. `categories='none'` passes through to ms-gateway for uncategorised filtering.
+- **BFF Transactions Client (`transactions.ts`):** Filter parameters are sent as `categories`/`accounts` (pluralized — multi-select) and `method`/`q` (singular — one value each). `page` is kept 1-based inside the UI and converted to 0-based at the API boundary in `getTransactions()`. `categories='none'` passes through to ms-gateway for uncategorised filtering.
+- **`?id=` detail-panel contract:** The transactions page reads `id` from the URL (`useQueryState('id')`) to open the detail side panel for that transaction. `/transactions/[id]` (the standalone route) validates the id is a positive integer, `notFound()`s otherwise, and redirects to `/transactions?id=<id>` — the search BFF's movement hits link here too (`href: "/transactions?id=" + id`).
+- **`LoansTabProps.onAddLoan`:** optional callback on `LoansTab` (`components/pages/banks/LoansTab.tsx`); when provided, renders the "add loan" action button and opens `BanksContent`'s add-loan dialog on click. Omitted, the button does not render.
+- **Market strip degrade rule:** `InvestmentsContent` renders nothing for the market strip section when its `Section.status === 'UNAVAILABLE'` — unlike every other BFF section, which keeps rendering an error box with a retry action.
 
 ### BFF Type Generation & Drift Gate
 
