@@ -113,7 +113,7 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 | Area | Fix |
 |---|---|
 | `RecordHoldingDialog` | A banks refetch (identity change on the `banks` query result) no longer clears a quantity the user is mid-typing. |
-| `/transactions/[id]` | Validates the path id is a positive integer before redirecting to `/transactions?id=<id>`; a non-numeric or non-positive id 404s instead of redirecting with a bad value. |
+| `/transactions/[id]` | Validates the path id is a plain decimal positive integer of 1–16 digits (`/^[1-9]\d{0,15}$/`) before redirecting to `/transactions?id=<id>`; anything else (non-numeric, zero, negative, exponent, hex, padded) 404s instead of redirecting with a bad value. |
 
 ---
 
