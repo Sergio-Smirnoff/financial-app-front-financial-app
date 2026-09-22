@@ -23,5 +23,6 @@ describe('getTransactions', () => {
     await getTransactions({ categories: 'none' })
     const url = vi.mocked(api.get).mock.calls[0][0] as string
     expect(url).toContain('categories=none')
+    expect(url).toContain('page=0')
   })
 })

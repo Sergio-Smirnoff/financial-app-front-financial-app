@@ -95,7 +95,11 @@ describe('CategoriesContent renders the real contract', () => {
     render(<CategoriesContent />, { wrapper })
 
     const rows = await screen.findAllByTestId('budget-row')
-    expect(rows[0]).toHaveTextContent('250.000')
+    const budgets = bff.budgets
+    if (!budgets?.data) throw new Error('fixture invariant: budgets present')
+    const capped = budgets.data[0].cap as number
+    expect(rows[0]).toHaveTextContent(capped.toLocaleString('es-AR'))
     expect(rows[0]).not.toHaveTextContent(esAR.categories.budget.noCap)
+    expect(rows[1]).toHaveTextContent(esAR.categories.budget.noCap)
   })
 })
