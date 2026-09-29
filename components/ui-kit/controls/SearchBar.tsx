@@ -1,22 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useSearch } from '@/lib/hooks/useSearch'
 import type { SearchHit } from '@/lib/api/bff/types'
-
-export interface SearchGroup {
-  key: string
-  label: string
-  hits: SearchHit[]
-}
-
-export interface SearchBarProps {
-  groups?: SearchGroup[]
-  onQueryChange?: (q: string) => void
-  loading?: boolean
-}
 
 const SECTION_TITLE_KEYS = {
   movements: 'movements',
@@ -24,7 +12,7 @@ const SECTION_TITLE_KEYS = {
   categories: 'categories',
 } as const
 
-export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
+export function SearchBar() {
   const t = useTranslations('common')
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -33,11 +21,6 @@ export function SearchBar({ onQueryChange }: SearchBarProps = {}) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const { data, isLoading } = useSearch(query)
-
-  // Notify legacy listener if provided
-  useEffect(() => {
-    onQueryChange?.(query)
-  }, [query, onQueryChange])
 
   // Open on Cmd+K / Ctrl+K and focus input
   useEffect(() => {

@@ -64,7 +64,6 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
     >
       {(sessions: SessionRowResponse[]) => {
         const sessionList = Array.isArray(sessions) ? sessions : []
-        const hasCurrent = sessionList.some((s) => s.current)
 
         return (
           <div id="security" className="elev-sm rounded-xl border bg-card p-6 space-y-6">
@@ -74,7 +73,7 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
               <h4 className="text-sm font-semibold">{t('security.activeSessions')}</h4>
               <div className="space-y-3">
                 {sessionList.map((s, idx) => {
-                  const isCurrent = Boolean(s.current || (!hasCurrent && idx === 0))
+                  const isCurrent = s.current === true
 
                   return (
                     <div
@@ -94,7 +93,6 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
                             </span>
                           )}
                         </div>
-                        {s.ip && <span className="text-xs text-muted-foreground">{s.ip}</span>}
                       </div>
                       <div className="flex items-center gap-3">
                         {s.lastSeenAt && <FreshnessStamp observedAt={s.lastSeenAt} />}

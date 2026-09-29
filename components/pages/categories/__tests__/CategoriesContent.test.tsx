@@ -24,7 +24,7 @@ const bff: CategoriesBff = {
     status: 'OK',
     observedAt: new Date().toISOString(),
     data: [
-      { id: 10, matcher: 'COTO', categoryId: 1, categoryName: 'Supermercado', priority: 1 },
+      { id: 10, matcher: 'COTO', categoryId: 1, categoryName: 'Supermercado', matchCount: 12 },
     ],
   },
 }
@@ -72,6 +72,15 @@ describe('CategoriesContent renders the real contract', () => {
     const matcher = rules.data[0]?.matcher
     if (!matcher) throw new Error('fixture invariant: first rule has a matcher')
     expect(await screen.findByText(matcher)).toBeInTheDocument()
+  })
+
+  it('shows how many movements each rule has categorised, and no priority', async () => {
+    const user = userEvent.setup()
+    render(<CategoriesContent />, { wrapper })
+    await user.click(screen.getByRole('tab', { name: 'Reglas' }))
+    expect(await screen.findByRole('columnheader', { name: 'Veces aplicada' })).toBeInTheDocument()
+    expect(screen.getByRole('cell', { name: '12' })).toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: 'Prioridad' })).not.toBeInTheDocument()
   })
 
   it('requests the trend for the selected category', async () => {

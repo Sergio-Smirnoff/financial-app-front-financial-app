@@ -115,6 +115,15 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 | `RecordHoldingDialog` | A banks refetch (identity change on the `banks` query result) no longer clears a quantity the user is mid-typing. |
 | `/transactions/[id]` | Validates the path id is a plain decimal positive integer of 1–16 digits (`/^[1-9]\d{0,15}$/`) before redirecting to `/transactions?id=<id>`; anything else (non-numeric, zero, negative, exponent, hex, padded) 404s instead of redirecting with a bad value. |
 
+## Recent UX Fixes (2026-09-29, live-testing Round C2)
+
+| Area | Fix |
+|---|---|
+| Movements filters | Search, category, account, method and page live in the URL only. Deep links keep them, the pager stays on the page it moves to, and changing one filter keeps the others. The search box no longer embeds the global omnibar. |
+| Movements categories | Multi-select through the ui-kit `MultiSelectFilter`, including "Sin categorizar", one removable chip per category. |
+| Rules tab | "Veces aplicada" (`matchCount`) replaces the always-0 priority. |
+| Sessions | Only the session making the request is marked current. No fallback to the first row. The empty IP line is gone. |
+
 ---
 
 ## Run
@@ -141,15 +150,17 @@ The `live` Playwright project asserts real seeded data against the running stack
 stopped stack, in the parent workspace:
 
 ```bash
-docker compose --profile app up -d          # infra + all backend services
-docker compose stop frontend                # the compose frontend serves a stale published
-                                            # image and holds port 3000 — stop it
+docker compose --profile app up -d          # infra + all backend services (no host ports)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile app up -d --no-deps gateway
+                                            # publish the gateway on localhost:8080 for the browser
+                                            # (add --build to test a gateway branch)
+docker compose stop frontend                # the compose frontend serves a stale published image
 bash scripts/seed-demo-user.sh              # idempotent; exits non-zero if a step persists nothing
 cd front/financial-app
 npm run dev                                 # frontend from source, MUST be on port 3000:
                                             # .env pins ALLOWED_ORIGINS to http://localhost:3000,
                                             # any other port fails login with a CORS error
-npm run e2e:live                            # 8 tests, all green or the wave is not done
+npm run e2e:live                            # 10 tests, all green or the wave is not done
 ```
 
 No wave may report a live-verification goal met without pasting the run output.

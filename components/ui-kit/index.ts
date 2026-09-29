@@ -37,3 +37,7 @@ export type { KpiTileProps, KpiStripProps, RailSectionProps, SplitLayoutProps } 
 // controls
 export { FilterBar, FilterChip, RowActions } from './controls/FilterBar'
 export type { FilterBarProps, FilterChipProps, RowActionsProps, RowActionsItem } from './controls/FilterBar'
+export { FilterSearchField } from './controls/FilterSearchField'
+export type { FilterSearchFieldProps } from './controls/FilterSearchField'
+export { MultiSelectFilter } from './controls/MultiSelectFilter'
+export type { MultiSelectFilterProps, MultiSelectOption } from './controls/MultiSelectFilter'

@@ -162,7 +162,9 @@
       "chipSearch": "Search: {q}",
       "chipCategory": "Category: {name}",
       "chipAccount": "Account: {name}",
-      "chipMethod": "Method: {name}"
+      "chipMethod": "Method: {name}",
+      "search": "Search by description",
+      "categoriesSelected": "{count, plural, one {# category} other {# categories}}"
     },
     "table": {
       "caption": "Transactions table",
@@ -251,7 +253,7 @@
       "preview": "Preview",
       "creating": "Creating...",
       "create": "Create rule",
-      "priority": "Priority",
+      "timesApplied": "Times applied",
       "actionsHeader": "Actions",
       "caption": "Categorization rules",
       "deleteTitle": "Delete rule?",

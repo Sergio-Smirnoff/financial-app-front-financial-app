@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { getTransactions, type TransactionsQuery } from '@/lib/api/bff/transactions'
 
 export function useTransactionsPage(query: TransactionsQuery = {}) {
@@ -14,5 +14,6 @@ export function useTransactionsPage(query: TransactionsQuery = {}) {
     queryKey: ['bff', 'transactions', currency, secondary, q, categories, accounts, method, page],
     queryFn: () => getTransactions({ currency, secondary, q, categories, accounts, method, page }),
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   })
 }

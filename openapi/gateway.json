@@ -1201,12 +1201,12 @@
             "format": "int64",
             "type": "integer"
           },
-          "matcher": {
-            "type": "string"
-          },
-          "priority": {
+          "matchCount": {
             "format": "int32",
             "type": "integer"
+          },
+          "matcher": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -2148,9 +2148,6 @@
           "id": {
             "type": "string"
           },
-          "ip": {
-            "type": "string"
-          },
           "lastSeenAt": {
             "format": "date-time",
             "type": "string"
@@ -2818,6 +2815,14 @@
               "format": "int64",
               "type": "integer"
             }
+          },
+          {
+            "in": "cookie",
+            "name": "access_token",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3009,7 +3014,7 @@
   "servers": [
     {
       "description": "Generated server url",
-      "url": "http://localhost:8090"
+      "url": "http://localhost:8080"
     }
   ],
   "tags": [
