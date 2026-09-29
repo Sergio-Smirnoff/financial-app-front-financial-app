@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -7,8 +7,6 @@ import { NextIntlClientProvider } from 'next-intl'
 import React from 'react'
 import esAR from '@/messages/es-AR.json'
 import { TransactionFilters, type TransactionFilterOptions } from '../TransactionFilters'
-
-vi.mock('@/lib/api/bff/search', () => ({ getSearch: vi.fn(async () => ({})) }))
 
 const OPTIONS: TransactionFilterOptions = {
   accounts: [{ cbu: '0170099200000000000017', alias: 'demo.cuenta' }],
