@@ -55,9 +55,9 @@ export function RulesTab({
       header: t('rules.assigned'),
     },
     {
-      id: 'priority',
-      accessorFn: (row) => row.priority ?? 0,
-      header: t('rules.priority'),
+      id: 'matchCount',
+      accessorKey: 'matchCount',
+      header: t('rules.timesApplied'),
     },
     {
       id: 'actions',
