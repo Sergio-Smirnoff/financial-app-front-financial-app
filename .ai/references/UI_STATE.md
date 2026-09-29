@@ -7,7 +7,7 @@ State management decision rules: Server state vs Local UI state.
 | State Type | Library | Location | Pattern |
 |---|---|---|---|
 | **Server State** | TanStack Query v5 | `lib/hooks/use*.ts` | `useQuery` for reads; `useMutation` + `queryClient.invalidateQueries` on write success |
-| **URL State** | nuqs | Component / Page | `useQueryState` / `useQueryStates` wrapped in `<NuqsAdapter>` |
+| **URL State** | nuqs | Component / Page | `useQueryState` / `useQueryStates` wrapped in `<NuqsAdapter>` Pages with several URL filters share one parser map (`useQueryStates(map)`) across components, e.g. `transactionFilterParams.ts`. |
 | **Global UI State** | Zustand | `lib/store/ui.store.ts` | Modal visibility, confirm dialogs, mobile sidebar open/close |
 | **Form State** | React Hook Form | Page / Component | `react-hook-form` + `zod` resolvers (`lib/schemas/`) |
 | **Theme / SSE** | React Context | `providers/` | `ThemeProvider` (next-themes), `NotificationProvider` (mounts SSE) |
@@ -47,3 +47,9 @@ Modal names: `create-transaction`, `edit-transaction`, `create-category`, `creat
 
 Confirmation dialogs are local component state over the ui-kit `Dialog` (see
 `components/pages/loans/LoansContent.tsx`) — there is no shared confirm-delete store slice.
+
+`useTransactionsPage` uses `placeholderData: keepPreviousData` so filter options survive a filter change; during a refetch sections show the previous data, not the skeleton.
+
+## ui-kit controls
+
+`FilterSearchField` (controlled search input, no state) and `MultiSelectFilter` (checkbox dropdown; listed values in option order, unlisted selected values kept; trigger named `label: summary`) in `components/ui-kit/controls/`.
