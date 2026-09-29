@@ -253,7 +253,7 @@
       "preview": "Preview",
       "creating": "Creating...",
       "create": "Create rule",
-      "priority": "Priority",
+      "timesApplied": "Times applied",
       "actionsHeader": "Actions",
       "caption": "Categorization rules",
       "deleteTitle": "Delete rule?",

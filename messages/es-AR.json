@@ -253,7 +253,7 @@
       "preview": "Previsualizar",
       "creating": "Creando...",
       "create": "Crear regla",
-      "priority": "Prioridad",
+      "timesApplied": "Veces aplicada",
       "actionsHeader": "Acciones",
       "caption": "Reglas de categorización",
       "deleteTitle": "¿Eliminar regla?",

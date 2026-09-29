@@ -24,8 +24,8 @@ const section = {
   status: 'OK',
   observedAt: '2026-08-31T00:00:00Z',
   data: [
-    { id: '65', device: 'Chrome · Linux', current: true, ip: '', lastSeenAt: '2026-08-31T00:00:00Z' },
-    { id: '42', device: 'Firefox · Windows', current: false, ip: '', lastSeenAt: '2026-08-30T00:00:00Z' },
+    { id: '65', device: 'Chrome · Linux', current: true, lastSeenAt: '2026-08-31T00:00:00Z' },
+    { id: '42', device: 'Firefox · Windows', current: false, lastSeenAt: '2026-08-30T00:00:00Z' },
   ],
 }
 

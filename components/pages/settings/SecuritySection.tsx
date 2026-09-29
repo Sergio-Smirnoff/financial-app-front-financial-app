@@ -94,7 +94,6 @@ export function SecuritySection({ section, isLoading, onRetry }: SecuritySection
                             </span>
                           )}
                         </div>
-                        {s.ip && <span className="text-xs text-muted-foreground">{s.ip}</span>}
                       </div>
                       <div className="flex items-center gap-3">
                         {s.lastSeenAt && <FreshnessStamp observedAt={s.lastSeenAt} />}

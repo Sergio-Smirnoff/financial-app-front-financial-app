@@ -655,9 +655,9 @@ export interface components {
             categoryName?: string;
             /** Format: int64 */
             id?: number;
-            matcher?: string;
             /** Format: int32 */
-            priority?: number;
+            matchCount?: number;
+            matcher?: string;
         };
         SearchBffResponse: {
             categories?: components["schemas"]["SectionResponseListSearchHitResponse"];
@@ -932,7 +932,6 @@ export interface components {
             current?: boolean;
             device?: string;
             id?: string;
-            ip?: string;
             /** Format: date-time */
             lastSeenAt?: string;
         };
@@ -1260,7 +1259,9 @@ export interface operations {
                 "X-User-Id": number;
             };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                access_token?: string;
+            };
         };
         requestBody?: never;
         responses: {
