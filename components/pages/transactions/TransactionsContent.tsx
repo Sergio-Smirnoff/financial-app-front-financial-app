@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useQueryState, parseAsInteger } from 'nuqs'
+import { useQueryState, useQueryStates, parseAsInteger } from 'nuqs'
 import { useTranslations } from 'next-intl'
 import { useTransactionsPage } from '@/lib/hooks/useTransactionsPage'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Pagination } from '@/components/ui-kit/table/Pagination'
 import { TransactionFilters } from './TransactionFilters'
+import { transactionFilterParams } from './transactionFilterParams'
 import { TransactionTable } from './TransactionTable'
 import { UncategorisedBanner } from './UncategorisedBanner'
 import { BulkCategoriseBar } from './BulkCategoriseBar'
@@ -36,21 +37,17 @@ const SkeletonKpi = () => (
 export function TransactionsContent({ query = { currency: 'ARS', secondary: 'none' } }: TransactionsContentProps) {
   const t = useTranslations('transactions')
   const queryClient = useQueryClient()
-  const [q] = useQueryState('q', { defaultValue: '' })
-  const [category] = useQueryState('categories', { defaultValue: '' })
-  const [accountCbu] = useQueryState('accounts', { defaultValue: '' })
-  const [method] = useQueryState('method', { defaultValue: '' })
-  const [pageState, setPageState] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [filters, setFilters] = useQueryStates(transactionFilterParams)
   const [selectedRowId, setSelectedRowId] = useQueryState('id', parseAsInteger)
 
   const { data, isLoading, refetch } = useTransactionsPage({
     currency: query.currency,
     secondary: query.secondary,
-    q,
-    categories: category,
-    accounts: accountCbu,
-    method,
-    page: pageState,
+    q: filters.q,
+    categories: filters.categories.join(','),
+    accounts: filters.accounts,
+    method: filters.method,
+    page: filters.page,
   })
 
   const [selection, setSelection] = useState<RowSelectionState>({})
@@ -146,7 +143,7 @@ export function TransactionsContent({ query = { currency: 'ARS', secondary: 'non
             />
 
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-              <Pagination page={pageState} totalPages={totalPages} onChange={(p) => setPageState(p)} />
+              <Pagination page={filters.page} totalPages={totalPages} onChange={(p) => setFilters({ page: p })} />
               <BulkCategoriseBar
                 count={selectedCount}
                 categories={bulkCategories}

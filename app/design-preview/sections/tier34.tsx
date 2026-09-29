@@ -84,7 +84,7 @@ export default function Tier34Section() {
       <section className="space-y-4">
         <h2 className="section-head">Controls & Data Display</h2>
         <div className="space-y-4">
-          <Toolbar left={<span className="font-medium text-sm">Filtros activos</span>} right={<SearchBar groups={[]} onQueryChange={() => {}} loading={false} />} />
+          <Toolbar left={<span className="font-medium text-sm">Filtros activos</span>} right={<SearchBar />} />
           <ToggleRow id="notifications-toggle" label="Notificaciones de gastos" description="Recibir alertas cuando un presupuesto se exceda" checked={toggled} onCheckedChange={setToggled} />
           <div className="flex items-center gap-4">
             <FreshnessStamp observedAt="2026-08-23T12:00:00Z" />

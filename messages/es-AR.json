@@ -162,7 +162,9 @@
       "chipSearch": "Búsqueda: {q}",
       "chipCategory": "Categoría: {name}",
       "chipAccount": "Cuenta: {name}",
-      "chipMethod": "Método: {name}"
+      "chipMethod": "Método: {name}",
+      "search": "Buscar por descripción",
+      "categoriesSelected": "{count, plural, one {# categoría} other {# categorías}}"
     },
     "table": {
       "caption": "Tabla de movimientos",
