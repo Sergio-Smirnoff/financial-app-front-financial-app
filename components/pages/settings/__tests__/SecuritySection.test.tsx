@@ -44,3 +44,21 @@ describe('SecuritySection revokes a session', () => {
     expect(api.delete).toHaveBeenCalledWith('/api/v1/users/me/sessions/42')
   })
 })
+
+describe('SecuritySection marks only the session the gateway reports as current', () => {
+  it('marks the reported session and offers no revoke for it', async () => {
+    render(<SecuritySection section={section} isLoading={false} />, { wrapper })
+    const rows = await screen.findAllByTestId('session-row')
+    expect(within(rows[0]).getByTestId('session-current')).toBeInTheDocument()
+    expect(within(rows[0]).queryByRole('button')).not.toBeInTheDocument()
+    expect(within(rows[1]).queryByTestId('session-current')).not.toBeInTheDocument()
+  })
+
+  it('marks no session when none is current, so every one can be revoked', async () => {
+    const noneCurrent = { ...section, data: section.data.map((s) => ({ ...s, current: false })) }
+    render(<SecuritySection section={noneCurrent} isLoading={false} />, { wrapper })
+    const rows = await screen.findAllByTestId('session-row')
+    expect(screen.queryByTestId('session-current')).not.toBeInTheDocument()
+    for (const row of rows) expect(within(row).getByRole('button')).toBeInTheDocument()
+  })
+})
