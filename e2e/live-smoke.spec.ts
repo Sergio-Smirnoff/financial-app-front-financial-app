@@ -18,8 +18,8 @@ test('Bancos renders all seven sections with seeded entities', async ({ page }) 
   await expect(page.getByTestId('banks-kpi-account-count')).toHaveText('2')
   await expect(page.getByTestId('import-health-rail').getByTestId('import-health-row').first()).toBeVisible()
   await expect(page.getByTestId('payment-calendar-entry').first()).toBeVisible()
-  await page.getByRole('tab', { name: /préstamos/i }).click()
-  await expect(page.getByText(DEMO.loanName)).toBeVisible()
+  await page.getByRole('tab', { name: /préstamos|loans/i }).click()
+  await expect(page.getByRole('tabpanel').getByRole('cell', { name: DEMO.loanName, exact: true })).toBeVisible()
 })
 
 test('Movimientos renders the summary strip, rows and method filter', async ({ page }) => {
@@ -29,11 +29,27 @@ test('Movimientos renders the summary strip, rows and method filter', async ({ p
   await expect(page.getByRole('option', { name: 'Tarjeta de débito' })).toBeAttached()
 })
 
+test('Movimientos keeps a deep-linked search and filters by several categories', async ({ page }) => {
+  await page.goto('/transactions?q=Coto')
+  const search = page.getByRole('searchbox', { name: /buscar por descripción|search by description/i })
+  await expect(search).toHaveValue('Coto')
+  await expect(page).toHaveURL(/[?&]q=Coto/)
+  await page.getByRole('button', { name: /filtrar por categoría|filter by category/i }).click()
+  await page.getByRole('menuitemcheckbox', { name: /sin categorizar|uncategorized/i }).click()
+  await page.getByRole('menuitemcheckbox', { name: DEMO.overBudgetCategory, exact: true }).first().click()
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/[?&]categories=none(,|%2C)\d+/)
+  await expect(page).toHaveURL(/[?&]q=Coto/)
+})
+
 test('Categorías flags the deliberately over-cap budget', async ({ page }) => {
   await page.goto('/categories')
-  const row = page.getByTestId('budget-row').filter({ hasText: DEMO.overBudgetCategory })
-  await expect(row).toBeVisible()
-  await expect(row.getByTestId('budget-over-flag')).toBeVisible()
+  const overCap = page
+    .getByTestId('budget-row')
+    .filter({ hasText: DEMO.overBudgetCategory })
+    .filter({ has: page.getByTestId('budget-over-flag') })
+  await expect(overCap).toHaveCount(1)
+  await expect(overCap).toBeVisible()
 })
 
 test('Inversiones renders portfolio sections and degrades only the market strip', async ({ page }) => {

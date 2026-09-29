@@ -141,15 +141,17 @@ The `live` Playwright project asserts real seeded data against the running stack
 stopped stack, in the parent workspace:
 
 ```bash
-docker compose --profile app up -d          # infra + all backend services
-docker compose stop frontend                # the compose frontend serves a stale published
-                                            # image and holds port 3000 — stop it
+docker compose --profile app up -d          # infra + all backend services (no host ports)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile app up -d --no-deps gateway
+                                            # publish the gateway on localhost:8080 for the browser
+                                            # (add --build to test a gateway branch)
+docker compose stop frontend                # the compose frontend serves a stale published image
 bash scripts/seed-demo-user.sh              # idempotent; exits non-zero if a step persists nothing
 cd front/financial-app
 npm run dev                                 # frontend from source, MUST be on port 3000:
                                             # .env pins ALLOWED_ORIGINS to http://localhost:3000,
                                             # any other port fails login with a CORS error
-npm run e2e:live                            # 8 tests, all green or the wave is not done
+npm run e2e:live                            # 10 tests, all green or the wave is not done
 ```
 
 No wave may report a live-verification goal met without pasting the run output.
