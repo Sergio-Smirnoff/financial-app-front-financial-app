@@ -107,7 +107,7 @@ export function TickerChartPanel({ ticker, name, onBuy }: TickerChartPanelProps)
           series={series}
           currency={data.currency ?? 'ARS'}
           ariaLabel={t('market.priceChartAria', { ticker })}
-          height={220}
+          minHeight={96}
         />
       )}
     </div>

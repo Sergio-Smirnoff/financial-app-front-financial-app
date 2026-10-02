@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { stubChartSize } from '@/test/chartSize'
 import { render, screen } from '@testing-library/react'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
@@ -50,6 +51,9 @@ const holdingFixture = {
 }
 
 describe('PositionDetail', () => {
+  beforeEach(() => stubChartSize(640, 240))
+  afterEach(() => vi.unstubAllGlobals())
+
   it('renders the price chart with axes', () => {
     renderWithIntl(<PositionDetail holding={holdingFixture} />)
     expect(screen.getAllByTestId('tick-y').length).toBeGreaterThan(2)

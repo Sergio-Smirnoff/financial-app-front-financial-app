@@ -78,7 +78,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Live Chart (with comparison series)</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <AreaChart
               series={fixtureSeries}
@@ -90,7 +90,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Skeleton (Identical geometry)</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <div className="w-full aspect-[640/240] rounded-xl bg-muted/40 animate-pulse" />
           </div>
@@ -104,7 +104,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Live Chart (August highlighted)</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <BarPairChart
               months={fixtureMonths}
@@ -116,7 +116,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Skeleton</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <div className="w-full aspect-[640/240] rounded-xl bg-muted/40 animate-pulse" />
           </div>
@@ -130,7 +130,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Live Chart (Descending tone by rank)</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <HorizonBars
               months={fixtureCommitted}
@@ -141,7 +141,7 @@ export default function ChartsDesignPreviewSection() {
           <div className="rounded-2xl border border-border p-5 bg-card space-y-2">
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>Skeleton</span>
-              <span>viewBox 640x240</span>
+              <span>fills its card</span>
             </div>
             <div className="w-full aspect-[640/240] rounded-xl bg-muted/40 animate-pulse" />
           </div>
@@ -174,17 +174,15 @@ export default function ChartsDesignPreviewSection() {
         <div className="flex items-center gap-6 rounded-2xl border border-border p-5 bg-card flex-wrap">
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-muted-foreground">Positivo:</span>
-            <Sparkline series={fixtureSeries} ariaLabel="Tendencia positiva" width={120} height={36} />
+            <div className="w-[120px]">
+              <Sparkline series={fixtureSeries} ariaLabel="Tendencia positiva" minHeight={36} />
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-muted-foreground">Negativo:</span>
-            <Sparkline
-              series={[...fixtureSeries].reverse()}
-              ariaLabel="Tendencia negativa"
-              width={120}
-              height={36}
-              isPositive={false}
-            />
+            <div className="w-[120px]">
+              <Sparkline series={[...fixtureSeries].reverse()} ariaLabel="Tendencia negativa" minHeight={36} isPositive={false} />
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-muted-foreground">Skeleton:</span>

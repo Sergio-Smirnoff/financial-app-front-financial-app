@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { stubChartSize } from '@/test/chartSize'
 import { BarPairChart } from '../BarPairChart'
 import { HorizonBars } from '../HorizonBars'
 
@@ -35,6 +36,9 @@ const committed12 = [
 ]
 
 describe('BarPairChart & HorizonBars', () => {
+  beforeEach(() => stubChartSize(640, 240))
+  afterEach(() => vi.unstubAllGlobals())
+
   it('renders 12 month pairs and highlights the current month', () => {
     render(<BarPairChart months={months12} currency="ARS" highlightMonth="2026-08" ariaLabel="Ingresos vs egresos" />)
     expect(screen.getAllByTestId('bar-income')).toHaveLength(12)

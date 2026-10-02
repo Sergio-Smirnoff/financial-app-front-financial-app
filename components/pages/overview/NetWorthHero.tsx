@@ -24,7 +24,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
       section={section}
       isLoading={isLoading}
       onRetry={onRetry}
-      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
+      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-full" />}
     >
       {(data) => {
         const series = data.series ?? []
@@ -35,7 +35,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
         }))
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
+          <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-6">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
                 <span className="kicker">{t('netWorthKicker')}</span>
@@ -54,11 +54,12 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
             </div>
 
             {chartPoints.length > 0 && (
-              <div className="pt-2">
+              <div className="h-56 min-h-0 frame:h-auto frame:flex-1">
                 <AreaChart
                   series={chartPoints}
                   currency={latestPoint?.value?.currency || 'ARS'}
                   ariaLabel={t('netWorthAria')}
+                  minHeight={96}
                 />
               </div>
             )}

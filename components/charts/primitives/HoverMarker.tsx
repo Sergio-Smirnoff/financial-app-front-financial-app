@@ -4,6 +4,7 @@ export interface HoverMarkerProps {
   x: number
   y: number
   height: number
+  width: number
   paddingY?: number
   dateText: string
   valueText: string
@@ -15,6 +16,7 @@ export function HoverMarker({
   x,
   y,
   height,
+  width,
   paddingY = 32,
   dateText,
   valueText,
@@ -42,7 +44,7 @@ export function HoverMarker({
       <circle cx={x} cy={y} r={3} fill="white" />
 
       {/* Tooltip */}
-      <g role="tooltip" transform={`translate(${x > 400 ? x - 140 : x + 10}, ${Math.max(paddingY, y - 40)})`}>
+      <g role="tooltip" transform={`translate(${x + 150 > width ? x - 140 : x + 10}, ${Math.max(paddingY, y - 40)})`}>
         <rect
           width={130}
           height={42}

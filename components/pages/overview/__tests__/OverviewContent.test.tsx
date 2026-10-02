@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { stubChartSize } from '@/test/chartSize'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NextIntlClientProvider } from 'next-intl'
@@ -100,6 +101,9 @@ function renderOverview(data: OverviewBff) {
 }
 
 describe('OverviewContent', () => {
+  beforeEach(() => stubChartSize(640, 240))
+  afterEach(() => vi.unstubAllGlobals())
+
   it('renders the four KPIs from the kpis section', () => {
     renderOverview(fixture)
     expect(screen.getAllByText('Efectivo')[0]).toBeInTheDocument()
