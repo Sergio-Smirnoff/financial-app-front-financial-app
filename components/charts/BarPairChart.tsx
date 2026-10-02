@@ -1,6 +1,7 @@
 import React from 'react'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import { ChartFrame } from './primitives/ChartFrame'
+import { formatCompactMoney } from '@/lib/format'
 
 export interface MonthPair {
   month: string
@@ -29,8 +30,6 @@ export function BarPairChart({
 }: BarPairChartProps) {
   const paddingX = 32
   const paddingY = 32
-
-  const currencySymbol = currency === 'USD' ? 'US$' : '$'
 
   const maxVal = Math.max(...months.map((m) => Math.max(m.income, m.expense)), 100)
 
@@ -80,7 +79,7 @@ export function BarPairChart({
               fill="currentColor"
               className="fill-muted-foreground font-mono text-[10px]"
             >
-              {currencySymbol}{tick >= 1000 ? `${(tick / 1000).toFixed(0)}k` : tick}
+              {formatCompactMoney(tick, currency)}
             </text>
           </g>
         )

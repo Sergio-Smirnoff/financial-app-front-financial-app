@@ -4,6 +4,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
+import { currencySymbol } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import type { CategoriesBff, Section } from '@/lib/api/bff/types'
@@ -41,7 +42,7 @@ export function BudgetTab({
           {categories.map((cat: BudgetRow) => {
             const spent = parseFloat(cat.spent?.amount || '0')
             const budgetCap = typeof cat.cap === 'number' ? cat.cap : 0
-            const currencySymbol = cat.spent?.currency === 'USD' ? 'US$' : '$'
+            const symbol = currencySymbol(cat.spent?.currency ?? 'ARS')
             const isOver = cat.over ?? (budgetCap > 0 && spent > budgetCap)
             const catId = cat.categoryId
             const isSelected = selectedCategoryId === catId
@@ -67,7 +68,7 @@ export function BudgetTab({
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-muted-foreground">
-                      {currencySymbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${currencySymbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
+                      {symbol} {spent.toLocaleString('es-AR')} / {budgetCap > 0 ? `${symbol} ${budgetCap.toLocaleString('es-AR')}` : t('budget.noCap')}
                     </span>
                     {onAddSubcategory && catId && isRoot && (
                       <Button

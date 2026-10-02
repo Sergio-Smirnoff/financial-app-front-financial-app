@@ -1,5 +1,6 @@
 import React from 'react'
 import { ScaleTime, ScaleLinear } from 'd3-scale'
+import { formatCompactNumber } from '@/lib/format'
 
 export interface AxisProps {
   xScale: ScaleTime<number, number>
@@ -39,14 +40,8 @@ export function Axis({
     return `${month}/${year}`
   }
 
-  const defaultFormatY = (v: number) => {
-    if (Math.abs(v) >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
-    if (Math.abs(v) >= 1_000) return `${(v / 1_000).toFixed(0)}k`
-    return String(v)
-  }
-
   const fx = formatX || defaultFormatX
-  const fy = formatY || defaultFormatY
+  const fy = formatY || formatCompactNumber
 
   const yRange = yScale.range()
   const bottomY = Math.max(...yRange)

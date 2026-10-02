@@ -71,4 +71,14 @@ describe('AreaChart', () => {
     const vertices = container.querySelectorAll('circle[data-role="vertex"]')
     expect(vertices).toHaveLength(1)
   })
+
+  it('labels the value axis compactly for large amounts', () => {
+    const large = [
+      { date: '2026-01-01', value: 8e7 },
+      { date: '2026-02-01', value: 9.74e7 },
+    ]
+    render(<AreaChart series={large} currency="ARS" ariaLabel="Patrimonio neto" />)
+    expect(screen.getByText('$80M')).toBeInTheDocument()
+    expect(screen.queryByText(/\d{4,}k/)).not.toBeInTheDocument()
+  })
 })

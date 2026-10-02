@@ -4,6 +4,7 @@ import { ChartFrame } from './primitives/ChartFrame'
 import { Axis } from './primitives/Axis'
 import { HoverMarker } from './primitives/HoverMarker'
 import { useChartScales, SeriesPoint } from './primitives/useChartScales'
+import { currencySymbol, formatCompactMoney } from '@/lib/format'
 
 export interface AreaChartProps {
   series: SeriesPoint[]
@@ -130,8 +131,8 @@ export function AreaChart({
   const monthOfYear = String(activeDate.getMonth() + 1).padStart(2, '0')
   const dateText = `${month}/${monthOfYear}`
 
-  const currencySymbol = currency === 'USD' ? 'US$' : '$'
-  const valueText = `${currencySymbol} ${currentValue.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+  const symbol = currencySymbol(currency)
+  const valueText = `${symbol} ${currentValue.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
   const deltaText = `${isPositiveDelta ? '+' : '−'}${Math.abs(deltaPct).toFixed(1)}%`
 
   const dataTable = sortedSeries.map((s) => ({
@@ -158,7 +159,7 @@ export function AreaChart({
         paddingLeft={paddingLeft}
         paddingRight={paddingRight}
         paddingY={paddingY}
-        formatY={(val) => `${currencySymbol}${val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}`}
+        formatY={(val) => formatCompactMoney(val, currency)}
       />
 
       {/* Main Area */}

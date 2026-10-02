@@ -1,6 +1,7 @@
 import React from 'react'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import { ChartFrame } from './primitives/ChartFrame'
+import { formatCompactMoney } from '@/lib/format'
 
 export interface HorizonMonth {
   month: string
@@ -36,8 +37,6 @@ export function HorizonBars({
       </ChartFrame>
     )
   }
-
-  const currencySymbol = currency === 'USD' ? 'US$' : '$'
 
   const maxVal = Math.max(...months.map((m) => m.amount), 100)
 
@@ -89,7 +88,7 @@ export function HorizonBars({
               fill="currentColor"
               className="fill-muted-foreground font-mono text-[10px]"
             >
-              {currencySymbol}{tick >= 1000 ? `${(tick / 1000).toFixed(0)}k` : tick}
+              {formatCompactMoney(tick, currency)}
             </text>
           </g>
         )

@@ -46,4 +46,21 @@ describe('BarPairChart & HorizonBars', () => {
     const bars = [...container.querySelectorAll('[data-step]')].map((b) => Number(b.getAttribute('data-step')))
     expect(bars).toEqual([...bars].sort((a, b) => b - a))
   })
+
+  it('labels the flow axis compactly for large amounts', () => {
+    render(
+      <BarPairChart
+        months={[{ month: '2026-09', income: 8e7, expense: 7.5e7 }]}
+        currency="ARS"
+        ariaLabel="Flujo"
+      />
+    )
+    expect(screen.getByText('$80M')).toBeInTheDocument()
+    expect(screen.queryByText(/\d{4,}k/)).not.toBeInTheDocument()
+  })
+
+  it('labels the committed axis compactly in dollars', () => {
+    render(<HorizonBars months={[{ month: '2026-09', amount: 8e7 }]} currency="USD" ariaLabel="Comprometido" />)
+    expect(screen.getByText('US$80M')).toBeInTheDocument()
+  })
 })
