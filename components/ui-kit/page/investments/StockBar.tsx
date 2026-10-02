@@ -1,6 +1,6 @@
 import { Money } from '@/components/ui-kit/money/Money'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
-import type { MoneyView } from '@/lib/format'
+import { formatQuantity, type MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface StockBarProps {
@@ -22,7 +22,7 @@ export function StockBar({ ticker, name, quantity, avgPrice, currentValue, pnlPc
           <span className="truncate text-sm text-muted-foreground hidden sm:inline">{name}</span>
         </div>
         <span className="n text-xs text-muted-foreground">
-          {quantity} unidades · Costo: <Money value={avgPrice} className="text-xs" />
+          {formatQuantity(quantity)} unidades · Costo: <Money value={avgPrice} className="text-xs" />
         </span>
       </div>
       <div className="flex flex-col items-end gap-0.5 shrink-0">

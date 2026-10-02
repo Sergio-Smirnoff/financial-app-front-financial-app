@@ -1,10 +1,11 @@
 import React, { useState, useId, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { area, line, curveMonotoneX, curveLinear } from 'd3-shape'
 import { ChartFrame, type ChartSize } from './primitives/ChartFrame'
 import { Axis } from './primitives/Axis'
 import { HoverMarker } from './primitives/HoverMarker'
 import { useChartScales, SeriesPoint } from './primitives/useChartScales'
-import { currencySymbol, formatCompactMoney } from '@/lib/format'
+import { currencySymbol, formatCompactMoney, formatPercent } from '@/lib/format'
 
 type CurveMode = 'linear' | 'monotone' | 'auto'
 
@@ -34,6 +35,7 @@ export function AreaChart({
   className = '',
   curve = 'auto'
 }: AreaChartProps) {
+  const t = useTranslations('common.chart')
   const sortedSeries = useMemo(() => [...series].sort(chronological), [series])
   const sortedComparison = useMemo(() => (comparison ? [...comparison].sort(chronological) : undefined), [comparison])
 
@@ -50,7 +52,7 @@ export function AreaChart({
       {(size) =>
         sortedSeries.length === 0 ? (
           <text x={size.width / 2} y={size.height / 2} textAnchor="middle" fill="currentColor" className="text-sm fill-muted-foreground">
-            Sin datos suficientes
+            {t('notEnoughData')}
           </text>
         ) : (
           <AreaPlot size={size} series={sortedSeries} comparison={sortedComparison} currency={currency} curve={curve} />
@@ -145,7 +147,7 @@ function AreaPlot({ size, series, comparison, currency, curve }: AreaPlotProps) 
   const dateText = `${day}/${monthOfYear}`
 
   const valueText = `${currencySymbol(currency)} ${currentValue.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-  const deltaText = `${isPositiveDelta ? '+' : '−'}${Math.abs(deltaPct).toFixed(1)}%`
+  const deltaText = formatPercent(deltaPct, { decimals: 1 })
 
   return (
     <>

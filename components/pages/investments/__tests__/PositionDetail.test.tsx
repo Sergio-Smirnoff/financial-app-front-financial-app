@@ -70,4 +70,9 @@ describe('PositionDetail', () => {
     expect(screen.getByRole('button', { name: /Vender/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Comprar más/i })).toBeInTheDocument()
   })
+
+  it('shows the quantity with es-AR separators', () => {
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 1500.5 }} />)
+    expect(screen.getByText('1.500,5')).toBeInTheDocument()
+  })
 })

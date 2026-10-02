@@ -1,4 +1,5 @@
 import React, { type ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { useElementSize } from './useElementSize'
 
@@ -16,6 +17,7 @@ export interface ChartFrameProps {
 }
 
 export function ChartFrame({ ariaLabel, dataTable, className, minHeight = 160, children }: ChartFrameProps) {
+  const t = useTranslations('common.chart')
   const [ref, measured] = useElementSize<HTMLDivElement>()
   const size: ChartSize = { width: measured.width, height: Math.max(measured.height, minHeight) }
   const ready = size.width > 0
@@ -38,8 +40,8 @@ export function ChartFrame({ ariaLabel, dataTable, className, minHeight = 160, c
             <caption>{ariaLabel}</caption>
             <thead>
               <tr>
-                <th scope="col">Etiqueta / Fecha</th>
-                <th scope="col">Valor</th>
+                <th scope="col">{t('label')}</th>
+                <th scope="col">{t('value')}</th>
               </tr>
             </thead>
             <tbody>

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render } from '@testing-library/react'
+import { renderWithIntl } from '@/test/intl'
 import React from 'react'
 import { DonutChart, type DonutSlice } from '../DonutChart'
 import { stubChartSize } from '@/test/chartSize'
@@ -12,7 +12,7 @@ const slices: DonutSlice[] = [
 ]
 
 function renderDonut(override: Partial<React.ComponentProps<typeof DonutChart>> = {}) {
-  return render(
+  return renderWithIntl(
     <DonutChart
       slices={slices}
       ariaLabel="Composición"

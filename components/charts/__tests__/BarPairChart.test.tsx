@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithIntl } from '@/test/intl'
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { stubChartSize } from '@/test/chartSize'
 import { BarPairChart } from '../BarPairChart'
@@ -40,19 +41,19 @@ describe('BarPairChart & HorizonBars', () => {
   afterEach(() => vi.unstubAllGlobals())
 
   it('renders 12 month pairs and highlights the current month', () => {
-    render(<BarPairChart months={months12} currency="ARS" highlightMonth="2026-08" ariaLabel="Ingresos vs egresos" />)
+    renderWithIntl(<BarPairChart months={months12} currency="ARS" highlightMonth="2026-08" ariaLabel="Ingresos vs egresos" />)
     expect(screen.getAllByTestId('bar-income')).toHaveLength(12)
     expect(screen.getByTestId('bar-group-2026-08')).toHaveAttribute('data-current', 'true')
   })
 
   it('descends tone with amount', () => {
-    const { container } = render(<HorizonBars months={committed12} currency="ARS" ariaLabel="Comprometido" />)
+    const { container } = renderWithIntl(<HorizonBars months={committed12} currency="ARS" ariaLabel="Comprometido" />)
     const bars = [...container.querySelectorAll('[data-step]')].map((b) => Number(b.getAttribute('data-step')))
     expect(bars).toEqual([...bars].sort((a, b) => b - a))
   })
 
   it('labels the flow axis compactly for large amounts', () => {
-    render(
+    renderWithIntl(
       <BarPairChart
         months={[{ month: '2026-09', income: 8e7, expense: 7.5e7 }]}
         currency="ARS"
@@ -64,14 +65,14 @@ describe('BarPairChart & HorizonBars', () => {
   })
 
   it('labels the committed axis compactly in dollars', () => {
-    render(<HorizonBars months={[{ month: '2026-09', amount: 8e7 }]} currency="USD" ariaLabel="Comprometido" />)
+    renderWithIntl(<HorizonBars months={[{ month: '2026-09', amount: 8e7 }]} currency="USD" ariaLabel="Comprometido" />)
     expect(screen.getByText('US$80M')).toBeInTheDocument()
   })
 
   it('never draws an inverted bar in a card narrower than its padding', () => {
     vi.unstubAllGlobals()
     stubChartSize(40, 40)
-    const { container } = render(
+    const { container } = renderWithIntl(
       <>
         <BarPairChart months={months12} currency="ARS" ariaLabel="Flujo" />
         <HorizonBars months={committed12} currency="ARS" ariaLabel="Comprometido" />

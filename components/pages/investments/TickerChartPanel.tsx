@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTickerResearch } from '@/lib/hooks/useInvestments'
-import { formatCurrency } from '@/lib/format'
+import { formatCurrency, formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { AreaChart } from '@/components/charts/AreaChart'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,13 @@ import { Plus } from 'lucide-react'
 
 const RANGES = ['D30', 'D90', 'Y1', 'ALL'] as const
 type Range = (typeof RANGES)[number]
+
+const RANGE_LABEL_KEYS: Record<Range, string> = {
+  D30: 'market.ranges.D30',
+  D90: 'market.ranges.D90',
+  Y1: 'market.ranges.Y1',
+  ALL: 'market.ranges.all',
+}
 
 export interface TickerChartPanelProps {
   ticker: string
@@ -54,15 +61,13 @@ export function TickerChartPanel({ ticker, name, onBuy, className }: TickerChart
                       : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
                   )}
                 >
-                  {isPos ? '+' : ''}
-                  {data.variation.toFixed(2)}%
+                  {formatPercent(data.variation)}
                 </span>
               )}
             </div>
           )}
         </div>
 
-        {/* Range selectors & Buy button */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex gap-1 rounded-lg border border-border p-1 bg-muted/40">
             {RANGES.map((r) => (
@@ -77,7 +82,7 @@ export function TickerChartPanel({ ticker, name, onBuy, className }: TickerChart
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                {r === 'ALL' ? t('market.ranges.all') : r}
+                {t(RANGE_LABEL_KEYS[r])}
               </button>
             ))}
           </div>

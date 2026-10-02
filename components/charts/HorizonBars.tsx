@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import { plotRange, plotRangeDown } from './primitives/plotRange'
 import { ChartFrame, type ChartSize } from './primitives/ChartFrame'
@@ -21,6 +22,7 @@ const PADDING_X = 32
 const PADDING_Y = 32
 
 export function HorizonBars({ months, currency = 'ARS', ariaLabel, minHeight = 160, className = '' }: HorizonBarsProps) {
+  const t = useTranslations('common.chart')
   const hasData = months && months.length > 0
   const dataTable = hasData ? months.map((m) => ({ label: m.month, value: m.amount })) : undefined
 
@@ -31,7 +33,7 @@ export function HorizonBars({ months, currency = 'ARS', ariaLabel, minHeight = 1
           <HorizonPlot size={size} months={months} currency={currency} />
         ) : (
           <text x={size.width / 2} y={size.height / 2} textAnchor="middle" fill="currentColor" className="text-sm fill-muted-foreground">
-            Sin datos suficientes
+            {t('notEnoughData')}
           </text>
         )
       }

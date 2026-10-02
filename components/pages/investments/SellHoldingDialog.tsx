@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useDeleteHolding } from '@/lib/hooks/useInvestments'
-import { formatCurrency } from '@/lib/format'
+import { formatCurrency, formatQuantity } from '@/lib/format'
 
 export interface SellHoldingTarget {
   id: number
@@ -121,7 +121,7 @@ export function SellHoldingDialog({
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('holdings.availableQuantity')}:</span>
               <span className="font-mono font-bold text-foreground">
-                {holding.quantity} {tc('units')}
+                {formatQuantity(holding.quantity)} {tc('units')}
               </span>
             </div>
             <div className="flex justify-between">

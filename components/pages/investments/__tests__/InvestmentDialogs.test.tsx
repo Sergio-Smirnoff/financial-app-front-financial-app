@@ -222,4 +222,15 @@ describe('TickerSearchBox & MarketsTab', () => {
     expect(screen.getByRole('button', { name: /Registrar compra de GGAL/i })).toBeInTheDocument()
     expect(screen.getByText('SPY')).toBeInTheDocument()
   })
+
+  it('labels the chart ranges and formats the variations as shared percents', () => {
+    renderWithIntl(<MarketsTab initialTicker="GGAL" />)
+
+    for (const label of ['30D', '90D', '1A', 'TODO']) {
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+    }
+    expect(screen.queryByRole('button', { name: 'D30' })).not.toBeInTheDocument()
+    expect(screen.getByText('+3,45 %')).toBeInTheDocument()
+    expect(screen.getByText('+1,80 %')).toBeInTheDocument()
+  })
 })

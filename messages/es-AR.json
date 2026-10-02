@@ -82,7 +82,13 @@
     "noNotifications": "No hay notificaciones",
     "unread": "Sin leer",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "chart": {
+      "label": "Etiqueta / Fecha",
+      "value": "Valor",
+      "notEnoughData": "Sin datos suficientes",
+      "composition": "Composición"
+    }
   },
   "sections": {
     "unavailable": "No pudimos cargar esta sección",
@@ -381,6 +387,9 @@
       "priceChartAria": "Gráfico de cotización de {ticker}",
       "ranges": {
         "all": "TODO",
+        "D30": "30D",
+        "D90": "90D",
+        "Y1": "1A",
         "1M": "1M",
         "3M": "3M",
         "1A": "1A"
@@ -399,7 +408,7 @@
     "alerts": {
       "title": "Notificaciones",
       "unreadCount": "{count} sin leer",
-      "empty": "Sin alertas activas.",
+      "empty": "Sin notificaciones.",
       "hiddenCount": "{count, plural, one {# notificación más en la campana} other {# notificaciones más en la campana}}"
     },
     "holdings": {

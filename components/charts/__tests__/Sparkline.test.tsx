@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithIntl } from '@/test/intl'
 import { describe, it, expect } from 'vitest'
 import { Sparkline } from '../Sparkline'
 
@@ -20,7 +21,7 @@ const series12 = [
 
 describe('Sparkline', () => {
   it('renders no axes and no labels', () => {
-    render(<Sparkline series={series12} ariaLabel="Tendencia Comida" />)
+    renderWithIntl(<Sparkline series={series12} ariaLabel="Tendencia Comida" />)
     expect(screen.queryAllByTestId('tick-x')).toHaveLength(0)
     expect(screen.getByRole('img', { name: 'Tendencia Comida' })).toBeInTheDocument()
   })

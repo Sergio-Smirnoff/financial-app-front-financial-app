@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslations } from 'next-intl'
 import { LegendList, CompositionSlice } from './LegendList'
 
 export interface CompositionBarProps {
@@ -18,13 +19,14 @@ const DEFAULT_COLORS = [
 ]
 
 export function CompositionBar({ slices, className = '', showLegend = true }: CompositionBarProps) {
+  const t = useTranslations('common.chart')
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Track bar */}
       <div
         className="w-full h-3 rounded-full overflow-hidden flex bg-muted/30 p-0.5 gap-0.5"
         role="progressbar"
-        aria-label="Composición"
+        aria-label={t('composition')}
       >
         {slices.map((slice, i) => {
           const colorClass = slice.color || DEFAULT_COLORS[i % DEFAULT_COLORS.length]

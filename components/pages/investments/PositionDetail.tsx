@@ -11,7 +11,7 @@ import { KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { Button } from '@/components/ui/button'
 import { SellHoldingDialog } from './SellHoldingDialog'
 import { RecordHoldingDialog } from './RecordHoldingDialog'
-import type { MoneyView } from '@/lib/format'
+import { formatQuantity, type MoneyView } from '@/lib/format'
 import type { AssetType } from '@/types/investments'
 
 export interface PositionDetailData {
@@ -85,7 +85,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
       </div>
 
       <KpiStrip>
-        <KpiTile label={tc('quantity')} value={String(holding.quantity)} />
+        <KpiTile label={tc('quantity')} value={formatQuantity(holding.quantity)} />
         <KpiTile label={t('holdings.avgPrice')} value={<Money value={holding.avgPrice} />} />
         <KpiTile label={t('holdings.currentPrice')} value={<Money value={holding.currentPrice} />} />
         <KpiTile label={t('shared.totalValue')} value={<Money value={holding.totalValue} />} />

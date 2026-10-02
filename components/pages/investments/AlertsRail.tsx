@@ -27,7 +27,7 @@ export function AlertsRail({ section, isLoading, onRetry, className }: AlertsRai
   const t = useTranslations('investments')
   const alerts = section?.data ?? []
   const { ref, count, framed } = useFitCount<HTMLUListElement>(alerts.length)
-  const none = framed && count === 0
+  const none = framed && count === 0 && alerts.length > 0
   const unreadCount = alerts.filter((a) => !a.read).length
 
   return (

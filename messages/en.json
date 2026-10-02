@@ -82,7 +82,13 @@
     "noNotifications": "No notifications",
     "unread": "Unread",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "chart": {
+      "label": "Label / Date",
+      "value": "Value",
+      "notEnoughData": "Not enough data",
+      "composition": "Composition"
+    }
   },
   "sections": {
     "unavailable": "We couldn't load this section",
@@ -335,7 +341,7 @@
       "BOND": "Bonds",
       "CEDEAR": "CEDEARs",
       "STOCK": "Stocks",
-      "FCI": "Mutual funds (FCI)",
+      "FCI": "Mutual Funds (FCI)",
       "OTHER": "Other"
     },
     "composition": {
@@ -381,6 +387,9 @@
       "priceChartAria": "Price chart for {ticker}",
       "ranges": {
         "all": "ALL",
+        "D30": "30D",
+        "D90": "90D",
+        "Y1": "1Y",
         "1M": "1M",
         "3M": "3M",
         "1A": "1Y"
@@ -399,7 +408,7 @@
     "alerts": {
       "title": "Notifications",
       "unreadCount": "{count} unread",
-      "empty": "No active alerts.",
+      "empty": "No notifications.",
       "hiddenCount": "{count, plural, one {# more notification in the bell} other {# more notifications in the bell}}"
     },
     "holdings": {

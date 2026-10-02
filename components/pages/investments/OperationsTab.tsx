@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
 import { Money } from '@/components/ui-kit/money/Money'
+import { formatQuantity } from '@/lib/format'
 import type { Section } from '@/lib/api/bff/types'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
@@ -73,6 +74,7 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
       id: 'quantity',
       accessorKey: 'quantity',
       header: tc(COMMON_COLUMN_KEYS.quantity),
+      cell: ({ row }) => formatQuantity(row.original.quantity),
     },
     {
       id: 'amount',
@@ -82,7 +84,7 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
         <span className="flex flex-col items-end">
           <Money value={row.original.amount} />
           <small className="text-[11px] text-muted-foreground md:hidden">
-            {row.original.quantity} {tc('units')}
+            {formatQuantity(row.original.quantity)} {tc('units')}
           </small>
         </span>
       ),

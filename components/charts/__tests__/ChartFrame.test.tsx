@@ -1,5 +1,6 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
+import { renderWithIntl } from '@/test/intl'
 import { afterEach, describe, it, expect, vi } from 'vitest'
 import { ChartFrame } from '../primitives/ChartFrame'
 import { stubChartSize } from '@/test/chartSize'
@@ -13,7 +14,7 @@ describe('ChartFrame', () => {
 
   it('draws the svg at the measured pixel size, without viewBox stretching', () => {
     stubChartSize(480, 220)
-    render(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
+    renderWithIntl(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
     const svg = screen.getByRole('img', { name: 'Flujo' })
     expect(svg).toHaveAttribute('width', '480')
     expect(svg).toHaveAttribute('height', '220')
@@ -23,14 +24,14 @@ describe('ChartFrame', () => {
   })
 
   it('draws nothing until the container has been measured', () => {
-    render(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
+    renderWithIntl(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
     expect(screen.getByRole('img', { name: 'Flujo' })).toBeInTheDocument()
     expect(screen.queryByTestId('size')).not.toBeInTheDocument()
   })
 
   it('keeps its minHeight when the container has no height', () => {
     stubChartSize(400, 0)
-    const { container } = render(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
+    const { container } = renderWithIntl(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
     expect(container.querySelector('[data-chart-frame]')).toHaveStyle({ minHeight: '160px' })
     const svgHeight = Number(screen.getByRole('img', { name: 'Flujo' }).getAttribute('height'))
     expect(svgHeight).toBeGreaterThanOrEqual(160)
@@ -39,13 +40,23 @@ describe('ChartFrame', () => {
 
   it('honours a caller minHeight', () => {
     stubChartSize(400, 0)
-    const { container } = render(
+    const { container } = renderWithIntl(
       <ChartFrame ariaLabel="Flujo" minHeight={96}>
         {sizeProbe}
       </ChartFrame>
     )
     expect(container.querySelector('[data-chart-frame]')).toHaveStyle({ minHeight: '96px' })
     expect(screen.getByTestId('size')).toHaveTextContent('400x96')
+  })
+
+  it('heads the screen-reader table with translated column names', () => {
+    renderWithIntl(
+      <ChartFrame ariaLabel="Flujo" dataTable={[{ label: '2026-09', value: 10 }]}>
+        {sizeProbe}
+      </ChartFrame>
+    )
+    expect(screen.getByRole('columnheader', { name: 'Etiqueta / Fecha' })).toBeInTheDocument()
+    expect(screen.getByRole('columnheader', { name: 'Valor' })).toBeInTheDocument()
   })
 
   it('stops observing when it unmounts', () => {
@@ -58,7 +69,7 @@ describe('ChartFrame', () => {
         disconnect = disconnect
       }
     )
-    const { unmount } = render(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
+    const { unmount } = renderWithIntl(<ChartFrame ariaLabel="Flujo">{sizeProbe}</ChartFrame>)
     unmount()
     expect(disconnect).toHaveBeenCalledTimes(1)
   })

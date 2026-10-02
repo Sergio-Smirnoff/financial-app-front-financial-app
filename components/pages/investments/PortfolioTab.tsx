@@ -7,7 +7,7 @@ import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
-import { formatPercent } from '@/lib/format'
+import { formatPercent, formatQuantity } from '@/lib/format'
 import { useHoldings } from '@/lib/hooks/useInvestments'
 import type { AssetTypeSlice, InvestmentsKpis, PositionRow, Section } from '@/lib/api/bff/types'
 import type { Holding } from '@/types/investments'
@@ -155,7 +155,7 @@ export function PortfolioTab({
                                 </Link>
                               </td>
                               <td className="max-w-[14rem] truncate py-2 px-2" title={row.name}>{row.name}</td>
-                              <td className="py-2 px-2 text-right font-mono">{row.quantity}</td>
+                              <td className="py-2 px-2 text-right font-mono">{formatQuantity(row.quantity)}</td>
                               <td className="py-2 px-2 text-right font-mono"><Money value={row.avgCost} /></td>
                               <td className="py-2 px-2 text-right font-mono"><Money value={row.price} /></td>
                               <td className="py-2 px-2 text-right font-mono"><Money value={row.marketValue} /></td>
