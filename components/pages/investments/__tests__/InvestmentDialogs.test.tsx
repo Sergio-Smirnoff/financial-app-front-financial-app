@@ -310,6 +310,41 @@ describe('SellHoldingDialog', () => {
     expect(sellMutateAsync).not.toHaveBeenCalled()
   })
 
+  it('rejects more than six decimals in the quantity and the manual price', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    await user.clear(quantity)
+    await user.type(quantity, '1.1234567')
+    expect(screen.getByRole('alert')).toHaveTextContent('La cantidad admite hasta 6 decimales')
+    expect(screen.queryByTestId('sell-estimate')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
+
+    await user.clear(quantity)
+    await user.type(quantity, '1.123456')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    const price = screen.getByLabelText(/Precio de venta/)
+    await user.clear(price)
+    await user.type(price, '812.1234567')
+    expect(screen.getByRole('alert')).toHaveTextContent('El precio admite hasta 6 decimales')
+    expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
+
+    expect(sellMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('prefills the manual price with at most six decimals', async () => {
+    const user = userEvent.setup()
+    renderSell({ ...ggal, currentPrice: 812.123456789 })
+
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+
+    expect(screen.getByLabelText(/Precio de venta/)).toHaveValue(812.123457)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
   it('quotes bonds per 100 VN, starts the manual price empty and shows no estimate', async () => {
     const user = userEvent.setup()
     renderSell(al30)

@@ -55,7 +55,13 @@ const SELL_ERROR_KEYS: Readonly<Record<string, string>> = {
   finances_service_unavailable: 'holdings.sell.errors.financesUnavailable',
 }
 
+const MAX_DECIMALS = 6
+
 const toNumber = (raw: string): number => (raw.trim() === '' ? NaN : Number(raw))
+
+const exceedsDecimals = (raw: string): boolean => (raw.trim().split('.')[1] ?? '').length > MAX_DECIMALS
+
+const withMaxDecimals = (value: number): string => String(Number(value.toFixed(MAX_DECIMALS)))
 
 const sellErrorKey = (err: unknown): string =>
   (err instanceof ApiError && err.code && SELL_ERROR_KEYS[err.code]) || 'holdings.sell.errors.unknown'
@@ -104,7 +110,7 @@ export function SellHoldingDialog({
     initialisedFor.current = holdingId
     setQuantity(heldQuantity)
     setUseMarketPrice(true)
-    setManualPrice(!isBond && marketPrice != null ? String(marketPrice) : '')
+    setManualPrice(!isBond && marketPrice != null ? withMaxDecimals(marketPrice) : '')
     setSelectedCbu(availableAccounts[0]?.cbu ?? '')
   }, [open, holdingId, heldQuantity, isBond, marketPrice, availableAccounts])
 
@@ -117,10 +123,18 @@ export function SellHoldingDialog({
 
   const quantityError = !(qty > 0)
     ? t('holdings.sell.quantityPositive')
-    : qty > holding.quantity
-      ? t('holdings.sell.quantityExceeds', { max: formatQuantity(holding.quantity) })
-      : null
-  const priceError = !useMarketPrice && !(price != null && price > 0) ? t('holdings.sell.pricePositive') : null
+    : exceedsDecimals(quantity)
+      ? t('holdings.sell.quantityDecimals', { max: MAX_DECIMALS })
+      : qty > holding.quantity
+        ? t('holdings.sell.quantityExceeds', { max: formatQuantity(holding.quantity) })
+        : null
+  const priceError = useMarketPrice
+    ? null
+    : !(price != null && price > 0)
+      ? t('holdings.sell.pricePositive')
+      : exceedsDecimals(manualPrice)
+        ? t('holdings.sell.priceDecimals', { max: MAX_DECIMALS })
+        : null
   const error = quantityError ?? priceError
   const estimate = !isBond && !error && price != null ? qty * price : null
   const priceLabel = isBond ? t('holdings.sell.manualPricePerHundred') : t('holdings.sell.manualPrice')
