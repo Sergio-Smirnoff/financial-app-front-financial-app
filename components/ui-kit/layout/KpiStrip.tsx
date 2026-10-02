@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
+import { FitAmountGroup } from '@/components/ui-kit/money/FitAmount'
 
 // ---------------------------------------------------------------------------
 // KpiTile
@@ -20,7 +21,7 @@ export function KpiTile({ label, value, delta, hint, className }: KpiTileProps) 
       title={hint}
     >
       <span className="kicker">{label}</span>
-      <div className="text-2xl font-semibold n">{value}</div>
+      <div className="min-w-0 text-2xl font-semibold n">{value}</div>
       {delta !== undefined && (
         <div className="text-xs text-muted-foreground">{delta}</div>
       )}
@@ -39,7 +40,9 @@ export interface KpiStripProps {
 
 export function KpiStrip({ children, className }: KpiStripProps) {
   return (
-    <div className={cn('grid grid-cols-2 gap-3 sm:grid-cols-4', className)}>{children}</div>
+    <FitAmountGroup>
+      <div className={cn('grid grid-cols-2 gap-3 sm:grid-cols-4 @max-[976px]/page:grid-cols-2', className)}>{children}</div>
+    </FitAmountGroup>
   )
 }
 

@@ -31,4 +31,9 @@ describe('Money', () => {
     render(<Money value={null} />)
     expect(screen.getByText('—')).toBeInTheDocument()
   })
+
+  it('prints the compact figure with the same sign rules when compact', () => {
+    render(<Money value={{ amount: '88554220', currency: 'ARS', secondary: null }} tone="gain" compact />)
+    expect(screen.getByText('+$88,6M')).toBeInTheDocument()
+  })
 })

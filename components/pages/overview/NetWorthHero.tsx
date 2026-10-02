@@ -3,7 +3,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import { Money } from '@/components/ui-kit/money/Money'
+import { FitAmount } from '@/components/ui-kit/money/FitAmount'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
 import { AreaChart } from '@/components/charts/AreaChart'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -37,12 +37,14 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
         return (
           <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-6">
             <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="kicker">{t('netWorthKicker')}</span>
                 <div className="flex items-baseline gap-3 mt-1">
-                  {latestPoint && <Money value={latestPoint.value} className="text-3xl font-bold" />}
+                  {latestPoint && <FitAmount value={latestPoint.value} className="min-w-0 flex-1 text-3xl font-bold" />}
                   {data.delta?.pct != null && (
-                    <DeltaBadge pct={data.delta.pct} absolute={data.delta.amount} />
+                    <span className="shrink-0">
+                      <DeltaBadge pct={data.delta.pct} absolute={data.delta.amount} />
+                    </span>
                   )}
                 </div>
               </div>
