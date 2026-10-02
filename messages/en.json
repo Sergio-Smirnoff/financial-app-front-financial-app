@@ -334,6 +334,7 @@
     "tabs": {
       "markets": "Markets",
       "operations": "Operations",
+      "summary": "Summary",
       "kpiMarketValue": "Market value",
       "kpiPerformance": "Return",
       "positionsHeading": "Portfolio positions",

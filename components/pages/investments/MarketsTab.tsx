@@ -33,18 +33,20 @@ export function MarketsTab({ initialTicker }: MarketsTabProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-4 frame:h-full frame:min-h-0">
       <TickerSearchBox onSelect={handleSelect} />
 
-      {selectedTicker && (
-        <TickerChartPanel
-          ticker={selectedTicker}
-          name={selectedName}
-          onBuy={handleOpenBuy}
-        />
-      )}
-
-      <MarketDiscoveryCard onSelectTicker={handleSelect} />
+      <div data-testid="markets-grid" className="grid grid-cols-1 gap-4 @min-[852px]/page:grid-cols-[2fr_1fr] frame:min-h-0 frame:flex-1">
+        {selectedTicker && (
+          <TickerChartPanel
+            ticker={selectedTicker}
+            name={selectedName}
+            onBuy={handleOpenBuy}
+            className="frame:min-h-0"
+          />
+        )}
+        <MarketDiscoveryCard onSelectTicker={handleSelect} className="frame:min-h-0" />
+      </div>
 
       <RecordHoldingDialog
         open={buyDialogOpen}

@@ -19,9 +19,9 @@ export function MarketStrip({ quotes, observedAt, className }: MarketStripProps)
         </span>
         <FreshnessStamp observedAt={observedAt} />
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="flex gap-2 overflow-hidden max-md:flex-wrap">
         {quotes.map((q) => (
-          <QuotePill key={q.code} quote={q} className="shrink-0" />
+          <QuotePill key={q.code} quote={q} className="shrink-0 whitespace-nowrap" />
         ))}
       </div>
     </div>

@@ -334,6 +334,7 @@
     "tabs": {
       "markets": "Mercados",
       "operations": "Operaciones",
+      "summary": "Resumen",
       "kpiMarketValue": "Valor de mercado",
       "kpiPerformance": "Rendimiento",
       "positionsHeading": "Posiciones en Cartera",

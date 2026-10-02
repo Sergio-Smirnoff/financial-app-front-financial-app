@@ -16,9 +16,10 @@ export interface TickerChartPanelProps {
   ticker: string
   name?: string
   onBuy?: (ticker: string, currentPrice?: number | null, currency?: string) => void
+  className?: string
 }
 
-export function TickerChartPanel({ ticker, name, onBuy }: TickerChartPanelProps) {
+export function TickerChartPanel({ ticker, name, onBuy, className }: TickerChartPanelProps) {
   const t = useTranslations('investments')
   const [range, setRange] = useState<Range>('D90')
   const { data, isLoading, isError } = useTickerResearch(ticker, range)
@@ -31,7 +32,7 @@ export function TickerChartPanel({ ticker, name, onBuy }: TickerChartPanelProps)
   const isPos = (data?.variation ?? 0) >= 0
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 space-y-5 shadow-sm">
+    <div className={cn('rounded-2xl border border-border bg-card p-6 flex flex-col gap-5 shadow-sm', className)}>
       <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-border/60 pb-4">
         <div>
           <div className="flex items-center gap-3">
@@ -95,7 +96,7 @@ export function TickerChartPanel({ ticker, name, onBuy }: TickerChartPanelProps)
       </div>
 
       {isLoading && (
-        <div className="h-[220px] rounded-xl bg-muted animate-pulse" />
+        <div className="h-56 rounded-xl bg-muted animate-pulse frame:h-auto frame:flex-1" />
       )}
 
       {isError && (
@@ -103,12 +104,14 @@ export function TickerChartPanel({ ticker, name, onBuy }: TickerChartPanelProps)
       )}
 
       {data && series.length > 0 && (
-        <AreaChart
-          series={series}
-          currency={data.currency ?? 'ARS'}
-          ariaLabel={t('market.priceChartAria', { ticker })}
-          minHeight={96}
-        />
+        <div className="h-56 min-h-0 frame:h-auto frame:flex-1">
+          <AreaChart
+            series={series}
+            currency={data.currency ?? 'ARS'}
+            ariaLabel={t('market.priceChartAria', { ticker })}
+            minHeight={96}
+          />
+        </div>
       )}
     </div>
   )

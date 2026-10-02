@@ -54,7 +54,10 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
       </div>
 
       {isOpen && query.trim().length >= 1 && (
-        <div className="absolute z-30 mt-1.5 w-full rounded-xl border border-border bg-card shadow-xl overflow-hidden divide-y divide-border/60">
+        <div
+          data-testid="ticker-search-results"
+          className="absolute z-30 mt-1.5 max-h-[min(20rem,45dvh)] w-full overflow-y-auto rounded-xl border border-border bg-card shadow-xl divide-y divide-border/60"
+        >
           {visible.length > 0 ? (
             visible.map((item) => {
               const isPos = item.variation >= 0

@@ -30,16 +30,20 @@ const mockInvestments: InvestmentsBff = {
 }
 
 describe('useInvestmentsPage', () => {
-  it('keys query by currency and secondary', async () => {
+  it('keys query by currency, secondary and range', async () => {
     const spy = vi.spyOn(bff, 'getInvestments').mockResolvedValue(mockInvestments)
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
 
-    const { result } = renderHook(() => useInvestmentsPage({ currency: 'ARS', secondary: 'none' }), { wrapper })
+    const { result } = renderHook(
+      () => useInvestmentsPage({ currency: 'ARS', secondary: 'none', range: '1A' }),
+      { wrapper },
+    )
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith({ currency: 'ARS', secondary: 'none', range: '1A' })
+    expect(queryClient.getQueryData(['bff', 'investments', 'ARS', 'none', '1A'])).toEqual(mockInvestments)
   })
 })

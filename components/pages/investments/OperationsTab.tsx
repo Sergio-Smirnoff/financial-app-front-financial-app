@@ -62,6 +62,12 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
       id: 'ticker',
       accessorKey: 'ticker',
       header: tc(COMMON_COLUMN_KEYS.ticker),
+      cell: ({ row }) => (
+        <span className="flex flex-col">
+          <span className="font-mono font-semibold">{row.original.ticker}</span>
+          <small className="text-[11px] text-muted-foreground md:hidden">{row.original.date}</small>
+        </span>
+      ),
     },
     {
       id: 'quantity',
@@ -72,9 +78,22 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
       id: 'amount',
       accessorFn: (row) => row.amount,
       header: t(OPERATION_COLUMN_KEYS.amount),
-      cell: ({ getValue }) => <Money value={getValue() as any} />,
+      cell: ({ row }) => (
+        <span className="flex flex-col items-end">
+          <Money value={row.original.amount} />
+          <small className="text-[11px] text-muted-foreground md:hidden">
+            {row.original.quantity} {tc('units')}
+          </small>
+        </span>
+      ),
     },
   ]
+
+  const columnClassNames = {
+    date: 'max-md:hidden',
+    quantity: 'max-md:hidden',
+    amount: 'whitespace-nowrap text-right',
+  } as const
 
   return (
     <SectionState
@@ -82,20 +101,23 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
       isLoading={isLoading}
       onRetry={onRetry}
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
+      emptyTitle={t('operations.empty')}
+      emptyTestId="operations-empty"
     >
       {(operations) => (
-        <div className="space-y-4">
+        <div className="elev-sm rounded-xl border bg-card p-5 flex h-full min-h-0 flex-col gap-4 max-md:p-3.5 short:gap-2 short:p-4">
           <div className="flex items-center justify-between gap-4">
             <h3 className="section-head">{t('operations.heading')}</h3>
-            <p className="text-xs text-muted-foreground">{t('operations.subheading')}</p>
+            <p className="text-xs text-muted-foreground max-md:hidden">{t('operations.subheading')}</p>
           </div>
-          {operations.length === 0 ? (
-            <div data-testid="operations-empty" className="text-center py-8">
-              <p className="text-sm text-muted-foreground">{t('operations.empty')}</p>
-            </div>
-          ) : (
-            <ScrollTable columns={columns} rows={operations} caption={t('operations.caption')} maxHeight={350} />
-          )}
+          <ScrollTable
+            columns={columns}
+            rows={operations}
+            caption={t('operations.caption')}
+            maxHeight={350}
+            columnClassNames={columnClassNames}
+            className="max-md:max-h-none frame:max-h-none frame:min-h-0 frame:flex-1"
+          />
         </div>
       )}
     </SectionState>
