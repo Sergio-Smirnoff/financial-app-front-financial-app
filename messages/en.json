@@ -125,6 +125,7 @@
     "upcomingEmpty": "No upcoming payments.",
     "spendTitle": "Spending by Category",
     "spendEmpty": "No expenses recorded this month.",
+    "spendMore": "See categories →",
     "latestTitle": "Latest Transactions",
     "latest": {
       "caption": "Latest transactions",

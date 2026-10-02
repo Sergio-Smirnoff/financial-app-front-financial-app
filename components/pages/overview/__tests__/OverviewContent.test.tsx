@@ -196,6 +196,16 @@ describe('OverviewContent', () => {
     expect(screen.getByTestId('latest-more')).toHaveTextContent(esAR.overview.latest.seeAll)
   })
 
+  it('lets spend by category shrink to the rows that fit while upcoming payments stay whole', () => {
+    renderOverview(fixture)
+    const spend = screen.getByTestId('overview-rail-spend')
+    expect(spend).toHaveClass('flex', 'min-h-0', 'flex-col')
+    expect(spend).not.toHaveClass('frame:shrink-0')
+    expect(screen.getByTestId('spend-list')).toHaveClass('min-h-0', 'overflow-hidden')
+    expect(screen.getByTestId('overview-rail-latest')).toHaveClass('frame:min-h-15', 'frame:flex-1')
+    expect(screen.getByRole('link', { name: /Visa Galicia/ }).closest('.frame\\:shrink-0')).not.toBeNull()
+  })
+
   it('shows spend by category as amount and share, with no "/ max"', () => {
     renderOverview(fixture)
     expect(screen.getByText(/85\.000 · 36,9\s%/)).toBeInTheDocument()

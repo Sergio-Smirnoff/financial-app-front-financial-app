@@ -76,10 +76,10 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
                 >
                   {t('latest.more')}
                 </Link>
-                <div data-testid="overview-rail-spend" className="frame:shrink-0 short:hidden">
+                <div data-testid="overview-rail-spend" className="flex min-h-0 flex-col short:hidden">
                   <SpendByCategoryCard section={data?.spendByCategory} isLoading={isLoading} onRetry={refetch} />
                 </div>
-                <div data-testid="overview-rail-latest" className="flex min-h-0 flex-col frame:flex-1 short:hidden">
+                <div data-testid="overview-rail-latest" className="flex min-h-0 flex-col frame:min-h-15 frame:flex-1 short:hidden">
                   <LatestMovementsCard
                     section={data?.latestMovements}
                     isLoading={isLoading}

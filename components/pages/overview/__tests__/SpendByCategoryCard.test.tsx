@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import { NextIntlClientProvider } from 'next-intl'
 import esAR from '@/messages/es-AR.json'
 import { SpendByCategoryCard } from '../SpendByCategoryCard'
@@ -45,5 +45,79 @@ describe('SpendByCategoryCard', () => {
   it('treats a missing share as zero instead of inventing a cap', () => {
     renderCard([{ categoryId: 3, name: 'Otros', amount: { amount: '100', currency: 'ARS' } }])
     expect(screen.getByText(/100 · 0,0\s%/)).toBeInTheDocument()
+  })
+})
+
+describe('SpendByCategoryCard as a fit list', () => {
+  const categories: SpendCategoryItem[] = [
+    { categoryId: 1, name: 'Ocio', amount: { amount: '5000', currency: 'ARS' }, pct: 5 },
+    { categoryId: 2, name: 'Expensas', amount: { amount: '40000', currency: 'ARS' }, pct: 40 },
+    { categoryId: 3, name: 'Comida', amount: { amount: '25000', currency: 'ARS' }, pct: 25 },
+    { categoryId: 4, name: 'Transporte', amount: { amount: '15000', currency: 'ARS' }, pct: 15 },
+    { categoryId: 5, name: 'Salud', amount: { amount: '10000', currency: 'ARS' }, pct: 10 },
+    { categoryId: 6, name: 'Regalos', amount: { amount: '5000', currency: 'ARS' }, pct: 4.9 },
+    { categoryId: 7, name: 'Mascotas', amount: { amount: '100', currency: 'ARS' }, pct: 0.1 },
+  ]
+
+  function layout(listHeight: number, framed: boolean) {
+    vi.stubGlobal('matchMedia', (media: string) => ({
+      matches: framed,
+      media,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }))
+    vi.spyOn(Element.prototype, 'clientHeight', 'get').mockImplementation(function (this: Element) {
+      return this.getAttribute('data-testid') === 'spend-list' ? listHeight : 0
+    })
+    vi.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.parentElement ? Array.from(this.parentElement.children).indexOf(this) * 40 : 0
+    })
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.hidden ? 0 : 40
+    })
+  }
+
+  const shownNames = () =>
+    screen
+      .getAllByTestId('spend-row')
+      .filter((row) => !row.hidden)
+      .map((row) => row.getAttribute('data-name'))
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
+  it('shows only the largest categories that fully fit, and links to the rest', () => {
+    layout(130, true)
+    renderCard(categories)
+    expect(shownNames()).toEqual(['Expensas', 'Comida', 'Transporte'])
+    const more = screen.getByTestId('spend-more')
+    expect(more).toHaveAttribute('href', '/categories')
+    expect(more).toHaveTextContent(esAR.overview.spendMore)
+    expect(screen.getByTestId('spend-list')).toHaveClass('relative', 'min-h-0', 'overflow-hidden')
+  })
+
+  it('shows only the link when not one category fits', () => {
+    layout(30, true)
+    renderCard(categories)
+    expect(shownNames()).toEqual([])
+    expect(screen.getByTestId('spend-more')).toBeInTheDocument()
+    expect(screen.queryByText(esAR.overview.spendTitle)).not.toBeInTheDocument()
+  })
+
+  it('shows every category and no link when they all fit', () => {
+    layout(1000, true)
+    renderCard(categories)
+    expect(shownNames()).toHaveLength(7)
+    expect(screen.queryByTestId('spend-more')).not.toBeInTheDocument()
+    expect(screen.getByText(esAR.overview.spendTitle)).toBeInTheDocument()
+  })
+
+  it('shows the first six largest categories when the page is not framed', () => {
+    layout(130, false)
+    renderCard(categories)
+    expect(shownNames()).toEqual(['Expensas', 'Comida', 'Transporte', 'Salud', 'Ocio', 'Regalos'])
+    expect(screen.getByTestId('spend-more')).toBeInTheDocument()
   })
 })

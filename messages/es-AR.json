@@ -125,6 +125,7 @@
     "upcomingEmpty": "Sin vencimientos próximos.",
     "spendTitle": "Gastos por Categoría",
     "spendEmpty": "Sin gastos registrados este mes.",
+    "spendMore": "Ver categorías →",
     "latestTitle": "Últimos Movimientos",
     "latest": {
       "caption": "Últimos movimientos",
