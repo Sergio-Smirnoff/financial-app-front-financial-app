@@ -73,6 +73,8 @@
     "mainNavigation": "Navegación principal",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "collapseMenu": "Contraer menú",
+    "expandMenu": "Expandir menú",
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
     "unreadNotifications": "{count, plural, one {# notificación sin leer} other {# notificaciones sin leer}}",
