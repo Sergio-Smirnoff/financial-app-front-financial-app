@@ -195,4 +195,10 @@ describe('OverviewContent', () => {
     expect(row.querySelector('.whitespace-nowrap')).toHaveTextContent(/25\.000,00/)
     expect(screen.getByTestId('latest-more')).toHaveTextContent(esAR.overview.latest.seeAll)
   })
+
+  it('shows spend by category as amount and share, with no "/ max"', () => {
+    renderOverview(fixture)
+    expect(screen.getByText(/85\.000 · 36,9 %/)).toBeInTheDocument()
+    expect(screen.queryByText(/85000 \//)).not.toBeInTheDocument()
+  })
 })

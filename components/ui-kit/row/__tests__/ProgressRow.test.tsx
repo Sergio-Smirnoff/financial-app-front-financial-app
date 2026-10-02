@@ -26,6 +26,26 @@ describe('ProgressRow', () => {
     const nums = container.querySelectorAll('.n')
     expect(nums.length).toBeGreaterThan(0)
   })
+
+  it('shows amount and share with no cap', () => {
+    const { container } = render(<ProgressRow label="Comida" share={36.9} valueText="$ 85.000" />)
+    expect(screen.getByText('$ 85.000 · 36,9 %')).toBeInTheDocument()
+    expect(container).not.toHaveTextContent('/')
+    expect(container.querySelector('[data-over]')).not.toBeInTheDocument()
+    expect(container.querySelector('.bg-primary')).toHaveStyle({ width: '36.9%' })
+  })
+
+  it('never marks a share as over budget, even past 100', () => {
+    const { container } = render(<ProgressRow label="Comida" share={120} valueText="$ 1" />)
+    expect(container.querySelector('[data-over]')).not.toBeInTheDocument()
+    expect(container.querySelector('.bg-primary')).toHaveStyle({ width: '100%' })
+  })
+
+  it('keeps the capped figure for budgets', () => {
+    render(<ProgressRow label="Comida" value={80} max={100} caption="80 %" />)
+    expect(screen.getByText('80 / 100')).toBeInTheDocument()
+    expect(screen.getByText('80 %')).toBeInTheDocument()
+  })
 })
 
 describe('StatusDot', () => {

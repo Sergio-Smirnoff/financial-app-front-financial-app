@@ -4,6 +4,7 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
+import { formatMoney } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
 
@@ -30,22 +31,21 @@ export function SpendByCategoryCard({ section, isLoading, onRetry, className }: 
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => (
-        <div className={cn('elev-sm flex flex-col gap-4 rounded-xl border bg-card p-5', className)}>
+        <div className={cn('elev-sm flex flex-col gap-4 rounded-xl border bg-card p-5 frame:gap-1 frame:p-4', className)}>
           <h3 className="section-head">{t('spendTitle')}</h3>
-          <div className="space-y-3">
-            {data.map((item) => {
-              const val = parseFloat(item.amount?.amount || '0')
-              const pct = item.pct
-              return (
-                <ProgressRow
-                  key={item.categoryId}
-                  label={item.name ?? ''}
-                  value={val}
-                  max={val > 0 ? (val * 100) / Math.max(1, pct ?? 0) : 100}
-                  caption={pct != null ? `${pct.toFixed(1)} %` : undefined}
-                />
-              )
-            })}
+          <div className="space-y-3 frame:space-y-0">
+            {data.map((item) => (
+              <ProgressRow
+                key={item.categoryId}
+                label={item.name ?? ''}
+                share={item.pct ?? 0}
+                valueText={
+                  item.amount
+                    ? formatMoney({ amount: item.amount.amount, currency: item.amount.currency }, { decimals: 0 })
+                    : '—'
+                }
+              />
+            ))}
           </div>
         </div>
       )}

@@ -69,7 +69,7 @@ export function LatestMovementsCard({ section, isLoading, onRetry, className }: 
       skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => (
-        <div className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5', className)}>
+        <div className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 frame:gap-2 frame:p-4', className)}>
           <LatestList rows={data} />
         </div>
       )}
