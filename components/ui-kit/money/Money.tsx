@@ -1,4 +1,4 @@
-import { formatCompactMoney, type MoneyView } from '@/lib/format'
+import { formatCompactMoney, withTrueMinus, type MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface MoneyProps {
@@ -65,10 +65,7 @@ function formatSingleMoneyHelper(
         maximumFractionDigits: dec,
       }).format(num)
 
-  if (formatted.startsWith('-')) {
-    formatted = '−' + formatted.slice(1).trimStart()
-  } else if (handlePositiveSign && num > 0) {
-    formatted = '+' + formatted
-  }
+  if (formatted.startsWith('-')) return withTrueMinus(formatted)
+  if (handlePositiveSign && num > 0) formatted = '+' + formatted
   return formatted
 }

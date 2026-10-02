@@ -55,7 +55,7 @@ describe('ResumenTab', () => {
     expect(within(rows[0]).getByText('Bonos')).toBeInTheDocument()
     expect(within(rows[0]).getByText('2')).toBeInTheDocument()
     expect(within(rows[0]).getByText('45,3 %')).toBeInTheDocument()
-    expect(within(rows[2]).getByText(/−?-?16,67 %/)).toBeInTheDocument()
+    expect(within(rows[2]).getByText(/\u221216,67 %/)).toBeInTheDocument()
     expect(screen.getByText('20 posiciones')).toBeInTheDocument()
   })
 

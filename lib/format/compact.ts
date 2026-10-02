@@ -1,10 +1,11 @@
+import { MINUS } from './sign'
+
 const SCALES = [
   { floor: 1e9, divisor: 1e9, suffix: 'B' },
   { floor: 1e6, divisor: 1e6, suffix: 'M' },
   { floor: 1e3, divisor: 1e3, suffix: 'k' },
 ] as const
 
-const MINUS = '−'
 const NO_BREAK_SPACE = '\u00a0'
 const ALPHABETIC_CODE = /[A-Z]$/
 const DOLLAR_CODES: ReadonlySet<string> = new Set(['USD', 'USD_MEP', 'USD_CCL'])

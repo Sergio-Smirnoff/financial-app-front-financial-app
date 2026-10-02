@@ -83,9 +83,11 @@ export function OperationsTab({ section, isLoading, onRetry }: OperationsTabProp
       cell: ({ row }) => (
         <span className="flex flex-col items-end">
           <Money value={row.original.amount} />
-          <small className="text-[11px] text-muted-foreground md:hidden">
-            {formatQuantity(row.original.quantity)} {tc('units')}
-          </small>
+          {row.original.quantity != null && (
+            <small className="text-[11px] text-muted-foreground md:hidden">
+              {formatQuantity(row.original.quantity)} {tc('units')}
+            </small>
+          )}
         </span>
       ),
     },

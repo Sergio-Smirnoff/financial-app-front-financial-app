@@ -474,7 +474,7 @@
       "notificationsSection": "Variation alerts (optional)",
       "gainAlertPct": "Notify if gains exceed (%)",
       "lossAlertPct": "Stop-loss if drops exceed (%)",
-      "noAccountInBank": "You have no {currency} accounts in this bank",
+      "noAccountInBank": "You have no {currency} accounts",
       "assetType": {
         "STOCK": "Stock",
         "CEDEAR": "CEDEAR",

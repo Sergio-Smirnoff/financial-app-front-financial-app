@@ -474,7 +474,7 @@
       "notificationsSection": "Alertas de variación (opcional)",
       "gainAlertPct": "Avisarme si sube más de (%)",
       "lossAlertPct": "Stop-loss si cae más de (%)",
-      "noAccountInBank": "No tenés cuentas en {currency} en este banco",
+      "noAccountInBank": "No tenés cuentas en {currency}",
       "assetType": {
         "STOCK": "Acción",
         "CEDEAR": "CEDEAR",
