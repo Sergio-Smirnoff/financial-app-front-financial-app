@@ -70,6 +70,7 @@ export const investmentsApi = {
       ...h,
       assetType: h.assetType as Holding['assetType'],
       quantity: toNum(h.quantity),
+      exactQuantity: String(h.quantity ?? 0),
       avgPurchasePrice: toNum(h.avgPurchasePrice),
       notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
       notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),

@@ -20,6 +20,7 @@ export interface PositionDetailData {
   name: string
   assetType: string
   quantity: number
+  exactQuantity?: string
   avgPrice: MoneyView
   currentPrice: MoneyView
   totalValue: MoneyView
@@ -107,6 +108,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           name: holding.name,
           assetType: holding.assetType,
           quantity: holding.quantity,
+          exactQuantity: holding.exactQuantity,
           currency: holding.currentPrice.currency,
           currentPrice: parseNum(holding.currentPrice),
           avgPurchasePrice: parseNum(holding.avgPrice),

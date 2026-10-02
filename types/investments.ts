@@ -9,6 +9,7 @@ export interface Holding {
   name: string
   assetType: AssetType
   quantity: number
+  exactQuantity?: string
   avgPurchasePrice: number
   currency: string
   notifyGainThresholdPct: number | null
@@ -91,7 +92,7 @@ export interface CreateHoldingRequest {
 export type UpdateHoldingRequest = CreateHoldingRequest
 
 export interface SellHoldingRequest {
-  quantity: number
+  quantity: string
   price: number | null
   destinationCbu: string | null
 }

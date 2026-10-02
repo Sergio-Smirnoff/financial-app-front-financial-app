@@ -34,6 +34,7 @@ function sellTargetFor(row: PositionRow, holding: Holding): SellHoldingTarget {
     name: holding.name,
     assetType: holding.assetType,
     quantity: holding.quantity,
+    exactQuantity: holding.exactQuantity,
     currency: holding.currency,
     currentPrice: row.price?.currency === holding.currency ? amountOf(row.price) : null,
     avgPurchasePrice: holding.avgPurchasePrice,

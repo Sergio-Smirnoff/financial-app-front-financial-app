@@ -53,6 +53,7 @@ export default function HoldingDetailPage() {
       name: holding.name,
       assetType: holding.assetType,
       quantity: holding.quantity,
+      exactQuantity: holding.exactQuantity,
       avgPrice: { amount: String(holding.avgPurchasePrice), currency: holding.currency, secondary: null },
       currentPrice: { amount: String(curPrice), currency: holding.currency, secondary: null },
       totalValue: { amount: String(totalVal), currency: holding.currency, secondary: null },

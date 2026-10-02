@@ -11,4 +11,7 @@ describe('withTrueMinus', () => {
     expect(withTrueMinus('1,00')).toBe('1,00')
     expect(withTrueMinus('+1,00')).toBe('+1,00')
   })
+  it('only rewrites a leading hyphen', () => {
+    expect(withTrueMinus('A-B')).toBe('A-B')
+  })
 })

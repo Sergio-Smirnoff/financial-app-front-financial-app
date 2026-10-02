@@ -42,7 +42,7 @@ describe('AreaChart', () => {
   it('states date, value and delta on hover in text', async () => {
     renderWithIntl(<AreaChart series={series12} currency="ARS" ariaLabel="Patrimonio neto" />)
     await userEvent.hover(screen.getByTestId('hover-area'))
-    expect(screen.getByRole('tooltip')).toHaveTextContent(/\d{2}\/\d{2}.*\$.*[+−]/)
+    expect(screen.getByRole('tooltip')).toHaveTextContent(/\d{2}\/\d{2}.*\$.*\(0,0 %\)/)
   })
 
   it('states the delta with the shared percent formatter', () => {

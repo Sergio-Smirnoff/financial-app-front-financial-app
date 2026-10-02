@@ -1,6 +1,6 @@
 import { withTrueMinus } from './sign'
 
-const roundsToZero = (value: number, decimals: number) => Math.round(Math.abs(value) * 10 ** decimals) === 0
+export const roundsToZero = (value: number, decimals: number) => Math.round(Math.abs(value) * 10 ** decimals) === 0
 
 export function formatPercent(value: number, opts?: { decimals?: number; signed?: boolean }): string {
   const decimals = opts?.decimals ?? 2

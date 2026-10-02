@@ -24,4 +24,10 @@ describe('DeltaBadge', () => {
     )
     expect(screen.getByText(/500,00/)).toBeInTheDocument()
   })
+  it('stays neutral when the percentage rounds to zero', () => {
+    const { container } = render(<DeltaBadge pct={-0.004} />)
+    expect(screen.getByText('0,00 %')).toBeInTheDocument()
+    expect(screen.getByText('→')).toBeInTheDocument()
+    expect(container.firstChild).toHaveClass('tag-neutral')
+  })
 })

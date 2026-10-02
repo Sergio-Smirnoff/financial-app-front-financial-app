@@ -23,8 +23,7 @@ export function HoverMarker({
   deltaText,
   isPositiveDelta = true
 }: HoverMarkerProps) {
-  const deltaSymbol = deltaText ? (isPositiveDelta ? '+' : '−') : ''
-  const displayDelta = deltaText ? (deltaText.startsWith('+') || deltaText.startsWith('-') || deltaText.startsWith('−') ? deltaText : `${deltaSymbol}${deltaText}`) : ''
+  const displayDelta = deltaText ?? ''
 
   return (
     <g className="hover-marker pointer-events-none">

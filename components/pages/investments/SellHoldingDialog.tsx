@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
@@ -35,6 +35,7 @@ export interface SellHoldingTarget {
   name?: string
   assetType?: string
   quantity: number
+  exactQuantity?: string
   currency?: string
   currentPrice?: number | null
   avgPurchasePrice?: number | null
@@ -54,7 +55,7 @@ const SELL_ERROR_KEYS: Readonly<Record<string, string>> = {
   finances_service_unavailable: 'holdings.sell.errors.financesUnavailable',
 }
 
-const toNumber = (raw: string): number => (raw.trim() === '' ? NaN : Number(raw.replace(',', '.')))
+const toNumber = (raw: string): number => (raw.trim() === '' ? NaN : Number(raw))
 
 const sellErrorKey = (err: unknown): string =>
   (err instanceof ApiError && err.code && SELL_ERROR_KEYS[err.code]) || 'holdings.sell.errors.unknown'
@@ -79,7 +80,8 @@ export function SellHoldingDialog({
   const isBond = holding?.assetType === 'BOND'
   const marketPrice = holding?.currentPrice ?? null
   const holdingId = holding?.id
-  const heldQuantity = holding?.quantity
+  const heldQuantity = holding == null ? null : (holding.exactQuantity ?? String(holding.quantity))
+  const initialisedFor = useRef<number | null>(null)
 
   const availableAccounts = useMemo(() => {
     return banks.flatMap((b) =>
@@ -88,15 +90,23 @@ export function SellHoldingDialog({
   }, [banks, currency])
 
   useEffect(() => {
-    if (open) setSelectedCbu(availableAccounts[0]?.cbu ?? '')
-  }, [open, availableAccounts])
+    if (open && !availableAccounts.some((a) => a.cbu === selectedCbu)) {
+      setSelectedCbu(availableAccounts[0]?.cbu ?? '')
+    }
+  }, [open, availableAccounts, selectedCbu])
 
   useEffect(() => {
-    if (!open || heldQuantity == null) return
-    setQuantity(String(heldQuantity))
+    if (!open || holdingId == null || heldQuantity == null) {
+      initialisedFor.current = null
+      return
+    }
+    if (initialisedFor.current === holdingId) return
+    initialisedFor.current = holdingId
+    setQuantity(heldQuantity)
     setUseMarketPrice(true)
     setManualPrice(!isBond && marketPrice != null ? String(marketPrice) : '')
-  }, [open, holdingId, heldQuantity, isBond, marketPrice])
+    setSelectedCbu(availableAccounts[0]?.cbu ?? '')
+  }, [open, holdingId, heldQuantity, isBond, marketPrice, availableAccounts])
 
   if (!holding) return null
 
@@ -130,7 +140,7 @@ export function SellHoldingDialog({
       const sale = await sellMutation.mutateAsync({
         id: holding.id,
         body: {
-          quantity: qty,
+          quantity: sellsEverything && heldQuantity != null ? heldQuantity : String(qty),
           price: useMarketPrice ? null : price,
           destinationCbu,
         },
@@ -203,7 +213,7 @@ export function SellHoldingDialog({
                 onChange={(e) => setQuantity(e.target.value)}
                 className="h-9 font-mono"
               />
-              <Button type="button" variant="outline" size="sm" onClick={() => setQuantity(String(holding.quantity))}>
+              <Button type="button" variant="outline" size="sm" onClick={() => heldQuantity != null && setQuantity(heldQuantity)}>
                 {t('holdings.sell.all')}
               </Button>
             </div>
@@ -219,7 +229,7 @@ export function SellHoldingDialog({
                 <span className="text-xs font-medium text-muted-foreground">{priceLabel}</span>
                 <div
                   data-testid="sell-market-price-value"
-                  aria-readonly="true"
+                  aria-describedby="sell-market-locked-hint"
                   title={t('holdings.sell.marketLockedHint')}
                   className="flex h-9 cursor-not-allowed items-center justify-between rounded-md border border-dashed border-border bg-muted px-3"
                 >
@@ -231,6 +241,9 @@ export function SellHoldingDialog({
                     {t('holdings.sell.marketLocked')}
                   </span>
                 </div>
+                <span id="sell-market-locked-hint" className="sr-only">
+                  {t('holdings.sell.marketLockedHint')}
+                </span>
                 <p className="text-[11px] text-muted-foreground">{t('holdings.sell.marketPriceHint')}</p>
               </div>
             ) : (
@@ -288,7 +301,7 @@ export function SellHoldingDialog({
               </Select>
             ) : (
               <p className="text-[11px] text-amber-500">
-                {t('holdings.noAccountInBank', { currency })}
+                {t('holdings.noAccountInCurrency', { currency })}
               </p>
             )}
             <p className="text-[11px] text-muted-foreground">

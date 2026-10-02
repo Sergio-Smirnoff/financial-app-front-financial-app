@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { MINUS } from '@/lib/format'
 
 export interface Quote {
   code: string
@@ -28,8 +29,8 @@ export function QuotePill({ quote, className }: QuotePillProps) {
 
   const variationLabel =
     unit === 'POINTS'
-      ? `${isNegative ? '−' : '+'}${abs} pts`
-      : `${isNegative ? '−' : '+'}${absFormatted} %`
+      ? `${isNegative ? MINUS : '+'}${abs} pts`
+      : `${isNegative ? MINUS : '+'}${absFormatted} %`
 
   return (
     <div
