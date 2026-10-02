@@ -11,11 +11,11 @@ import fixture from '@/lib/api/bff/__fixtures__/investments.json'
 import type { InvestmentsBff } from '@/lib/api/bff/types'
 import type { Holding } from '@/types/investments'
 
-const { holdingsMock, createMutateAsync, updateMutateAsync, deleteMutateAsync } = vi.hoisted(() => ({
-  holdingsMock: { data: [] as Holding[] },
+const { holdingsMock, createMutateAsync, updateMutateAsync, sellMutateAsync } = vi.hoisted(() => ({
+  holdingsMock: { data: [] as Holding[], isError: false, refetch: vi.fn() },
   createMutateAsync: vi.fn(async () => ({})),
   updateMutateAsync: vi.fn(async () => ({})),
-  deleteMutateAsync: vi.fn(async () => undefined),
+  sellMutateAsync: vi.fn(),
 }))
 
 vi.mock('@/lib/hooks/useInvestmentsPage', () => ({
@@ -36,10 +36,10 @@ vi.mock('@/lib/hooks/useBanks', () => ({
 }))
 
 vi.mock('@/lib/hooks/useInvestments', () => ({
-  useHoldings: () => ({ data: holdingsMock.data, isLoading: false }),
+  useHoldings: () => ({ data: holdingsMock.data, isLoading: false, isError: holdingsMock.isError, refetch: holdingsMock.refetch }),
   useCreateHolding: () => ({ mutateAsync: createMutateAsync, isPending: false }),
   useUpdateHolding: () => ({ mutateAsync: updateMutateAsync, isPending: false }),
-  useDeleteHolding: () => ({ mutateAsync: deleteMutateAsync, isPending: false }),
+  useSellHolding: () => ({ mutateAsync: sellMutateAsync, isPending: false }),
   useTickerSearch: () => ({ data: [], isLoading: false }),
   useTickerResearch: (ticker: string | null) => ({
     data: ticker
@@ -88,6 +88,7 @@ function renderInvestments(
 beforeEach(() => {
   vi.clearAllMocks()
   holdingsMock.data = []
+  holdingsMock.isError = false
 })
 
 describe('InvestmentsContent renders the real contract', () => {
@@ -376,6 +377,22 @@ describe('Cartera', () => {
     const dialog = await screen.findByRole('dialog')
     expect(within(dialog).getByText(/Vender posición de GGAL/)).toBeInTheDocument()
     expect(dialog.textContent).not.toMatch(/US\$/)
-    expect(dialog.textContent).toMatch(/\$\s?1\.200\.000,00/)
+    expect(within(dialog).getByText('Costo promedio').parentElement).toHaveTextContent(/\$\s?12\.000,00/)
+    expect(within(dialog).queryByTestId('sell-estimate')).not.toBeInTheDocument()
+  })
+
+  it('explains why Vender is disabled when the holdings fail to load and retries them', async () => {
+    const user = userEvent.setup()
+    holdingsMock.isError = true
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    const notice = 'No pudimos cargar tus tenencias, así que todavía no podés vender.'
+    const sell = within(within(groupOf('STOCK')).getByTestId('position-row')).getByRole('button', { name: 'Vender' })
+    expect(sell).toBeDisabled()
+    expect(sell).toHaveAttribute('title', notice)
+    expect(sell).toHaveAccessibleDescription(notice)
+
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }))
+    expect(holdingsMock.refetch).toHaveBeenCalled()
   })
 })

@@ -105,6 +105,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           id: holding.id,
           ticker: holding.ticker,
           name: holding.name,
+          assetType: holding.assetType,
           quantity: holding.quantity,
           currency: holding.currentPrice.currency,
           currentPrice: parseNum(holding.currentPrice),

@@ -3,6 +3,8 @@ import type {
   Holding,
   CreateHoldingRequest,
   UpdateHoldingRequest,
+  SellHoldingRequest,
+  HoldingSale,
   TickerSearchResult,
   TickerResearch,
   MarketDiscovery,
@@ -80,8 +82,8 @@ export const investmentsApi = {
   updateHolding: (id: number, data: UpdateHoldingRequest) =>
     api.put<Holding>(`${BASE}/holdings/${id}`, data),
 
-  deleteHolding: (id: number, destinationCbu?: string) =>
-    api.delete<void>(`${BASE}/holdings/${id}${destinationCbu ? `?destinationCbu=${encodeURIComponent(destinationCbu)}` : ''}`),
+  sellHolding: (id: number, body: SellHoldingRequest) =>
+    api.post<HoldingSale>(`${BASE}/holdings/${id}/sell`, body),
 
   getMarketDiscovery: async (limit: number = 5): Promise<MarketDiscovery> => {
     const raw = await api.get<RawMarketDiscovery>(`${BASE}/market/discovery?limit=${limit}`)

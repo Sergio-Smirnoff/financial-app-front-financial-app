@@ -32,6 +32,7 @@ function sellTargetFor(row: PositionRow, holding: Holding): SellHoldingTarget {
     id: holding.id,
     ticker: holding.ticker,
     name: holding.name,
+    assetType: holding.assetType,
     quantity: holding.quantity,
     currency: holding.currency,
     currentPrice: row.price?.currency === holding.currency ? amountOf(row.price) : null,
@@ -49,7 +50,7 @@ export function PortfolioTab({
 }: PortfolioTabProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
-  const { data: holdings } = useHoldings()
+  const { data: holdings, isError: holdingsFailed, refetch: refetchHoldings } = useHoldings()
   const [collapsed, setCollapsed] = useState<ReadonlySet<GroupKey>>(new Set())
   const [selling, setSelling] = useState<SellHoldingTarget | null>(null)
 
@@ -77,6 +78,14 @@ export function PortfolioTab({
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col px-5 pb-4">
+        {holdingsFailed && (
+          <div className="mb-2 flex items-center justify-between gap-3 rounded-md border border-border bg-muted/60 px-3 py-1.5 text-xs">
+            <span id="holdings-unavailable" className="text-muted-foreground">{t('holdings.sell.unavailable')}</span>
+            <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => refetchHoldings()}>
+              {tc('retry')}
+            </Button>
+          </div>
+        )}
         <SectionState
           section={positionsSection}
           isLoading={isLoading}
@@ -167,6 +176,8 @@ export function PortfolioTab({
                                   size="sm"
                                   variant="ghost"
                                   disabled={!holding}
+                                  title={holdingsFailed ? t('holdings.sell.unavailable') : undefined}
+                                  aria-describedby={holdingsFailed ? 'holdings-unavailable' : undefined}
                                   className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
                                   onClick={() => holding && setSelling(sellTargetFor(row, holding))}
                                 >

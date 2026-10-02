@@ -90,6 +90,22 @@ export interface CreateHoldingRequest {
 
 export type UpdateHoldingRequest = CreateHoldingRequest
 
+export interface SellHoldingRequest {
+  quantity: number
+  price: number | null
+  destinationCbu: string | null
+}
+
+export interface HoldingSale {
+  holdingId: number
+  soldQuantity: string
+  remainingQuantity: string
+  proceeds: string
+  bookedAmount: string
+  currency: string
+  closed: boolean
+}
+
 export interface TickerSearchResult {
   ticker: string
   name?: string

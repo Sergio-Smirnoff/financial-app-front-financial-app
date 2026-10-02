@@ -17,7 +17,7 @@ vi.mock('@/lib/hooks/useBanks', () => ({
 
 vi.mock('@/lib/hooks/useInvestments', () => ({
   useCreateHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useDeleteHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useSellHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useHoldings: () => ({ data: [], isLoading: false }),
   useTickerResearch: () => ({ data: null, isLoading: false }),
 }))

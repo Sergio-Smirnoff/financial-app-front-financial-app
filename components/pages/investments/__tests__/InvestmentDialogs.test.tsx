@@ -7,12 +7,24 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import esAR from '@/messages/es-AR.json'
 import { RecordHoldingDialog } from '../RecordHoldingDialog'
 import { SellHoldingDialog } from '../SellHoldingDialog'
+import { ApiError } from '@/lib/api/client'
 import { TickerSearchBox } from '../TickerSearchBox'
 import { MarketsTab } from '../MarketsTab'
 
-const { createMutateAsync, deleteMutateAsync } = vi.hoisted(() => ({
+const { createMutateAsync, sellMutateAsync, sellState, banksState, toastSuccess, toastError } = vi.hoisted(() => ({
   createMutateAsync: vi.fn(async () => ({})),
-  deleteMutateAsync: vi.fn(async () => undefined),
+  sellMutateAsync: vi.fn(async () => ({
+    holdingId: 10, soldQuantity: '100', remainingQuantity: '0', proceeds: '80000',
+    bookedAmount: '79600', currency: 'ARS', closed: true,
+  })),
+  sellState: { isPending: false },
+  banksState: { withAccounts: true },
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}))
+
+vi.mock('sonner', () => ({
+  toast: { success: toastSuccess, error: toastError },
 }))
 
 vi.mock('@/lib/hooks/useBanks', () => ({
@@ -21,10 +33,12 @@ vi.mock('@/lib/hooks/useBanks', () => ({
       {
         bankNumber: '072',
         name: 'Banco Santander',
-        accounts: [
-          { cbu: '0720000000000000000011', name: 'Cuenta Corriente', currency: 'ARS', balance: '100000' },
-          { cbu: '0720000000000000000022', name: 'Caja Ahorro USD', currency: 'USD', balance: '500' },
-        ],
+        accounts: banksState.withAccounts
+          ? [
+              { cbu: '0720000000000000000011', name: 'Cuenta Corriente', currency: 'ARS', balance: '100000' },
+              { cbu: '0720000000000000000022', name: 'Caja Ahorro USD', currency: 'USD', balance: '500' },
+            ]
+          : [],
       },
     ],
     isLoading: false,
@@ -36,9 +50,9 @@ vi.mock('@/lib/hooks/useInvestments', () => ({
     mutateAsync: createMutateAsync,
     isPending: false,
   }),
-  useDeleteHolding: () => ({
-    mutateAsync: deleteMutateAsync,
-    isPending: false,
+  useSellHolding: () => ({
+    mutateAsync: sellMutateAsync,
+    isPending: sellState.isPending,
   }),
   useTickerSearch: (q: string) => ({
     data: q.length > 0 ? [
@@ -150,50 +164,253 @@ describe('RecordHoldingDialog', () => {
 })
 
 describe('SellHoldingDialog', () => {
+  const ggal = {
+    id: 10,
+    ticker: 'GGAL',
+    name: 'Grupo Financiero Galicia',
+    assetType: 'STOCK',
+    quantity: 100,
+    currency: 'ARS',
+    currentPrice: 800,
+    avgPurchasePrice: 650,
+  }
+  const al30 = {
+    id: 11,
+    ticker: 'AL30',
+    name: 'Bonos Rep. Arg. 2030',
+    assetType: 'BOND',
+    quantity: 1000,
+    currency: 'ARS',
+    currentPrice: 80216,
+    avgPurchasePrice: 700,
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+    sellState.isPending = false
+    banksState.withAccounts = true
   })
 
-  it('renders holding summary, liquidation value and confirms sell', async () => {
-    const user = userEvent.setup()
-    const onOpenChange = vi.fn()
-    const onSuccess = vi.fn()
-
-    const target = {
-      id: 10,
-      ticker: 'AL30',
-      name: 'Bonos Rep. Arg.',
-      quantity: 100,
-      currency: 'ARS',
-      currentPrice: 800,
-      avgPurchasePrice: 650,
-    }
-
+  function renderSell(holding: typeof ggal, onOpenChange = vi.fn(), onSuccess = vi.fn()) {
     renderWithIntl(
-      <SellHoldingDialog
-        holding={target}
-        open={true}
-        onOpenChange={onOpenChange}
-        onSuccess={onSuccess}
-      />
+      <SellHoldingDialog holding={holding} open={true} onOpenChange={onOpenChange} onSuccess={onSuccess} />
     )
+    return { onOpenChange, onSuccess }
+  }
 
-    expect(screen.getByText(/Vender posición de AL30/i)).toBeInTheDocument()
-    expect(screen.getByText(/100 unidades/i)).toBeInTheDocument()
+  it('sells every unit at the market price by default', async () => {
+    const user = userEvent.setup()
+    const { onOpenChange, onSuccess } = renderSell(ggal)
 
-    const confirmBtn = screen.getByRole('button', { name: /Confirmar venta y liquidar/i })
-    await user.click(confirmBtn)
+    expect(screen.getByText(/Vender posición de GGAL/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue(100)
+    expect(screen.getByRole('switch', { name: 'Precio de mercado' })).toBeChecked()
+    expect(screen.getByTestId('sell-estimate')).toHaveTextContent(/80\.000,00/)
+
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
 
     await waitFor(() => {
-      expect(deleteMutateAsync).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: 10,
-          destinationCbu: '0720000000000000000011',
-        })
-      )
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: 100, price: null, destinationCbu: '0720000000000000000011' },
+      })
       expect(onOpenChange).toHaveBeenCalledWith(false)
       expect(onSuccess).toHaveBeenCalled()
     })
+  })
+
+  it('shows the market price read-only while the switch is on', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const locked = screen.getByTestId('sell-market-price-value')
+    expect(locked).toHaveAttribute('aria-readonly', 'true')
+    expect(locked).toHaveTextContent(/800,00/)
+    expect(locked).toHaveTextContent('Mercado')
+    expect(screen.queryByLabelText(/Precio de venta/)).not.toBeInTheDocument()
+    expect(screen.getAllByRole('spinbutton')).toHaveLength(1)
+
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+
+    expect(screen.queryByTestId('sell-market-price-value')).not.toBeInTheDocument()
+    expect(screen.getByLabelText(/Precio de venta/)).toBeEnabled()
+  })
+
+  it('sells part of a holding at the market price', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    await user.clear(quantity)
+    await user.type(quantity, '40')
+
+    expect(screen.getByTestId('sell-estimate')).toHaveTextContent(/32\.000,00/)
+    await user.click(screen.getByRole('button', { name: 'Vender 40 y liquidar' }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: 40, price: null, destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('sells at a manual price when the market switch is off', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    expect(screen.queryByLabelText(/Precio de venta/)).not.toBeInTheDocument()
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+
+    const price = screen.getByLabelText(/Precio de venta/)
+    expect(price).toHaveValue(800)
+    await user.clear(price)
+    await user.type(price, '812.5')
+
+    expect(screen.getByTestId('sell-estimate')).toHaveTextContent(/81\.250,00/)
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: 100, price: 812.5, destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('rejects a quantity above the holding and a manual price of zero', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    await user.clear(quantity)
+    await user.type(quantity, '150')
+    expect(screen.getByRole('alert')).toHaveTextContent('No podés vender más de 100')
+    expect(screen.getByRole('button', { name: 'Vender 150 y liquidar' })).toBeDisabled()
+
+    await user.clear(quantity)
+    await user.type(quantity, '10')
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    const price = screen.getByLabelText(/Precio de venta/)
+    await user.clear(price)
+    await user.type(price, '0')
+    expect(screen.getByRole('alert')).toHaveTextContent('El precio debe ser mayor a cero')
+    expect(screen.getByRole('button', { name: 'Vender 10 y liquidar' })).toBeDisabled()
+
+    expect(sellMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('quotes bonds per 100 VN, starts the manual price empty and shows no estimate', async () => {
+    const user = userEvent.setup()
+    renderSell(al30)
+
+    expect(screen.getByTestId('sell-bond-note')).toHaveTextContent('cada 100 VN')
+    expect(screen.queryByTestId('sell-estimate')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    const price = screen.getByLabelText('Precio de venta (cada 100 VN)')
+    expect(price).toHaveValue(null)
+    await user.type(price, '80500')
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 11,
+        body: { quantity: 1000, price: 80500, destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('reports the booked amount from the response after a full sale', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('Vendiste toda tu posición de GGAL', {
+        description: expect.stringMatching(/^Se acreditaron \$\s?79\.600,00\.$/),
+      }),
+    )
+  })
+
+  it('says nothing was credited when the fees take the whole sale', async () => {
+    const user = userEvent.setup()
+    sellMutateAsync.mockResolvedValueOnce({
+      holdingId: 10, soldQuantity: '10.0000', remainingQuantity: '90.0000', proceeds: '8000',
+      bookedAmount: '0', currency: 'ARS', closed: false,
+    })
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    await user.clear(quantity)
+    await user.type(quantity, '10')
+    await user.click(screen.getByRole('button', { name: 'Vender 10 y liquidar' }))
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('Vendiste 10 de GGAL', {
+        description: 'No se acreditó dinero: las comisiones cubren todo el monto de la venta.',
+      }),
+    )
+  })
+
+  it('says nothing was credited when there is no account in the holding currency', async () => {
+    const user = userEvent.setup()
+    banksState.withAccounts = false
+    sellMutateAsync.mockResolvedValueOnce({
+      holdingId: 10, soldQuantity: '100', remainingQuantity: '0', proceeds: '80000',
+      bookedAmount: '0', currency: 'ARS', closed: true,
+    })
+    renderSell(ggal)
+
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() => {
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: 100, price: null, destinationCbu: null },
+      })
+      expect(toastSuccess).toHaveBeenCalledWith('Vendiste toda tu posición de GGAL', {
+        description: 'No se acreditó dinero en ninguna cuenta.',
+      })
+    })
+  })
+
+  it('explains a sale above the current holding and keeps the dialog open', async () => {
+    const user = userEvent.setup()
+    sellMutateAsync.mockRejectedValueOnce(new ApiError('too many', 422, 'holding_sale_exceeds_quantity'))
+    const { onOpenChange } = renderSell(ggal)
+
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('No pudimos vender GGAL', {
+        description: 'Ya no tenés esa cantidad de GGAL. Actualizá la página y probá de nuevo.',
+      }),
+    )
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(toastSuccess).not.toHaveBeenCalled()
+  })
+
+  it('falls back to a generic message for an unknown error', async () => {
+    const user = userEvent.setup()
+    sellMutateAsync.mockRejectedValueOnce(new Error('boom'))
+    renderSell(ggal)
+
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith('No pudimos vender GGAL', {
+        description: 'Probá de nuevo en un momento.',
+      }),
+    )
+  })
+
+  it('disables the confirm button while the sale is pending', () => {
+    sellState.isPending = true
+    renderSell(ggal)
+
+    expect(screen.getByRole('button', { name: 'Vendiendo...' })).toBeDisabled()
   })
 })
 
