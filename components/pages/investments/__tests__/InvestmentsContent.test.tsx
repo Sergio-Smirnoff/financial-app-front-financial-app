@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -9,6 +9,7 @@ import esAR from '@/messages/es-AR.json'
 import { InvestmentsContent } from '../InvestmentsContent'
 import fixture from '@/lib/api/bff/__fixtures__/investments.json'
 import type { InvestmentsBff } from '@/lib/api/bff/types'
+import { useCarteraViewStore } from '@/lib/store/carteraView.store'
 import type { Holding } from '@/types/investments'
 
 const { holdingsMock, createMutateAsync, updateMutateAsync, sellMutateAsync } = vi.hoisted(() => ({
@@ -394,5 +395,155 @@ describe('Cartera', () => {
 
     await user.click(screen.getByRole('button', { name: 'Reintentar' }))
     expect(holdingsMock.refetch).toHaveBeenCalled()
+  })
+})
+
+const tickers = () => screen.getAllByTestId('position-row').map((r) => within(r).getByRole('link').textContent)
+
+describe('Cartera view options', () => {
+  const resetView = () => {
+    useCarteraViewStore.getState().reset()
+    localStorage.clear()
+  }
+
+  beforeEach(resetView)
+  afterEach(() => {
+    resetView()
+    vi.unstubAllGlobals()
+  })
+
+  it('switches to one table with a type column and type chips', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    expect(screen.queryByRole('columnheader', { name: esAR.investments.cartera.colType })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: esAR.investments.cartera.view }))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.groupByType }))
+    await user.keyboard('{Escape}')
+
+    expect(screen.queryAllByTestId('position-group')).toHaveLength(0)
+    expect(screen.getByRole('columnheader', { name: esAR.investments.cartera.colType })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: esAR.investments.groups.BOND }))
+    expect(tickers()).toEqual(['AL30', 'GD30'])
+    expect(screen.getByTestId('cartera-filter-summary')).toHaveTextContent('Mostrando 2 de 4 posiciones')
+  })
+
+  it('hides a column from the header and from every row', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    const cellsBefore = screen.getAllByTestId('position-row')[0].children.length
+
+    await user.click(screen.getByRole('button', { name: esAR.investments.cartera.view }))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: esAR.investments.tabs.colAvgCost }))
+    await user.keyboard('{Escape}')
+
+    expect(screen.queryByRole('columnheader', { name: esAR.investments.tabs.colAvgCost })).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('position-row')[0].children).toHaveLength(cellsBefore - 1)
+  })
+
+  it('sorts the flat table by total value, largest first', async () => {
+    const user = userEvent.setup()
+    useCarteraViewStore.getState().setGrouped(false)
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    await user.click(screen.getByRole('button', { name: esAR.investments.shared.totalValue }))
+
+    expect(tickers()).toEqual(['MELI', 'GD30', 'AL30', 'GGAL'])
+    expect(screen.getByRole('columnheader', { name: esAR.investments.shared.totalValue })).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    )
+  })
+
+  it('filters by ticker or name and keeps the type-wide subtotal', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    await user.type(screen.getByRole('searchbox', { name: esAR.investments.cartera.filterLabel }), 'gd')
+
+    expect(tickers()).toEqual(['GD30'])
+    expect(screen.getAllByTestId('position-group').map((g) => g.getAttribute('data-asset-type'))).toEqual(['BOND'])
+    expect(within(groupOf('BOND')).getByTestId('group-subtotal')).toHaveTextContent(/4\.500\.000,00/)
+    const summary = screen.getByTestId('cartera-filter-summary')
+    expect(summary).toHaveTextContent('Mostrando 1 de 4 posiciones')
+    expect(summary).toHaveTextContent(esAR.investments.cartera.subtotalsNote)
+  })
+
+  it('never scrolls sideways on desktop: truncating text columns, sticky actions, dense below 1600', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    await user.click(screen.getByRole('button', { name: esAR.investments.cartera.view }))
+    await user.click(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.colBank }))
+    await user.keyboard('{Escape}')
+
+    const table = screen.getByTestId('cartera-table')
+    expect(table).toHaveClass('w-full', 'table-auto', 'max-[1600px]:text-[12.5px]')
+    const name = screen.getByRole('columnheader', { name: esAR.investments.tabs.colName })
+    expect(name).toHaveClass('w-[26%]', 'max-[1600px]:px-1.5')
+    const row = screen.getAllByTestId('position-row')[0]
+    const cells = [...row.children]
+    expect(cells[1]).toHaveClass('max-w-0', 'truncate')
+    expect(cells[1]).toHaveAttribute('title')
+    expect(cells.at(-1)).toHaveClass('md:sticky', 'md:right-0', 'bg-card')
+  })
+
+  it('keeps every money cell on one line, group subtotals and P&L included', () => {
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    const groupHeader = groupOf('BOND').querySelector('tr')!
+    const moneyCells = [
+      ...screen.getAllByTestId('position-row').flatMap((r) => [...r.children]),
+      ...groupHeader.querySelectorAll('td'),
+    ].filter((cell) => /[$%]/.test(cell.textContent ?? ''))
+
+    expect(moneyCells.length).toBeGreaterThanOrEqual(4 * 6 + 4)
+    moneyCells.forEach((cell) => expect(cell).toHaveClass('whitespace-nowrap'))
+  })
+
+  it('shows only the ticker and the actions on a phone, whatever columns are saved', async () => {
+    const user = userEvent.setup()
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === '(max-width: 767px)',
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }))
+    useCarteraViewStore.getState().toggleColumn('bank')
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    expect(screen.getAllByRole('columnheader').map((h) => h.textContent)).toEqual([esAR.common.ticker, esAR.common.actions])
+    const sell = screen.getByRole('button', { name: 'Vender GGAL' })
+    expect(sell).toHaveClass('h-7', 'w-7')
+    expect(sell.closest('td')).not.toHaveClass('sticky')
+    const header = groupOf('BOND').querySelector('tr')!
+    expect(header.children).toHaveLength(1)
+    expect(header.children[0]).toHaveAttribute('colspan', '2')
+    expect(within(groupOf('BOND')).queryByTestId('group-subtotal')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: esAR.investments.cartera.view }))
+    expect(screen.getByTestId('cartera-phone-note')).toHaveTextContent(esAR.investments.cartera.phoneColumnsNote)
+    expect(screen.queryByRole('menuitemcheckbox', { name: esAR.investments.tabs.colAvgCost })).not.toBeInTheDocument()
+    expect(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.groupByType })).toBeInTheDocument()
+  })
+
+  it('explains a disabled phone Vender like the desktop one', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query === '(max-width: 767px)',
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }))
+    holdingsMock.isError = true
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    const notice = 'No pudimos cargar tus tenencias, así que todavía no podés vender.'
+    const sell = screen.getByRole('button', { name: 'Vender GGAL' })
+    expect(sell).toBeDisabled()
+    expect(sell).toHaveAttribute('title', notice)
+    expect(sell).toHaveAccessibleDescription(notice)
   })
 })

@@ -344,6 +344,22 @@
       "FCI": "Fondos (FCI)",
       "OTHER": "Otros"
     },
+    "cartera": {
+      "filterPlaceholder": "Filtrar por ticker o nombre",
+      "filterLabel": "Filtrar posiciones",
+      "view": "Vista",
+      "groupByType": "Agrupar por tipo",
+      "columns": "Columnas",
+      "reset": "Restablecer vista",
+      "colType": "Tipo",
+      "colBank": "Banco",
+      "typeFilter": "Filtrar por tipo",
+      "showing": "Mostrando {shown} de {total} posiciones",
+      "subtotalsNote": "Los subtotales de cada grupo son del tipo completo",
+      "noMatch": "Ninguna posición coincide con el filtro.",
+      "phoneColumnsNote": "En el teléfono la tabla muestra solo el ticker; tocalo para ver el detalle.",
+      "sellAria": "Vender {ticker}"
+    },
     "composition": {
       "heading": "Composición",
       "positionsCount": "{count, plural, one {# posición} other {# posiciones}}",

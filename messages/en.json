@@ -344,6 +344,22 @@
       "FCI": "Mutual Funds (FCI)",
       "OTHER": "Other"
     },
+    "cartera": {
+      "filterPlaceholder": "Filter by ticker or name",
+      "filterLabel": "Filter holdings",
+      "view": "View",
+      "groupByType": "Group by type",
+      "columns": "Columns",
+      "reset": "Reset view",
+      "colType": "Type",
+      "colBank": "Bank",
+      "typeFilter": "Filter by type",
+      "showing": "Showing {shown} of {total} holdings",
+      "subtotalsNote": "Group subtotals cover the whole type",
+      "noMatch": "No holding matches the filter.",
+      "phoneColumnsNote": "On a phone the table shows only the ticker; tap it to see the details.",
+      "sellAria": "Sell {ticker}"
+    },
     "composition": {
       "heading": "Composition",
       "positionsCount": "{count, plural, one {# position} other {# positions}}",
