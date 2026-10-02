@@ -24,8 +24,8 @@ function LatestList({ rows }: { rows: TransactionRow[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
-        {!none && <h3 className="section-head">{t('latestTitle')}</h3>}
+      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
+        <h3 className={cn('section-head', none && 'sr-only')}>{t('latestTitle')}</h3>
         <Link href="/transactions" data-testid="latest-more" className="text-xs font-medium text-primary hover:underline">
           {none ? t('latest.more') : t('latest.seeAll')}
         </Link>
@@ -61,15 +61,21 @@ export function LatestMovementsCard({ section, isLoading, onRetry, className }: 
       section={section}
       isLoading={isLoading}
       onRetry={onRetry}
+      boxClassName="frame:p-4"
       emptyAction={
         <Link href="/transactions">
           <Button size="sm">{t('latest.emptyAction')}</Button>
         </Link>
       }
-      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-auto frame:min-h-0 frame:flex-1" />}
+      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-auto frame:min-h-16 frame:flex-1 frame:basis-0" />}
     >
       {(data) => (
-        <div className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 frame:gap-2 frame:p-4', className)}>
+        <div
+          className={cn(
+            'elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 frame:min-h-16 frame:flex-1 frame:basis-0 frame:gap-2 frame:p-4',
+            className,
+          )}
+        >
           <LatestList rows={data} />
         </div>
       )}

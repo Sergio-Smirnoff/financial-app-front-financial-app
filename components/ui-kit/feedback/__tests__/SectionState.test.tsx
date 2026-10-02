@@ -65,4 +65,16 @@ describe('SectionState', () => {
     )
     assert()
   })
+
+  it.each([
+    ['unavailable', { status: 'UNAVAILABLE' as const, observedAt: NOW, data: null }, 'No pudimos cargar esta sección'],
+    ['empty', { status: 'OK' as const, observedAt: NOW, data: [] }, 'Todavía no hay datos'],
+  ])('adds the given class to the %s box', (_, section, text) => {
+    renderWithIntl(
+      <SectionState section={section} isLoading={false} skeleton={null} boxClassName="frame:p-4" onRetry={vi.fn()}>
+        {() => null}
+      </SectionState>
+    )
+    expect(screen.getByText(text).parentElement).toHaveClass('p-8', 'frame:p-4')
+  })
 })

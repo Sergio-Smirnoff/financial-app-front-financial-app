@@ -35,8 +35,8 @@ function SpendList({ items }: { items: SpendCategoryItem[] }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
-        {!none && <h3 className="section-head">{t('spendTitle')}</h3>}
+      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
+        <h3 className={cn('section-head', none && 'sr-only')}>{t('spendTitle')}</h3>
         {hidesSome && (
           <Link href="/categories" data-testid="spend-more" className="text-xs font-medium text-primary hover:underline">
             {t('spendMore')}
@@ -75,11 +75,17 @@ export function SpendByCategoryCard({ section, isLoading, onRetry, className }: 
       section={section}
       isLoading={isLoading}
       onRetry={onRetry}
+      boxClassName="frame:p-4"
       emptyTitle={t('spendEmpty')}
-      skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse frame:min-h-0" />}
+      skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse frame:h-auto frame:min-h-16 frame:flex-1 frame:basis-0" />}
     >
       {(data) => (
-        <div className={cn('elev-sm flex min-h-0 flex-col gap-4 rounded-xl border bg-card p-5 frame:gap-1 frame:p-4', className)}>
+        <div
+          className={cn(
+            'elev-sm flex min-h-0 flex-col gap-4 rounded-xl border bg-card p-5 frame:min-h-16 frame:flex-1 frame:basis-0 frame:gap-0 frame:p-4',
+            className,
+          )}
+        >
           <SpendList items={data} />
         </div>
       )}

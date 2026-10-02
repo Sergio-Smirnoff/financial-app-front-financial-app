@@ -166,7 +166,7 @@ function AreaPlot({ size, series, comparison, currency, curve }: AreaPlotProps) 
         paddingLeft={PADDING_LEFT}
         paddingRight={PADDING_RIGHT}
         paddingY={PADDING_Y}
-        formatY={(val) => formatCompactMoney(val, currency)}
+        formatY={(val) => formatCompactMoney(val, currency, 1)}
       />
 
       <path d={areaPath} fill={`url(#${gradientId})`} />

@@ -61,6 +61,19 @@ describe('formatCompactMoney', () => {
   it('puts the sign before the symbol', () => {
     expect(formatCompactMoney(-8e7)).toBe('−$80M')
   })
+
+  it('keeps one decimal below 1000 when asked, for narrow price axes', () => {
+    expect(formatCompactMoney(10.4, 'ARS', 1)).toBe('$10,4')
+    expect(formatCompactMoney(0.5, 'USD', 1)).toBe('US$0,5')
+    expect(formatCompactMoney(-0.5, 'ARS', 1)).toBe('−$0,5')
+    expect(formatCompactMoney(9.74e7, 'ARS', 1)).toBe('$97,4M')
+    expect(formatCompactMoney(10.4)).toBe('$10')
+  })
+
+  it('separates an alphabetic currency code from the figure with a non-breaking space', () => {
+    expect(formatCompactMoney(9.74e7, 'EUR')).toBe('EUR\u00a097,4M')
+    expect(formatCompactMoney(-8e7, 'eur')).toBe('−EUR\u00a080M')
+  })
 })
 
 describe('currencySymbol', () => {

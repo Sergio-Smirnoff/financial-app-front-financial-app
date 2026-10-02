@@ -98,12 +98,29 @@ describe('SpendByCategoryCard as a fit list', () => {
     expect(screen.getByTestId('spend-list')).toHaveClass('relative', 'min-h-0', 'overflow-hidden')
   })
 
-  it('shows only the link when not one category fits', () => {
+  it('shows only the link when not one category fits, keeping the heading for screen readers', () => {
     layout(30, true)
     renderCard(categories)
     expect(shownNames()).toEqual([])
     expect(screen.getByTestId('spend-more')).toBeInTheDocument()
-    expect(screen.queryByText(esAR.overview.spendTitle)).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: esAR.overview.spendTitle })).toHaveClass('sr-only')
+  })
+
+  it.each([
+    ['none fit', 30],
+    ['some fit', 130],
+    ['all fit', 1000],
+  ])('keeps the header the same height when %s', (_, listHeight) => {
+    layout(listHeight, true)
+    renderCard(categories)
+    const heading = screen.getByRole('heading', { name: esAR.overview.spendTitle })
+    expect(heading.parentElement).toHaveClass('h-5', 'shrink-0')
+  })
+
+  it('shows the heading visibly while at least one category fits', () => {
+    layout(130, true)
+    renderCard(categories)
+    expect(screen.getByRole('heading', { name: esAR.overview.spendTitle })).not.toHaveClass('sr-only')
   })
 
   it('shows every category and no link when they all fit', () => {

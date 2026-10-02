@@ -110,6 +110,29 @@ describe('AreaChart', () => {
     expect(screen.queryByText(/\d{4,}k/)).not.toBeInTheDocument()
   })
 
+  it('keeps a decimal on the value axis when the range is narrow', () => {
+    const narrow = [
+      { date: '2026-01-01', value: 10 },
+      { date: '2026-02-01', value: 11 },
+    ]
+    render(<AreaChart series={narrow} currency="ARS" ariaLabel="Precio" />)
+    const labels = screen.getAllByTestId('tick-y').map((tick) => tick.textContent)
+    expect(labels.length).toBeGreaterThan(2)
+    expect(new Set(labels).size).toBe(labels.length)
+    expect(labels.some((label) => /^\$10,\d$/.test(label ?? ''))).toBe(true)
+  })
+
+  it('labels sub-unit prices instead of printing $0', () => {
+    const subUnit = [
+      { date: '2026-01-01', value: 0.2 },
+      { date: '2026-02-01', value: 0.8 },
+    ]
+    render(<AreaChart series={subUnit} currency="USD" ariaLabel="Precio" />)
+    const labels = screen.getAllByTestId('tick-y').map((tick) => tick.textContent)
+    expect(labels).toContain('US$0,4')
+    expect(labels).not.toContain('US$0')
+  })
+
   it('marks the point under the pointer', () => {
     vi.unstubAllGlobals()
     stubChartSize(640, 240)

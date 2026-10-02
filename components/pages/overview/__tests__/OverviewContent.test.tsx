@@ -196,14 +196,55 @@ describe('OverviewContent', () => {
     expect(screen.getByTestId('latest-more')).toHaveTextContent(esAR.overview.latest.seeAll)
   })
 
-  it('lets spend by category shrink to the rows that fit while upcoming payments stay whole', () => {
+  it('splits the rail space left under the upcoming payments between spend and latest', () => {
     renderOverview(fixture)
-    const spend = screen.getByTestId('overview-rail-spend')
-    expect(spend).toHaveClass('flex', 'min-h-0', 'flex-col')
-    expect(spend).not.toHaveClass('frame:shrink-0')
-    expect(screen.getByTestId('spend-list')).toHaveClass('min-h-0', 'overflow-hidden')
-    expect(screen.getByTestId('overview-rail-latest')).toHaveClass('frame:min-h-15', 'frame:flex-1')
+    for (const id of ['overview-rail-spend', 'overview-rail-latest']) {
+      const wrapper = screen.getByTestId(id)
+      expect(wrapper).toHaveClass('flex', 'flex-col', 'frame:flex-1', 'frame:basis-0', 'short:hidden')
+      expect(wrapper).not.toHaveClass('min-h-0')
+      expect(wrapper.className).not.toMatch(/frame:min-h-/)
+    }
+    for (const id of ['spend-list', 'latest-list']) {
+      const list = screen.getByTestId(id)
+      expect(list).toHaveClass('min-h-0', 'overflow-hidden')
+      expect(list.parentElement).toHaveClass('min-h-0', 'frame:flex-1', 'frame:basis-0', 'frame:min-h-16')
+    }
     expect(screen.getByRole('link', { name: /Visa Galicia/ }).closest('.frame\\:shrink-0')).not.toBeNull()
+  })
+
+  it('keeps the latest heading for screen readers and its header at one height', () => {
+    renderOverview(fixture)
+    const heading = screen.getByRole('heading', { name: esAR.overview.latestTitle })
+    expect(heading.parentElement).toHaveClass('h-5', 'shrink-0')
+  })
+
+  it.each<[string, OverviewBff['spendByCategory']]>([
+    ['empty', { status: 'OK', observedAt: NOW, data: [] }],
+    ['unavailable', { status: 'UNAVAILABLE', observedAt: NOW, data: null }],
+  ])('keeps an %s spend box at its own size inside the rail', (_, spendByCategory) => {
+    renderOverview({ ...fixture, spendByCategory })
+    const wrapper = screen.getByTestId('overview-rail-spend')
+    expect(wrapper).toHaveClass('frame:flex-1', 'frame:basis-0')
+    expect(wrapper).not.toHaveClass('min-h-0')
+    const box = wrapper.firstElementChild as HTMLElement
+    expect(box).toHaveClass('p-8', 'frame:p-4')
+    expect(box.className).not.toMatch(/(^|\s)(frame:)?(min-h-0|basis-0|flex-1|shrink)(\s|$)/)
+    expect(screen.queryByTestId('spend-list')).not.toBeInTheDocument()
+  })
+
+  it.each<[string, OverviewBff['latestMovements']]>([
+    ['empty', { status: 'OK', observedAt: NOW, data: [] }],
+    ['unavailable', { status: 'UNAVAILABLE', observedAt: NOW, data: null }],
+  ])('keeps an %s latest box at its own compact size inside the rail', (_, latestMovements) => {
+    renderOverview({ ...fixture, latestMovements })
+    const box = screen.getByTestId('overview-rail-latest').firstElementChild as HTMLElement
+    expect(box).toHaveClass('p-8', 'frame:p-4')
+    expect(box.className).not.toMatch(/(^|\s)(frame:)?(min-h-0|basis-0|flex-1|shrink)(\s|$)/)
+  })
+
+  it('lets the spend rows sit right under the header in the frame, since each row carries its own padding', () => {
+    renderOverview(fixture)
+    expect(screen.getByTestId('spend-list').parentElement).toHaveClass('frame:gap-0')
   })
 
   it('shows spend by category as amount and share, with no "/ max"', () => {

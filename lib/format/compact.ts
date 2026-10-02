@@ -5,6 +5,8 @@ const SCALES = [
 ] as const
 
 const MINUS = '−'
+const NO_BREAK_SPACE = '\u00a0'
+const ALPHABETIC_CODE = /[A-Z]$/
 const DOLLAR_CODES: ReadonlySet<string> = new Set(['USD', 'USD_MEP', 'USD_CCL'])
 const PESO_CODES: ReadonlySet<string> = new Set(['ARS'])
 const oneDecimal = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 1 })
@@ -33,9 +35,15 @@ export function formatCompactNumber(value: number, fractionDigitsBelowThousand: 
   return `${sign}${oneDecimal.format(tenthsOf(rounded, scale.divisor))}${scale.suffix}`
 }
 
-export function formatCompactMoney(value: number, currency: string = 'ARS'): string {
+export function formatCompactMoney(
+  value: number,
+  currency: string = 'ARS',
+  fractionDigitsBelowThousand: 0 | 1 = 0,
+): string {
   if (!Number.isFinite(value)) return '—'
-  const digits = formatCompactNumber(Math.abs(value))
+  const digits = formatCompactNumber(Math.abs(value), fractionDigitsBelowThousand)
   const sign = value < 0 && digits !== '0' ? MINUS : ''
-  return `${sign}${currencySymbol(currency)}${digits}`
+  const symbol = currencySymbol(currency)
+  const separator = ALPHABETIC_CODE.test(symbol) ? NO_BREAK_SPACE : ''
+  return `${sign}${symbol}${separator}${digits}`
 }
