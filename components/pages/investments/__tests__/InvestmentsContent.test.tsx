@@ -428,6 +428,19 @@ describe('Cartera view options', () => {
     expect(screen.getByTestId('cartera-filter-summary')).toHaveTextContent('Mostrando 2 de 4 posiciones')
   })
 
+  it('shows the type column unchecked while grouped, since it is not displayed', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    await user.click(screen.getByRole('button', { name: esAR.investments.cartera.view }))
+    const type = screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.colType })
+    expect(type).toHaveAttribute('aria-checked', 'false')
+    expect(type).toHaveAttribute('data-disabled')
+
+    await user.click(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.groupByType }))
+    expect(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.colType })).toHaveAttribute('aria-checked', 'true')
+  })
+
   it('hides a column from the header and from every row', async () => {
     const user = userEvent.setup()
     renderInvestments(cartera, { searchParams: '?tab=cartera' })

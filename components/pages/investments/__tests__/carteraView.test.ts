@@ -61,4 +61,14 @@ describe('sortRows', () => {
 
     expect(sorted.map((r) => r.ticker)).toEqual(['YPFD', 'GGAL'])
   })
+
+  it.each(['asc', 'desc'] as const)('puts rows without a P&L percentage last when sorting %s', (direction) => {
+    const unknown = { ...row(1, 'AL30', '1'), pnlPct: null } as unknown as PositionRow
+    const missing = { ...row(2, 'BMA', '1'), pnlPct: undefined }
+    const rows = [unknown, { ...row(3, 'GGAL', '1'), pnlPct: 5 }, missing, { ...row(4, 'YPFD', '1'), pnlPct: -3 }]
+
+    const sorted = sortRows(rows, { key: 'pnlPct', direction })
+
+    expect(sorted.map((r) => r.ticker)).toEqual(direction === 'asc' ? ['YPFD', 'GGAL', 'AL30', 'BMA'] : ['GGAL', 'YPFD', 'AL30', 'BMA'])
+  })
 })

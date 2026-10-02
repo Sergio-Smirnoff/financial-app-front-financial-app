@@ -20,7 +20,7 @@ export function matchesQuery(row: PositionRow, query: string): boolean {
   return (row.ticker ?? '').toLowerCase().includes(needle) || (row.name ?? '').toLowerCase().includes(needle)
 }
 
-function sortValue(row: PositionRow, key: CarteraSortKey, displayed?: DisplayedText): string | number {
+function sortValue(row: PositionRow, key: CarteraSortKey, displayed?: DisplayedText): string | number | null {
   switch (key) {
     case 'ticker':
       return row.ticker ?? ''
@@ -42,20 +42,26 @@ function sortValue(row: PositionRow, key: CarteraSortKey, displayed?: DisplayedT
     case 'pnl':
       return amountOf(row.pnl)
     case 'pnlPct':
-      return row.pnlPct ?? 0
+      return row.pnlPct ?? null
   }
 }
 
 function compareValues(a: string | number, b: string | number): number {
-  if (typeof a === 'string' && typeof b === 'string') return a.localeCompare(b, 'es')
+  if (typeof a === 'string' && typeof b === 'string') return a.localeCompare(b, 'es-AR')
   return Number(a) - Number(b)
 }
 
 export function sortRows(rows: readonly PositionRow[], sort: CarteraSort, displayed?: DisplayedText): PositionRow[] {
   const sign = sort.direction === 'asc' ? 1 : -1
   return [...rows].sort((a, b) => {
-    const primary = compareValues(sortValue(a, sort.key, displayed), sortValue(b, sort.key, displayed))
-    if (primary !== 0) return primary * sign
+    const left = sortValue(a, sort.key, displayed)
+    const right = sortValue(b, sort.key, displayed)
+    if (left === null || right === null) {
+      if (left !== right) return left === null ? 1 : -1
+    } else {
+      const primary = compareValues(left, right)
+      if (primary !== 0) return primary * sign
+    }
     return compareValues(a.ticker ?? '', b.ticker ?? '') || (a.holdingId ?? 0) - (b.holdingId ?? 0)
   })
 }

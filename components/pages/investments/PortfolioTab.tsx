@@ -173,7 +173,7 @@ export function PortfolioTab({
                   {CARTERA_COLUMNS.map((column) => (
                     <DropdownMenuCheckboxItem
                       key={column}
-                      checked={columns[column]}
+                      checked={columns[column] && !(grouped && column === 'assetType')}
                       disabled={grouped && column === 'assetType'}
                       onCheckedChange={() => toggleColumn(column)}
                       onSelect={(e) => e.preventDefault()}
