@@ -58,6 +58,12 @@ describe('DonutChart', () => {
     expect(container.querySelectorAll('.sr-only table tbody tr')).toHaveLength(4)
   })
 
+  it('draws nothing when no slice has a value', () => {
+    const { container } = renderDonut({ slices: slices.map((s) => ({ ...s, value: 0 })) })
+    expect(container.querySelector('[data-role="slice"]')).toBeNull()
+    expect(container.querySelector('[data-role="center"]')).toBeNull()
+  })
+
   it('drops the slice labels when the ring is too small to hold them', () => {
     stubChartSize(100, 100)
     const { container } = renderDonut()

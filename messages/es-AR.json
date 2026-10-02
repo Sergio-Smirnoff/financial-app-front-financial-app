@@ -371,7 +371,6 @@
       "evolutionHeading": "Evolución de Cartera",
       "evolutionEmpty": "Sin datos de evolución disponibles.",
       "evolutionAria": "Evolución del valor de cartera y costo acumulado",
-      "alertsTitle": "Alertas de Mercado",
       "discoveryTitle": "Tendencias del Mercado",
       "searchPlaceholder": "Buscá un ticker para investigar (ej: GGAL, AL30, AAPL)...",
       "noSearchResults": "No se encontraron tickers que coincidan.",
@@ -396,6 +395,7 @@
       "colAmount": "Monto"
     },
     "alerts": {
+      "title": "Notificaciones",
       "unreadCount": "{count} sin leer",
       "empty": "Sin alertas activas.",
       "hiddenCount": "{count, plural, one {# notificación más en la campana} other {# notificaciones más en la campana}}"

@@ -25,12 +25,14 @@ function Compact({ value }: { value?: MoneyView | null }) {
 
 export function CompositionCard({ section, kpis, isLoading, onRetry }: CompositionCardProps) {
   const t = useTranslations('investments')
+  const hasValue = section?.data?.some((s) => amountOf(s.amount) > 0) ?? false
+  const composed = section?.data && !hasValue ? { ...section, data: [] } : section
 
   return (
     <div data-testid="composition-card" className="elev-sm relative rounded-xl border bg-card p-5 flex h-full min-h-0 min-w-0 flex-col gap-3 frame:overflow-hidden max-md:p-3.5 short:gap-2 short:p-4">
       <h3 className="section-head">{t('composition.heading')}</h3>
       <SectionState
-        section={section}
+        section={composed}
         isLoading={isLoading}
         onRetry={onRetry}
         emptyTitle={t('composition.empty')}
@@ -52,9 +54,9 @@ export function CompositionCard({ section, kpis, isLoading, onRetry }: Compositi
                   centerLabel={t('composition.centerLabel')}
                   centerValue={marketValue ? formatCompactMoney(amountOf(marketValue), marketValue.currency) : '—'}
                   centerDelta={kpis?.pnlPct != null ? { text: formatPercent(kpis.pnlPct), tone: toneOf(kpis.pnlPct) } : undefined}
-                  slices={ordered.map((s) => {
+                  slices={ordered.map((s, index) => {
                     const key = groupKeyOf(s.assetType)
-                    return { key, label: t(GROUP_LABEL_KEYS[key]), value: amountOf(s.amount), pct: s.pct ?? 0, color: GROUP_COLOR[key] }
+                    return { key: `${s.assetType ?? key}-${index}`, label: t(GROUP_LABEL_KEYS[key]), value: amountOf(s.amount), pct: s.pct ?? 0, color: GROUP_COLOR[key] }
                   })}
                 />
               </div>
@@ -71,11 +73,11 @@ export function CompositionCard({ section, kpis, isLoading, onRetry }: Compositi
                   </tr>
                 </thead>
                 <tbody>
-                  {ordered.map((s) => {
+                  {ordered.map((s, index) => {
                     const key = groupKeyOf(s.assetType)
                     const tone = TONE_TEXT[toneOf(s.pnlPct)]
                     return (
-                      <tr key={key} data-testid="composition-row" data-asset-type={key} className="border-b last:border-0">
+                      <tr key={`${s.assetType ?? key}-${index}`} data-testid="composition-row" data-asset-type={key} className="border-b last:border-0">
                         <td className="max-w-0 truncate py-1" title={t(GROUP_LABEL_KEYS[key])}>
                           <span className="mr-1.5 inline-block h-2 w-2 rounded-sm" style={{ background: GROUP_COLOR[key] }} />
                           {t(GROUP_LABEL_KEYS[key])}

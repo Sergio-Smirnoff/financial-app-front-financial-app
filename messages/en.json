@@ -371,7 +371,6 @@
       "evolutionHeading": "Portfolio evolution",
       "evolutionEmpty": "No evolution data available.",
       "evolutionAria": "Portfolio value and accumulated cost evolution",
-      "alertsTitle": "Market alerts",
       "discoveryTitle": "Market Trends",
       "searchPlaceholder": "Search a ticker to research (e.g. GGAL, AL30, AAPL)...",
       "noSearchResults": "No matching tickers found.",
@@ -396,6 +395,7 @@
       "colAmount": "Amount"
     },
     "alerts": {
+      "title": "Notifications",
       "unreadCount": "{count} unread",
       "empty": "No active alerts.",
       "hiddenCount": "{count, plural, one {# more notification in the bell} other {# more notifications in the bell}}"

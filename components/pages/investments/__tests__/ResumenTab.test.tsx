@@ -110,6 +110,38 @@ describe('ResumenTab', () => {
     expect(within(card).getByText('+11,11 %')).toBeInTheDocument()
   })
 
+  it('keeps one row and one arc per slice when two asset types are unknown', () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    renderResumen({
+      composition: ok([
+        { ...slices[0], label: 'ETF', assetType: 'ETF', pct: 50 },
+        { ...slices[1], label: 'CRYPTO', assetType: 'CRYPTO', pct: 50 },
+      ]),
+    })
+    const rows = screen.getAllByTestId('composition-row')
+    expect(rows.map((r) => r.getAttribute('data-asset-type'))).toEqual(['OTHER', 'OTHER'])
+    expect(screen.getByTestId('composition-card').querySelectorAll('[data-role="slice"]')).toHaveLength(2)
+    expect(errors.mock.calls.flat().join(' ')).not.toMatch(/same key/)
+    errors.mockRestore()
+  })
+
+  it('shows the empty state, not a blank ring or a 100 % total, when no slice has a value', () => {
+    renderResumen({
+      composition: ok(slices.map((s) => ({ ...s, amount: ars('0'), pct: 0 }))),
+    })
+    const card = screen.getByTestId('composition-card')
+    expect(within(card).getByTestId('composition-empty')).toBeInTheDocument()
+    expect(card.querySelector('[data-role="slice"]')).toBeNull()
+    expect(card.textContent).not.toMatch(/100\s%/)
+  })
+
+  it('heads the rail Notificaciones and keeps the heading around the empty state', () => {
+    renderResumen()
+    const card = screen.getByTestId('alerts-card')
+    expect(within(card).getByRole('heading', { name: esAR.investments.alerts.title })).toBeInTheDocument()
+    expect(within(card).getByText(esAR.investments.alerts.empty)).toBeInTheDocument()
+  })
+
   it('shows the composition error state when unavailable', () => {
     renderResumen({ composition: { status: 'UNAVAILABLE', observedAt, data: null } as Section<AssetTypeSlice[]> })
     const card = screen.getByTestId('composition-card')

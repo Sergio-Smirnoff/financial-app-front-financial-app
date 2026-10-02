@@ -41,6 +41,7 @@ export function DonutChart({
   className,
 }: DonutChartProps) {
   const drawn = slices.filter((s) => s.value > 0)
+  if (drawn.length === 0) return null
 
   return (
     <ChartFrame
