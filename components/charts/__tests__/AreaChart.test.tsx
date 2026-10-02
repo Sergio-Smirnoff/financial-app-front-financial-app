@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { stubChartSize } from '@/test/chartSize'
@@ -108,5 +108,27 @@ describe('AreaChart', () => {
     render(<AreaChart series={large} currency="ARS" ariaLabel="Patrimonio neto" />)
     expect(screen.getByText('$80M')).toBeInTheDocument()
     expect(screen.queryByText(/\d{4,}k/)).not.toBeInTheDocument()
+  })
+
+  it('marks the point under the pointer', () => {
+    vi.unstubAllGlobals()
+    stubChartSize(640, 240)
+    render(<AreaChart series={series12} currency="ARS" ariaLabel="Patrimonio neto" />)
+    const hoverArea = screen.getByTestId('hover-area')
+    vi.spyOn(hoverArea, 'getBoundingClientRect').mockReturnValue({ left: 100, top: 0, width: 560, height: 240 } as DOMRect)
+    fireEvent.mouseMove(hoverArea, { clientX: 100 })
+    expect(screen.getByRole('tooltip')).toHaveTextContent(/\$\s100\b/)
+    fireEvent.mouseMove(hoverArea, { clientX: 100 + 560 })
+    expect(screen.getByRole('tooltip')).toHaveTextContent(/\$\s200\b/)
+  })
+
+  it('keeps its plot inside the card when the card is narrower than the padding', () => {
+    vi.unstubAllGlobals()
+    stubChartSize(60, 50)
+    const { container } = render(<AreaChart series={series12} currency="ARS" ariaLabel="Patrimonio neto" />)
+    const xs = [...container.querySelectorAll('circle[data-role="vertex"]')].map((c) => Number(c.getAttribute('cx')))
+    expect(Math.min(...xs)).toBeGreaterThanOrEqual(56)
+    const transform = screen.getByRole('tooltip').getAttribute('transform') ?? ''
+    expect(Number(/translate\(([-\d.]+)/.exec(transform)?.[1])).toBeGreaterThanOrEqual(0)
   })
 })

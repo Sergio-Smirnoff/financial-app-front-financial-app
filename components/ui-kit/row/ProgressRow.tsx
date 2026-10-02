@@ -22,10 +22,11 @@ const isShareProgress = (props: ProgressRowProps): props is ProgressRowProps & S
 
 function figures(props: ProgressRowProps): { pct: number; isOver: boolean; text: string } {
   if (isShareProgress(props)) {
+    const share = Number.isFinite(props.share) ? props.share : 0
     return {
-      pct: Math.max(0, props.share),
+      pct: Math.max(0, share),
       isOver: false,
-      text: `${props.valueText} · ${formatPercent(props.share, { decimals: 1, signed: false })}`,
+      text: `${props.valueText} · ${formatPercent(share, { decimals: 1, signed: false })}`,
     }
   }
   const pct = props.max > 0 ? (props.value / props.max) * 100 : 0
@@ -36,12 +37,17 @@ export function ProgressRow(props: ProgressRowProps) {
   const { label, caption } = props
   const { pct, isOver, text } = figures(props)
   const clampedPct = Math.min(pct, 100)
+  const share = isShareProgress(props)
 
   return (
     <div className="flex flex-col gap-1.5 py-2">
       <div className="flex items-center justify-between gap-4">
-        <span className="min-w-0 truncate text-sm text-foreground">{label}</span>
-        <span className={cn('n', 'shrink-0 whitespace-nowrap text-sm tabular-nums', isOver && 'text-destructive')}>{text}</span>
+        <span className={cn('text-sm text-foreground', share && 'min-w-0 truncate')} title={share ? label : undefined}>
+          {label}
+        </span>
+        <span className={cn('n', 'text-sm tabular-nums', share && 'shrink-0 whitespace-nowrap', isOver && 'text-destructive')}>
+          {text}
+        </span>
       </div>
 
       <div

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { UI_SIDEBAR_STORAGE_KEY, useUiStore } from '../ui.store'
 
 describe('useUiStore sidebar', () => {
@@ -38,5 +38,15 @@ describe('useUiStore sidebar', () => {
     localStorage.setItem(UI_SIDEBAR_STORAGE_KEY, JSON.stringify({ state: { sidebarCollapsed: 'yes' }, version: 1 }))
     await useUiStore.persist.rehydrate()
     expect(useUiStore.getState().sidebarCollapsed).toBe(false)
+  })
+
+  it('keeps the current rail state when storage is blocked', async () => {
+    useUiStore.setState({ sidebarCollapsed: true })
+    const blocked = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    await useUiStore.persist.rehydrate()
+    blocked.mockRestore()
+    expect(useUiStore.getState().sidebarCollapsed).toBe(true)
   })
 })

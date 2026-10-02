@@ -31,7 +31,7 @@ export function UpcomingRail({ section, isLoading, onRetry, className }: Upcomin
       skeleton={<div className="h-40 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => (
-        <div className={cn('elev-sm flex flex-col gap-4 rounded-xl border bg-card p-5 frame:gap-2 frame:p-4 short:gap-2 short:p-4', className)}>
+        <div className={cn('elev-sm flex flex-col gap-4 rounded-xl border bg-card p-5 frame:gap-2 frame:p-4', className)}>
           <h3 className="section-head">{t('upcomingTitle')}</h3>
           <div className="space-y-3 frame:space-y-2">
             {data.map((item) => (

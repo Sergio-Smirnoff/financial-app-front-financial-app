@@ -20,6 +20,20 @@ describe('formatCompactNumber', () => {
     expect(formatCompactNumber(999_960)).toBe('1M')
   })
 
+  it('rounds the half-tenth boundary up, free of float error', () => {
+    expect(formatCompactNumber(999.95)).toBe('1k')
+    expect(formatCompactNumber(999_950)).toBe('1M')
+    expect(formatCompactNumber(999_949)).toBe('999,9k')
+    expect(formatCompactNumber(1_250)).toBe('1,3k')
+  })
+
+  it('keeps one decimal below 1000 when asked, for small axis ticks', () => {
+    expect(formatCompactNumber(0.25, 1)).toBe('0,3')
+    expect(formatCompactNumber(12.34, 1)).toBe('12,3')
+    expect(formatCompactNumber(-0.5, 1)).toBe('−0,5')
+    expect(formatCompactNumber(1_500, 1)).toBe('1,5k')
+  })
+
   it('prefixes negatives with a true minus sign', () => {
     expect(formatCompactNumber(-1.5e3)).toBe('−1,5k')
     expect(formatCompactNumber(-8e7)).toBe('−80M')
@@ -50,8 +64,21 @@ describe('formatCompactMoney', () => {
 })
 
 describe('currencySymbol', () => {
-  it('maps USD to US$ and everything else to $', () => {
-    expect(currencySymbol('USD')).toBe('US$')
+  it.each(['USD', 'USD_MEP', 'USD_CCL', 'usd'])('marks the dollar code %s as US$', (code) => {
+    expect(currencySymbol(code)).toBe('US$')
+  })
+
+  it('marks pesos as $', () => {
     expect(currencySymbol('ARS')).toBe('$')
+    expect(currencySymbol('')).toBe('$')
+  })
+
+  it('shows an unknown code as itself instead of passing it off as pesos', () => {
+    expect(currencySymbol('EUR')).toBe('EUR')
+  })
+
+  it('prefixes US$ for every dollar view', () => {
+    expect(formatCompactMoney(1.5e3, 'USD_MEP')).toBe('US$1,5k')
+    expect(formatCompactMoney(1.5e3, 'USD_CCL')).toBe('US$1,5k')
   })
 })

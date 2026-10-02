@@ -57,7 +57,7 @@ export const useUiStore = create<UiState>()(
       storage: safeJsonStorage<PersistedUi>(),
       skipHydration: true,
       partialize: ({ sidebarCollapsed }) => ({ sidebarCollapsed }),
-      merge: (persisted, current) => ({ ...current, sidebarCollapsed: storedCollapsed(persisted) ?? false }),
+      merge: (persisted, current) => ({ ...current, sidebarCollapsed: storedCollapsed(persisted) ?? current.sidebarCollapsed }),
     },
   ),
 )

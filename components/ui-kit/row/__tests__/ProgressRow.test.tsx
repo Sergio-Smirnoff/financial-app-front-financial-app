@@ -29,7 +29,7 @@ describe('ProgressRow', () => {
 
   it('shows amount and share with no cap', () => {
     const { container } = render(<ProgressRow label="Comida" share={36.9} valueText="$ 85.000" />)
-    expect(screen.getByText('$ 85.000 · 36,9 %')).toBeInTheDocument()
+    expect(screen.getByText('$ 85.000 · 36,9 %').textContent).toBe('$ 85.000 · 36,9\u00a0%')
     expect(container).not.toHaveTextContent('/')
     expect(container.querySelector('[data-over]')).not.toBeInTheDocument()
     expect(container.querySelector('.bg-primary')).toHaveStyle({ width: '36.9%' })
@@ -39,6 +39,28 @@ describe('ProgressRow', () => {
     const { container } = render(<ProgressRow label="Comida" share={120} valueText="$ 1" />)
     expect(container.querySelector('[data-over]')).not.toBeInTheDocument()
     expect(container.querySelector('.bg-primary')).toHaveStyle({ width: '100%' })
+  })
+
+  it('shows a share that is not a number as zero', () => {
+    const { container } = render(<ProgressRow label="Comida" share={Number.NaN} valueText="$ 1" />)
+    expect(screen.getByText('$ 1 · 0,0 %').textContent).toBe('$ 1 · 0,0\u00a0%')
+    expect(container).not.toHaveTextContent('NaN')
+    expect(container.querySelector('.bg-primary')).toHaveStyle({ width: '0%' })
+  })
+
+  it('truncates a long share label and keeps it whole in the title', () => {
+    render(<ProgressRow label="Servicios del hogar y expensas" share={12} valueText="$ 1" />)
+    const label = screen.getByText('Servicios del hogar y expensas')
+    expect(label).toHaveClass('truncate')
+    expect(label).toHaveAttribute('title', 'Servicios del hogar y expensas')
+  })
+
+  it('renders a budget row exactly as before: label wraps, no truncation', () => {
+    render(<ProgressRow label="Comida" value={80} max={100} />)
+    expect(screen.getByText('Comida')).toHaveClass('text-sm', 'text-foreground')
+    expect(screen.getByText('Comida')).not.toHaveClass('truncate')
+    expect(screen.getByText('Comida')).not.toHaveAttribute('title')
+    expect(screen.getByText('80 / 100')).not.toHaveClass('whitespace-nowrap')
   })
 
   it('keeps the capped figure for budgets', () => {

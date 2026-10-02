@@ -24,8 +24,8 @@ describe('SpendByCategoryCard', () => {
       { categoryId: 1, name: 'expensas', amount: { amount: '87000000', currency: 'ARS' }, pct: 98.7 },
       { categoryId: 2, name: 'Inversiones', amount: { amount: '1119611.57', currency: 'ARS' }, pct: 1.3 },
     ])
-    expect(screen.getByText(/87\.000\.000 · 98,7 %/)).toBeInTheDocument()
-    expect(screen.getByText(/1\.119\.612 · 1,3 %/)).toBeInTheDocument()
+    expect(screen.getByText(/87\.000\.000 · 98,7\s%/)).toBeInTheDocument()
+    expect(screen.getByText(/1\.119\.612 · 1,3\s%/)).toBeInTheDocument()
     expect(container).not.toHaveTextContent(' / ')
   })
 
@@ -38,12 +38,12 @@ describe('SpendByCategoryCard', () => {
         pct: 36.9,
       },
     ])
-    expect(screen.getByText(/85\.000 · 36,9 %/)).toBeInTheDocument()
+    expect(screen.getByText(/85\.000 · 36,9\s%/)).toBeInTheDocument()
     expect(screen.queryByText(/US\$/)).not.toBeInTheDocument()
   })
 
   it('treats a missing share as zero instead of inventing a cap', () => {
     renderCard([{ categoryId: 3, name: 'Otros', amount: { amount: '100', currency: 'ARS' } }])
-    expect(screen.getByText(/100 · 0,0 %/)).toBeInTheDocument()
+    expect(screen.getByText(/100 · 0,0\s%/)).toBeInTheDocument()
   })
 })

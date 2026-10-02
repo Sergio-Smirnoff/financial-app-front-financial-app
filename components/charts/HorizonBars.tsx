@@ -1,5 +1,6 @@
 import React from 'react'
 import { scaleBand, scaleLinear } from 'd3-scale'
+import { plotRange, plotRangeDown } from './primitives/plotRange'
 import { ChartFrame, type ChartSize } from './primitives/ChartFrame'
 import { formatCompactMoney } from '@/lib/format'
 
@@ -49,12 +50,12 @@ function HorizonPlot({ size: { width, height }, months, currency }: HorizonPlotP
 
   const xScale = scaleBand<string>()
     .domain(months.map((m) => m.month))
-    .range([PADDING_X, width - PADDING_X])
+    .range(plotRange(PADDING_X, width - PADDING_X))
     .padding(0.2)
 
   const yScale = scaleLinear()
     .domain([0, maxVal])
-    .range([height - PADDING_Y, PADDING_Y])
+    .range(plotRangeDown(PADDING_Y, height - PADDING_Y))
     .nice()
 
   const ticksY = yScale.ticks(5)

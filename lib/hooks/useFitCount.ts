@@ -1,12 +1,12 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { FRAME_QUERY } from '@/lib/layout/frame'
 
 export const UNFRAMED_LIST_LIMIT = 6
 
 export interface FitCount<T extends HTMLElement> {
-  ref: RefObject<T | null>
+  ref: (node: T | null) => void
   count: number
   framed: boolean
 }
@@ -16,8 +16,8 @@ interface Fit {
   framed: boolean
 }
 
-function isFramed(): boolean {
-  return typeof window.matchMedia === 'function' && window.matchMedia(FRAME_QUERY).matches
+function frameQuery(): MediaQueryList | null {
+  return typeof window.matchMedia === 'function' ? window.matchMedia(FRAME_QUERY) : null
 }
 
 function rowsThatFit(list: HTMLElement): number {
@@ -39,22 +39,26 @@ function rowsThatFit(list: HTMLElement): number {
 }
 
 export function useFitCount<T extends HTMLElement>(total: number): FitCount<T> {
-  const ref = useRef<T>(null)
+  const [list, setList] = useState<T | null>(null)
   const [fit, setFit] = useState<Fit>({ count: Math.min(total, UNFRAMED_LIST_LIMIT), framed: false })
 
   useLayoutEffect(() => {
-    const list = ref.current
     if (!list) return
+    const query = frameQuery()
     const measure = () => {
-      const framed = isFramed()
+      const framed = query?.matches ?? false
       const count = framed ? rowsThatFit(list) : Math.min(total, UNFRAMED_LIST_LIMIT)
       setFit((prev) => (prev.count === count && prev.framed === framed ? prev : { count, framed }))
     }
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(list)
-    return () => observer.disconnect()
-  }, [total])
+    query?.addEventListener('change', measure)
+    return () => {
+      observer.disconnect()
+      query?.removeEventListener('change', measure)
+    }
+  }, [list, total])
 
-  return { ref, ...fit }
+  return { ref: setList, ...fit }
 }

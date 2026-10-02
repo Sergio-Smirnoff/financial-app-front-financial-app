@@ -19,6 +19,8 @@ export interface AxisProps {
   formatY?: (val: number) => string
 }
 
+const defaultFormatY = (val: number) => formatCompactNumber(val, 1)
+
 export function Axis({
   xScale,
   yScale,
@@ -41,7 +43,7 @@ export function Axis({
   }
 
   const fx = formatX || defaultFormatX
-  const fy = formatY || formatCompactNumber
+  const fy = formatY || defaultFormatY
 
   const yRange = yScale.range()
   const bottomY = Math.max(...yRange)

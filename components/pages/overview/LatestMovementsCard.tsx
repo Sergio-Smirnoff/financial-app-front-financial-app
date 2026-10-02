@@ -66,7 +66,7 @@ export function LatestMovementsCard({ section, isLoading, onRetry, className }: 
           <Button size="sm">{t('latest.emptyAction')}</Button>
         </Link>
       }
-      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
+      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-auto frame:min-h-0 frame:flex-1" />}
     >
       {(data) => (
         <div className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 frame:gap-2 frame:p-4', className)}>

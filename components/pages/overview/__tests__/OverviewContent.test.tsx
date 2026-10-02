@@ -198,7 +198,7 @@ describe('OverviewContent', () => {
 
   it('shows spend by category as amount and share, with no "/ max"', () => {
     renderOverview(fixture)
-    expect(screen.getByText(/85\.000 · 36,9 %/)).toBeInTheDocument()
+    expect(screen.getByText(/85\.000 · 36,9\s%/)).toBeInTheDocument()
     expect(screen.queryByText(/85000 \//)).not.toBeInTheDocument()
   })
 })

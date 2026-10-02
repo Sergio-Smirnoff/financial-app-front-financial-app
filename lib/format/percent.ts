@@ -5,5 +5,5 @@ export function formatPercent(value: number, opts?: { decimals?: number; signed?
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value)
-  return `${formatted} %`
+  return `${formatted}\u00a0%`
 }

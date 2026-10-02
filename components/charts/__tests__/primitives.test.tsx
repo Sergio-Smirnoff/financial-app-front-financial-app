@@ -49,4 +49,16 @@ describe('Axis', () => {
     const labels = [...container.querySelectorAll('[data-testid="tick-y"] text')].map((t) => t.textContent)
     expect(labels).toEqual(['1,5k', '80M'])
   })
+
+  it('keeps one decimal on small ticks by default instead of rounding them to zero', () => {
+    const yScale = scaleLinear().domain([0, 1]).range([200, 32])
+    const xScale = scaleUtc().domain([new Date('2026-01-01'), new Date('2026-02-01')]).range([56, 600])
+    const { container } = render(
+      <svg>
+        <Axis xScale={xScale} yScale={yScale} ticksX={[]} ticksY={[0, 0.25, 0.5]} width={640} height={240} />
+      </svg>
+    )
+    const labels = [...container.querySelectorAll('[data-testid="tick-y"] text')].map((t) => t.textContent)
+    expect(labels).toEqual(['0', '0,3', '0,5'])
+  })
 })

@@ -44,7 +44,7 @@ export function HoverMarker({
       <circle cx={x} cy={y} r={3} fill="white" />
 
       {/* Tooltip */}
-      <g role="tooltip" transform={`translate(${x + 150 > width ? x - 140 : x + 10}, ${Math.max(paddingY, y - 40)})`}>
+      <g role="tooltip" transform={`translate(${x + 150 > width ? Math.max(0, x - 140) : x + 10}, ${Math.max(paddingY, y - 40)})`}>
         <rect
           width={130}
           height={42}

@@ -67,4 +67,21 @@ describe('BarPairChart & HorizonBars', () => {
     render(<HorizonBars months={[{ month: '2026-09', amount: 8e7 }]} currency="USD" ariaLabel="Comprometido" />)
     expect(screen.getByText('US$80M')).toBeInTheDocument()
   })
+
+  it('never draws an inverted bar in a card narrower than its padding', () => {
+    vi.unstubAllGlobals()
+    stubChartSize(40, 40)
+    const { container } = render(
+      <>
+        <BarPairChart months={months12} currency="ARS" ariaLabel="Flujo" />
+        <HorizonBars months={committed12} currency="ARS" ariaLabel="Comprometido" />
+      </>
+    )
+    const rects = [...container.querySelectorAll('rect')]
+    expect(rects.length).toBeGreaterThan(0)
+    for (const rect of rects) {
+      expect(Number(rect.getAttribute('width') ?? 0)).toBeGreaterThanOrEqual(0)
+      expect(Number(rect.getAttribute('height') ?? 0)).toBeGreaterThanOrEqual(0)
+    }
+  })
 })
