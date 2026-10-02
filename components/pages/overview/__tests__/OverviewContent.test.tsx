@@ -200,9 +200,7 @@ describe('OverviewContent', () => {
     renderOverview(fixture)
     for (const id of ['overview-rail-spend', 'overview-rail-latest']) {
       const wrapper = screen.getByTestId(id)
-      expect(wrapper).toHaveClass('flex', 'flex-col', 'frame:flex-1', 'frame:basis-0', 'short:hidden')
-      expect(wrapper).not.toHaveClass('min-h-0')
-      expect(wrapper.className).not.toMatch(/frame:min-h-/)
+      expect(wrapper).toHaveClass('flex', 'flex-col', 'frame:flex-1', 'frame:basis-0', 'frame:min-h-16', 'short:hidden')
     }
     for (const id of ['spend-list', 'latest-list']) {
       const list = screen.getByTestId(id)
@@ -210,6 +208,19 @@ describe('OverviewContent', () => {
       expect(list.parentElement).toHaveClass('min-h-0', 'frame:flex-1', 'frame:basis-0', 'frame:min-h-16')
     }
     expect(screen.getByRole('link', { name: /Visa Galicia/ }).closest('.frame\\:shrink-0')).not.toBeNull()
+  })
+
+  it('bounds both rail lists to their share while loading', () => {
+    vi.mocked(useOverviewPage).mockReturnValue({ data: undefined, isLoading: true, refetch: vi.fn() } as any)
+    render(
+      <NextIntlClientProvider locale="es-AR" messages={esAR}>
+        <QueryClientProvider client={new QueryClient()}>
+          <OverviewContent />
+        </QueryClientProvider>
+      </NextIntlClientProvider>
+    )
+    expect(screen.getByTestId('overview-rail-spend')).toHaveClass('frame:min-h-16')
+    expect(screen.getByTestId('overview-rail-latest')).toHaveClass('frame:min-h-16')
   })
 
   it('keeps the latest heading for screen readers and its header at one height', () => {
@@ -225,7 +236,7 @@ describe('OverviewContent', () => {
     renderOverview({ ...fixture, spendByCategory })
     const wrapper = screen.getByTestId('overview-rail-spend')
     expect(wrapper).toHaveClass('frame:flex-1', 'frame:basis-0')
-    expect(wrapper).not.toHaveClass('min-h-0')
+    expect(wrapper.className).not.toMatch(/(^|\s)(frame:)?min-h-/)
     const box = wrapper.firstElementChild as HTMLElement
     expect(box).toHaveClass('p-8', 'frame:p-4')
     expect(box.className).not.toMatch(/(^|\s)(frame:)?(min-h-0|basis-0|flex-1|shrink)(\s|$)/)
@@ -237,7 +248,10 @@ describe('OverviewContent', () => {
     ['unavailable', { status: 'UNAVAILABLE', observedAt: NOW, data: null }],
   ])('keeps an %s latest box at its own compact size inside the rail', (_, latestMovements) => {
     renderOverview({ ...fixture, latestMovements })
-    const box = screen.getByTestId('overview-rail-latest').firstElementChild as HTMLElement
+    const wrapper = screen.getByTestId('overview-rail-latest')
+    expect(wrapper.className).not.toMatch(/(^|\s)(frame:)?min-h-/)
+    expect(screen.getByTestId('overview-rail-spend')).toHaveClass('frame:min-h-16')
+    const box = wrapper.firstElementChild as HTMLElement
     expect(box).toHaveClass('p-8', 'frame:p-4')
     expect(box.className).not.toMatch(/(^|\s)(frame:)?(min-h-0|basis-0|flex-1|shrink)(\s|$)/)
   })

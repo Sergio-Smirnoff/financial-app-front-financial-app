@@ -4,6 +4,8 @@ import React from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useOverviewPage } from '@/lib/hooks/useOverviewPage'
+import { useSection } from '@/lib/hooks/useSection'
+import { cn } from '@/lib/utils'
 import { RailSection } from '@/components/ui-kit/layout/KpiStrip'
 import { PageFrameFill } from '@/components/ui-kit/layout/PageFrame'
 import { NetWorthHero } from './NetWorthHero'
@@ -15,7 +17,15 @@ import { UpcomingRail } from './UpcomingRail'
 import { SpendByCategoryCard } from './SpendByCategoryCard'
 import { LatestMovementsCard } from './LatestMovementsCard'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
-import type { BffQuery, OverviewBff } from '@/lib/api/bff/types'
+import type { BffQuery, OverviewBff, Section } from '@/lib/api/bff/types'
+
+const RAIL_LIST_SHARE = 'flex flex-col frame:flex-1 frame:basis-0 short:hidden'
+
+function useRailListShare<T>(section: Section<T> | undefined, isLoading: boolean): string {
+  const { state } = useSection(section, isLoading)
+  const fitsShare = state === 'ready' || state === 'loading'
+  return cn(RAIL_LIST_SHARE, fitsShare && 'frame:min-h-16')
+}
 
 export interface OverviewContentProps {
   query?: BffQuery
@@ -27,6 +37,8 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
   const { data, isLoading, refetch } = useOverviewPage(query)
 
   const observedAt = data?.kpis?.observedAt
+  const spendShare = useRailListShare(data?.spendByCategory, isLoading)
+  const latestShare = useRailListShare(data?.latestMovements, isLoading)
 
   return (
     <>
@@ -76,10 +88,10 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
                 >
                   {t('latest.more')}
                 </Link>
-                <div data-testid="overview-rail-spend" className="flex flex-col frame:flex-1 frame:basis-0 short:hidden">
+                <div data-testid="overview-rail-spend" className={spendShare}>
                   <SpendByCategoryCard section={data?.spendByCategory} isLoading={isLoading} onRetry={refetch} />
                 </div>
-                <div data-testid="overview-rail-latest" className="flex flex-col frame:flex-1 frame:basis-0 short:hidden">
+                <div data-testid="overview-rail-latest" className={latestShare}>
                   <LatestMovementsCard section={data?.latestMovements} isLoading={isLoading} onRetry={refetch} />
                 </div>
               </div>
