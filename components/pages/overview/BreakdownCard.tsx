@@ -48,7 +48,7 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
         ].filter((s) => s.pct > 0)
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4 short:space-y-2 short:p-4">
             <h3 className="section-head">{t('breakdownTitle')}</h3>
             <CompositionBar slices={slices} />
           </div>

@@ -4,50 +4,57 @@ import React from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
 import { Money } from '@/components/ui-kit/money/Money'
 import { Button } from '@/components/ui/button'
+import { useFitCount } from '@/lib/hooks/useFitCount'
+import { cn } from '@/lib/utils'
 import type { Section, TransactionRow } from '@/lib/api/bff/types'
-import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
 export interface LatestMovementsCardProps {
   section?: Section<TransactionRow[]>
   isLoading: boolean
   onRetry?: () => void
+  className?: string
 }
 
-export function LatestMovementsCard({ section, isLoading, onRetry }: LatestMovementsCardProps) {
+function LatestList({ rows }: { rows: TransactionRow[] }) {
   const t = useTranslations('overview')
+  const { ref, count, framed } = useFitCount<HTMLUListElement>(rows.length)
+  const none = framed && count === 0
 
-  const columns: ColumnDef<TransactionRow, unknown>[] = React.useMemo(
-    () => [
-      {
-        id: 'date',
-        accessorKey: 'date',
-        header: t('latest.date'),
-      },
-      {
-        id: 'description',
-        accessorKey: 'description',
-        header: t('latest.description'),
-      },
-      {
-        id: 'category',
-        accessorFn: (row) => row.categoryName || t('latest.uncategorised'),
-        header: t('latest.category'),
-      },
-      {
-        id: 'amount',
-        accessorFn: (row) => row,
-        header: t('latest.amount'),
-        cell: ({ getValue }) => {
-          const row = getValue() as TransactionRow
-          return <Money value={row.amount} tone={row.direction === 'IN' ? 'gain' : 'loss'} />
-        },
-      },
-    ],
-    [t],
+  return (
+    <>
+      <div className="flex items-center justify-between gap-4">
+        {!none && <h3 className="section-head">{t('latestTitle')}</h3>}
+        <Link href="/transactions" data-testid="latest-more" className="text-xs font-medium text-primary hover:underline">
+          {none ? t('latest.more') : t('latest.seeAll')}
+        </Link>
+      </div>
+      <ul ref={ref} data-testid="latest-list" aria-label={t('latest.caption')} className="relative min-h-0 overflow-hidden frame:flex-1">
+        {rows.map((row, index) => (
+          <li
+            key={row.id}
+            data-testid="latest-row"
+            hidden={index >= count}
+            title={`${row.description} · ${row.categoryName || t('latest.uncategorised')}`}
+            className="flex items-baseline justify-between gap-3 border-b py-2 text-sm last:border-0"
+          >
+            <span className="min-w-0 truncate">
+              <span className="mr-1.5 text-xs text-muted-foreground">{row.date}</span>
+              {row.description}
+            </span>
+            <span className="shrink-0 whitespace-nowrap">
+              <Money value={row.amount} tone={row.direction === 'IN' ? 'gain' : 'loss'} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </>
   )
+}
+
+export function LatestMovementsCard({ section, isLoading, onRetry, className }: LatestMovementsCardProps) {
+  const t = useTranslations('overview')
 
   return (
     <SectionState
@@ -62,14 +69,8 @@ export function LatestMovementsCard({ section, isLoading, onRetry }: LatestMovem
       skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => (
-        <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h3 className="section-head">{t('latestTitle')}</h3>
-            <Link href="/transactions" className="text-xs font-medium text-primary hover:underline">
-              {t('latest.seeAll')}
-            </Link>
-          </div>
-          <ScrollTable columns={columns} rows={data} caption={t('latest.caption')} maxHeight={320} />
+        <div className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5', className)}>
+          <LatestList rows={data} />
         </div>
       )}
     </SectionState>

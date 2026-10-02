@@ -35,12 +35,12 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
         }))
 
         return (
-          <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-6">
+          <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-6 short:gap-2 short:p-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div className="min-w-0 flex-1">
                 <span className="kicker">{t('netWorthKicker')}</span>
-                <div className="flex items-baseline gap-3 mt-1">
-                  {latestPoint && <FitAmount value={latestPoint.value} className="min-w-0 flex-1 text-3xl font-bold" />}
+                <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  {latestPoint && <FitAmount value={latestPoint.value} className="min-w-0 flex-[1_1_12rem] text-3xl font-bold short:text-2xl" />}
                   {data.delta?.pct != null && (
                     <span className="shrink-0">
                       <DeltaBadge pct={data.delta.pct} absolute={data.delta.amount} />

@@ -144,4 +144,55 @@ describe('OverviewContent', () => {
     const link = screen.getByRole('link', { name: /Visa Galicia/ })
     expect(link).toHaveAttribute('href', '/banks')
   })
+
+  it('lays the cards out as layout A: net worth, flow, committed, breakdown, then the rail', () => {
+    renderOverview(fixture)
+    const grid = screen.getByTestId('overview-grid')
+    expect([...grid.children].map((child) => child.getAttribute('data-testid'))).toEqual([
+      'overview-area-net-worth',
+      'overview-area-flow',
+      'overview-area-committed',
+      'overview-area-breakdown',
+      'overview-rail',
+    ])
+    expect(grid).toHaveClass('frame:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)_330px]', 'frame:grid-rows-[minmax(0,1fr)_auto]')
+    expect(screen.getByTestId('overview-rail')).toHaveClass('frame:col-start-3', 'frame:row-span-2')
+  })
+
+  it('puts the rail beside the cards only when the page content is at least 900px wide', () => {
+    renderOverview(fixture)
+    const grid = screen.getByTestId('overview-grid')
+    expect(grid).toHaveClass('@min-[852px]/page:grid-cols-[minmax(0,1fr)_20rem]')
+    expect(grid.className).not.toMatch(/(^|\s)(md|lg|xl):grid-cols-/)
+    expect(screen.getByTestId('overview-rail')).toHaveClass('@min-[852px]/page:col-start-2', '@min-[852px]/page:row-span-4')
+  })
+
+  it('drops Flujo and Comprometido in the compact frame and puts the breakdown under net worth', () => {
+    renderOverview(fixture)
+    expect(screen.getByTestId('overview-grid')).toHaveClass('short:grid-cols-[minmax(0,1fr)_330px]')
+    expect(screen.getByTestId('overview-area-flow')).toHaveClass('short:hidden')
+    expect(screen.getByTestId('overview-area-committed')).toHaveClass('short:hidden')
+    expect(screen.getByTestId('overview-area-breakdown')).toHaveClass('short:col-start-1')
+    expect(screen.getByTestId('overview-rail')).toHaveClass('short:col-start-2')
+  })
+
+  it('keeps only the upcoming payments and a link to the movements in the compact rail', () => {
+    renderOverview(fixture)
+    expect(screen.getByTestId('overview-rail-spend')).toHaveClass('short:hidden')
+    expect(screen.getByTestId('overview-rail-latest')).toHaveClass('short:hidden')
+    const link = screen.getByTestId('overview-latest-link')
+    expect(link).toHaveClass('hidden', 'short:inline-flex')
+    expect(link).toHaveAttribute('href', '/transactions')
+    expect(link).toHaveTextContent(esAR.overview.latest.more)
+  })
+
+  it('lists the latest movements as whole rows that never scroll or wrap their amount', () => {
+    renderOverview(fixture)
+    expect(screen.queryByRole('table', { name: esAR.overview.latest.caption })).not.toBeInTheDocument()
+    expect(screen.getByTestId('latest-list')).toHaveClass('relative', 'min-h-0', 'overflow-hidden')
+    const [row] = screen.getAllByTestId('latest-row')
+    expect(row).toHaveTextContent('Supermercado Coto')
+    expect(row.querySelector('.whitespace-nowrap')).toHaveTextContent(/25\.000,00/)
+    expect(screen.getByTestId('latest-more')).toHaveTextContent(esAR.overview.latest.seeAll)
+  })
 })

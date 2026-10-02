@@ -28,12 +28,14 @@ export function FitAmountGroup({ children }: { children: React.ReactNode }) {
   return <FitGroupContext.Provider value={group}>{children}</FitGroupContext.Provider>
 }
 
-function fittedFontPx(root: HTMLElement, probe: HTMLElement): number | null {
+function fittedFontPx(root: HTMLElement, probe: HTMLElement, scale: number): number | null {
   const natural = probe.scrollWidth
   const available = root.clientWidth
-  if (natural === 0 || available === 0 || natural <= available) return null
+  if (natural === 0 || available === 0) return null
+  const ratio = Math.min(1, available / natural) * scale
+  if (ratio >= 1) return null
   const base = parseFloat(window.getComputedStyle(root).fontSize)
-  return Math.floor((2 * base * available) / natural) / 2
+  return Math.floor(2 * base * ratio) / 2
 }
 
 export function FitAmount({ className, ...money }: FitAmountProps) {
@@ -42,15 +44,34 @@ export function FitAmount({ className, ...money }: FitAmountProps) {
   const report = group?.report
   const rootRef = useRef<HTMLSpanElement>(null)
   const probeRef = useRef<HTMLSpanElement>(null)
+  const amountRef = useRef<HTMLSpanElement>(null)
+  const scaleRef = useRef(1)
+  const widthRef = useRef(0)
   const [own, setOwn] = useState<number | null>(null)
 
   const measure = useCallback(() => {
     const root = rootRef.current
     const probe = probeRef.current
     if (!root || !probe) return
-    const next = fittedFontPx(root, probe)
+    const amount = amountRef.current
+    if (amount && root.clientWidth > 0 && amount.scrollWidth > root.clientWidth) {
+      scaleRef.current *= root.clientWidth / amount.scrollWidth
+    }
+    const next = fittedFontPx(root, probe, scaleRef.current)
     setOwn((prev) => (prev === next ? prev : next))
   }, [])
+
+  const remeasure = useCallback(
+    (force: boolean) => {
+      const width = rootRef.current?.clientWidth ?? 0
+      if (force || width !== widthRef.current) {
+        widthRef.current = width
+        scaleRef.current = 1
+      }
+      measure()
+    },
+    [measure],
+  )
 
   useLayoutEffect(() => {
     measure()
@@ -60,16 +81,16 @@ export function FitAmount({ className, ...money }: FitAmountProps) {
     const root = rootRef.current
     if (!root) return
     let active = true
-    const observer = new ResizeObserver(measure)
+    const observer = new ResizeObserver(() => remeasure(false))
     observer.observe(root)
     void document.fonts?.ready.then(() => {
-      if (active) measure()
+      if (active) remeasure(true)
     })
     return () => {
       active = false
       observer.disconnect()
     }
-  }, [measure])
+  }, [remeasure])
 
   useLayoutEffect(() => {
     report?.(id, own)
@@ -90,6 +111,7 @@ export function FitAmount({ className, ...money }: FitAmountProps) {
       className={cn('relative block min-w-0 overflow-hidden', className)}
     >
       <span
+        ref={amountRef}
         data-amount
         data-fit={compact ? 'compact' : fontPx != null ? 'shrunk' : 'full'}
         className="block whitespace-nowrap"

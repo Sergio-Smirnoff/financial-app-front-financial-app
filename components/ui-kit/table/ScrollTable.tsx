@@ -1,5 +1,6 @@
 'use client'
 
+import type * as React from 'react'
 import {
   useLegacyTable as useReactTable,
   getCoreRowModel,
@@ -14,6 +15,7 @@ export interface ScrollTableProps<T extends Record<string, any> = any> {
   maxHeight?: number
   caption: string
   className?: string
+  columnClassNames?: Readonly<Record<string, string>>
 }
 
 export function ScrollTable<T extends Record<string, any> = any>({
@@ -22,6 +24,7 @@ export function ScrollTable<T extends Record<string, any> = any>({
   maxHeight = 400,
   caption,
   className,
+  columnClassNames,
 }: ScrollTableProps<T>) {
   const table = useReactTable<T>({
     data: rows,
@@ -35,8 +38,8 @@ export function ScrollTable<T extends Record<string, any> = any>({
 
   return (
     <div
-      className={cn('w-full overflow-auto', className)}
-      style={{ maxHeight }}
+      className={cn('w-full overflow-auto max-h-[var(--scroll-table-max)]', className)}
+      style={{ '--scroll-table-max': `${maxHeight}px` } as React.CSSProperties}
     >
       <table aria-label={caption} className="w-full border-collapse text-sm">
         <caption className="sr-only">{caption}</caption>
@@ -47,7 +50,7 @@ export function ScrollTable<T extends Record<string, any> = any>({
                 <th
                   key={header.id}
                   scope="col"
-                  className="px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap"
+                  className={cn('px-3 py-2 text-left font-medium text-muted-foreground whitespace-nowrap', columnClassNames?.[header.column.id])}
                 >
                   {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
@@ -59,7 +62,7 @@ export function ScrollTable<T extends Record<string, any> = any>({
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="border-b transition-colors hover:bg-muted/30">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-3 py-2">
+                <td key={cell.id} className={cn('px-3 py-2', columnClassNames?.[cell.column.id])}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

@@ -33,23 +33,25 @@ export function ChartFrame({ ariaLabel, dataTable, className, minHeight = 160, c
         {ready && children(size)}
       </svg>
       {dataTable && dataTable.length > 0 && (
-        <table className="sr-only">
-          <caption>{ariaLabel}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Etiqueta / Fecha</th>
-              <th scope="col">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable.map((item, idx) => (
-              <tr key={idx}>
-                <td>{item.label}</td>
-                <td>{item.value}</td>
+        <div className="sr-only">
+          <table>
+            <caption>{ariaLabel}</caption>
+            <thead>
+              <tr>
+                <th scope="col">Etiqueta / Fecha</th>
+                <th scope="col">Valor</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {dataTable.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.label}</td>
+                  <td>{item.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

@@ -129,11 +129,8 @@
     "latest": {
       "caption": "Últimos movimientos",
       "seeAll": "Ver todos →",
-      "date": "Fecha",
-      "description": "Descripción",
-      "category": "Categoría",
+      "more": "Ver últimos movimientos →",
       "uncategorised": "Sin categoría",
-      "amount": "Monto",
       "emptyAction": "Registrar movimiento"
     }
   },
