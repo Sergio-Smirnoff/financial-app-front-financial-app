@@ -93,7 +93,7 @@ export type UpdateHoldingRequest = CreateHoldingRequest
 
 export interface SellHoldingRequest {
   quantity: string
-  price: number | null
+  price: string | null
   destinationCbu: string | null
 }
 

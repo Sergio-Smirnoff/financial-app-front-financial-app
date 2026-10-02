@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { NextIntlClientProvider } from 'next-intl'
@@ -283,7 +283,7 @@ describe('SellHoldingDialog', () => {
     await waitFor(() =>
       expect(sellMutateAsync).toHaveBeenCalledWith({
         id: 10,
-        body: { quantity: '100', price: 812.5, destinationCbu: '0720000000000000000011' },
+        body: { quantity: '100', price: '812.5', destinationCbu: '0720000000000000000011' },
       }),
     )
   })
@@ -345,6 +345,102 @@ describe('SellHoldingDialog', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
+  it.each(['1e-7', '1.5e-7'])('rejects the exponent value %s in the quantity and the manual price', async (value) => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    fireEvent.change(quantity, { target: { value } })
+    expect(screen.getByRole('alert')).toHaveTextContent('La cantidad admite hasta 6 decimales')
+    expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
+
+    fireEvent.change(quantity, { target: { value: '10' } })
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    fireEvent.change(screen.getByLabelText(/Precio de venta/), { target: { value } })
+    expect(screen.getByRole('alert')).toHaveTextContent('El precio admite hasta 6 decimales')
+    expect(screen.getByRole('button', { name: 'Vender 10 y liquidar' })).toBeDisabled()
+
+    expect(sellMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('sends exponent values within six decimals as plain decimals', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    fireEvent.change(screen.getByLabelText('Cantidad a vender'), { target: { value: '1.5e-5' } })
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    fireEvent.change(screen.getByLabelText(/Precio de venta/), { target: { value: '8.125e2' } })
+    await user.click(screen.getByRole('button', { name: /^Vender .* y liquidar$/ }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: '0.000015', price: '812.5', destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('prefills a tiny market quote as a plain decimal', async () => {
+    const user = userEvent.setup()
+    renderSell({ ...ggal, currentPrice: 0.0000012 })
+
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    const price = screen.getByLabelText(/Precio de venta/) as HTMLInputElement
+    expect(price.value).toBe('0.000001')
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: '100', price: '0.000001', destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('accepts a trailing decimal point as zero decimals', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    await user.clear(quantity)
+    await user.type(quantity, '10.')
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Vender 10 y liquidar' }))
+
+    await waitFor(() =>
+      expect(sellMutateAsync).toHaveBeenCalledWith({
+        id: 10,
+        body: { quantity: '10', price: null, destinationCbu: '0720000000000000000011' },
+      }),
+    )
+  })
+
+  it('ties the error to the field that owns it', async () => {
+    const user = userEvent.setup()
+    renderSell(ggal)
+
+    const quantity = screen.getByLabelText('Cantidad a vender')
+    expect(quantity).toHaveAttribute('aria-invalid', 'false')
+    expect(quantity).not.toHaveAccessibleDescription()
+
+    fireEvent.change(quantity, { target: { value: '150' } })
+    expect(quantity).toHaveAttribute('aria-invalid', 'true')
+    expect(quantity).toHaveAccessibleDescription('No podés vender más de 100')
+
+    fireEvent.change(quantity, { target: { value: '10' } })
+    await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
+    const price = screen.getByLabelText(/Precio de venta/)
+    fireEvent.change(price, { target: { value: '0' } })
+    expect(quantity).toHaveAttribute('aria-invalid', 'false')
+    expect(quantity).not.toHaveAccessibleDescription()
+    expect(price).toHaveAttribute('aria-invalid', 'true')
+    expect(price).toHaveAccessibleDescription('El precio debe ser mayor a cero')
+
+    fireEvent.change(price, { target: { value: '800' } })
+    expect(price).toHaveAttribute('aria-invalid', 'false')
+    expect(price).not.toHaveAccessibleDescription()
+  })
+
   it('quotes bonds per 100 VN, starts the manual price empty and shows no estimate', async () => {
     const user = userEvent.setup()
     renderSell(al30)
@@ -361,7 +457,7 @@ describe('SellHoldingDialog', () => {
     await waitFor(() =>
       expect(sellMutateAsync).toHaveBeenCalledWith({
         id: 11,
-        body: { quantity: '1000', price: 80500, destinationCbu: '0720000000000000000011' },
+        body: { quantity: '1000', price: '80500', destinationCbu: '0720000000000000000011' },
       }),
     )
   })
@@ -474,7 +570,7 @@ describe('SellHoldingDialog', () => {
     await waitFor(() =>
       expect(sellMutateAsync).toHaveBeenCalledWith({
         id: 10,
-        body: { quantity: '40', price: 812.5, destinationCbu: '0720000000000000000011' },
+        body: { quantity: '40', price: '812.5', destinationCbu: '0720000000000000000011' },
       }),
     )
   })
@@ -528,6 +624,7 @@ describe('SellHoldingDialog', () => {
     await user.clear(screen.getByLabelText('Cantidad a vender'))
     await user.type(screen.getByLabelText('Cantidad a vender'), '40')
     await user.click(screen.getByRole('button', { name: 'Todo' }))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
 
     await waitFor(() =>

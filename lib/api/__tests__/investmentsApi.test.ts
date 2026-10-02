@@ -39,11 +39,11 @@ describe('investmentsApi.sellHolding', () => {
     const sale = { holdingId: 7, soldQuantity: '10', remainingQuantity: '40', proceeds: '350000', bookedAmount: '350000', currency: 'ARS', closed: false }
     vi.mocked(api.post).mockResolvedValueOnce(sale)
 
-    const result = await investmentsApi.sellHolding(7, { quantity: '10', price: 35000, destinationCbu: '0170099200000000000017' })
+    const result = await investmentsApi.sellHolding(7, { quantity: '10', price: '35000', destinationCbu: '0170099200000000000017' })
 
     expect(api.post).toHaveBeenCalledWith('/api/v1/investments/holdings/7/sell', {
       quantity: '10',
-      price: 35000,
+      price: '35000',
       destinationCbu: '0170099200000000000017',
     })
     expect(result).toEqual(sale)

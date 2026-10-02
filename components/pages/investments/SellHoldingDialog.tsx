@@ -59,9 +59,13 @@ const MAX_DECIMALS = 6
 
 const toNumber = (raw: string): number => (raw.trim() === '' ? NaN : Number(raw))
 
-const exceedsDecimals = (raw: string): boolean => (raw.trim().split('.')[1] ?? '').length > MAX_DECIMALS
+const exceedsDecimals = (raw: string): boolean => {
+  const [mantissa, exponent = '0'] = raw.trim().toLowerCase().split('e')
+  return (mantissa.split('.')[1] ?? '').length - Number(exponent) > MAX_DECIMALS
+}
 
-const withMaxDecimals = (value: number): string => String(Number(value.toFixed(MAX_DECIMALS)))
+const plainDecimal = (value: number): string =>
+  value.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: MAX_DECIMALS })
 
 const sellErrorKey = (err: unknown): string =>
   (err instanceof ApiError && err.code && SELL_ERROR_KEYS[err.code]) || 'holdings.sell.errors.unknown'
@@ -110,7 +114,7 @@ export function SellHoldingDialog({
     initialisedFor.current = holdingId
     setQuantity(heldQuantity)
     setUseMarketPrice(true)
-    setManualPrice(!isBond && marketPrice != null ? withMaxDecimals(marketPrice) : '')
+    setManualPrice(!isBond && marketPrice != null ? plainDecimal(marketPrice) : '')
     setSelectedCbu(availableAccounts[0]?.cbu ?? '')
   }, [open, holdingId, heldQuantity, isBond, marketPrice, availableAccounts])
 
@@ -136,6 +140,7 @@ export function SellHoldingDialog({
         ? t('holdings.sell.priceDecimals', { max: MAX_DECIMALS })
         : null
   const error = quantityError ?? priceError
+  const priceOwnsError = quantityError == null && priceError != null
   const estimate = !isBond && !error && price != null ? qty * price : null
   const priceLabel = isBond ? t('holdings.sell.manualPricePerHundred') : t('holdings.sell.manualPrice')
 
@@ -154,8 +159,8 @@ export function SellHoldingDialog({
       const sale = await sellMutation.mutateAsync({
         id: holding.id,
         body: {
-          quantity: sellsEverything && heldQuantity != null ? heldQuantity : String(qty),
-          price: useMarketPrice ? null : price,
+          quantity: sellsEverything && heldQuantity != null ? heldQuantity : plainDecimal(qty),
+          price: useMarketPrice || price == null ? null : plainDecimal(price),
           destinationCbu,
         },
       })
@@ -225,6 +230,8 @@ export function SellHoldingDialog({
                 step="any"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
+                aria-invalid={quantityError != null}
+                aria-describedby={quantityError != null ? 'sell-error' : undefined}
                 className="h-9 font-mono"
               />
               <Button type="button" variant="outline" size="sm" onClick={() => heldQuantity != null && setQuantity(heldQuantity)}>
@@ -271,6 +278,8 @@ export function SellHoldingDialog({
                   step="any"
                   value={manualPrice}
                   onChange={(e) => setManualPrice(e.target.value)}
+                  aria-invalid={priceOwnsError}
+                  aria-describedby={priceOwnsError ? 'sell-error' : undefined}
                   className="h-9 font-mono"
                 />
               </div>
@@ -293,7 +302,7 @@ export function SellHoldingDialog({
           )}
 
           {error && (
-            <p role="alert" className="text-xs font-medium text-destructive">
+            <p id="sell-error" role="alert" className="text-xs font-medium text-destructive">
               {error}
             </p>
           )}
