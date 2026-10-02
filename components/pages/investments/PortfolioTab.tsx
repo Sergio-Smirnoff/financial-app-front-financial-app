@@ -1,191 +1,191 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Money } from '@/components/ui-kit/money/Money'
-import { CompositionBar } from '@/components/charts/CompositionBar'
-import { LegendList } from '@/components/charts/LegendList'
 import { Button } from '@/components/ui/button'
-import { formatMoney } from '@/lib/format'
+import { formatPercent } from '@/lib/format'
+import { useHoldings } from '@/lib/hooks/useInvestments'
+import type { AssetTypeSlice, InvestmentsKpis, PositionRow, Section } from '@/lib/api/bff/types'
+import type { Holding } from '@/types/investments'
 import { SellHoldingDialog, type SellHoldingTarget } from './SellHoldingDialog'
-import type { Section } from '@/lib/api/bff/types'
-import { Plus } from 'lucide-react'
-
-interface PositionRow {
-  holdingId?: number
-  ticker?: string
-  name?: string
-  quantity?: number
-  avgCost?: any
-  price?: any
-  marketValue?: any
-  pnl?: any
-  pnlPct?: number
-  bankNumber?: string
-}
-
-interface CompositionSlice {
-  label?: string
-  amount?: any
-  pct?: number
-}
+import { GROUP_LABEL_KEYS, amountOf, groupPositions, portfolioShare, toneOf, type GroupKey } from './portfolioView'
 
 export interface PortfolioTabProps {
   positionsSection?: Section<PositionRow[]>
-  compositionSection?: Section<CompositionSlice[]>
+  compositionSection?: Section<AssetTypeSlice[]>
+  kpis?: InvestmentsKpis | null
   isLoading: boolean
   onRetry?: () => void
   onOpenCreate?: () => void
 }
 
+const TONE_TEXT = { gain: 'text-gain', loss: 'text-loss', neutral: '' } as const
+const share = (pct?: number | null) => (pct == null ? '—' : formatPercent(pct, { decimals: 1, signed: false }))
+const signedPct = (pct?: number | null) => (pct == null ? '—' : formatPercent(pct))
+
+function sellTargetFor(row: PositionRow, holding: Holding): SellHoldingTarget {
+  return {
+    id: holding.id,
+    ticker: holding.ticker,
+    name: holding.name,
+    quantity: holding.quantity,
+    currency: holding.currency,
+    currentPrice: row.price?.currency === holding.currency ? amountOf(row.price) : null,
+    avgPurchasePrice: holding.avgPurchasePrice,
+  }
+}
+
 export function PortfolioTab({
   positionsSection,
   compositionSection,
+  kpis,
   isLoading,
   onRetry,
   onOpenCreate,
 }: PortfolioTabProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
-  const [sellingHolding, setSellingHolding] = useState<SellHoldingTarget | null>(null)
+  const { data: holdings } = useHoldings()
+  const [collapsed, setCollapsed] = useState<ReadonlySet<GroupKey>>(new Set())
+  const [selling, setSelling] = useState<SellHoldingTarget | null>(null)
 
-  const slices = compositionSection?.data?.map((a) => ({
-    label: a.label ?? '',
-    amount: a.amount ? formatMoney(a.amount) : '0',
-    pct: a.pct ?? 0,
-  })) ?? []
+  const holdingsById = useMemo(() => new Map((holdings ?? []).map((h) => [h.id, h])), [holdings])
+  const slices = compositionSection?.status === 'OK' ? compositionSection.data ?? [] : null
 
-  const parseNum = (val: any): number => {
-    if (val == null) return 0
-    if (typeof val === 'number') return val
-    if (typeof val?.amount === 'string') return parseFloat(val.amount) || 0
-    if (typeof val?.amount === 'number') return val.amount
-    return 0
-  }
+  const toggle = (key: GroupKey) =>
+    setCollapsed((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
 
   return (
-    <div className="space-y-6">
-      <SectionState
-        section={positionsSection}
-        isLoading={isLoading}
-        onRetry={onRetry}
-        emptyTitle={t('tabs.positionsEmptyTitle')}
-        emptyDescription={t('tabs.positionsEmptyDescription')}
-        emptyTestId="positions-empty"
-        skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
-      >
-        {(positions) => (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="section-head">{t('tabs.positionsHeading')}</h3>
-              {positions.length > 0 && onOpenCreate && (
-                <Button size="sm" variant="outline" onClick={onOpenCreate} className="h-8 text-xs font-semibold gap-1.5">
-                  <Plus className="w-3.5 h-3.5" />
-                  {t('holdings.new')}
-                </Button>
-              )}
-            </div>
-
-            {positions.length === 0 ? (
-              <div data-testid="positions-empty" className="p-8 text-center border rounded-xl bg-card space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  {t('tabs.positionsEmptyDescription')}
-                </p>
-                {onOpenCreate && (
-                  <Button size="sm" onClick={onOpenCreate} className="font-bold gap-1.5">
-                    <Plus className="w-4 h-4" />
-                    {t('holdings.new')}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <caption className="sr-only">{t('tabs.positionsCaption')}</caption>
-                  <thead>
-                    <tr className="border-b text-left text-muted-foreground">
-                      <th className="py-2 px-2">{tc('ticker')}</th>
-                      <th className="py-2 px-2">{t('tabs.colName')}</th>
-                      <th className="py-2 px-2 text-right">{tc('quantity')}</th>
-                      <th className="py-2 px-2 text-right">{t('tabs.colAvgCost')}</th>
-                      <th className="py-2 px-2 text-right">{t('tabs.colPrice')}</th>
-                      <th className="py-2 px-2 text-right">{t('shared.totalValue')}</th>
-                      <th className="py-2 px-2 text-right">P&amp;L</th>
-                      <th className="py-2 px-2 text-center">{tc('actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {positions.map((p: PositionRow) => (
-                      <tr key={p.holdingId} data-testid="position-row" className="border-b last:border-0 hover:bg-muted/30 transition">
-                        <td className="py-2 px-2">
-                          <Link href={`/investments/holdings/${p.holdingId}`} className="font-mono font-semibold text-primary hover:underline">
-                            {p.ticker}
-                          </Link>
-                        </td>
-                        <td className="py-2 px-2">{p.name}</td>
-                        <td className="py-2 px-2 text-right font-mono">{p.quantity}</td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.avgCost} /></td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.price} /></td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.marketValue} /></td>
-                        <td className="py-2 px-2 text-right font-mono">
-                          <span className={p.pnlPct != null && p.pnlPct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
-                            <Money value={p.pnl} /> ({p.pnlPct != null ? `${p.pnlPct >= 0 ? '+' : ''}${p.pnlPct.toFixed(2)}%` : '—'})
-                          </span>
-                        </td>
-                        <td className="py-2 px-2 text-center">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
-                            onClick={() =>
-                              setSellingHolding({
-                                id: p.holdingId!,
-                                ticker: p.ticker!,
-                                name: p.name,
-                                quantity: p.quantity ?? 0,
-                                currency: p.marketValue?.currency ?? 'ARS',
-                                currentPrice: parseNum(p.price),
-                                avgPurchasePrice: parseNum(p.avgCost),
-                              })
-                            }
-                          >
-                            {t('holdings.sellAction')}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+    <div className="elev-sm rounded-xl border bg-card flex h-full min-h-0 flex-col">
+      <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
+        <h3 className="section-head">{t('tabs.positionsHeading')}</h3>
+        {onOpenCreate && (
+          <Button size="sm" data-testid="register-holding-trigger" onClick={onOpenCreate} className="h-8 gap-1.5 text-xs font-semibold">
+            <Plus className="h-3.5 w-3.5" />
+            {t('holdings.new')}
+          </Button>
         )}
-      </SectionState>
+      </div>
 
-      {slices.length > 0 && (
+      <div className="flex min-h-0 flex-1 flex-col px-5 pb-4">
         <SectionState
-          section={compositionSection}
+          section={positionsSection}
           isLoading={isLoading}
           onRetry={onRetry}
-          skeleton={<div className="h-32 rounded-xl bg-muted animate-pulse" />}
+          emptyTitle={t('tabs.positionsEmptyTitle')}
+          emptyDescription={t('tabs.positionsEmptyDescription')}
+          emptyTestId="positions-empty"
+          emptyAction={
+            onOpenCreate && (
+              <Button size="sm" data-testid="positions-empty-register" onClick={onOpenCreate} className="gap-1.5 font-bold">
+                <Plus className="h-4 w-4" />
+                {t('holdings.new')}
+              </Button>
+            )
+          }
+          skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
         >
-          {() => (
-            <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-              <h3 className="section-head">{t('tabs.compositionHeading')}</h3>
-              <CompositionBar slices={slices} />
-              <LegendList slices={slices} />
+          {(positions) => (
+            <div data-testid="positions-scroll" className="relative max-h-[70vh] min-h-0 flex-1 overflow-auto frame:max-h-none">
+              <table className="w-full text-sm">
+                <caption className="sr-only">{t('tabs.positionsCaption')}</caption>
+                <thead className="sticky top-0 z-10 bg-card">
+                  <tr className="border-b text-left text-muted-foreground">
+                    <th scope="col" className="py-2 px-2">{tc('ticker')}</th>
+                    <th scope="col" className="py-2 px-2">{t('tabs.colName')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{tc('quantity')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('tabs.colAvgCost')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('tabs.colPrice')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('shared.totalValue')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('tabs.colShare')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('tabs.colPnlAmount')}</th>
+                    <th scope="col" className="py-2 px-2 text-right">{t('tabs.colPnlPct')}</th>
+                    <th scope="col" className="py-2 px-2 text-center">{tc('actions')}</th>
+                  </tr>
+                </thead>
+                {groupPositions(positions, slices).map((group) => {
+                  const isCollapsed = collapsed.has(group.key)
+                  const slice = group.slice
+                  return (
+                    <tbody key={group.key} data-testid="position-group" data-asset-type={group.key}>
+                      <tr className="border-b bg-muted/40 font-semibold">
+                        <th scope="rowgroup" colSpan={5} className="py-2 px-2 text-left">
+                          <button
+                            type="button"
+                            aria-expanded={!isCollapsed}
+                            onClick={() => toggle(group.key)}
+                            className="flex items-center gap-1.5"
+                          >
+                            {isCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                            {t(GROUP_LABEL_KEYS[group.key])}
+                            <span className="font-normal text-muted-foreground">
+                              · {t('composition.positionsCount', { count: slice?.count ?? group.rows.length })}
+                            </span>
+                          </button>
+                        </th>
+                        <td data-testid="group-subtotal" className="py-2 px-2 text-right font-mono">
+                          {slice && <Money value={slice.amount} />}
+                        </td>
+                        <td className="py-2 px-2 text-right font-mono">{slice && share(slice.pct)}</td>
+                        <td className="py-2 px-2 text-right font-mono">
+                          {slice && <Money value={slice.pnl} tone={toneOf(slice.pnlPct)} />}
+                        </td>
+                        <td className={`py-2 px-2 text-right font-mono ${TONE_TEXT[toneOf(slice?.pnlPct)]}`}>
+                          {slice && signedPct(slice.pnlPct)}
+                        </td>
+                        <td />
+                      </tr>
+                      {!isCollapsed &&
+                        group.rows.map((row) => {
+                          const holding = row.holdingId != null ? holdingsById.get(row.holdingId) : undefined
+                          return (
+                            <tr key={row.holdingId} data-testid="position-row" className="border-b last:border-0 hover:bg-muted/30 transition">
+                              <td className="py-2 px-2">
+                                <Link href={`/investments/holdings/${row.holdingId}`} className="font-mono font-semibold text-primary hover:underline">
+                                  {row.ticker}
+                                </Link>
+                              </td>
+                              <td className="max-w-[14rem] truncate py-2 px-2" title={row.name}>{row.name}</td>
+                              <td className="py-2 px-2 text-right font-mono">{row.quantity}</td>
+                              <td className="py-2 px-2 text-right font-mono"><Money value={row.avgCost} /></td>
+                              <td className="py-2 px-2 text-right font-mono"><Money value={row.price} /></td>
+                              <td className="py-2 px-2 text-right font-mono"><Money value={row.marketValue} /></td>
+                              <td className="py-2 px-2 text-right font-mono">{share(portfolioShare(row.marketValue, kpis?.marketValue))}</td>
+                              <td className="py-2 px-2 text-right font-mono"><Money value={row.pnl} tone={toneOf(row.pnlPct)} /></td>
+                              <td className={`py-2 px-2 text-right font-mono ${TONE_TEXT[toneOf(row.pnlPct)]}`}>{signedPct(row.pnlPct)}</td>
+                              <td className="whitespace-nowrap py-2 px-2 text-center">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  disabled={!holding}
+                                  className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
+                                  onClick={() => holding && setSelling(sellTargetFor(row, holding))}
+                                >
+                                  {t('holdings.sellAction')}
+                                </Button>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                    </tbody>
+                  )
+                })}
+              </table>
             </div>
           )}
         </SectionState>
-      )}
+      </div>
 
-      <SellHoldingDialog
-        holding={sellingHolding}
-        open={!!sellingHolding}
-        onOpenChange={(open) => !open && setSellingHolding(null)}
-      />
+      <SellHoldingDialog holding={selling} open={!!selling} onOpenChange={(open) => !open && setSelling(null)} />
     </div>
   )
 }

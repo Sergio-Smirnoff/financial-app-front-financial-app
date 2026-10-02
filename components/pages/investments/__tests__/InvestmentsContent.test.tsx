@@ -253,3 +253,129 @@ describe('Resumen range', () => {
     expect(vi.mocked(useInvestmentsPage)).not.toHaveBeenCalledWith(expect.objectContaining({ range: 'bogus' }))
   })
 })
+
+const position = (holdingId: number, ticker: string, assetType: string, value: string, currency = 'ARS') => ({
+  holdingId,
+  ticker,
+  name: `${ticker} S.A.`,
+  assetType,
+  quantity: 100,
+  avgCost: { amount: '100', currency, secondary: null },
+  price: { amount: String(Number(value) / 100), currency, secondary: null },
+  marketValue: { amount: value, currency, secondary: null },
+  pnl: { amount: '0', currency, secondary: null },
+  pnlPct: 0,
+  bankNumber: '017',
+})
+
+const typeSlice = (assetType: string, amount: string, pct: number, count: number) => ({
+  label: assetType,
+  assetType,
+  amount: ars(amount),
+  cost: ars(amount),
+  pnl: ars('0'),
+  pnlPct: 0,
+  pct,
+  count,
+})
+
+const cartera: InvestmentsBff = {
+  ...bff,
+  kpis: { status: 'OK', observedAt, data: { marketValue: ars('10000000'), cost: ars('10000000'), pnl: ars('0'), pnlPct: 0 } },
+  positions: {
+    status: 'OK',
+    observedAt,
+    data: [
+      position(1, 'GGAL', 'STOCK', '1500000'),
+      position(2, 'GD30', 'BOND', '3000000'),
+      position(3, 'MELI', 'CEDEAR', '4000000'),
+      position(4, 'AL30', 'BOND', '1500000'),
+    ],
+  },
+  composition: {
+    status: 'OK',
+    observedAt,
+    data: [typeSlice('BOND', '4500000', 45, 2), typeSlice('CEDEAR', '4000000', 40, 1), typeSlice('STOCK', '1500000', 15, 1)],
+  },
+} as InvestmentsBff
+
+const groupOf = (key: string) =>
+  screen.getAllByTestId('position-group').find((g) => g.getAttribute('data-asset-type') === key)!
+
+describe('Cartera', () => {
+  it('groups holdings by type in fixed order with subtotals from the composition', () => {
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    expect(screen.getAllByTestId('position-group').map((g) => g.getAttribute('data-asset-type'))).toEqual([
+      'BOND',
+      'CEDEAR',
+      'STOCK',
+    ])
+    const bonds = groupOf('BOND')
+    expect(within(bonds).getAllByTestId('position-row').map((r) => within(r).getByRole('link').textContent)).toEqual([
+      'AL30',
+      'GD30',
+    ])
+    expect(within(bonds).getByRole('button', { name: /Bonos/ })).toHaveTextContent('2 posiciones')
+    expect(within(bonds).getByTestId('group-subtotal')).toHaveTextContent(/4\.500\.000,00/)
+    expect(within(bonds).getByText('45,0 %')).toBeInTheDocument()
+  })
+
+  it('contains the table caption inside its scroller so it never stretches the page', () => {
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    expect(screen.getByTestId('positions-scroll')).toHaveClass('relative')
+  })
+
+  it('shows each row share of the portfolio', () => {
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    const ggal = within(groupOf('STOCK')).getByTestId('position-row')
+    expect(within(ggal).getByText('15,0 %')).toBeInTheDocument()
+  })
+
+  it('collapses a group on click', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    const toggle = within(groupOf('BOND')).getByRole('button', { name: /Bonos/ })
+
+    await user.click(toggle)
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(within(groupOf('BOND')).queryAllByTestId('position-row')).toHaveLength(0)
+    expect(within(groupOf('CEDEAR')).getAllByTestId('position-row')).toHaveLength(1)
+  })
+
+  it('groups rows without subtotals when composition is unavailable', () => {
+    renderInvestments(
+      { ...cartera, composition: { status: 'UNAVAILABLE', observedAt, data: null } } as InvestmentsBff,
+      { searchParams: '?tab=cartera' },
+    )
+    const bonds = groupOf('BOND')
+    expect(within(bonds).getByRole('button', { name: /Bonos/ })).toHaveTextContent('2 posiciones')
+    expect(within(bonds).getByTestId('group-subtotal')).toBeEmptyDOMElement()
+    expect(within(bonds).getAllByTestId('position-row')).toHaveLength(2)
+    expect(document.body.textContent).not.toMatch(/NaN/)
+  })
+
+  it("sells in the holding's own currency", async () => {
+    const user = userEvent.setup()
+    holdingsMock.data = [
+      {
+        id: 1, userId: 1, bankNumber: '017', ticker: 'GGAL', name: 'GGAL S.A.', assetType: 'STOCK',
+        quantity: 100, avgPurchasePrice: 12000, currency: 'ARS',
+        notifyGainThresholdPct: null, notifyLossThresholdPct: null, createdAt: '', updatedAt: '',
+      },
+    ]
+    const usdView = {
+      ...cartera,
+      positions: { status: 'OK', observedAt, data: [position(1, 'GGAL', 'STOCK', '1000', 'USD')] },
+    } as InvestmentsBff
+    renderInvestments(usdView, { searchParams: '?tab=cartera&currency=USD_MEP' })
+
+    await user.click(within(screen.getByTestId('position-row')).getByRole('button', { name: 'Vender' }))
+
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByText(/Vender posición de GGAL/)).toBeInTheDocument()
+    expect(dialog.textContent).not.toMatch(/US\$/)
+    expect(dialog.textContent).toMatch(/\$\s?1\.200\.000,00/)
+  })
+})

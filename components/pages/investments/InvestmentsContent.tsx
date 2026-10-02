@@ -144,6 +144,7 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
             <PortfolioTab
               positionsSection={positions}
               compositionSection={composition}
+              kpis={kpis?.data}
               isLoading={isLoading}
               onRetry={refetch}
               onOpenCreate={() => setCreateOpen(true)}

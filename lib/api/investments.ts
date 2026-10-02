@@ -62,7 +62,7 @@ const BASE = '/api/v1/investments'
 
 export const investmentsApi = {
   getHoldings: async (): Promise<Holding[]> => {
-    const raw = await api.get<{ content?: RawHoldingResponse[] } | RawHoldingResponse[]>(`${BASE}/holdings`)
+    const raw = await api.get<{ content?: RawHoldingResponse[] } | RawHoldingResponse[]>(`${BASE}/holdings?size=500`)
     const list = Array.isArray(raw) ? raw : (raw?.content ?? [])
     return list.map((h) => ({
       ...h,

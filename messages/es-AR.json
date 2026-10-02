@@ -365,7 +365,9 @@
       "colName": "Nombre",
       "colAvgCost": "Costo prom.",
       "colPrice": "Precio",
-      "compositionHeading": "Distribución por Tipo de Activo"
+      "colShare": "% cartera",
+      "colPnlAmount": "P&L $",
+      "colPnlPct": "P&L %"
     },
     "market": {
       "evolutionHeading": "Evolución de Cartera",

@@ -1,5 +1,5 @@
 import type { AssetType } from '@/types/investments'
-import type { AssetTypeSlice, MoneyView } from '@/lib/api/bff/types'
+import type { AssetTypeSlice, MoneyView, PositionRow } from '@/lib/api/bff/types'
 
 export type GroupKey = AssetType | 'OTHER'
 
@@ -41,4 +41,32 @@ export function amountOf(value?: MoneyView | null): number {
 export function toneOf(n?: number | null): 'gain' | 'loss' | 'neutral' {
   if (n == null || n === 0) return 'neutral'
   return n > 0 ? 'gain' : 'loss'
+}
+
+export interface PositionGroup {
+  key: GroupKey
+  rows: PositionRow[]
+  slice: AssetTypeSlice | null
+}
+
+export function groupPositions(
+  rows: readonly PositionRow[],
+  slices: readonly AssetTypeSlice[] | null,
+): PositionGroup[] {
+  return GROUP_ORDER.map((key) => ({
+    key,
+    rows: rows
+      .filter((row) => groupKeyOf(row.assetType) === key)
+      .sort(
+        (a, b) =>
+          (a.ticker ?? '').localeCompare(b.ticker ?? '', 'es-AR') || (a.holdingId ?? 0) - (b.holdingId ?? 0),
+      ),
+    slice: slices?.find((slice) => groupKeyOf(slice.assetType) === key) ?? null,
+  })).filter((group) => group.rows.length > 0)
+}
+
+export function portfolioShare(value?: MoneyView | null, total?: MoneyView | null): number | null {
+  const whole = amountOf(total)
+  if (!value || whole === 0) return null
+  return (amountOf(value) / whole) * 100
 }

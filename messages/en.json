@@ -365,7 +365,9 @@
       "colName": "Name",
       "colAvgCost": "Avg. cost",
       "colPrice": "Price",
-      "compositionHeading": "Breakdown by asset type"
+      "colShare": "% of portfolio",
+      "colPnlAmount": "P&L $",
+      "colPnlPct": "P&L %"
     },
     "market": {
       "evolutionHeading": "Portfolio evolution",
