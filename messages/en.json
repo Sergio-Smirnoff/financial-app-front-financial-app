@@ -331,6 +331,27 @@
     "shared": {
       "totalValue": "Total value"
     },
+    "groups": {
+      "BOND": "Bonds",
+      "CEDEAR": "CEDEARs",
+      "STOCK": "Stocks",
+      "FCI": "Mutual funds (FCI)",
+      "OTHER": "Other"
+    },
+    "composition": {
+      "heading": "Composition",
+      "positionsCount": "{count, plural, one {# position} other {# positions}}",
+      "donutAria": "Portfolio composition by asset type",
+      "centerLabel": "TOTAL",
+      "colType": "Type",
+      "colCount": "#",
+      "colShare": "%",
+      "colAmount": "Amount",
+      "colPnl": "P&L $",
+      "colPnlPct": "P&L %",
+      "total": "Total",
+      "empty": "No positions to compose yet."
+    },
     "tabs": {
       "markets": "Markets",
       "operations": "Operations",
@@ -358,8 +379,12 @@
       "seriesError": "Could not load quote data.",
       "priceChartAria": "Price chart for {ticker}",
       "ranges": {
-        "all": "ALL"
-      }
+        "all": "ALL",
+        "1M": "1M",
+        "3M": "3M",
+        "1A": "1Y"
+      },
+      "rangeAria": "Evolution period"
     },
     "operations": {
       "heading": "Latest operations",
@@ -372,7 +397,8 @@
     },
     "alerts": {
       "unreadCount": "{count} unread",
-      "empty": "No active alerts."
+      "empty": "No active alerts.",
+      "hiddenCount": "{count, plural, one {# more notification in the bell} other {# more notifications in the bell}}"
     },
     "holdings": {
       "new": "Record investment",

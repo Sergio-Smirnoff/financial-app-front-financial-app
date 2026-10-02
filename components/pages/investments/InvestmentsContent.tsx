@@ -15,8 +15,7 @@ import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { PortfolioTab } from './PortfolioTab'
 import { OperationsTab } from './OperationsTab'
 import { MarketsTab } from './MarketsTab'
-import { EvolutionCard } from './EvolutionCard'
-import { AlertsRail } from './AlertsRail'
+import { ResumenTab } from './ResumenTab'
 import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { resolveInvestmentsTab } from './tabs'
 import type { BffQuery, InvestmentsBff } from '@/lib/api/bff/types'
@@ -35,7 +34,7 @@ export interface InvestmentsContentProps {
 export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none' } }: InvestmentsContentProps) {
   const t = useTranslations('investments')
   const [rawTab, setTab] = useQueryState('tab')
-  const [range] = useQueryState('range', parseAsStringLiteral(EVOLUTION_RANGES).withDefault('1M'))
+  const [range, setRange] = useQueryState('range', parseAsStringLiteral(EVOLUTION_RANGES).withDefault('1M'))
   const [addTicker, setAddTicker] = useQueryState('add')
   const [createOpen, setCreateOpen] = useState(false)
   const tab = resolveInvestmentsTab(rawTab)
@@ -129,10 +128,16 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
           </TabsList>
 
           <TabsContent value="resumen" className={PANEL}>
-            <div className="grid gap-4 @min-[852px]/page:grid-cols-[1fr_330px] frame:h-full frame:min-h-0">
-              <EvolutionCard section={evolution} isLoading={isLoading} onRetry={refetch} />
-              <AlertsRail section={alerts} isLoading={isLoading} onRetry={refetch} />
-            </div>
+            <ResumenTab
+              composition={composition}
+              kpis={kpis?.data}
+              evolution={evolution}
+              alerts={alerts}
+              range={range}
+              onRangeChange={(next) => void setRange(next)}
+              isLoading={isLoading}
+              onRetry={refetch}
+            />
           </TabsContent>
 
           <TabsContent value="cartera" className={PANEL}>

@@ -331,6 +331,27 @@
     "shared": {
       "totalValue": "Valor total"
     },
+    "groups": {
+      "BOND": "Bonos",
+      "CEDEAR": "CEDEARs",
+      "STOCK": "Acciones",
+      "FCI": "Fondos (FCI)",
+      "OTHER": "Otros"
+    },
+    "composition": {
+      "heading": "Composición",
+      "positionsCount": "{count, plural, one {# posición} other {# posiciones}}",
+      "donutAria": "Composición de la cartera por tipo de activo",
+      "centerLabel": "TOTAL",
+      "colType": "Tipo",
+      "colCount": "#",
+      "colShare": "%",
+      "colAmount": "Monto",
+      "colPnl": "P&L $",
+      "colPnlPct": "P&L %",
+      "total": "Total",
+      "empty": "Sin posiciones para mostrar la composición."
+    },
     "tabs": {
       "markets": "Mercados",
       "operations": "Operaciones",
@@ -358,8 +379,12 @@
       "seriesError": "No se pudieron cargar los datos de cotización.",
       "priceChartAria": "Gráfico de cotización de {ticker}",
       "ranges": {
-        "all": "TODO"
-      }
+        "all": "TODO",
+        "1M": "1M",
+        "3M": "3M",
+        "1A": "1A"
+      },
+      "rangeAria": "Período de la evolución"
     },
     "operations": {
       "heading": "Últimas Operaciones",
@@ -372,7 +397,8 @@
     },
     "alerts": {
       "unreadCount": "{count} sin leer",
-      "empty": "Sin alertas activas."
+      "empty": "Sin alertas activas.",
+      "hiddenCount": "{count, plural, one {# notificación más en la campana} other {# notificaciones más en la campana}}"
     },
     "holdings": {
       "new": "Registrar inversión",

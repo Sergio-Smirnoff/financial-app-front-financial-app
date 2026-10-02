@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
@@ -224,5 +224,32 @@ describe('Mercados', () => {
   it('stacks the chart and Descubrir in one shrinkable column below the side-by-side width', () => {
     renderInvestments(bff, { searchParams: '?tab=mercados' })
     expect(screen.getByTestId('markets-grid')).toHaveClass('grid-cols-1')
+  })
+})
+
+describe('Resumen range', () => {
+  it('requests the range picked on Resumen and writes it to the URL', async () => {
+    const user = userEvent.setup()
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>()
+    renderInvestments(bff, { onUrlUpdate })
+    expect(vi.mocked(useInvestmentsPage)).toHaveBeenLastCalledWith(expect.objectContaining({ range: '1M' }))
+
+    await user.click(within(screen.getByTestId('evolution-card')).getByRole('button', { name: '3M' }))
+
+    await waitFor(() =>
+      expect(vi.mocked(useInvestmentsPage)).toHaveBeenLastCalledWith(expect.objectContaining({ range: '3M' })),
+    )
+    await waitFor(() => expect(onUrlUpdate.mock.calls.at(-1)![0].searchParams.get('range')).toBe('3M'))
+  })
+
+  it('requests the range already in the URL', () => {
+    renderInvestments(bff, { searchParams: '?range=3M' })
+    expect(vi.mocked(useInvestmentsPage)).toHaveBeenCalledWith(expect.objectContaining({ range: '3M' }))
+  })
+
+  it('falls back to one month for an unknown range in the URL', () => {
+    renderInvestments(bff, { searchParams: '?range=bogus' })
+    expect(vi.mocked(useInvestmentsPage)).toHaveBeenLastCalledWith(expect.objectContaining({ range: '1M' }))
+    expect(vi.mocked(useInvestmentsPage)).not.toHaveBeenCalledWith(expect.objectContaining({ range: 'bogus' }))
   })
 })
