@@ -3,6 +3,8 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant frame (@media (min-width: 1280px) and (min-height: 600px));
+@custom-variant short (@media (min-width: 1280px) and (min-height: 600px) and (max-height: 759.98px));
 
 @theme inline {
   --font-sans: var(--font-inter), system-ui, sans-serif;
