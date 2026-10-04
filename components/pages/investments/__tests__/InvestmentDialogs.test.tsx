@@ -158,8 +158,8 @@ describe('RecordHoldingDialog', () => {
           bankNumber: '072',
           ticker: 'GGAL',
           name: 'Grupo Financiero Galicia',
-          quantity: 50,
-          avgPurchasePrice: 4850,
+          quantity: '50',
+          avgPurchasePrice: '4850',
           currency: 'ARS',
         }),
       )
@@ -174,7 +174,7 @@ describe('RecordHoldingDialog', () => {
     const qtyInput = screen.getByPlaceholderText('100')
     await user.type(qtyInput, '50')
 
-    expect(qtyInput).toHaveValue(50)
+    expect(qtyInput).toHaveValue('50')
   })
 
   it('stacks the form into one column on a phone', () => {
@@ -221,15 +221,108 @@ describe('RecordHoldingDialog', () => {
           name: 'Grupo Financiero Galicia',
           assetType: 'BOND',
           currency: 'ARS',
-          quantity: 100,
-          avgPurchasePrice: 4850,
-          notifyGainThresholdPct: 20,
+          quantity: '100',
+          avgPurchasePrice: '4850',
+          notifyGainThresholdPct: '20',
           notifyLossThresholdPct: null,
         },
       }),
     )
     expect(createMutateAsync).not.toHaveBeenCalled()
     expect(onClose).toHaveBeenCalled()
+  })
+
+  it('sends a quantity beyond double precision exactly as typed', async () => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'create', prefill: { ticker: 'GGAL', name: 'Grupo Financiero Galicia', price: 4850 } })
+
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '123456789012.12345' } })
+    await user.click(screen.getByRole('button', { name: /^Registrar inversión$/i }))
+
+    await waitFor(() =>
+      expect(createMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ quantity: '123456789012.12345', avgPurchasePrice: '4850' }),
+      ),
+    )
+  })
+
+  it('sends a comma decimal normalised', async () => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'create', prefill: { ticker: 'GGAL', name: 'Grupo Financiero Galicia' } })
+
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1,5' } })
+    fireEvent.change(screen.getByLabelText('Precio de compra unitario'), { target: { value: '4850,50' } })
+    await user.click(screen.getByRole('button', { name: /^Registrar inversión$/i }))
+
+    await waitFor(() =>
+      expect(createMutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ quantity: '1.5', avgPurchasePrice: '4850.5' }),
+      ),
+    )
+  })
+
+  it('shows a format error for an exponent and sends nothing', async () => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'create', prefill: { ticker: 'GGAL', name: 'Grupo Financiero Galicia', price: 4850 } })
+
+    const quantity = screen.getByLabelText('Cantidad')
+    fireEvent.change(quantity, { target: { value: '1e-7' } })
+    expect(screen.getByRole('alert')).toHaveTextContent('Ingresá un número válido (ej: 1,5).')
+    expect(quantity).toHaveAttribute('aria-invalid', 'true')
+    expect(quantity).toHaveAccessibleDescription('Ingresá un número válido (ej: 1,5).')
+
+    await user.click(screen.getByRole('button', { name: /^Registrar inversión$/i }))
+    expect(createMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('saves an unchanged edit with the exact stored quantity', async () => {
+    const user = userEvent.setup()
+    holdings.data = [{ ...ggalHolding, quantity: 0.123456, exactQuantity: '0.123456' }]
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    expect(screen.getByLabelText('Cantidad')).toHaveValue('0.123456')
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 7,
+        body: expect.objectContaining({ quantity: '0.123456', avgPurchasePrice: '4850' }),
+      }),
+    )
+  })
+
+  it.each([
+    ['1.234', 'Admite hasta 2 decimales'],
+    ['-1', 'Ingresá un número válido (ej: 1,5).'],
+    ['1000', 'Admite hasta 3 dígitos enteros'],
+  ])('rejects the threshold %s before sending', async (value, message) => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    const gain = screen.getByLabelText('Avisarme si sube más de (%)')
+    fireEvent.change(gain, { target: { value } })
+    expect(screen.getByRole('alert')).toHaveTextContent(message)
+    expect(gain).toHaveAttribute('aria-invalid', 'true')
+    expect(gain).toHaveAccessibleDescription(message)
+
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+    expect(updateMutateAsync).not.toHaveBeenCalled()
+  })
+
+  it('sends an empty threshold as null and a filled one as a string', async () => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    fireEvent.change(screen.getByLabelText('Avisarme si sube más de (%)'), { target: { value: '' } })
+    fireEvent.change(screen.getByLabelText('Stop-loss si cae más de (%)'), { target: { value: '12,50' } })
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 7,
+        body: expect.objectContaining({ notifyGainThresholdPct: null, notifyLossThresholdPct: '12.5' }),
+      }),
+    )
   })
 
   it('warns that a renamed ticker shows at average cost', async () => {
@@ -294,7 +387,7 @@ describe('SellHoldingDialog', () => {
     const { onOpenChange, onSuccess } = renderSell(ggal)
 
     expect(screen.getByText(/Vender posición de GGAL/i)).toBeInTheDocument()
-    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue(100)
+    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue('100')
     expect(screen.getByRole('switch', { name: 'Precio de mercado' })).toBeChecked()
     expect(screen.getByTestId('sell-estimate')).toHaveTextContent(/80\.000,00/)
 
@@ -320,7 +413,7 @@ describe('SellHoldingDialog', () => {
     expect(locked).toHaveTextContent(/800,00/)
     expect(locked).toHaveTextContent('Mercado')
     expect(screen.queryByLabelText(/Precio de venta/)).not.toBeInTheDocument()
-    expect(screen.getAllByRole('spinbutton')).toHaveLength(1)
+    expect(screen.getAllByRole('textbox')).toHaveLength(1)
 
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
 
@@ -355,7 +448,7 @@ describe('SellHoldingDialog', () => {
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
 
     const price = screen.getByLabelText(/Precio de venta/)
-    expect(price).toHaveValue(800)
+    expect(price).toHaveValue('800')
     await user.clear(price)
     await user.type(price, '812.5')
 
@@ -423,7 +516,7 @@ describe('SellHoldingDialog', () => {
 
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
 
-    expect(screen.getByLabelText(/Precio de venta/)).toHaveValue(812.123457)
+    expect(screen.getByLabelText(/Precio de venta/)).toHaveValue('812.123457')
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
@@ -433,31 +526,31 @@ describe('SellHoldingDialog', () => {
 
     const quantity = screen.getByLabelText('Cantidad a vender')
     fireEvent.change(quantity, { target: { value } })
-    expect(screen.getByRole('alert')).toHaveTextContent('La cantidad admite hasta 6 decimales')
+    expect(screen.getByRole('alert')).toHaveTextContent('Ingresá un número válido (ej: 1,5).')
     expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
 
     fireEvent.change(quantity, { target: { value: '10' } })
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
     fireEvent.change(screen.getByLabelText(/Precio de venta/), { target: { value } })
-    expect(screen.getByRole('alert')).toHaveTextContent('El precio admite hasta 6 decimales')
+    expect(screen.getByRole('alert')).toHaveTextContent('Ingresá un número válido (ej: 1,5).')
     expect(screen.getByRole('button', { name: 'Vender 10 y liquidar' })).toBeDisabled()
 
     expect(sellMutateAsync).not.toHaveBeenCalled()
   })
 
-  it('sends exponent values within six decimals as plain decimals', async () => {
+  it('accepts a comma as the decimal separator and sends a normalised decimal', async () => {
     const user = userEvent.setup()
     renderSell(ggal)
 
-    fireEvent.change(screen.getByLabelText('Cantidad a vender'), { target: { value: '1.5e-5' } })
+    fireEvent.change(screen.getByLabelText('Cantidad a vender'), { target: { value: '1,5' } })
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
-    fireEvent.change(screen.getByLabelText(/Precio de venta/), { target: { value: '8.125e2' } })
+    fireEvent.change(screen.getByLabelText(/Precio de venta/), { target: { value: '812,50' } })
     await user.click(screen.getByRole('button', { name: /^Vender .* y liquidar$/ }))
 
     await waitFor(() =>
       expect(sellMutateAsync).toHaveBeenCalledWith({
         id: 10,
-        body: { quantity: '0.000015', price: '812.5', destinationCbu: '0720000000000000000011' },
+        body: { quantity: '1.5', price: '812.5', destinationCbu: '0720000000000000000011' },
       }),
     )
   })
@@ -532,7 +625,7 @@ describe('SellHoldingDialog', () => {
 
     await user.click(screen.getByRole('switch', { name: 'Precio de mercado' }))
     const price = screen.getByLabelText('Precio de venta (cada 100 VN)')
-    expect(price).toHaveValue(null)
+    expect(price).toHaveValue('')
     await user.type(price, '80500')
     await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
 
@@ -643,9 +736,9 @@ describe('SellHoldingDialog', () => {
 
     rerender({ ...ggal, currentPrice: 805, quantity: 120 })
 
-    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue(40)
+    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue('40')
     expect(screen.getByRole('switch', { name: 'Precio de mercado' })).not.toBeChecked()
-    expect(screen.getByLabelText(/Precio de venta/)).toHaveValue(812.5)
+    expect(screen.getByLabelText(/Precio de venta/)).toHaveValue('812.5')
 
     await user.click(screen.getByRole('button', { name: 'Vender 40 y liquidar' }))
 
@@ -688,14 +781,14 @@ describe('SellHoldingDialog', () => {
     rerender(ggal, false)
     rerender(ggal, true)
 
-    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue(100)
+    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue('100')
     expect(screen.getByRole('switch', { name: 'Precio de mercado' })).toBeChecked()
 
     await user.clear(screen.getByLabelText('Cantidad a vender'))
     await user.type(screen.getByLabelText('Cantidad a vender'), '40')
     rerender(al30)
 
-    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue(1000)
+    expect(screen.getByLabelText('Cantidad a vender')).toHaveValue('1000')
   })
 
   it('sends the exact held quantity when selling everything', async () => {
@@ -715,6 +808,39 @@ describe('SellHoldingDialog', () => {
         body: { quantity: '123456789012.123456', price: null, destinationCbu: '0720000000000000000011' },
       }),
     )
+  })
+
+  describe('with a quantity beyond double precision', () => {
+    const precise = { ...ggal, quantity: Number('123456789012.123456'), exactQuantity: '123456789012.123456' }
+
+    it('rejects one millionth above the held quantity', () => {
+      renderSell(precise)
+
+      const quantity = screen.getByLabelText('Cantidad a vender')
+      fireEvent.change(quantity, { target: { value: '123456789012.123457' } })
+
+      expect(screen.getByRole('alert')).toHaveTextContent('No podés vender más de')
+      expect(quantity).toHaveAttribute('aria-invalid', 'true')
+      expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
+      expect(sellMutateAsync).not.toHaveBeenCalled()
+    })
+
+    it('sells one millionth below the held quantity as a partial sale', async () => {
+      const user = userEvent.setup()
+      renderSell(precise)
+
+      fireEvent.change(screen.getByLabelText('Cantidad a vender'), { target: { value: '123456789012.123455' } })
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /Confirmar venta y liquidar/i })).not.toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /^Vender .* y liquidar$/ }))
+
+      await waitFor(() =>
+        expect(sellMutateAsync).toHaveBeenCalledWith({
+          id: 10,
+          body: { quantity: '123456789012.123455', price: null, destinationCbu: '0720000000000000000011' },
+        }),
+      )
+    })
   })
 
   it('disables the confirm button while the sale is pending', () => {

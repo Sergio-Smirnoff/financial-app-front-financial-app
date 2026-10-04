@@ -26,13 +26,45 @@ import { useCreateHolding, useHoldings, useUpdateHolding } from '@/lib/hooks/use
 import type { HoldingDraft } from '@/lib/store/holdingDraft.store'
 import type { AssetType } from '@/types/investments'
 import { formatCurrency } from '@/lib/format'
+import { parseDecimal, toPlainDecimal, type DecimalResult } from '@/lib/utils/decimal'
+import { decimalErrorMessage, type DecimalFieldMessages } from '@/components/ui-kit/page/investments/decimalErrorMessage'
 
 export interface RecordHoldingDialogProps {
   draft: HoldingDraft | null
   onClose: () => void
 }
 
-const formNumber = (n: number | null | undefined) => (n == null ? '' : String(n))
+const AMOUNT_LIMITS = { scale: 6, integerDigits: 12 }
+const THRESHOLD_LIMITS = { scale: 2, integerDigits: 3, allowZero: true }
+
+const QUANTITY_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.mustBePositive',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
+const PRICE_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.mustBeZeroOrPositive',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
+const THRESHOLD_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.invalidNumber',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
+const formDecimal = (n: number | null | undefined, scale: number) => (n == null ? '' : toPlainDecimal(n, scale))
+
+const parseThreshold = (raw: string): DecimalResult | null =>
+  raw.trim() === '' ? null : parseDecimal(raw, THRESHOLD_LIMITS)
+
+function FieldError({ id, message }: { id: string; message: string | null }) {
+  if (!message) return null
+  return (
+    <p id={id} role="alert" className="text-[11px] font-medium text-destructive">
+      {message}
+    </p>
+  )
+}
 
 export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps) {
   const t = useTranslations('investments')
@@ -56,6 +88,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
   const [avgPurchasePrice, setAvgPurchasePrice] = useState('')
   const [notifyGainThresholdPct, setNotifyGainThresholdPct] = useState('')
   const [notifyLossThresholdPct, setNotifyLossThresholdPct] = useState('')
+  const [submitted, setSubmitted] = useState(false)
   const loadedFor = useRef<HoldingDraft | null>(null)
 
   useEffect(() => {
@@ -71,10 +104,10 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       setName(editing.name)
       setAssetType(editing.assetType)
       setCurrency(editing.currency === 'USD' ? 'USD' : 'ARS')
-      setQuantity(formNumber(editing.quantity))
-      setAvgPurchasePrice(formNumber(editing.avgPurchasePrice))
-      setNotifyGainThresholdPct(formNumber(editing.notifyGainThresholdPct))
-      setNotifyLossThresholdPct(formNumber(editing.notifyLossThresholdPct))
+      setQuantity(editing.exactQuantity ?? toPlainDecimal(editing.quantity))
+      setAvgPurchasePrice(formDecimal(editing.avgPurchasePrice, AMOUNT_LIMITS.scale))
+      setNotifyGainThresholdPct(formDecimal(editing.notifyGainThresholdPct, THRESHOLD_LIMITS.scale))
+      setNotifyLossThresholdPct(formDecimal(editing.notifyLossThresholdPct, THRESHOLD_LIMITS.scale))
     } else {
       const { prefill } = draft
       setBankNumber('')
@@ -83,11 +116,12 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       setAssetType(prefill.assetType ?? 'STOCK')
       setCurrency(prefill.currency ?? 'ARS')
       setQuantity('')
-      setAvgPurchasePrice(formNumber(prefill.price))
+      setAvgPurchasePrice(formDecimal(prefill.price, AMOUNT_LIMITS.scale))
       setNotifyGainThresholdPct('')
       setNotifyLossThresholdPct('')
     }
     setFundingCbu('none')
+    setSubmitted(false)
     loadedFor.current = draft
   }, [draft, editing])
 
@@ -103,12 +137,25 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
     return (bank.accounts ?? []).filter((a) => a.currency.toUpperCase() === currency.toUpperCase())
   }, [banks, bankNumber, currency])
 
-  const totalCalculated = useMemo(() => {
-    const q = parseFloat(quantity)
-    const p = parseFloat(avgPurchasePrice)
-    if (isNaN(q) || isNaN(p) || q <= 0 || p <= 0) return 0
-    return q * p
-  }, [quantity, avgPurchasePrice])
+  const parsedQuantity = parseDecimal(quantity, AMOUNT_LIMITS)
+  const parsedPrice = parseDecimal(avgPurchasePrice, { ...AMOUNT_LIMITS, allowZero: true })
+  const parsedGain = parseThreshold(notifyGainThresholdPct)
+  const parsedLoss = parseThreshold(notifyLossThresholdPct)
+  const totalCalculated = parsedQuantity.ok && parsedPrice.ok ? Number(parsedQuantity.value) * Number(parsedPrice.value) : 0
+
+  const fieldError = (
+    result: DecimalResult | null,
+    raw: string,
+    limits: { scale: number; integerDigits: number },
+    messages: DecimalFieldMessages,
+  ): string | null =>
+    result && !result.ok && (submitted || raw.trim() !== '')
+      ? decimalErrorMessage(t, result.reason, limits, messages)
+      : null
+  const quantityError = fieldError(parsedQuantity, quantity, AMOUNT_LIMITS, QUANTITY_MESSAGES)
+  const priceError = fieldError(parsedPrice, avgPurchasePrice, AMOUNT_LIMITS, PRICE_MESSAGES)
+  const gainError = fieldError(parsedGain, notifyGainThresholdPct, THRESHOLD_LIMITS, THRESHOLD_MESSAGES)
+  const lossError = fieldError(parsedLoss, notifyLossThresholdPct, THRESHOLD_LIMITS, THRESHOLD_MESSAGES)
 
   const cleanTicker = ticker.trim().toUpperCase()
   const isPending = isEdit ? updateMutation.isPending : createMutation.isPending
@@ -125,19 +172,13 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       toast.error(t('holdings.validation.tickerRequired'))
       return
     }
-    const qNum = parseFloat(quantity)
-    if (isNaN(qNum) || qNum <= 0) {
-      toast.error(t('holdings.validation.mustBePositive'))
-      return
-    }
-    const pNum = parseFloat(avgPurchasePrice)
-    if (isNaN(pNum) || pNum < 0) {
-      toast.error(t('holdings.validation.mustBeZeroOrPositive'))
+    if (!parsedQuantity.ok || !parsedPrice.ok || parsedGain?.ok === false || parsedLoss?.ok === false) {
+      setSubmitted(true)
       return
     }
 
-    const gainThresh = notifyGainThresholdPct ? parseFloat(notifyGainThresholdPct) : null
-    const lossThresh = notifyLossThresholdPct ? parseFloat(notifyLossThresholdPct) : null
+    const gainThresh = parsedGain?.ok ? parsedGain.value : null
+    const lossThresh = parsedLoss?.ok ? parsedLoss.value : null
     const cleanName = name.trim() || cleanTicker
 
     try {
@@ -152,8 +193,8 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
             name: cleanName,
             assetType,
             currency: editing.currency,
-            quantity: qNum,
-            avgPurchasePrice: pNum,
+            quantity: parsedQuantity.value,
+            avgPurchasePrice: parsedPrice.value,
             notifyGainThresholdPct: gainThresh,
             notifyLossThresholdPct: lossThresh,
           },
@@ -167,8 +208,8 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
           name: cleanName,
           assetType,
           currency,
-          quantity: qNum,
-          avgPurchasePrice: pNum,
+          quantity: parsedQuantity.value,
+          avgPurchasePrice: parsedPrice.value,
           notifyGainThresholdPct: gainThresh,
           notifyLossThresholdPct: lossThresh,
         })
@@ -309,29 +350,35 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
                 <Label htmlFor="holding-qty">{tc('quantity')}</Label>
                 <Input
                   id="holding-qty"
-                  type="number"
-                  step="any"
-                  min="0.0001"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="100"
+                  aria-invalid={quantityError != null}
+                  aria-describedby={quantityError != null ? 'holding-qty-error' : undefined}
                   className="font-mono h-9"
                   required
                 />
+                <FieldError id="holding-qty-error" message={quantityError} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="holding-price">{t('holdings.fieldAvgPurchasePrice')}</Label>
                 <Input
                   id="holding-price"
-                  type="number"
-                  step="any"
-                  min="0"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
                   value={avgPurchasePrice}
                   onChange={(e) => setAvgPurchasePrice(e.target.value)}
                   placeholder="4850"
+                  aria-invalid={priceError != null}
+                  aria-describedby={priceError != null ? 'holding-price-error' : undefined}
                   className="font-mono h-9"
                   required
                 />
+                <FieldError id="holding-price-error" message={priceError} />
               </div>
             </div>
 
@@ -351,13 +398,17 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
                   </Label>
                   <Input
                     id="gain-thresh"
-                    type="number"
-                    step="any"
+                    type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
                     placeholder={t('holdings.gainAlertPlaceholder')}
                     value={notifyGainThresholdPct}
                     onChange={(e) => setNotifyGainThresholdPct(e.target.value)}
+                    aria-invalid={gainError != null}
+                    aria-describedby={gainError != null ? 'gain-thresh-error' : undefined}
                     className="h-8"
                   />
+                  <FieldError id="gain-thresh-error" message={gainError} />
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="loss-thresh" className="text-[11px] text-muted-foreground">
@@ -365,13 +416,17 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
                   </Label>
                   <Input
                     id="loss-thresh"
-                    type="number"
-                    step="any"
+                    type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
                     placeholder={t('holdings.lossAlertPlaceholder')}
                     value={notifyLossThresholdPct}
                     onChange={(e) => setNotifyLossThresholdPct(e.target.value)}
+                    aria-invalid={lossError != null}
+                    aria-describedby={lossError != null ? 'loss-thresh-error' : undefined}
                     className="h-8"
                   />
+                  <FieldError id="loss-thresh-error" message={lossError} />
                 </div>
               </div>
             </div>

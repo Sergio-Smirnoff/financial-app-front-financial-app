@@ -23,7 +23,7 @@ interface RawHoldingResponse {
   ticker: string
   name: string
   assetType: string
-  quantity: string | number
+  quantity: string
   avgPurchasePrice: string | number
   currency: string
   notifyGainThresholdPct: string | number | null
@@ -70,7 +70,7 @@ export const investmentsApi = {
       ...h,
       assetType: h.assetType as Holding['assetType'],
       quantity: toNum(h.quantity),
-      exactQuantity: String(h.quantity ?? 0),
+      exactQuantity: h.quantity,
       avgPurchasePrice: toNum(h.avgPurchasePrice),
       notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
       notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),

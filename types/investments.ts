@@ -82,11 +82,11 @@ export interface CreateHoldingRequest {
   ticker: string
   name: string
   assetType: AssetType
-  quantity: number
-  avgPurchasePrice: number
+  quantity: string
+  avgPurchasePrice: string
   currency: string
-  notifyGainThresholdPct?: number | null
-  notifyLossThresholdPct?: number | null
+  notifyGainThresholdPct?: string | null
+  notifyLossThresholdPct?: string | null
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest

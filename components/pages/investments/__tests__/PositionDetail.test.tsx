@@ -93,4 +93,19 @@ describe('PositionDetail', () => {
     expect(push).toHaveBeenCalledWith('/investments?tab=cartera')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
+
+  it('leaves the price blank when there is no current price', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(
+      <PositionDetail holding={{ ...holdingFixture, currentPrice: { amount: '', currency: 'ARS', secondary: null } }} />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: undefined, price: undefined, currency: 'ARS' },
+    })
+  })
 })

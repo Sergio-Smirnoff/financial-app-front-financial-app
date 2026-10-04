@@ -699,7 +699,7 @@ describe('Editar', () => {
     await waitFor(() =>
       expect(updateMutateAsync).toHaveBeenCalledWith({
         id: 1,
-        body: expect.objectContaining({ currency: 'ARS', avgPurchasePrice: 12000, quantity: 100, fundingCbu: null }),
+        body: expect.objectContaining({ currency: 'ARS', avgPurchasePrice: '12000', quantity: '100', fundingCbu: null }),
       }),
     )
   })

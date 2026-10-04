@@ -27,7 +27,9 @@ import { ApiError } from '@/lib/api/client'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useSellHolding } from '@/lib/hooks/useInvestments'
 import { formatMoney, formatQuantity } from '@/lib/format'
+import { compareDecimal, parseDecimal, toPlainDecimal } from '@/lib/utils/decimal'
 import type { HoldingSale } from '@/types/investments'
+import { decimalErrorMessage, type DecimalFieldMessages } from '@/components/ui-kit/page/investments/decimalErrorMessage'
 
 export interface SellHoldingTarget {
   id: number
@@ -55,17 +57,20 @@ const SELL_ERROR_KEYS: Readonly<Record<string, string>> = {
   finances_service_unavailable: 'holdings.sell.errors.financesUnavailable',
 }
 
-const MAX_DECIMALS = 6
+const DECIMAL_LIMITS = { scale: 6, integerDigits: 12 }
 
-const toNumber = (raw: string): number => (raw.trim() === '' ? NaN : Number(raw))
-
-const exceedsDecimals = (raw: string): boolean => {
-  const [mantissa, exponent = '0'] = raw.trim().toLowerCase().split('e')
-  return (mantissa.split('.')[1] ?? '').length - Number(exponent) > MAX_DECIMALS
+const QUANTITY_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.sell.quantityPositive',
+  decimals: 'holdings.sell.quantityDecimals',
 }
 
-const plainDecimal = (value: number): string =>
-  value.toLocaleString('en-US', { useGrouping: false, maximumFractionDigits: MAX_DECIMALS })
+const PRICE_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.sell.pricePositive',
+  decimals: 'holdings.sell.priceDecimals',
+}
+
+const heldQuantityOf = (holding: SellHoldingTarget): string =>
+  holding.exactQuantity ?? toPlainDecimal(holding.quantity)
 
 const sellErrorKey = (err: unknown): string =>
   (err instanceof ApiError && err.code && SELL_ERROR_KEYS[err.code]) || 'holdings.sell.errors.unknown'
@@ -90,7 +95,7 @@ export function SellHoldingDialog({
   const isBond = holding?.assetType === 'BOND'
   const marketPrice = holding?.currentPrice ?? null
   const holdingId = holding?.id
-  const heldQuantity = holding == null ? null : (holding.exactQuantity ?? String(holding.quantity))
+  const heldQuantity = holding == null ? null : heldQuantityOf(holding)
   const initialisedFor = useRef<number | null>(null)
 
   const availableAccounts = useMemo(() => {
@@ -114,34 +119,31 @@ export function SellHoldingDialog({
     initialisedFor.current = holdingId
     setQuantity(heldQuantity)
     setUseMarketPrice(true)
-    setManualPrice(!isBond && marketPrice != null ? plainDecimal(marketPrice) : '')
+    setManualPrice(!isBond && marketPrice != null ? toPlainDecimal(marketPrice, DECIMAL_LIMITS.scale) : '')
     setSelectedCbu(availableAccounts[0]?.cbu ?? '')
   }, [open, holdingId, heldQuantity, isBond, marketPrice, availableAccounts])
 
   if (!holding) return null
 
-  const qty = toNumber(quantity)
-  const price = useMarketPrice ? marketPrice : toNumber(manualPrice)
-  const sellsEverything = qty === holding.quantity
+  const held = heldQuantityOf(holding)
+  const parsedQuantity = parseDecimal(quantity, DECIMAL_LIMITS)
+  const parsedPrice = parseDecimal(manualPrice, DECIMAL_LIMITS)
+  const sellsEverything = parsedQuantity.ok && compareDecimal(parsedQuantity.value, held) === 0
   const money = (value: number | string, code = currency) => formatMoney(value, { currency: code })
 
-  const quantityError = !(qty > 0)
-    ? t('holdings.sell.quantityPositive')
-    : exceedsDecimals(quantity)
-      ? t('holdings.sell.quantityDecimals', { max: MAX_DECIMALS })
-      : qty > holding.quantity
-        ? t('holdings.sell.quantityExceeds', { max: formatQuantity(holding.quantity) })
-        : null
-  const priceError = useMarketPrice
+  const quantityError = !parsedQuantity.ok
+    ? decimalErrorMessage(t, parsedQuantity.reason, DECIMAL_LIMITS, QUANTITY_MESSAGES)
+    : compareDecimal(parsedQuantity.value, held) > 0
+      ? t('holdings.sell.quantityExceeds', { max: formatQuantity(holding.quantity) })
+      : null
+  const priceError = useMarketPrice || parsedPrice.ok
     ? null
-    : !(price != null && price > 0)
-      ? t('holdings.sell.pricePositive')
-      : exceedsDecimals(manualPrice)
-        ? t('holdings.sell.priceDecimals', { max: MAX_DECIMALS })
-        : null
+    : decimalErrorMessage(t, parsedPrice.reason, DECIMAL_LIMITS, PRICE_MESSAGES)
   const error = quantityError ?? priceError
   const priceOwnsError = quantityError == null && priceError != null
-  const estimate = !isBond && !error && price != null ? qty * price : null
+  const previewPrice = useMarketPrice ? marketPrice : parsedPrice.ok ? Number(parsedPrice.value) : null
+  const previewQuantity = parsedQuantity.ok ? Number(parsedQuantity.value) : 0
+  const estimate = !isBond && !error && previewPrice != null ? previewQuantity * previewPrice : null
   const priceLabel = isBond ? t('holdings.sell.manualPricePerHundred') : t('holdings.sell.manualPrice')
 
   const creditedText = (sale: HoldingSale, destinationCbu: string | null) => {
@@ -153,14 +155,14 @@ export function SellHoldingDialog({
   }
 
   const handleSell = async () => {
-    if (error || sellMutation.isPending) return
+    if (error || !parsedQuantity.ok || sellMutation.isPending) return
     const destinationCbu = selectedCbu || null
     try {
       const sale = await sellMutation.mutateAsync({
         id: holding.id,
         body: {
-          quantity: sellsEverything && heldQuantity != null ? heldQuantity : plainDecimal(qty),
-          price: useMarketPrice || price == null ? null : plainDecimal(price),
+          quantity: parsedQuantity.value,
+          price: !useMarketPrice && parsedPrice.ok ? parsedPrice.value : null,
           destinationCbu,
         },
       })
@@ -223,21 +225,24 @@ export function SellHoldingDialog({
             <div className="flex items-center gap-2">
               <Input
                 id="sell-quantity"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                min={0}
-                max={holding.quantity}
-                step="any"
+                autoComplete="off"
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 aria-invalid={quantityError != null}
-                aria-describedby={quantityError != null ? 'sell-error' : undefined}
+                aria-describedby={quantityError != null ? 'sell-quantity-error' : undefined}
                 className="h-9 font-mono"
               />
-              <Button type="button" variant="outline" size="sm" onClick={() => heldQuantity != null && setQuantity(heldQuantity)}>
+              <Button type="button" variant="outline" size="sm" onClick={() => setQuantity(held)}>
                 {t('holdings.sell.all')}
               </Button>
             </div>
+            {quantityError && (
+              <p id="sell-quantity-error" role="alert" className="text-xs font-medium text-destructive">
+                {quantityError}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -272,16 +277,20 @@ export function SellHoldingDialog({
                 <Label htmlFor="sell-price">{priceLabel}</Label>
                 <Input
                   id="sell-price"
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  min={0}
-                  step="any"
+                  autoComplete="off"
                   value={manualPrice}
                   onChange={(e) => setManualPrice(e.target.value)}
                   aria-invalid={priceOwnsError}
-                  aria-describedby={priceOwnsError ? 'sell-error' : undefined}
+                  aria-describedby={priceOwnsError ? 'sell-price-error' : undefined}
                   className="h-9 font-mono"
                 />
+                {priceOwnsError && (
+                  <p id="sell-price-error" role="alert" className="text-xs font-medium text-destructive">
+                    {priceError}
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -299,12 +308,6 @@ export function SellHoldingDialog({
                 {money(estimate)}
               </span>
             </div>
-          )}
-
-          {error && (
-            <p id="sell-error" role="alert" className="text-xs font-medium text-destructive">
-              {error}
-            </p>
           )}
 
           <div className="space-y-1.5">
@@ -348,7 +351,7 @@ export function SellHoldingDialog({
               ? t('holdings.selling')
               : sellsEverything
                 ? t('holdings.confirmSell')
-                : t('holdings.sell.confirmPartial', { quantity: formatQuantity(Number.isFinite(qty) ? qty : 0) })}
+                : t('holdings.sell.confirmPartial', { quantity: formatQuantity(previewQuantity) })}
           </Button>
         </DialogFooter>
       </DialogContent>

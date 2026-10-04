@@ -517,7 +517,10 @@
         "bankRequired": "Debés seleccionar un banco",
         "tickerRequired": "El ticker es obligatorio",
         "mustBePositive": "La cantidad debe ser mayor a cero",
-        "mustBeZeroOrPositive": "El precio debe ser cero o mayor"
+        "mustBeZeroOrPositive": "El precio debe ser cero o mayor",
+        "invalidNumber": "Ingresá un número válido (ej: 1,5).",
+        "maxDecimals": "Admite hasta {max} decimales",
+        "maxIntegerDigits": "Admite hasta {max} dígitos enteros"
       },
       "avgPrice": "Precio promedio",
       "currentPrice": "Precio actual",

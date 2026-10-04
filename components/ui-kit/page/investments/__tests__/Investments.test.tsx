@@ -89,4 +89,33 @@ describe('PositionForm', () => {
     expect(screen.getByRole('form', { name: 'Editar posición' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument()
   })
+
+  it('submits the decimals normalised as exact strings', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderWithIntl(<PositionForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText('Ticker'), 'ggal')
+    await user.type(screen.getByLabelText('Cantidad'), '1,50')
+    await user.type(screen.getByLabelText('Precio de compra'), '4850')
+    await user.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    expect(onSubmit).toHaveBeenCalledWith({ ticker: 'GGAL', quantity: '1.5', purchasePrice: '4850', currency: 'ARS' })
+  })
+
+  it('flags an exponent quantity on the field and submits nothing', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderWithIntl(<PositionForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText('Ticker'), 'GGAL')
+    await user.type(screen.getByLabelText('Cantidad'), '1e-7')
+    await user.type(screen.getByLabelText('Precio de compra'), '4850')
+    await user.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    const quantity = screen.getByLabelText('Cantidad')
+    expect(quantity).toHaveAttribute('aria-invalid', 'true')
+    expect(quantity).toHaveAccessibleDescription('Ingresá un número válido (ej: 1,5).')
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
 })

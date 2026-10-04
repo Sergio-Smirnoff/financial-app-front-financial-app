@@ -50,11 +50,12 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
   }
 
   const buyMore = () => {
+    const currentPrice = parseNum(holding.currentPrice)
     openCreate({
       ticker: holding.ticker,
       name: holding.name,
       assetType: isAssetType(holding.assetType) ? holding.assetType : undefined,
-      price: parseNum(holding.currentPrice),
+      price: currentPrice > 0 ? currentPrice : undefined,
       currency: holding.currentPrice.currency === 'USD' ? 'USD' : 'ARS',
     })
     router.push('/investments?tab=cartera')
