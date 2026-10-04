@@ -88,7 +88,8 @@
       "value": "Valor",
       "notEnoughData": "Sin datos suficientes",
       "composition": "Composición"
-    }
+    },
+    "points": "{value} pts"
   },
   "sections": {
     "unavailable": "No pudimos cargar esta sección",
@@ -530,7 +531,20 @@
       "currentPrice": "Precio actual",
       "priceHistoryHeading": "Histórico de Precios",
       "priceHistoryAria": "Histórico de precios de {ticker}",
-      "backToInvestments": "Volver a Inversiones"
+      "backToInvestments": "Volver a Inversiones",
+      "errors": {
+        "alreadyExists": "Ya tenés esa inversión registrada en este banco. Editá la existente.",
+        "notFound": "Esta inversión ya no existe. Puede que la hayas vendido.",
+        "invalid": "Revisá los datos ingresados y probá de nuevo.",
+        "quantityInvalid": "La cantidad tiene que ser mayor que cero.",
+        "currencyMismatch": "La moneda no coincide con la de esta inversión.",
+        "unsupportedCurrency": "Esa moneda no está disponible para inversiones.",
+        "banksUnavailable": "El servicio de bancos no respondió. Probá de nuevo en un momento.",
+        "unknown": "Probá de nuevo en un momento."
+      }
+    },
+    "stockBar": {
+      "summary": "{quantity} unidades · Costo: <cost></cost>"
     }
   },
   "imports": {

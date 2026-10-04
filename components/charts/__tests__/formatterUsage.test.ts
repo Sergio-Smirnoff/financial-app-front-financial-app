@@ -17,7 +17,8 @@ function sourcesUnder(dir: string): string[] {
 describe('chart axis formatting', () => {
   it.each(AXIS_SOURCES)('%s formats its axis with the shared compact formatter', (file) => {
     const source = readFileSync(path.resolve(__dirname, '..', file), 'utf8')
-    expect(source).toMatch(/import \{[^}]*formatCompact(Money|Number)[^}]*\} from '@\/lib\/format'/)
+    expect(source).toMatch(/moneyText\(\{[^}]*\}, compact: true|import \{[^}]*formatCompactNumber[^}]*\} from '@\/lib\/format'/)
+    expect(source).not.toMatch(/formatCompactMoney/)
     expect(source).not.toMatch(/toFixed\(0\)\}?k/)
     expect(source).not.toMatch(/=== 'USD' \? 'US\$'/)
   })

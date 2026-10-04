@@ -25,7 +25,6 @@ export interface CarteraSort {
 }
 
 export const CARTERA_VIEW_STORAGE_KEY = 'investments.cartera.view.v1'
-export const PHONE_QUERY = '(max-width: 767px)'
 
 export const DEFAULT_COLUMNS: ColumnVisibility = {
   name: true,

@@ -9,13 +9,14 @@ import { stubChartSize } from '@/test/chartSize'
 import type { Holding } from '@/types/investments'
 import HoldingDetailPage from '../page'
 
-const { holdings, refetch } = vi.hoisted(() => ({
-  holdings: { data: [] as Holding[], isLoading: false, isError: false, isFetching: false },
+const { holdings, refetch, params } = vi.hoisted(() => ({
+  holdings: { data: undefined as Holding[] | undefined, isPending: false, isError: false, isFetching: false },
   refetch: vi.fn(),
+  params: { id: '42' },
 }))
 
 vi.mock('next/navigation', () => ({
-  useParams: () => ({ id: '42' }),
+  useParams: () => params,
   useRouter: () => ({ push: vi.fn() }),
 }))
 
@@ -64,8 +65,9 @@ describe('HoldingDetailPage', () => {
   beforeEach(() => {
     stubChartSize(640, 240)
     vi.clearAllMocks()
+    params.id = '42'
     holdings.data = []
-    holdings.isLoading = false
+    holdings.isPending = false
     holdings.isError = false
     holdings.isFetching = false
   })
@@ -84,6 +86,29 @@ describe('HoldingDetailPage', () => {
     expect(screen.getByRole('heading', { name: 'GGAL' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Editar' })).toBeInTheDocument()
     expect(screen.queryByTestId('holding-not-found')).not.toBeInTheDocument()
+  })
+
+  it('treats an id with trailing junk as not found', () => {
+    params.id = '42abc'
+    holdings.data = [ggal]
+    renderPage()
+    expect(screen.getByTestId('holding-not-found')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'GGAL' })).not.toBeInTheDocument()
+  })
+
+  it.each(['0', '-42', '4.2', ''])('treats the id %j as not found', (id) => {
+    params.id = id
+    holdings.data = [ggal]
+    renderPage()
+    expect(screen.getByTestId('holding-not-found')).toBeInTheDocument()
+  })
+
+  it('keeps loading instead of saying not found while a paused first load is pending', () => {
+    holdings.data = undefined
+    holdings.isPending = true
+    renderPage()
+    expect(screen.queryByTestId('holding-not-found')).not.toBeInTheDocument()
+    expect(screen.getByTestId('holding-loading')).toBeInTheDocument()
   })
 
   it('says the holdings failed to load, not that the holding is missing, and retries', async () => {

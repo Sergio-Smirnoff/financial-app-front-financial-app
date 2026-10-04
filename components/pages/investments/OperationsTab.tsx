@@ -6,7 +6,7 @@ import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ScrollTable } from '@/components/ui-kit/table/ScrollTable'
 import { Money } from '@/components/ui-kit/money/Money'
 import { formatQuantity } from '@/lib/format'
-import type { Section } from '@/lib/api/bff/types'
+import type { MoneyView, Section } from '@/lib/api/bff/types'
 import type { LegacyColumnDef as ColumnDef } from '@tanstack/react-table/legacy'
 
 export interface OperationRow {
@@ -15,7 +15,7 @@ export interface OperationRow {
   kind?: string
   date?: string
   quantity?: number
-  amount?: any
+  amount?: MoneyView | null
 }
 
 export interface OperationsTabProps {

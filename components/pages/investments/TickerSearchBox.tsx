@@ -7,7 +7,8 @@ import { useTickerSearch } from '@/lib/hooks/useInvestments'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { TickerSearchResult } from '@/types/investments'
-import { formatCurrency } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
 
 const RESULTS_MAX_HEIGHT = 320
 const RESULTS_MIN_HEIGHT = 96
@@ -110,7 +111,7 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
                       )}
                     </div>
                     <span className="text-[11px] font-mono text-muted-foreground mt-0.5">
-                      {formatCurrency(item.price, item.currency)}
+                      {moneyText({ value: { amount: String(item.price), currency: item.currency } })}
                     </span>
                   </div>
 
@@ -122,8 +123,7 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
                         : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
                     )}
                   >
-                    {isPos ? '+' : ''}
-                    {item.variation.toFixed(2)}%
+                    {formatPercent(item.variation)}
                   </span>
                 </button>
               )

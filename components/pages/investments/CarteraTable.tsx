@@ -10,7 +10,17 @@ import { cn } from '@/lib/utils'
 import type { AssetTypeSlice, MoneyView, PositionRow } from '@/lib/api/bff/types'
 import type { CarteraColumn, CarteraSort, CarteraSortKey } from '@/lib/store/carteraView.store'
 import { sortRows, type DisplayedText } from './carteraView'
-import { GROUP_COLOR, GROUP_LABEL_KEYS, groupKeyOf, groupPositions, portfolioShare, toneOf, type GroupKey } from './portfolioView'
+import {
+  GROUP_COLOR,
+  GROUP_LABEL_KEYS,
+  TONE_TEXT,
+  groupKeyOf,
+  groupPositions,
+  portfolioShare,
+  toggled,
+  toneOf,
+  type GroupKey,
+} from './portfolioView'
 
 export interface CarteraTableProps {
   rows: readonly PositionRow[]
@@ -21,6 +31,7 @@ export interface CarteraTableProps {
   onSort: (key: CarteraSortKey) => void
   totalMarketValue?: MoneyView | null
   bankNames: ReadonlyMap<string, string>
+  exactQuantities?: ReadonlyMap<number, string>
   renderActions: (row: PositionRow) => React.ReactNode
   phone: boolean
 }
@@ -30,7 +41,6 @@ const NUMERIC_COLUMNS: ReadonlySet<CarteraColumn> = new Set([
   'quantity', 'avgCost', 'price', 'marketValue', 'share', 'pnl', 'pnlPct',
 ])
 const HEADER_WIDTH: Partial<Record<CarteraColumn, string>> = { name: 'w-[26%]', bank: 'w-[14%]' }
-const TONE_TEXT = { gain: 'text-gain', loss: 'text-loss', neutral: '' } as const
 const CELL = 'py-2 px-2 max-[1600px]:py-1.5 max-[1600px]:px-1.5'
 const FIGURE = `${CELL} whitespace-nowrap text-right font-mono`
 const ACTIONS_HEAD = 'md:sticky md:right-0 md:z-30 md:bg-card'
@@ -64,6 +74,7 @@ export function CarteraTable({
   onSort,
   totalMarketValue,
   bankNames,
+  exactQuantities,
   renderActions,
   phone,
 }: CarteraTableProps) {
@@ -77,13 +88,7 @@ export function CarteraTable({
   const displayed: DisplayedText = (row, column) => (column === 'bank' ? bankLabel(row) : typeLabel(row))
   const sorted = (list: readonly PositionRow[]) => sortRows(list, sort, displayed)
 
-  const toggle = (key: GroupKey) =>
-    setCollapsed((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
+  const toggle = (key: GroupKey) => setCollapsed((prev) => toggled(prev, key))
 
   const header = (key: CarteraSortKey, label: string, numeric: boolean, width = '') => {
     const active = sort.key === key
@@ -113,7 +118,11 @@ export function CarteraTable({
         return <td key={column} className={cn(CELL, 'max-w-0 truncate text-muted-foreground')} title={bank}>{bank}</td>
       }
       case 'quantity':
-        return <td key={column} className={FIGURE}>{formatQuantity(row.quantity)}</td>
+        return (
+          <td key={column} className={FIGURE}>
+            {formatQuantity((row.holdingId != null && exactQuantities?.get(row.holdingId)) || row.quantity)}
+          </td>
+        )
       case 'avgCost':
         return <td key={column} className={FIGURE}><Money value={row.avgCost} /></td>
       case 'price':

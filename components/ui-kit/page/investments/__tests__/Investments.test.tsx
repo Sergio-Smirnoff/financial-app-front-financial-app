@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuotePill } from '../QuotePill'
 import { MarketStrip } from '../MarketStrip'
+import { StockBar } from '../StockBar'
 import { PositionForm } from '../PositionForm'
 import { Dropzone } from '../../imports/Dropzone'
 import { NextIntlClientProvider } from 'next-intl'
@@ -36,6 +37,15 @@ describe('QuotePill', () => {
     expect(screen.getByText('−12 pts')).toBeInTheDocument()
   })
 
+  it('formats a fractional point delta with es-AR separators', () => {
+    renderWithIntl(
+      <QuotePill
+        quote={{ code: 'RIESGO_PAIS', label: 'Riesgo país', value: '742', variation: 12.5, unit: 'POINTS', observedAt: NOW }}
+      />
+    )
+    expect(screen.getByText('+12,5 pts')).toBeInTheDocument()
+  })
+
   it('formats percent variation for regular tickers', () => {
     renderWithIntl(
       <QuotePill
@@ -49,7 +59,7 @@ describe('QuotePill', () => {
         }}
       />
     )
-    expect(screen.getByText(/2,5 %/)).toBeInTheDocument()
+    expect(screen.getByText('+2,50 %')).toBeInTheDocument()
   })
 })
 
@@ -70,6 +80,22 @@ describe('MarketStrip', () => {
   it('titles the strip in Spanish', () => {
     renderWithIntl(<MarketStrip quotes={[]} observedAt={NOW} />)
     expect(screen.getByText('Mercado')).toBeInTheDocument()
+  })
+})
+
+describe('StockBar', () => {
+  it('reads the quantity and cost line from the catalogue', () => {
+    renderWithIntl(
+      <StockBar
+        ticker="GGAL"
+        name="Grupo Financiero Galicia"
+        quantity={1500}
+        avgPrice={{ amount: '4200', currency: 'ARS', secondary: null }}
+        currentValue={{ amount: '4850', currency: 'ARS', secondary: null }}
+        pnlPct={15.48}
+      />
+    )
+    expect(screen.getByTestId('stock-bar-summary')).toHaveTextContent(/^1\.500 unidades · Costo: \$\s4\.200,00$/)
   })
 })
 

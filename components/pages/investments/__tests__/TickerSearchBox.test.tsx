@@ -47,4 +47,12 @@ describe('TickerSearchBox', () => {
     await userEvent.type(screen.getByPlaceholderText(esAR.investments.market.searchPlaceholder), 'G')
     expect(screen.getByTestId('ticker-search-results')).toHaveStyle({ maxHeight: '320px' })
   })
+
+  it('prints the price and the variation with the shared formatters', async () => {
+    renderInFrame(1313, 280)
+    await userEvent.type(screen.getByPlaceholderText(esAR.investments.market.searchPlaceholder), 'G')
+    const results = screen.getByTestId('ticker-search-results')
+    expect(results).toHaveTextContent('+1,50 %')
+    expect(results).toHaveTextContent(/\$\s8\.120,00/)
+  })
 })

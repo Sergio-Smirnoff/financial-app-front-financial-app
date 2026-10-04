@@ -23,6 +23,11 @@ export function currencySymbol(currency: string): string {
   return code
 }
 
+export function isoCurrency(currency: string): string {
+  const code = currency.trim().toUpperCase()
+  return DOLLAR_CODES.has(code) ? 'USD' : code || 'ARS'
+}
+
 export function formatCompactNumber(value: number, fractionDigitsBelowThousand: 0 | 1 = 0): string {
   if (!Number.isFinite(value)) return '—'
   const magnitude = Math.abs(value)

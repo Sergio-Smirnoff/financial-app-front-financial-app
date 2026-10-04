@@ -1,3 +1,4 @@
+import { amountOf } from '@/lib/format'
 import type { AssetType } from '@/types/investments'
 import type { AssetTypeSlice, MoneyView, PositionRow } from '@/lib/api/bff/types'
 
@@ -33,10 +34,7 @@ export function orderSlices(slices: readonly AssetTypeSlice[]): AssetTypeSlice[]
   )
 }
 
-export function amountOf(value?: MoneyView | null): number {
-  const n = Number(value?.amount)
-  return Number.isFinite(n) ? n : 0
-}
+export const TONE_TEXT = { gain: 'text-gain', loss: 'text-loss', neutral: '' } as const
 
 export function toneOf(n?: number | null): 'gain' | 'loss' | 'neutral' {
   if (n == null || n === 0) return 'neutral'
@@ -69,4 +67,11 @@ export function portfolioShare(value?: MoneyView | null, total?: MoneyView | nul
   const whole = amountOf(total)
   if (!value || whole === 0) return null
   return (amountOf(value) / whole) * 100
+}
+
+export function toggled<T>(set: ReadonlySet<T>, key: T): ReadonlySet<T> {
+  const next = new Set(set)
+  if (next.has(key)) next.delete(key)
+  else next.add(key)
+  return next
 }

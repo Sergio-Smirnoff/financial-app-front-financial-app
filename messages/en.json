@@ -88,7 +88,8 @@
       "value": "Value",
       "notEnoughData": "Not enough data",
       "composition": "Composition"
-    }
+    },
+    "points": "{value} pts"
   },
   "sections": {
     "unavailable": "We couldn't load this section",
@@ -530,7 +531,20 @@
       "currentPrice": "Current price",
       "priceHistoryHeading": "Price history",
       "priceHistoryAria": "Price history for {ticker}",
-      "backToInvestments": "Back to Investments"
+      "backToInvestments": "Back to Investments",
+      "errors": {
+        "alreadyExists": "You already have this investment at this bank. Edit the existing one instead.",
+        "notFound": "This investment no longer exists. You may have sold it already.",
+        "invalid": "Check the details you entered and try again.",
+        "quantityInvalid": "The quantity must be greater than zero.",
+        "currencyMismatch": "The currency doesn't match this investment's currency.",
+        "unsupportedCurrency": "That currency isn't available for investments.",
+        "banksUnavailable": "The banks service didn't respond. Try again in a moment.",
+        "unknown": "Try again in a moment."
+      }
+    },
+    "stockBar": {
+      "summary": "{quantity} units · Cost: <cost></cost>"
     }
   },
   "imports": {

@@ -10,13 +10,15 @@ import { PageFrameFill } from '@/components/ui-kit/layout/PageFrame'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { MarketStrip } from '@/components/ui-kit/page/investments/MarketStrip'
-import { FitAmount } from '@/components/ui-kit/money/FitAmount'
+import { FitAmount, FitText } from '@/components/ui-kit/money/FitAmount'
+import { formatPercent } from '@/lib/format'
 import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { PortfolioTab } from './PortfolioTab'
 import { OperationsTab } from './OperationsTab'
 import { MarketsTab } from './MarketsTab'
 import { ResumenTab } from './ResumenTab'
 import { resolveInvestmentsTab } from './tabs'
+import { TONE_TEXT, toneOf } from './portfolioView'
 import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { BffQuery, InvestmentsBff } from '@/lib/api/bff/types'
 import type { components } from '@/lib/api/bff/schema'
@@ -114,9 +116,12 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
             <KpiTile
               label={t('tabs.kpiPerformance')}
               value={
-                <span data-testid="inv-kpi-pnl-pct" className={`block whitespace-nowrap ${kpisData?.pnlPct != null && kpisData.pnlPct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}`}>
-                  {kpisData?.pnlPct != null ? `${kpisData.pnlPct >= 0 ? '+' : ''}${kpisData.pnlPct.toFixed(2)}%` : '—'}
-                </span>
+                <div data-testid="inv-kpi-pnl-pct">
+                  <FitText
+                    text={kpisData?.pnlPct != null ? formatPercent(kpisData.pnlPct) : '—'}
+                    className={TONE_TEXT[toneOf(kpisData?.pnlPct)]}
+                  />
+                </div>
               }
             />
           </KpiStrip>

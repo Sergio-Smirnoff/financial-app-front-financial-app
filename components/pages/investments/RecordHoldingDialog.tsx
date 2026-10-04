@@ -21,11 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { ApiError } from '@/lib/api/client'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useCreateHolding, useHoldings, useUpdateHolding } from '@/lib/hooks/useInvestments'
 import type { HoldingDraft } from '@/lib/store/holdingDraft.store'
 import type { AssetType } from '@/types/investments'
-import { formatCurrency } from '@/lib/format'
 import { AMOUNT_LIMITS, THRESHOLD_LIMITS, parseDecimal, toPlainDecimal, type DecimalResult } from '@/lib/utils/decimal'
 import {
   decimalErrorMessage,
@@ -34,11 +34,26 @@ import {
   THRESHOLD_MESSAGES,
   type DecimalFieldMessages,
 } from '@/components/ui-kit/page/investments/decimalErrorMessage'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { HOLDING_DIALOG_CLASS } from './holdingDialog'
 
 export interface RecordHoldingDialogProps {
   draft: HoldingDraft | null
   onClose: () => void
 }
+
+const SAVE_ERROR_KEYS: Readonly<Record<string, string>> = {
+  resource_already_exists: 'holdings.errors.alreadyExists',
+  resource_not_found: 'holdings.errors.notFound',
+  validation_error: 'holdings.errors.invalid',
+  holding_quantity_invalid: 'holdings.errors.quantityInvalid',
+  holding_currency_mismatch: 'holdings.errors.currencyMismatch',
+  unsupported_currency: 'holdings.errors.unsupportedCurrency',
+  banks_service_unavailable: 'holdings.errors.banksUnavailable',
+}
+
+const saveErrorKey = (err: unknown): string =>
+  (err instanceof ApiError && err.code && SAVE_ERROR_KEYS[err.code]) || 'holdings.errors.unknown'
 
 const formDecimal = (n: number | null | undefined, scale: number) => (n == null ? '' : toPlainDecimal(n, scale))
 
@@ -61,7 +76,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
   const t = useTranslations('investments')
   const tc = useTranslations('common')
   const { banks } = useBanks()
-  const { data: holdings, isLoading: holdingsLoading, isError: holdingsFailed } = useHoldings()
+  const { data: holdings, isPending: holdingsPending, isError: holdingsFailed } = useHoldings()
   const createMutation = useCreateHolding()
   const updateMutation = useUpdateHolding()
 
@@ -212,14 +227,15 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       }
       onClose()
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : ''
-      toast.error(message || t(isEdit ? 'holdings.toastUpdateFailed' : 'holdings.toastCreateFailed'))
+      toast.error(t(isEdit ? 'holdings.toastUpdateFailed' : 'holdings.toastCreateFailed'), {
+        description: t(saveErrorKey(err)),
+      })
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="sm:max-w-md bg-card border-border max-h-[90vh] overflow-y-auto">
+      <DialogContent className={HOLDING_DIALOG_CLASS}>
         <DialogHeader>
           <DialogTitle className="text-foreground">{isEdit ? t('holdings.editTitle') : t('holdings.new')}</DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -229,9 +245,9 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
 
         {isEdit && !editing ? (
           <p className="text-sm text-muted-foreground">
-            {holdingsLoading
-              ? t('holdings.loadingHolding')
-              : holdingsFailed ? t('holdings.loadFailed') : t('holdings.notFound')}
+            {holdingsFailed
+              ? t('holdings.loadFailed')
+              : holdingsPending ? t('holdings.loadingHolding') : t('holdings.notFound')}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
@@ -284,7 +300,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
                     <SelectItem value="none">{t('holdings.noFundingDebit')}</SelectItem>
                     {availableAccounts.map((a) => (
                       <SelectItem key={a.cbu} value={a.cbu}>
-                        {a.name} ({a.cbu.slice(-4)}) — {formatCurrency(parseFloat(a.balance) || 0, a.currency)}
+                        {a.name} ({a.cbu.slice(-4)}) — {moneyText({ value: { amount: a.balance, currency: a.currency } })}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -382,7 +398,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
             {!isEdit && totalCalculated > 0 && (
               <div className="p-3 bg-muted/60 rounded-lg border border-border flex items-center justify-between">
                 <span className="text-muted-foreground">{t('holdings.totalDebitEstimate')}:</span>
-                <span className="font-mono font-bold text-foreground">{formatCurrency(totalCalculated, currency)}</span>
+                <span className="font-mono font-bold text-foreground">{moneyText({ value: { amount: String(totalCalculated), currency } })}</span>
               </div>
             )}
 

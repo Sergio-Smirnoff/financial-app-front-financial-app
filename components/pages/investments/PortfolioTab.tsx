@@ -18,7 +18,9 @@ import {
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useHoldings } from '@/lib/hooks/useInvestments'
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
-import { CARTERA_COLUMNS, PHONE_COLUMNS, PHONE_QUERY, useCarteraViewStore } from '@/lib/store/carteraView.store'
+import { amountOf } from '@/lib/format'
+import { PHONE_QUERY } from '@/lib/layout/frame'
+import { CARTERA_COLUMNS, PHONE_COLUMNS, useCarteraViewStore } from '@/lib/store/carteraView.store'
 import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { AssetTypeSlice, InvestmentsKpis, PositionRow, Section } from '@/lib/api/bff/types'
 import type { Holding } from '@/types/investments'
@@ -26,7 +28,7 @@ import { SellHoldingDialog, type SellHoldingTarget } from './SellHoldingDialog'
 import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { CarteraTable, useColumnLabels } from './CarteraTable'
 import { matchesQuery, visibleColumns } from './carteraView'
-import { GROUP_LABEL_KEYS, GROUP_ORDER, amountOf, groupKeyOf, type GroupKey } from './portfolioView'
+import { GROUP_LABEL_KEYS, GROUP_ORDER, groupKeyOf, toggled, type GroupKey } from './portfolioView'
 
 export interface PortfolioTabProps {
   positionsSection?: Section<PositionRow[]>
@@ -85,18 +87,16 @@ export function PortfolioTab({
 
   const shownColumns = visibleColumns(isPhone ? PHONE_COLUMNS : columns, grouped)
   const holdingsById = useMemo(() => new Map((holdings ?? []).map((h) => [h.id, h])), [holdings])
+  const exactQuantities = useMemo(
+    () => new Map((holdings ?? []).flatMap((h) => (h.exactQuantity ? [[h.id, h.exactQuantity] as const] : []))),
+    [holdings],
+  )
   const bankNames = useMemo(() => new Map(banks.map((b) => [b.bankNumber, b.name])), [banks])
   const slices = compositionSection?.status === 'OK' ? compositionSection.data ?? [] : null
   const actionsUnavailable = holdingsFailed ? t('cartera.holdingsUnavailable') : undefined
   const actionsDescribedBy = holdingsFailed ? 'holdings-unavailable' : undefined
 
-  const toggleType = (key: GroupKey) =>
-    setTypes((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
+  const toggleType = (key: GroupKey) => setTypes((prev) => toggled(prev, key))
 
   const renderActions = (row: PositionRow) => {
     const holding = row.holdingId != null ? holdingsById.get(row.holdingId) : undefined
@@ -301,6 +301,7 @@ export function PortfolioTab({
                     onSort={sortBy}
                     totalMarketValue={kpis?.marketValue}
                     bankNames={bankNames}
+                    exactQuantities={exactQuantities}
                     renderActions={renderActions}
                     phone={isPhone}
                   />

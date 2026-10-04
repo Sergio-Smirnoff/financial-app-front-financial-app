@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
+import { BRAND_NAME } from '@/lib/brand'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/lib/store/ui.store'
 import { SideNavItem } from './SideNavItem'
@@ -58,14 +59,14 @@ export function SideNav({ pathname: pathnameProp }: SideNavProps) {
       )}
     >
       <div className={cn('flex h-14 items-center border-b', collapsed ? 'justify-center px-2' : 'px-4')}>
-        <span className="flex min-w-0 items-center gap-2 font-semibold text-sidebar-foreground" title="FinanceApp">
+        <span className="flex min-w-0 items-center gap-2 font-semibold text-sidebar-foreground" title={BRAND_NAME}>
           <span
             aria-hidden="true"
             className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sm text-sidebar-primary-foreground"
           >
             $
           </span>
-          <span className={cn('truncate', collapsed && 'sr-only')}>FinanceApp</span>
+          <span className={cn('truncate', collapsed && 'sr-only')}>{BRAND_NAME}</span>
         </span>
       </div>
       <nav className={cn('flex-1 space-y-1', collapsed ? 'p-2' : 'p-3')} aria-label={tCommon('mainNavigation')}>
@@ -109,7 +110,8 @@ export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
   const tCommon = useTranslations('common')
   const routePathname = usePathname()
   const pathname = pathnameProp ?? routePathname
-  const { sidebarOpen, setSidebarOpen } = useUiStore()
+  const sidebarOpen = useUiStore((s) => s.sidebarOpen)
+  const setSidebarOpen = useUiStore((s) => s.setSidebarOpen)
 
   if (!sidebarOpen) return null
 
@@ -122,7 +124,7 @@ export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
       />
       <aside className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r bg-sidebar md:hidden">
         <div className="flex h-14 items-center justify-between border-b px-4">
-          <span className="font-semibold text-sidebar-foreground">FinanceApp</span>
+          <span className="font-semibold text-sidebar-foreground">{BRAND_NAME}</span>
           <Button
             variant="ghost"
             size="icon"

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { ProgressRow } from '@/components/ui-kit/row/ProgressRow'
-import { formatMoney } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
 import { useFitCount } from '@/lib/hooks/useFitCount'
 import { cn } from '@/lib/utils'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -58,11 +58,7 @@ function SpendList({ items }: { items: SpendCategoryItem[] }) {
             <ProgressRow
               label={item.name ?? ''}
               share={item.pct ?? 0}
-              valueText={
-                item.amount
-                  ? formatMoney({ amount: item.amount.amount, currency: item.amount.currency }, { decimals: 0 })
-                  : '—'
-              }
+              valueText={moneyText({ value: item.amount && { ...item.amount, secondary: null }, decimals: 0 })}
             />
           </li>
         ))}

@@ -47,7 +47,7 @@ function fittedFontPx(root: HTMLElement, probe: HTMLElement): number | null {
   return Math.floor(2 * base * ratio) / 2
 }
 
-export function FitAmount({ className, ...money }: FitAmountProps) {
+function useFit() {
   const id = useId()
   const group = useContext(FitGroupContext)
   const report = group?.report
@@ -90,22 +90,37 @@ export function FitAmount({ className, ...money }: FitAmountProps) {
   useLayoutEffect(() => () => forget?.(id), [forget, id])
 
   const applied = group ? group.fontPx : own
-  const compact = own != null && own < FIT_AMOUNT_FLOOR_PX
   const fontPx = applied == null ? null : Math.max(applied, FIT_AMOUNT_FLOOR_PX)
+  return { rootRef, probeRef, own, fontPx }
+}
+
+function FitProbe({ probeRef, text }: { probeRef: React.RefObject<HTMLSpanElement | null>; text: string }) {
+  return (
+    <span
+      ref={probeRef}
+      data-amount-probe
+      data-text={text}
+      aria-hidden="true"
+      className="n pointer-events-none invisible absolute top-0 left-0 whitespace-nowrap after:content-[attr(data-text)]"
+    />
+  )
+}
+
+const ROOT = 'relative block min-w-0 overflow-hidden'
+const fontStyle = (fontPx: number | null) => (fontPx != null ? { fontSize: `${fontPx}px` } : undefined)
+
+export function FitAmount({ className, ...money }: FitAmountProps) {
+  const { rootRef, probeRef, own, fontPx } = useFit()
+  const compact = own != null && own < FIT_AMOUNT_FLOOR_PX
   const full = moneyText(money)
 
   return (
-    <span
-      ref={rootRef}
-      data-amount-root
-      title={compact ? full : undefined}
-      className={cn('relative block min-w-0 overflow-hidden', className)}
-    >
+    <span ref={rootRef} data-amount-root title={compact ? full : undefined} className={cn(ROOT, className)}>
       <span
         data-amount
         data-fit={compact ? 'compact' : fontPx != null ? 'shrunk' : 'full'}
         className="block whitespace-nowrap"
-        style={fontPx != null ? { fontSize: `${fontPx}px` } : undefined}
+        style={fontStyle(fontPx)}
       >
         {compact ? (
           <>
@@ -118,13 +133,25 @@ export function FitAmount({ className, ...money }: FitAmountProps) {
           <Money {...money} />
         )}
       </span>
+      <FitProbe probeRef={probeRef} text={full} />
+    </span>
+  )
+}
+
+export function FitText({ text, className }: { text: string; className?: string }) {
+  const { rootRef, probeRef, fontPx } = useFit()
+
+  return (
+    <span ref={rootRef} data-amount-root className={cn(ROOT, 'n', className)}>
       <span
-        ref={probeRef}
-        data-amount-probe
-        data-text={full}
-        aria-hidden="true"
-        className="n pointer-events-none invisible absolute top-0 left-0 whitespace-nowrap after:content-[attr(data-text)]"
-      />
+        data-amount
+        data-fit={fontPx != null ? 'shrunk' : 'full'}
+        className="block whitespace-nowrap"
+        style={fontStyle(fontPx)}
+      >
+        {text}
+      </span>
+      <FitProbe probeRef={probeRef} text={text} />
     </span>
   )
 }

@@ -5,7 +5,8 @@ import { ChartFrame, type ChartSize } from './primitives/ChartFrame'
 import { Axis } from './primitives/Axis'
 import { HoverMarker } from './primitives/HoverMarker'
 import { useChartScales, SeriesPoint } from './primitives/useChartScales'
-import { currencySymbol, formatCompactMoney, formatPercent } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
 
 type CurveMode = 'linear' | 'monotone' | 'auto'
 
@@ -146,7 +147,10 @@ function AreaPlot({ size, series, comparison, currency, curve }: AreaPlotProps) 
   const monthOfYear = String(activeDate.getMonth() + 1).padStart(2, '0')
   const dateText = `${day}/${monthOfYear}`
 
-  const valueText = `${currencySymbol(currency)} ${currentValue.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+  const valueText = moneyText({
+    value: { amount: String(currentValue), currency },
+    decimals: Number.isInteger(currentValue) ? 0 : 2,
+  })
   const deltaText = formatPercent(deltaPct, { decimals: 1 })
 
   return (
@@ -168,7 +172,7 @@ function AreaPlot({ size, series, comparison, currency, curve }: AreaPlotProps) 
         paddingLeft={PADDING_LEFT}
         paddingRight={PADDING_RIGHT}
         paddingY={PADDING_Y}
-        formatY={(val) => formatCompactMoney(val, currency, 1)}
+        formatY={(val) => moneyText({ value: { amount: String(val), currency }, compact: true, decimals: 1 })}
       />
 
       <path d={areaPath} fill={`url(#${gradientId})`} />

@@ -4,9 +4,10 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { DonutChart } from '@/components/charts/DonutChart'
-import { formatCompactMoney, formatMoney, formatPercent } from '@/lib/format'
+import { Money, moneyText } from '@/components/ui-kit/money/Money'
+import { amountOf, formatPercent } from '@/lib/format'
 import type { AssetTypeSlice, InvestmentsKpis, MoneyView, Section } from '@/lib/api/bff/types'
-import { GROUP_COLOR, GROUP_LABEL_KEYS, amountOf, groupKeyOf, orderSlices, toneOf } from './portfolioView'
+import { GROUP_COLOR, GROUP_LABEL_KEYS, TONE_TEXT, groupKeyOf, orderSlices, toneOf } from './portfolioView'
 
 export interface CompositionCardProps {
   section?: Section<AssetTypeSlice[]>
@@ -15,12 +16,15 @@ export interface CompositionCardProps {
   onRetry?: () => void
 }
 
-const TONE_TEXT = { gain: 'text-gain', loss: 'text-loss', neutral: 'text-muted-foreground' } as const
 const PNL_AMOUNT = 'max-[1441px]:hidden'
 
 function Compact({ value }: { value?: MoneyView | null }) {
-  if (!value) return <span className="text-muted-foreground">—</span>
-  return <span title={formatMoney({ ...value, secondary: null })}>{formatCompactMoney(amountOf(value), value.currency)}</span>
+  const primary = value && { ...value, secondary: null }
+  return (
+    <span title={primary ? moneyText({ value: primary }) : undefined}>
+      <Money value={primary} compact />
+    </span>
+  )
 }
 
 export function CompositionCard({ section, kpis, isLoading, onRetry }: CompositionCardProps) {
@@ -52,7 +56,7 @@ export function CompositionCard({ section, kpis, isLoading, onRetry }: Compositi
                   minHeight={96}
                   ariaLabel={t('composition.donutAria')}
                   centerLabel={t('composition.centerLabel')}
-                  centerValue={marketValue ? formatCompactMoney(amountOf(marketValue), marketValue.currency) : '—'}
+                  centerValue={moneyText({ value: marketValue && { ...marketValue, secondary: null }, compact: true })}
                   centerDelta={kpis?.pnlPct != null ? { text: formatPercent(kpis.pnlPct), tone: toneOf(kpis.pnlPct) } : undefined}
                   slices={ordered.map((s, index) => {
                     const key = groupKeyOf(s.assetType)

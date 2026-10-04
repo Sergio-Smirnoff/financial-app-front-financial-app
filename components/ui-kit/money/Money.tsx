@@ -1,4 +1,4 @@
-import { formatCompactMoney, withTrueMinus, type MoneyView } from '@/lib/format'
+import { formatCompactMoney, isoCurrency, withTrueMinus, type MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface MoneyProps {
@@ -57,10 +57,10 @@ function formatSingleMoneyHelper(
   if (isNaN(num)) return amountStr
 
   let formatted = compact
-    ? formatCompactMoney(num, currency)
+    ? formatCompactMoney(num, currency, decimals == null ? 0 : (Math.min(decimals, 1) as 0 | 1))
     : new Intl.NumberFormat('es-AR', {
         style: 'currency',
-        currency,
+        currency: isoCurrency(currency),
         minimumFractionDigits: dec,
         maximumFractionDigits: dec,
       }).format(num)

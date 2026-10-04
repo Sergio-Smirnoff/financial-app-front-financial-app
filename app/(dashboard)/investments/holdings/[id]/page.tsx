@@ -12,10 +12,11 @@ export default function HoldingDetailPage() {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
   const { id } = useParams<{ id: string }>()
-  const { data: holdings = [], isLoading, isError, isFetching, refetch } = useHoldings()
+  const { data: holdings = [], isPending, isError, isFetching, refetch } = useHoldings()
 
-  const holdingId = Number.parseInt(id ?? '', 10)
-  const holding = holdings.find((h) => h.id === holdingId)
+  const holdingId = Number(id)
+  const validId = Number.isInteger(holdingId) && holdingId > 0
+  const holding = validId ? holdings.find((h) => h.id === holdingId) : undefined
 
   const { data: research } = useTickerResearch(holding?.ticker ?? null, 'D90')
 
@@ -54,9 +55,9 @@ export default function HoldingDetailPage() {
     }
   }, [holding, research])
 
-  if (isLoading && !holding) {
+  if (validId && isPending && !holding) {
     return (
-      <main className="flex-1 overflow-auto p-6 space-y-6">
+      <main data-testid="holding-loading" className="flex-1 overflow-auto p-6 space-y-6">
         <div className="h-10 w-48 rounded-lg bg-muted animate-pulse" />
         <div className="h-24 rounded-xl bg-muted animate-pulse" />
         <div className="h-64 rounded-xl bg-muted animate-pulse" />

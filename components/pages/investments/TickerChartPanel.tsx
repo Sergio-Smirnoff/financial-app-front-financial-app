@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTickerResearch } from '@/lib/hooks/useInvestments'
-import { formatCurrency, formatPercent } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { AreaChart } from '@/components/charts/AreaChart'
 import { Button } from '@/components/ui/button'
@@ -81,7 +82,7 @@ export function TickerChartPanel({ ticker, name, onBuy, className }: TickerChart
         {data?.currentPrice != null && (
           <div className="flex min-w-0 flex-1 items-baseline gap-3 short:order-1 short:flex-none">
             <span className="whitespace-nowrap text-xl font-black font-mono text-foreground short:text-base">
-              {formatCurrency(data.currentPrice, data.currency ?? 'ARS')}
+              {moneyText({ value: { amount: String(data.currentPrice), currency: data.currency ?? 'ARS' } })}
             </span>
             {data.variation != null && (
               <span

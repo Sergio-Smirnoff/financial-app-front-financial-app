@@ -1,5 +1,6 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
+import { formatPercent } from '@/lib/format'
 import { LegendList, CompositionSlice } from './LegendList'
 
 export interface CompositionBarProps {
@@ -22,7 +23,6 @@ export function CompositionBar({ slices, className = '', showLegend = true }: Co
   const t = useTranslations('common.chart')
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Track bar */}
       <div
         className="w-full h-3 rounded-full overflow-hidden flex bg-muted/30 p-0.5 gap-0.5"
         role="progressbar"
@@ -37,13 +37,12 @@ export function CompositionBar({ slices, className = '', showLegend = true }: Co
               data-pct={slice.pct}
               style={{ width: `${slice.pct}%` }}
               className={`h-full first:rounded-l-full last:rounded-r-full transition-all duration-300 ${colorClass}`}
-              title={`${slice.label}: ${slice.pct.toFixed(1)}%`}
+              title={`${slice.label}: ${formatPercent(slice.pct, { decimals: 1, signed: false })}`}
             />
           )
         })}
       </div>
 
-      {/* Legend list */}
       {showLegend && <LegendList slices={slices} />}
     </div>
   )

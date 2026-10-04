@@ -5,12 +5,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { AreaChart } from '@/components/charts/AreaChart'
-import { Money } from '@/components/ui-kit/money/Money'
+import { FitAmount } from '@/components/ui-kit/money/FitAmount'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
 import { KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { Button } from '@/components/ui/button'
 import { SellHoldingDialog } from './SellHoldingDialog'
-import { formatQuantity, type MoneyView } from '@/lib/format'
+import { amountOf, formatQuantity, type MoneyView } from '@/lib/format'
 import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { AssetType } from '@/types/investments'
 
@@ -45,13 +45,8 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
 
   const [sellOpen, setSellOpen] = useState(false)
 
-  const parseNum = (val: MoneyView): number => {
-    if (typeof val.amount === 'string') return parseFloat(val.amount) || 0
-    return (val.amount as unknown as number) || 0
-  }
-
   const buyMore = () => {
-    const currentPrice = parseNum(holding.currentPrice)
+    const currentPrice = amountOf(holding.currentPrice)
     openCreate({
       ticker: holding.ticker,
       name: holding.name,
@@ -104,10 +99,10 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
       </div>
 
       <KpiStrip>
-        <KpiTile label={tc('quantity')} value={formatQuantity(holding.quantity)} />
-        <KpiTile label={t('holdings.avgPrice')} value={<Money value={holding.avgPrice} />} />
-        <KpiTile label={t('holdings.currentPrice')} value={<Money value={holding.currentPrice} />} />
-        <KpiTile label={t('shared.totalValue')} value={<Money value={holding.totalValue} />} />
+        <KpiTile label={tc('quantity')} value={formatQuantity(holding.exactQuantity ?? holding.quantity)} />
+        <KpiTile label={t('holdings.avgPrice')} value={<div data-testid="position-kpi"><FitAmount value={holding.avgPrice} /></div>} />
+        <KpiTile label={t('holdings.currentPrice')} value={<div data-testid="position-kpi"><FitAmount value={holding.currentPrice} /></div>} />
+        <KpiTile label={t('shared.totalValue')} value={<div data-testid="position-kpi"><FitAmount value={holding.totalValue} /></div>} />
       </KpiStrip>
 
       <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
@@ -128,8 +123,8 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           quantity: holding.quantity,
           exactQuantity: holding.exactQuantity,
           currency: holding.currentPrice.currency,
-          currentPrice: parseNum(holding.currentPrice),
-          avgPurchasePrice: parseNum(holding.avgPrice),
+          currentPrice: amountOf(holding.currentPrice),
+          avgPurchasePrice: amountOf(holding.avgPrice),
         }}
         open={sellOpen}
         onOpenChange={setSellOpen}
@@ -137,7 +132,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           if (onSold) {
             onSold()
           } else {
-            router.push('/investments')
+            router.push('/investments?tab=cartera')
           }
         }}
       />

@@ -27,7 +27,6 @@ export function HoverMarker({
 
   return (
     <g className="hover-marker pointer-events-none">
-      {/* Vertical guideline */}
       <line
         x1={x}
         y1={paddingY}
@@ -38,11 +37,9 @@ export function HoverMarker({
         strokeDasharray="3 3"
       />
 
-      {/* Target point indicator */}
       <circle cx={x} cy={y} r={5} fill="currentColor" className="text-primary" />
       <circle cx={x} cy={y} r={3} fill="white" />
 
-      {/* Tooltip */}
       <g role="tooltip" transform={`translate(${x + 150 > width ? Math.max(0, x - 140) : x + 10}, ${Math.max(paddingY, y - 40)})`}>
         <rect
           width={130}

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { stubChartSize } from '@/test/chartSize'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
@@ -19,8 +19,15 @@ vi.mock('@/lib/hooks/useBanks', () => ({
   useBanks: () => ({ banks: [], isLoading: false }),
 }))
 
+const { sellMutateAsync } = vi.hoisted(() => ({
+  sellMutateAsync: vi.fn(async () => ({
+    holdingId: 42, soldQuantity: '100', remainingQuantity: '0', proceeds: '1500000',
+    bookedAmount: '0', currency: 'ARS', closed: true,
+  })),
+}))
+
 vi.mock('@/lib/hooks/useInvestments', () => ({
-  useSellHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useSellHolding: () => ({ mutateAsync: sellMutateAsync, isPending: false }),
   useHoldings: () => ({ data: [], isLoading: false }),
   useTickerResearch: () => ({ data: null, isLoading: false }),
 }))
@@ -131,5 +138,26 @@ describe('PositionDetail', () => {
       mode: 'create',
       prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: undefined, price: undefined, currency: 'ARS' },
     })
+  })
+
+  it('returns to Cartera after selling', async () => {
+    const user = userEvent.setup()
+    push.mockClear()
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+
+    await user.click(screen.getByRole('button', { name: 'Vender' }))
+    await user.click(await screen.findByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/investments?tab=cartera'))
+  })
+
+  it('shows the exact stored quantity', () => {
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 123456789012.12346, exactQuantity: '123456789012.123456' }} />)
+    expect(screen.getByText('123.456.789.012,123456')).toBeInTheDocument()
+  })
+
+  it('fits the headline amounts like the other KPI strips', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    expect(screen.getAllByTestId('position-kpi').map((tile) => tile.querySelector('[data-amount]') != null)).toEqual([true, true, true])
   })
 })

@@ -212,7 +212,20 @@ describe('Investments layout on short screens and phones', () => {
   it('keeps every KPI amount on one line', () => {
     renderInvestments(bff)
     expect(screen.getByTestId('inv-kpi-market-value').querySelector('[data-amount]')).not.toBeNull()
-    expect(screen.getByTestId('inv-kpi-pnl-pct')).toHaveClass('whitespace-nowrap')
+    expect(screen.getByTestId('inv-kpi-pnl-pct').querySelector('[data-amount]')).toHaveClass('whitespace-nowrap')
+  })
+
+  it('prints the performance KPI as a shared percent in the gain or loss tone', () => {
+    const kpisWith = (pnlPct: number) =>
+      ({ ...bff, kpis: { ...bff.kpis!, data: { ...bff.kpis!.data!, pnlPct } } }) as InvestmentsBff
+    const { unmount } = renderInvestments(kpisWith(12.345))
+    expect(screen.getByTestId('inv-kpi-pnl-pct')).toHaveTextContent('+12,35 %')
+    expect(screen.getByTestId('inv-kpi-pnl-pct').firstElementChild).toHaveClass('text-gain')
+    unmount()
+
+    renderInvestments(kpisWith(-3.5))
+    expect(screen.getByTestId('inv-kpi-pnl-pct')).toHaveTextContent('−3,50 %')
+    expect(screen.getByTestId('inv-kpi-pnl-pct').firstElementChild).toHaveClass('text-loss')
   })
 
   it('stacks Operaciones into three columns on a phone', async () => {
@@ -714,5 +727,13 @@ describe('Editar', () => {
         body: expect.objectContaining({ currency: 'ARS', avgPurchasePrice: '12000', quantity: '100', fundingCbu: null }),
       }),
     )
+  })
+})
+
+describe('Cartera quantities', () => {
+  it('shows the exact stored quantity instead of the rounded number', () => {
+    holdingsMock.data = [{ ...nativeGgal, exactQuantity: '123456789012.123456' }]
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+    expect(within(rowOf('GGAL')).getByText('123.456.789.012,123456')).toBeInTheDocument()
   })
 })

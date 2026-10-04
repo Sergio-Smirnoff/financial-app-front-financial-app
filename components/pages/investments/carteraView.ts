@@ -6,7 +6,7 @@ import {
   type CarteraSortKey,
   type ColumnVisibility,
 } from '@/lib/store/carteraView.store'
-import { amountOf } from './portfolioView'
+import { amountOf } from '@/lib/format'
 
 export type DisplayedText = (row: PositionRow, column: 'assetType' | 'bank') => string
 

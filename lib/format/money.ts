@@ -4,6 +4,11 @@ export interface MoneyView {
   secondary?: MoneyView | null
 }
 
+export function amountOf(value?: MoneyView | null): number {
+  const n = Number(value?.amount)
+  return Number.isFinite(n) ? n : 0
+}
+
 export function formatMoney(
   value: MoneyView | string | number,
   opts?: { decimals?: number; currency?: string },

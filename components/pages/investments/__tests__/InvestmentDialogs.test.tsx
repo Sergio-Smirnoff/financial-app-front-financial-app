@@ -24,7 +24,7 @@ const { createMutateAsync, updateMutateAsync, sellMutateAsync, holdings, sellSta
     holdingId: 10, soldQuantity: '100', remainingQuantity: '0', proceeds: '80000',
     bookedAmount: '79600', currency: 'ARS', closed: true,
   })),
-  holdings: { data: [] as Holding[], isLoading: false, isError: false },
+  holdings: { data: [] as Holding[], isPending: false, isError: false },
   sellState: { isPending: false },
   banksState: { withAccounts: true, secondArsAccount: false },
   toastSuccess: vi.fn(),
@@ -95,7 +95,7 @@ vi.mock('@/lib/hooks/useInvestments', () => ({
     },
     isLoading: false,
   }),
-  useHoldings: () => ({ data: holdings.data, isLoading: holdings.isLoading, isError: holdings.isError }),
+  useHoldings: () => ({ data: holdings.data, isPending: holdings.isPending, isError: holdings.isError }),
 }))
 
 function renderWithIntl(ui: React.ReactElement) {
@@ -137,7 +137,7 @@ describe('RecordHoldingDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     holdings.data = [ggalHolding]
-    holdings.isLoading = false
+    holdings.isPending = false
     holdings.isError = false
   })
 
@@ -367,6 +367,43 @@ describe('RecordHoldingDialog', () => {
     renderDialog({ mode: 'edit', holdingId: 999 })
     expect(screen.getByText('No encontramos esa tenencia.')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Guardar cambios' })).not.toBeInTheDocument()
+  })
+
+  it('says the holding is loading, not missing, while a paused first load is pending', () => {
+    holdings.data = []
+    holdings.isPending = true
+    renderDialog({ mode: 'edit', holdingId: 7 })
+    expect(screen.getByText(esAR.investments.holdings.loadingHolding)).toBeInTheDocument()
+    expect(screen.queryByText('No encontramos esa tenencia.')).not.toBeInTheDocument()
+  })
+
+  it('explains a known create error from the catalogue instead of the raw message', async () => {
+    const user = userEvent.setup()
+    createMutateAsync.mockRejectedValueOnce(new ApiError('Duplicate holding GGAL for bank 072', 409, 'resource_already_exists'))
+    renderDialog({ mode: 'create', prefill: { ticker: 'GGAL', name: 'Grupo Financiero Galicia', price: 4850 } })
+
+    await user.type(screen.getByPlaceholderText('100'), '50')
+    await user.click(screen.getByRole('button', { name: /^Registrar inversión$/i }))
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(esAR.investments.holdings.toastCreateFailed, {
+        description: esAR.investments.holdings.errors.alreadyExists,
+      }),
+    )
+  })
+
+  it('falls back to a translated generic message for an unknown update error', async () => {
+    const user = userEvent.setup()
+    updateMutateAsync.mockRejectedValueOnce(new Error('socket hang up'))
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(esAR.investments.holdings.toastUpdateFailed, {
+        description: esAR.investments.holdings.errors.unknown,
+      }),
+    )
   })
 
   it('says the holdings failed to load instead of not found when the list errors', () => {
@@ -671,6 +708,28 @@ describe('SellHoldingDialog', () => {
         id: 11,
         body: { quantity: '1000', price: '80500', destinationCbu: '0720000000000000000011' },
       }),
+    )
+  })
+
+  it('caps its height and scrolls so the confirm button is never clipped on a short screen', () => {
+    renderSell(ggal)
+    expect(screen.getByRole('dialog')).toHaveClass('max-h-[90vh]', 'overflow-y-auto')
+  })
+
+  it('shows the exact held quantity and reports the exact sold quantity', async () => {
+    const user = userEvent.setup()
+    const exact = '123456789012.123456'
+    sellMutateAsync.mockResolvedValueOnce({
+      holdingId: 10, soldQuantity: exact, remainingQuantity: '1', proceeds: '8000',
+      bookedAmount: '0', currency: 'ARS', closed: false,
+    })
+    renderSell({ ...ggal, quantity: Number(exact), exactQuantity: exact })
+
+    expect(screen.getByText(/123\.456\.789\.012,123456 unidades/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith('Vendiste 123.456.789.012,123456 de GGAL', expect.anything()),
     )
   })
 

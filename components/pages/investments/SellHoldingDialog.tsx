@@ -26,10 +26,12 @@ import { Lock } from 'lucide-react'
 import { ApiError } from '@/lib/api/client'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useSellHolding } from '@/lib/hooks/useInvestments'
-import { formatMoney, formatQuantity } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatQuantity } from '@/lib/format'
 import { AMOUNT_LIMITS, compareDecimal, parseDecimal, toPlainDecimal } from '@/lib/utils/decimal'
 import type { HoldingSale } from '@/types/investments'
 import { decimalErrorMessage, type DecimalFieldMessages } from '@/components/ui-kit/page/investments/decimalErrorMessage'
+import { HOLDING_DIALOG_CLASS } from './holdingDialog'
 
 export interface SellHoldingTarget {
   id: number
@@ -129,7 +131,7 @@ export function SellHoldingDialog({
   const parsedQuantity = parseDecimal(quantity, AMOUNT_LIMITS)
   const parsedPrice = parseDecimal(manualPrice, AMOUNT_LIMITS)
   const sellsEverything = parsedQuantity.ok && compareDecimal(parsedQuantity.value, held) === 0
-  const money = (value: number | string, code = currency) => formatMoney(value, { currency: code })
+  const money = (value: number | string, code = currency) => moneyText({ value: { amount: String(value), currency: code } })
 
   const quantityError = !parsedQuantity.ok
     ? decimalErrorMessage(t, parsedQuantity.reason, AMOUNT_LIMITS, SELL_QUANTITY_MESSAGES)
@@ -170,7 +172,7 @@ export function SellHoldingDialog({
         sale.closed
           ? t('holdings.sell.toastSoldAll', { ticker: holding.ticker })
           : t('holdings.sell.toastSold', {
-              quantity: formatQuantity(Number(sale.soldQuantity)),
+              quantity: formatQuantity(sale.soldQuantity),
               ticker: holding.ticker,
             }),
         { description: creditedText(sale, destinationCbu) }
@@ -186,7 +188,7 @@ export function SellHoldingDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card border-border">
+      <DialogContent className={HOLDING_DIALOG_CLASS}>
         <DialogHeader>
           <DialogTitle className="text-foreground">
             {t('holdings.sellTitle', { ticker: holding.ticker })}
@@ -201,7 +203,7 @@ export function SellHoldingDialog({
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t('holdings.availableQuantity')}</span>
               <span className="font-mono font-bold text-foreground">
-                {formatQuantity(holding.quantity)} {tc('units')}
+                {formatQuantity(held)} {tc('units')}
               </span>
             </div>
             <div className="flex justify-between">
@@ -320,7 +322,7 @@ export function SellHoldingDialog({
                 <SelectContent>
                   {availableAccounts.map((a) => (
                     <SelectItem key={a.cbu} value={a.cbu}>
-                      {a.name} ({a.cbu.slice(-4)}) — {money(parseFloat(a.balance) || 0, a.currency)}
+                      {a.name} ({a.cbu.slice(-4)}) — {money(a.balance, a.currency)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -351,7 +353,7 @@ export function SellHoldingDialog({
               ? t('holdings.selling')
               : sellsEverything
                 ? t('holdings.confirmSell')
-                : t('holdings.sell.confirmPartial', { quantity: formatQuantity(previewQuantity) })}
+                : t('holdings.sell.confirmPartial', { quantity: formatQuantity(parsedQuantity.ok ? parsedQuantity.value : 0) })}
           </Button>
         </DialogFooter>
       </DialogContent>

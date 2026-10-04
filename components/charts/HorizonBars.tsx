@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl'
 import { scaleBand, scaleLinear } from 'd3-scale'
 import { plotRange, plotRangeDown } from './primitives/plotRange'
 import { ChartFrame, type ChartSize } from './primitives/ChartFrame'
-import { formatCompactMoney } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
 
 export interface HorizonMonth {
   month: string
@@ -87,7 +87,7 @@ function HorizonPlot({ size: { width, height }, months, currency }: HorizonPlotP
               fill="currentColor"
               className="fill-muted-foreground font-mono text-[10px]"
             >
-              {formatCompactMoney(tick, currency)}
+              {moneyText({ value: { amount: String(tick), currency }, compact: true })}
             </text>
           </g>
         )

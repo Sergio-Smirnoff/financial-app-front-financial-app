@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl'
 import { TrendingUp } from 'lucide-react'
 import { useMarketDiscovery } from '@/lib/hooks/useInvestments'
 import { useFitCount } from '@/lib/hooks/useFitCount'
-import { formatCurrency, formatPercent } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { MarketQuote } from '@/types/investments'
 
@@ -38,7 +39,7 @@ function DiscoveryList({ items, onSelectTicker }: { items: MarketQuote[]; onSele
               {item.name && <span className="text-xs text-muted-foreground">{item.name}</span>}
             </span>
             <span className="shrink-0 whitespace-nowrap font-mono text-xs">
-              {formatCurrency(item.price, item.currency ?? 'ARS')}{' '}
+              {moneyText({ value: { amount: String(item.price), currency: item.currency ?? 'ARS' } })}{' '}
               <span className={cn('font-bold', isPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400')}>
                 {formatPercent(item.variation)}
               </span>
