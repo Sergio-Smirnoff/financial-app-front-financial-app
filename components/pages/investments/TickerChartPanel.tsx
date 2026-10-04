@@ -39,65 +39,76 @@ export function TickerChartPanel({ ticker, name, onBuy, className }: TickerChart
   const isPos = (data?.variation ?? 0) >= 0
 
   return (
-    <div className={cn('rounded-2xl border border-border bg-card p-6 flex flex-col gap-5 shadow-sm', className)}>
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 border-b border-border/60 pb-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-black font-mono tracking-tight text-foreground">{ticker}</h2>
-            {name && <span className="text-sm text-muted-foreground">{name}</span>}
-          </div>
-
-          {data?.currentPrice != null && (
-            <div className="flex items-baseline gap-3 mt-1.5">
-              <span className="text-xl font-black font-mono text-foreground">
-                {formatCurrency(data.currentPrice, data.currency ?? 'ARS')}
-              </span>
-              {data.variation != null && (
-                <span
-                  className={cn(
-                    'text-xs font-mono font-bold px-2 py-0.5 rounded',
-                    isPos
-                      ? 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400'
-                      : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
-                  )}
-                >
-                  {formatPercent(data.variation)}
-                </span>
-              )}
-            </div>
+    <div className={cn('min-w-0 rounded-2xl border border-border bg-card p-6 flex flex-col gap-5 shadow-sm short:p-4 short:gap-3', className)}>
+      <div
+        data-testid="ticker-chart-head"
+        className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border/60 pb-4 short:gap-x-2 short:pb-3"
+      >
+        <div className="flex min-w-16 flex-1 basis-0 items-baseline gap-3 short:gap-2">
+          <h2 className="shrink-0 text-2xl font-black font-mono tracking-tight text-foreground short:text-lg">{ticker}</h2>
+          {name && (
+            <span title={name} className="min-w-0 truncate text-sm text-muted-foreground">
+              {name}
+            </span>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex gap-1 rounded-lg border border-border p-1 bg-muted/40">
-            {RANGES.map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRange(r)}
+        <div
+          role="group"
+          aria-label={t('market.priceRangeAria')}
+          className="flex shrink-0 gap-1 rounded-lg border border-border p-1 bg-muted/40 short:order-2"
+        >
+          {RANGES.map((r) => (
+            <button
+              key={r}
+              type="button"
+              aria-pressed={range === r}
+              onClick={() => setRange(r)}
+              className={cn(
+                'whitespace-nowrap text-xs font-medium px-2.5 py-1 rounded transition-colors max-sm:px-2 short:px-1.5 short:py-0.5',
+                range === r
+                  ? 'bg-primary text-primary-foreground font-bold shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {t(RANGE_LABEL_KEYS[r])}
+            </button>
+          ))}
+        </div>
+
+        <div className="basis-full short:hidden" />
+
+        {data?.currentPrice != null && (
+          <div className="flex min-w-0 flex-1 items-baseline gap-3 short:order-1 short:flex-none">
+            <span className="whitespace-nowrap text-xl font-black font-mono text-foreground short:text-base">
+              {formatCurrency(data.currentPrice, data.currency ?? 'ARS')}
+            </span>
+            {data.variation != null && (
+              <span
                 className={cn(
-                  'text-xs font-medium px-2.5 py-1 rounded transition-colors',
-                  range === r
-                    ? 'bg-primary text-primary-foreground font-bold shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  'whitespace-nowrap text-xs font-mono font-bold px-2 py-0.5 rounded',
+                  isPos
+                    ? 'text-emerald-600 bg-emerald-500/10 dark:text-emerald-400'
+                    : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
                 )}
               >
-                {t(RANGE_LABEL_KEYS[r])}
-              </button>
-            ))}
+                {formatPercent(data.variation)}
+              </span>
+            )}
           </div>
+        )}
 
-          {onBuy && (
-            <Button
-              size="sm"
-              onClick={() => onBuy(ticker, data?.currentPrice, data?.currency ?? 'ARS')}
-              className="font-bold flex items-center gap-1.5"
-            >
-              <Plus className="w-4 h-4" />
-              {t('market.addHoldingFor', { ticker })}
-            </Button>
-          )}
-        </div>
+        {onBuy && (
+          <Button
+            size="sm"
+            onClick={() => onBuy(ticker, data?.currentPrice, data?.currency ?? 'ARS')}
+            className="shrink-0 font-bold flex items-center gap-1.5 max-sm:w-full short:order-3"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="short:hidden">{t('market.addHoldingFor', { ticker })}</span>
+            <span className="hidden short:inline">{t('market.buyShort', { ticker })}</span>
+          </Button>
+        )}
       </div>
 
       {isLoading && (

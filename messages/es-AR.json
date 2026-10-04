@@ -401,6 +401,7 @@
       "searchPlaceholder": "Buscá un ticker para investigar (ej: GGAL, AL30, AAPL)...",
       "noSearchResults": "No se encontraron tickers que coincidan.",
       "addHoldingFor": "Registrar compra de {ticker}",
+      "buyShort": "Comprar {ticker}",
       "seriesError": "No se pudieron cargar los datos de cotización.",
       "priceChartAria": "Gráfico de cotización de {ticker}",
       "ranges": {
@@ -412,7 +413,8 @@
         "3M": "3M",
         "1A": "1A"
       },
-      "rangeAria": "Período de la evolución"
+      "rangeAria": "Período de la evolución",
+      "priceRangeAria": "Período de la cotización"
     },
     "operations": {
       "heading": "Últimas Operaciones",

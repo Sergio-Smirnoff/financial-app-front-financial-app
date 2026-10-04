@@ -401,6 +401,7 @@
       "searchPlaceholder": "Search a ticker to research (e.g. GGAL, AL30, AAPL)...",
       "noSearchResults": "No matching tickers found.",
       "addHoldingFor": "Buy {ticker}",
+      "buyShort": "Buy {ticker}",
       "seriesError": "Could not load quote data.",
       "priceChartAria": "Price chart for {ticker}",
       "ranges": {
@@ -412,7 +413,8 @@
         "3M": "3M",
         "1A": "1Y"
       },
-      "rangeAria": "Evolution period"
+      "rangeAria": "Evolution period",
+      "priceRangeAria": "Price period"
     },
     "operations": {
       "heading": "Latest operations",

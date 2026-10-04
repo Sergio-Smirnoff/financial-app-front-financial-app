@@ -33,7 +33,7 @@ export function MarketsTab({ onBuy }: MarketsTabProps) {
     <div className="flex flex-col gap-4 frame:h-full frame:min-h-0">
       <TickerSearchBox onSelect={handleSelect} />
 
-      <div data-testid="markets-grid" className="grid grid-cols-1 gap-4 @min-[852px]/page:grid-cols-[2fr_1fr] frame:min-h-0 frame:flex-1">
+      <div data-testid="markets-grid" className="grid grid-cols-1 gap-4 @min-[852px]/page:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] frame:min-h-0 frame:flex-1">
         {selectedTicker && (
           <TickerChartPanel
             ticker={selectedTicker}
