@@ -53,7 +53,7 @@ test('Categorías flags the deliberately over-cap budget', async ({ page }) => {
 })
 
 test('Inversiones renders portfolio sections and degrades only the market strip', async ({ page }) => {
-  await page.goto('/investments')
+  await page.goto('/investments?tab=cartera')
   await expect(page.getByTestId('inv-kpi-market-value')).toBeVisible()
   await expect(page.getByTestId('position-row').or(page.getByTestId('positions-empty')).first()).toBeVisible()
 })
