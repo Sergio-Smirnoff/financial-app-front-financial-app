@@ -27,7 +27,7 @@ import { ApiError } from '@/lib/api/client'
 import { useBanks } from '@/lib/hooks/useBanks'
 import { useSellHolding } from '@/lib/hooks/useInvestments'
 import { formatMoney, formatQuantity } from '@/lib/format'
-import { compareDecimal, parseDecimal, toPlainDecimal } from '@/lib/utils/decimal'
+import { AMOUNT_LIMITS, compareDecimal, parseDecimal, toPlainDecimal } from '@/lib/utils/decimal'
 import type { HoldingSale } from '@/types/investments'
 import { decimalErrorMessage, type DecimalFieldMessages } from '@/components/ui-kit/page/investments/decimalErrorMessage'
 
@@ -57,20 +57,20 @@ const SELL_ERROR_KEYS: Readonly<Record<string, string>> = {
   finances_service_unavailable: 'holdings.sell.errors.financesUnavailable',
 }
 
-const DECIMAL_LIMITS = { scale: 6, integerDigits: 12 }
-
-const QUANTITY_MESSAGES: DecimalFieldMessages = {
+const SELL_QUANTITY_MESSAGES: DecimalFieldMessages = {
   positive: 'holdings.sell.quantityPositive',
   decimals: 'holdings.sell.quantityDecimals',
 }
 
-const PRICE_MESSAGES: DecimalFieldMessages = {
+const SELL_PRICE_MESSAGES: DecimalFieldMessages = {
   positive: 'holdings.sell.pricePositive',
   decimals: 'holdings.sell.priceDecimals',
 }
 
-const heldQuantityOf = (holding: SellHoldingTarget): string =>
-  holding.exactQuantity ?? toPlainDecimal(holding.quantity)
+const heldQuantityOf = (holding: SellHoldingTarget): string => {
+  const held = parseDecimal(holding.exactQuantity ?? toPlainDecimal(holding.quantity), { ...AMOUNT_LIMITS, allowZero: true })
+  return held.ok ? held.value : '0'
+}
 
 const sellErrorKey = (err: unknown): string =>
   (err instanceof ApiError && err.code && SELL_ERROR_KEYS[err.code]) || 'holdings.sell.errors.unknown'
@@ -119,26 +119,26 @@ export function SellHoldingDialog({
     initialisedFor.current = holdingId
     setQuantity(heldQuantity)
     setUseMarketPrice(true)
-    setManualPrice(!isBond && marketPrice != null ? toPlainDecimal(marketPrice, DECIMAL_LIMITS.scale) : '')
+    setManualPrice(!isBond && marketPrice != null ? toPlainDecimal(marketPrice, AMOUNT_LIMITS.scale) : '')
     setSelectedCbu(availableAccounts[0]?.cbu ?? '')
   }, [open, holdingId, heldQuantity, isBond, marketPrice, availableAccounts])
 
   if (!holding) return null
 
   const held = heldQuantityOf(holding)
-  const parsedQuantity = parseDecimal(quantity, DECIMAL_LIMITS)
-  const parsedPrice = parseDecimal(manualPrice, DECIMAL_LIMITS)
+  const parsedQuantity = parseDecimal(quantity, AMOUNT_LIMITS)
+  const parsedPrice = parseDecimal(manualPrice, AMOUNT_LIMITS)
   const sellsEverything = parsedQuantity.ok && compareDecimal(parsedQuantity.value, held) === 0
   const money = (value: number | string, code = currency) => formatMoney(value, { currency: code })
 
   const quantityError = !parsedQuantity.ok
-    ? decimalErrorMessage(t, parsedQuantity.reason, DECIMAL_LIMITS, QUANTITY_MESSAGES)
+    ? decimalErrorMessage(t, parsedQuantity.reason, AMOUNT_LIMITS, SELL_QUANTITY_MESSAGES)
     : compareDecimal(parsedQuantity.value, held) > 0
-      ? t('holdings.sell.quantityExceeds', { max: formatQuantity(holding.quantity) })
+      ? t('holdings.sell.quantityExceeds', { max: formatQuantity(held) })
       : null
   const priceError = useMarketPrice || parsedPrice.ok
     ? null
-    : decimalErrorMessage(t, parsedPrice.reason, DECIMAL_LIMITS, PRICE_MESSAGES)
+    : decimalErrorMessage(t, parsedPrice.reason, AMOUNT_LIMITS, SELL_PRICE_MESSAGES)
   const error = quantityError ?? priceError
   const priceOwnsError = quantityError == null && priceError != null
   const previewPrice = useMarketPrice ? marketPrice : parsedPrice.ok ? Number(parsedPrice.value) : null

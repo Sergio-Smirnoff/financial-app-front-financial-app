@@ -291,6 +291,32 @@ describe('RecordHoldingDialog', () => {
     )
   })
 
+  it('saves an unchanged edit with the exact stored price and thresholds', async () => {
+    const user = userEvent.setup()
+    holdings.data = [{
+      ...ggalHolding,
+      avgPurchasePrice: Number('123456789012.123456'),
+      exactAvgPurchasePrice: '123456789012.123456',
+      exactNotifyGainThresholdPct: '20.5',
+      exactNotifyLossThresholdPct: null,
+    }]
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    expect(screen.getByLabelText('Precio de compra unitario')).toHaveValue('123456789012.123456')
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 7,
+        body: expect.objectContaining({
+          avgPurchasePrice: '123456789012.123456',
+          notifyGainThresholdPct: '20.5',
+          notifyLossThresholdPct: null,
+        }),
+      }),
+    )
+  })
+
   it.each([
     ['1.234', 'Admite hasta 2 decimales'],
     ['-1', 'Ingresá un número válido (ej: 1,5).'],
@@ -819,7 +845,7 @@ describe('SellHoldingDialog', () => {
       const quantity = screen.getByLabelText('Cantidad a vender')
       fireEvent.change(quantity, { target: { value: '123456789012.123457' } })
 
-      expect(screen.getByRole('alert')).toHaveTextContent('No podés vender más de')
+      expect(screen.getByRole('alert')).toHaveTextContent('No podés vender más de 123.456.789.012,123456')
       expect(quantity).toHaveAttribute('aria-invalid', 'true')
       expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
       expect(sellMutateAsync).not.toHaveBeenCalled()
@@ -841,6 +867,15 @@ describe('SellHoldingDialog', () => {
         }),
       )
     })
+  })
+
+  it('treats an unusable held quantity as nothing to sell instead of crashing', () => {
+    renderSell({ ...ggal, quantity: Number.NaN })
+
+    fireEvent.change(screen.getByLabelText('Cantidad a vender'), { target: { value: '1' } })
+
+    expect(screen.getByRole('alert')).toHaveTextContent('No podés vender más de 0')
+    expect(screen.getByRole('button', { name: /^Vender .* y liquidar$/ })).toBeDisabled()
   })
 
   it('disables the confirm button while the sale is pending', () => {

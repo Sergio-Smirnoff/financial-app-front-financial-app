@@ -17,6 +17,16 @@ describe('formatQuantity', () => {
     expect(formatQuantity(0.00012345)).toBe('0,00012345')
   })
 
+  it('formats an exact decimal string without going through a number', () => {
+    expect(formatQuantity('123456789012.123456')).toBe('123.456.789.012,123456')
+    expect(formatQuantity('0.5')).toBe('0,5')
+  })
+
+  it('renders a dash for a string that is not a plain decimal', () => {
+    expect(formatQuantity('')).toBe('—')
+    expect(formatQuantity('1e-7')).toBe('—')
+  })
+
   it('renders a dash when there is no number', () => {
     expect(formatQuantity(Number.NaN)).toBe('—')
     expect(formatQuantity(null)).toBe('—')

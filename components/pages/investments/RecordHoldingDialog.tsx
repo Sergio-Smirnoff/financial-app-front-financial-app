@@ -26,33 +26,24 @@ import { useCreateHolding, useHoldings, useUpdateHolding } from '@/lib/hooks/use
 import type { HoldingDraft } from '@/lib/store/holdingDraft.store'
 import type { AssetType } from '@/types/investments'
 import { formatCurrency } from '@/lib/format'
-import { parseDecimal, toPlainDecimal, type DecimalResult } from '@/lib/utils/decimal'
-import { decimalErrorMessage, type DecimalFieldMessages } from '@/components/ui-kit/page/investments/decimalErrorMessage'
+import { AMOUNT_LIMITS, THRESHOLD_LIMITS, parseDecimal, toPlainDecimal, type DecimalResult } from '@/lib/utils/decimal'
+import {
+  decimalErrorMessage,
+  PURCHASE_PRICE_MESSAGES,
+  QUANTITY_MESSAGES,
+  THRESHOLD_MESSAGES,
+  type DecimalFieldMessages,
+} from '@/components/ui-kit/page/investments/decimalErrorMessage'
 
 export interface RecordHoldingDialogProps {
   draft: HoldingDraft | null
   onClose: () => void
 }
 
-const AMOUNT_LIMITS = { scale: 6, integerDigits: 12 }
-const THRESHOLD_LIMITS = { scale: 2, integerDigits: 3, allowZero: true }
-
-const QUANTITY_MESSAGES: DecimalFieldMessages = {
-  positive: 'holdings.validation.mustBePositive',
-  decimals: 'holdings.validation.maxDecimals',
-}
-
-const PRICE_MESSAGES: DecimalFieldMessages = {
-  positive: 'holdings.validation.mustBeZeroOrPositive',
-  decimals: 'holdings.validation.maxDecimals',
-}
-
-const THRESHOLD_MESSAGES: DecimalFieldMessages = {
-  positive: 'holdings.validation.invalidNumber',
-  decimals: 'holdings.validation.maxDecimals',
-}
-
 const formDecimal = (n: number | null | undefined, scale: number) => (n == null ? '' : toPlainDecimal(n, scale))
+
+const exactOrPlain = (exact: string | null | undefined, n: number | null, scale: number) =>
+  exact === undefined ? formDecimal(n, scale) : (exact ?? '')
 
 const parseThreshold = (raw: string): DecimalResult | null =>
   raw.trim() === '' ? null : parseDecimal(raw, THRESHOLD_LIMITS)
@@ -105,9 +96,13 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       setAssetType(editing.assetType)
       setCurrency(editing.currency === 'USD' ? 'USD' : 'ARS')
       setQuantity(editing.exactQuantity ?? toPlainDecimal(editing.quantity))
-      setAvgPurchasePrice(formDecimal(editing.avgPurchasePrice, AMOUNT_LIMITS.scale))
-      setNotifyGainThresholdPct(formDecimal(editing.notifyGainThresholdPct, THRESHOLD_LIMITS.scale))
-      setNotifyLossThresholdPct(formDecimal(editing.notifyLossThresholdPct, THRESHOLD_LIMITS.scale))
+      setAvgPurchasePrice(exactOrPlain(editing.exactAvgPurchasePrice, editing.avgPurchasePrice, AMOUNT_LIMITS.scale))
+      setNotifyGainThresholdPct(
+        exactOrPlain(editing.exactNotifyGainThresholdPct, editing.notifyGainThresholdPct, THRESHOLD_LIMITS.scale),
+      )
+      setNotifyLossThresholdPct(
+        exactOrPlain(editing.exactNotifyLossThresholdPct, editing.notifyLossThresholdPct, THRESHOLD_LIMITS.scale),
+      )
     } else {
       const { prefill } = draft
       setBankNumber('')
@@ -153,7 +148,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
       ? decimalErrorMessage(t, result.reason, limits, messages)
       : null
   const quantityError = fieldError(parsedQuantity, quantity, AMOUNT_LIMITS, QUANTITY_MESSAGES)
-  const priceError = fieldError(parsedPrice, avgPurchasePrice, AMOUNT_LIMITS, PRICE_MESSAGES)
+  const priceError = fieldError(parsedPrice, avgPurchasePrice, AMOUNT_LIMITS, PURCHASE_PRICE_MESSAGES)
   const gainError = fieldError(parsedGain, notifyGainThresholdPct, THRESHOLD_LIMITS, THRESHOLD_MESSAGES)
   const lossError = fieldError(parsedLoss, notifyLossThresholdPct, THRESHOLD_LIMITS, THRESHOLD_MESSAGES)
 

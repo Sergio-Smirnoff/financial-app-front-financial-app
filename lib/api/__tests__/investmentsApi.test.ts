@@ -32,6 +32,21 @@ describe('investmentsApi.getHoldings', () => {
     expect(holding.exactQuantity).toBe('123456789012.123456')
     expect(holding.quantity).toBe(123456789012.123456)
   })
+
+  it('keeps the exact price and thresholds the API sent', async () => {
+    vi.mocked(api.get).mockResolvedValueOnce({
+      content: [{
+        id: 9, bankNumber: '017', ticker: 'GGAL', assetType: 'STOCK', quantity: '1', avgPurchasePrice: '123456789012.123456',
+        currency: 'ARS', notifyGainThresholdPct: '12.5', notifyLossThresholdPct: null,
+      }],
+    })
+
+    const [holding] = await investmentsApi.getHoldings()
+
+    expect(holding.exactAvgPurchasePrice).toBe('123456789012.123456')
+    expect(holding.exactNotifyGainThresholdPct).toBe('12.5')
+    expect(holding.exactNotifyLossThresholdPct).toBeNull()
+  })
 })
 
 describe('investmentsApi.sellHolding', () => {

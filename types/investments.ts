@@ -11,9 +11,12 @@ export interface Holding {
   quantity: number
   exactQuantity?: string
   avgPurchasePrice: number
+  exactAvgPurchasePrice?: string
   currency: string
   notifyGainThresholdPct: number | null
   notifyLossThresholdPct: number | null
+  exactNotifyGainThresholdPct?: string | null
+  exactNotifyLossThresholdPct?: string | null
   createdAt: string
   updatedAt: string
 }

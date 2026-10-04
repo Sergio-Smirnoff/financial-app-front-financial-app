@@ -24,10 +24,10 @@ interface RawHoldingResponse {
   name: string
   assetType: string
   quantity: string
-  avgPurchasePrice: string | number
+  avgPurchasePrice: string
   currency: string
-  notifyGainThresholdPct: string | number | null
-  notifyLossThresholdPct: string | number | null
+  notifyGainThresholdPct: string | null
+  notifyLossThresholdPct: string | null
   createdAt: string
   updatedAt: string
 }
@@ -72,8 +72,11 @@ export const investmentsApi = {
       quantity: toNum(h.quantity),
       exactQuantity: h.quantity,
       avgPurchasePrice: toNum(h.avgPurchasePrice),
+      exactAvgPurchasePrice: h.avgPurchasePrice,
       notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
       notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),
+      exactNotifyGainThresholdPct: h.notifyGainThresholdPct ?? null,
+      exactNotifyLossThresholdPct: h.notifyLossThresholdPct ?? null,
     }))
   },
 

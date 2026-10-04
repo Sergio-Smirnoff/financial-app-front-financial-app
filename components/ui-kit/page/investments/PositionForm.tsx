@@ -4,8 +4,8 @@ import * as React from 'react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { parseDecimal } from '@/lib/utils/decimal'
-import { decimalErrorMessage, type DecimalFieldMessages } from './decimalErrorMessage'
+import { AMOUNT_LIMITS, parseDecimal } from '@/lib/utils/decimal'
+import { decimalErrorMessage, PURCHASE_PRICE_MESSAGES, QUANTITY_MESSAGES } from './decimalErrorMessage'
 
 export interface PositionFormProps {
   /** 'add' | 'edit' — determines the submit label */
@@ -20,18 +20,6 @@ export interface PositionFormData {
   quantity: string
   purchasePrice: string
   currency: string
-}
-
-const AMOUNT_LIMITS = { scale: 6, integerDigits: 12 }
-
-const QUANTITY_MESSAGES: DecimalFieldMessages = {
-  positive: 'holdings.validation.mustBePositive',
-  decimals: 'holdings.validation.maxDecimals',
-}
-
-const PRICE_MESSAGES: DecimalFieldMessages = {
-  positive: 'holdings.validation.mustBeZeroOrPositive',
-  decimals: 'holdings.validation.maxDecimals',
 }
 
 /**
@@ -54,7 +42,7 @@ export function PositionForm({ mode = 'add', onSubmit, onCancel, className }: Po
   const quantityError =
     submitted && !quantity.ok ? decimalErrorMessage(ti, quantity.reason, AMOUNT_LIMITS, QUANTITY_MESSAGES) : null
   const priceError =
-    submitted && !purchasePrice.ok ? decimalErrorMessage(ti, purchasePrice.reason, AMOUNT_LIMITS, PRICE_MESSAGES) : null
+    submitted && !purchasePrice.ok ? decimalErrorMessage(ti, purchasePrice.reason, AMOUNT_LIMITS, PURCHASE_PRICE_MESSAGES) : null
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { compareDecimal, parseDecimal, toPlainDecimal } from '../decimal'
+import { compareDecimal, isPlainDecimal, parseDecimal, toPlainDecimal } from '../decimal'
 
 describe('parseDecimal', () => {
   it.each([
@@ -75,6 +75,26 @@ describe('compareDecimal', () => {
     ['123456789012.123456', '123456789012.123456', 0],
   ] as const)('compares %s with %s as %i', (a, b, expected) => {
     expect(compareDecimal(a, b)).toBe(expected)
+  })
+})
+
+describe('compareDecimal guards', () => {
+  it.each([
+    ['', '1'],
+    ['1', ''],
+    ['1e-7', '1'],
+    ['1', '-1'],
+    ['1,5', '1'],
+  ])('throws on the non-plain input %j vs %j', (a, b) => {
+    expect(() => compareDecimal(a, b)).toThrow(RangeError)
+  })
+})
+
+describe('isPlainDecimal', () => {
+  it('accepts only normalised-shape plain decimals', () => {
+    expect(isPlainDecimal('123456789012.123456')).toBe(true)
+    expect(isPlainDecimal('0')).toBe(true)
+    for (const value of ['', '1e-7', '-1', '1.', '.5', '1,5', 'NaN']) expect(isPlainDecimal(value)).toBe(false)
   })
 })
 

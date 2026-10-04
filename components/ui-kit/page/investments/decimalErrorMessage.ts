@@ -7,6 +7,21 @@ export interface DecimalFieldMessages {
   decimals: string
 }
 
+export const QUANTITY_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.mustBePositive',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
+export const PURCHASE_PRICE_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.mustBeZeroOrPositive',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
+export const THRESHOLD_MESSAGES: DecimalFieldMessages = {
+  positive: 'holdings.validation.invalidNumber',
+  decimals: 'holdings.validation.maxDecimals',
+}
+
 export function decimalErrorMessage(
   t: Translate,
   reason: DecimalRejection,

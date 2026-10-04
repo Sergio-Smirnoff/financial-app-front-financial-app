@@ -12,7 +12,13 @@ export interface DecimalLimits {
   allowZero?: boolean
 }
 
+export const AMOUNT_LIMITS = { scale: 6, integerDigits: 12 }
+export const THRESHOLD_LIMITS = { scale: 2, integerDigits: 3, allowZero: true }
+
 const DECIMAL_PATTERN = /^(\d*)(?:[.,](\d*))?$/
+const PLAIN_DECIMAL = /^\d+(?:\.\d+)?$/
+
+export const isPlainDecimal = (value: string): value is `${number}` => PLAIN_DECIMAL.test(value)
 
 const join = (integer: string, fraction: string): string => (fraction ? `${integer}.${fraction}` : integer)
 
@@ -22,7 +28,7 @@ const normalise = (integer: string, fraction: string): { integer: string; fracti
 })
 
 export function parseDecimal(raw: string, opts: DecimalLimits = {}): DecimalResult {
-  const { scale = 6, integerDigits = 12, allowZero = false } = opts
+  const { scale = AMOUNT_LIMITS.scale, integerDigits = AMOUNT_LIMITS.integerDigits, allowZero = false } = opts
   const trimmed = raw.trim()
   if (trimmed === '') return { ok: false, reason: 'empty' }
   const match = DECIMAL_PATTERN.exec(trimmed)
@@ -40,6 +46,9 @@ const unscaled = (value: string, scale: number): bigint => {
 }
 
 export function compareDecimal(a: string, b: string): -1 | 0 | 1 {
+  if (!isPlainDecimal(a) || !isPlainDecimal(b)) {
+    throw new RangeError(`compareDecimal expects plain non-negative decimals, got "${a}" and "${b}"`)
+  }
   const scale = Math.max(a.split('.')[1]?.length ?? 0, b.split('.')[1]?.length ?? 0)
   const left = unscaled(a, scale)
   const right = unscaled(b, scale)
