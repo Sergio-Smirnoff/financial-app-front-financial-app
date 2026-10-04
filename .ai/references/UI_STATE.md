@@ -50,6 +50,16 @@ Confirmation dialogs are local component state over the ui-kit `Dialog` (see
 
 `useTransactionsPage` uses `placeholderData: keepPreviousData` so filter options survive a filter change; during a refetch sections show the previous data, not the skeleton.
 
+## Holding draft store (`lib/store/holdingDraft.store.ts`)
+
+`useHoldingDraftStore` carries the one investments dialog's input across tabs and routes:
+`draft` is `{ mode: 'create', prefill }` or `{ mode: 'edit', holdingId }`; `openCreate(prefill?)`,
+`openEdit(id)`, `clear()`. Cartera renders the only `RecordHoldingDialog` and opens it whenever a
+draft is set; Mercados and the position page set a draft and switch to `?tab=cartera`. Edit mode
+reads the holding's native values from the cached `useHoldings()` list, never from a BFF row.
+`HoldingDraftReset` (rendered by the dashboard layout) clears the draft when the pathname leaves
+`/investments` and `/investments/*`.
+
 ## Cartera view store (`lib/store/carteraView.store.ts`)
 
 `useCarteraViewStore` keeps how the user likes to see Cartera, per browser: `grouped` (group by asset

@@ -358,7 +358,9 @@
       "subtotalsNote": "Group subtotals cover the whole type",
       "noMatch": "No holding matches the filter.",
       "phoneColumnsNote": "On a phone the table shows only the ticker; tap it to see the details.",
-      "sellAria": "Sell {ticker}"
+      "sellAria": "Sell {ticker}",
+      "editAria": "Edit {ticker}",
+      "holdingsUnavailable": "We couldn't load your holdings, so you can't edit or sell them yet."
     },
     "composition": {
       "heading": "Composition",
@@ -434,6 +436,17 @@
       "creating": "Recording...",
       "toastCreated": "Investment recorded successfully",
       "toastCreateFailed": "Failed to record investment",
+      "editAction": "Edit",
+      "editTitle": "Edit investment",
+      "editDescription": "Correct the holding's details. Saving moves no money between your accounts.",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "toastUpdated": "Investment updated",
+      "toastUpdateFailed": "Failed to update investment",
+      "bondNote": "Bonds: quantity is in nominal value (VN) and the price is per 1 VN. The market quotes per 100 VN (80,216 per 100 VN = 802.16 per VN).",
+      "tickerChangeNote": "Until the next price refresh, {ticker} is shown at its average cost.",
+      "loadingHolding": "Loading the holding...",
+      "notFound": "We couldn't find that holding.",
       "sellAction": "Sell",
       "buyMore": "Buy more",
       "sellTitle": "Sell position: {ticker}",
@@ -472,8 +485,7 @@
           "invalid": "Check the quantity, price and account, then try again.",
           "financesUnavailable": "The finances service didn't respond and the sale was not completed. Try again in a moment.",
           "unknown": "Try again in a moment."
-        },
-        "unavailable": "We couldn't load your holdings, so you can't sell yet."
+        }
       },
       "availableQuantity": "Available holding",
       "destinationAccountLabel": "Destination account to credit funds",
@@ -492,6 +504,8 @@
       "notificationsSection": "Variation alerts (optional)",
       "gainAlertPct": "Notify if gains exceed (%)",
       "lossAlertPct": "Stop-loss if drops exceed (%)",
+      "gainAlertPlaceholder": "e.g. 20",
+      "lossAlertPlaceholder": "e.g. 10",
       "noAccountInCurrency": "You have no {currency} accounts",
       "assetType": {
         "STOCK": "Stock",

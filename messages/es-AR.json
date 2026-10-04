@@ -358,7 +358,9 @@
       "subtotalsNote": "Los subtotales de cada grupo son del tipo completo",
       "noMatch": "Ninguna posición coincide con el filtro.",
       "phoneColumnsNote": "En el teléfono la tabla muestra solo el ticker; tocalo para ver el detalle.",
-      "sellAria": "Vender {ticker}"
+      "sellAria": "Vender {ticker}",
+      "editAria": "Editar {ticker}",
+      "holdingsUnavailable": "No pudimos cargar tus tenencias, así que todavía no podés editarlas ni venderlas."
     },
     "composition": {
       "heading": "Composición",
@@ -434,6 +436,17 @@
       "creating": "Registrando...",
       "toastCreated": "Inversión registrada con éxito",
       "toastCreateFailed": "No se pudo registrar la inversión",
+      "editAction": "Editar",
+      "editTitle": "Editar inversión",
+      "editDescription": "Corregí los datos de la tenencia. Guardar no mueve dinero entre tus cuentas.",
+      "saveChanges": "Guardar cambios",
+      "saving": "Guardando...",
+      "toastUpdated": "Inversión actualizada",
+      "toastUpdateFailed": "No se pudo actualizar la inversión",
+      "bondNote": "Bonos: la cantidad es en valor nominal (VN) y el precio es por 1 VN. El mercado cotiza cada 100 VN (80.216 por 100 VN = 802,16 por VN).",
+      "tickerChangeNote": "Hasta la próxima actualización de precios, {ticker} se muestra a su costo promedio.",
+      "loadingHolding": "Cargando la tenencia...",
+      "notFound": "No encontramos esa tenencia.",
       "sellAction": "Vender",
       "buyMore": "Comprar más",
       "sellTitle": "Vender posición de {ticker}",
@@ -472,8 +485,7 @@
           "invalid": "Revisá la cantidad, el precio y la cuenta, y probá de nuevo.",
           "financesUnavailable": "El servicio de finanzas no respondió y la venta no se completó. Probá de nuevo en un momento.",
           "unknown": "Probá de nuevo en un momento."
-        },
-        "unavailable": "No pudimos cargar tus tenencias, así que todavía no podés vender."
+        }
       },
       "availableQuantity": "Tenencia disponible",
       "destinationAccountLabel": "Cuenta destino donde acreditar los fondos",
@@ -492,6 +504,8 @@
       "notificationsSection": "Alertas de variación (opcional)",
       "gainAlertPct": "Avisarme si sube más de (%)",
       "lossAlertPct": "Stop-loss si cae más de (%)",
+      "gainAlertPlaceholder": "ej: 20",
+      "lossAlertPlaceholder": "ej: 10",
       "noAccountInCurrency": "No tenés cuentas en {currency}",
       "assetType": {
         "STOCK": "Acción",

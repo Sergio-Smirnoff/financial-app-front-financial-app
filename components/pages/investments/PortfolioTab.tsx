@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { DollarSign, Plus, SlidersHorizontal } from 'lucide-react'
+import { DollarSign, Pencil, Plus, SlidersHorizontal } from 'lucide-react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,9 +19,11 @@ import { useBanks } from '@/lib/hooks/useBanks'
 import { useHoldings } from '@/lib/hooks/useInvestments'
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
 import { CARTERA_COLUMNS, PHONE_COLUMNS, PHONE_QUERY, useCarteraViewStore } from '@/lib/store/carteraView.store'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { AssetTypeSlice, InvestmentsKpis, PositionRow, Section } from '@/lib/api/bff/types'
 import type { Holding } from '@/types/investments'
 import { SellHoldingDialog, type SellHoldingTarget } from './SellHoldingDialog'
+import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { CarteraTable, useColumnLabels } from './CarteraTable'
 import { matchesQuery, visibleColumns } from './carteraView'
 import { GROUP_LABEL_KEYS, GROUP_ORDER, amountOf, groupKeyOf, type GroupKey } from './portfolioView'
@@ -32,7 +34,6 @@ export interface PortfolioTabProps {
   kpis?: InvestmentsKpis | null
   isLoading: boolean
   onRetry?: () => void
-  onOpenCreate?: () => void
 }
 
 function sellTargetFor(row: PositionRow, holding: Holding): SellHoldingTarget {
@@ -55,7 +56,6 @@ export function PortfolioTab({
   kpis,
   isLoading,
   onRetry,
-  onOpenCreate,
 }: PortfolioTabProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
@@ -74,6 +74,10 @@ export function PortfolioTab({
   const toggleColumn = useCarteraViewStore((s) => s.toggleColumn)
   const sortBy = useCarteraViewStore((s) => s.sortBy)
   const resetView = useCarteraViewStore((s) => s.reset)
+  const draft = useHoldingDraftStore((s) => s.draft)
+  const openCreate = useHoldingDraftStore((s) => s.openCreate)
+  const openEdit = useHoldingDraftStore((s) => s.openEdit)
+  const clearDraft = useHoldingDraftStore((s) => s.clear)
 
   useEffect(() => {
     void useCarteraViewStore.persist.rehydrate()
@@ -83,8 +87,8 @@ export function PortfolioTab({
   const holdingsById = useMemo(() => new Map((holdings ?? []).map((h) => [h.id, h])), [holdings])
   const bankNames = useMemo(() => new Map(banks.map((b) => [b.bankNumber, b.name])), [banks])
   const slices = compositionSection?.status === 'OK' ? compositionSection.data ?? [] : null
-  const sellUnavailable = holdingsFailed ? t('holdings.sell.unavailable') : undefined
-  const sellDescribedBy = holdingsFailed ? 'holdings-unavailable' : undefined
+  const actionsUnavailable = holdingsFailed ? t('cartera.holdingsUnavailable') : undefined
+  const actionsDescribedBy = holdingsFailed ? 'holdings-unavailable' : undefined
 
   const toggleType = (key: GroupKey) =>
     setTypes((prev) => {
@@ -96,35 +100,63 @@ export function PortfolioTab({
 
   const renderActions = (row: PositionRow) => {
     const holding = row.holdingId != null ? holdingsById.get(row.holdingId) : undefined
+    const edit = () => holding && openEdit(holding.id)
     const sell = () => holding && setSelling(sellTargetFor(row, holding))
     if (isPhone) {
       return (
-        <Button
-          size="icon"
-          variant="ghost"
-          disabled={!holding}
-          aria-label={t('cartera.sellAria', { ticker: row.ticker ?? '' })}
-          title={sellUnavailable ?? t('holdings.sellAction')}
-          aria-describedby={sellDescribedBy}
-          className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={sell}
-        >
-          <DollarSign aria-hidden className="h-4 w-4" />
-        </Button>
+        <>
+          <Button
+            size="icon"
+            variant="ghost"
+            disabled={!holding}
+            aria-label={t('cartera.editAria', { ticker: row.ticker ?? '' })}
+            title={actionsUnavailable ?? t('holdings.editAction')}
+            aria-describedby={actionsDescribedBy}
+            className="h-7 w-7"
+            onClick={edit}
+          >
+            <Pencil aria-hidden className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            disabled={!holding}
+            aria-label={t('cartera.sellAria', { ticker: row.ticker ?? '' })}
+            title={actionsUnavailable ?? t('holdings.sellAction')}
+            aria-describedby={actionsDescribedBy}
+            className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={sell}
+          >
+            <DollarSign aria-hidden className="h-4 w-4" />
+          </Button>
+        </>
       )
     }
     return (
-      <Button
-        size="sm"
-        variant="ghost"
-        disabled={!holding}
-        title={sellUnavailable}
-        aria-describedby={sellDescribedBy}
-        className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
-        onClick={sell}
-      >
-        {t('holdings.sellAction')}
-      </Button>
+      <>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!holding}
+          title={actionsUnavailable}
+          aria-describedby={actionsDescribedBy}
+          className="h-7 px-1.5 text-xs font-bold"
+          onClick={edit}
+        >
+          {t('holdings.editAction')}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!holding}
+          title={actionsUnavailable}
+          aria-describedby={actionsDescribedBy}
+          className="h-7 px-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
+          onClick={sell}
+        >
+          {t('holdings.sellAction')}
+        </Button>
+      </>
     )
   }
 
@@ -194,19 +226,17 @@ export function PortfolioTab({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          {onOpenCreate && (
-            <Button size="sm" data-testid="register-holding-trigger" onClick={onOpenCreate} className="h-8 gap-1.5 text-xs font-semibold">
-              <Plus className="h-3.5 w-3.5" />
-              {t('holdings.new')}
-            </Button>
-          )}
+          <Button size="sm" data-testid="register-holding-trigger" onClick={() => openCreate()} className="h-8 gap-1.5 text-xs font-semibold">
+            <Plus className="h-3.5 w-3.5" />
+            {t('holdings.new')}
+          </Button>
         </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2 px-5 pb-4">
         {holdingsFailed && (
           <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/60 px-3 py-1.5 text-xs">
-            <span id="holdings-unavailable" className="text-muted-foreground">{t('holdings.sell.unavailable')}</span>
+            <span id="holdings-unavailable" className="text-muted-foreground">{t('cartera.holdingsUnavailable')}</span>
             <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => refetchHoldings()}>
               {tc('retry')}
             </Button>
@@ -220,12 +250,10 @@ export function PortfolioTab({
           emptyDescription={t('tabs.positionsEmptyDescription')}
           emptyTestId="positions-empty"
           emptyAction={
-            onOpenCreate && (
-              <Button size="sm" data-testid="positions-empty-register" onClick={onOpenCreate} className="gap-1.5 font-bold">
-                <Plus className="h-4 w-4" />
-                {t('holdings.new')}
-              </Button>
-            )
+            <Button size="sm" data-testid="positions-empty-register" onClick={() => openCreate()} className="gap-1.5 font-bold">
+              <Plus className="h-4 w-4" />
+              {t('holdings.new')}
+            </Button>
           }
           skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
         >
@@ -284,6 +312,7 @@ export function PortfolioTab({
       </div>
 
       <SellHoldingDialog holding={selling} open={!!selling} onOpenChange={(open) => !open && setSelling(null)} />
+      <RecordHoldingDialog draft={draft} onClose={clearDraft} />
     </div>
   )
 }

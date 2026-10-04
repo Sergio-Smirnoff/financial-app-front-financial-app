@@ -10,13 +10,21 @@ import { SellHoldingDialog, type SellHoldingTarget } from '../SellHoldingDialog'
 import { ApiError } from '@/lib/api/client'
 import { TickerSearchBox } from '../TickerSearchBox'
 import { MarketsTab } from '../MarketsTab'
+import type { HoldingDraft } from '@/lib/store/holdingDraft.store'
+import type { Holding } from '@/types/investments'
 
-const { createMutateAsync, sellMutateAsync, sellState, banksState, toastSuccess, toastError } = vi.hoisted(() => ({
+if (!Element.prototype.hasPointerCapture) Element.prototype.hasPointerCapture = () => false
+if (!Element.prototype.setPointerCapture) Element.prototype.setPointerCapture = () => {}
+if (!Element.prototype.releasePointerCapture) Element.prototype.releasePointerCapture = () => {}
+
+const { createMutateAsync, updateMutateAsync, sellMutateAsync, holdings, sellState, banksState, toastSuccess, toastError } = vi.hoisted(() => ({
   createMutateAsync: vi.fn(async () => ({})),
+  updateMutateAsync: vi.fn(async () => ({})),
   sellMutateAsync: vi.fn(async () => ({
     holdingId: 10, soldQuantity: '100', remainingQuantity: '0', proceeds: '80000',
     bookedAmount: '79600', currency: 'ARS', closed: true,
   })),
+  holdings: { data: [] as Holding[] },
   sellState: { isPending: false },
   banksState: { withAccounts: true, secondArsAccount: false },
   toastSuccess: vi.fn(),
@@ -53,6 +61,7 @@ vi.mock('@/lib/hooks/useInvestments', () => ({
     mutateAsync: createMutateAsync,
     isPending: false,
   }),
+  useUpdateHolding: () => ({ mutateAsync: updateMutateAsync, isPending: false }),
   useSellHolding: () => ({
     mutateAsync: sellMutateAsync,
     isPending: sellState.isPending,
@@ -86,7 +95,7 @@ vi.mock('@/lib/hooks/useInvestments', () => ({
     },
     isLoading: false,
   }),
-  useHoldings: () => ({ data: [], isLoading: false }),
+  useHoldings: () => ({ data: holdings.data, isLoading: false }),
 }))
 
 function renderWithIntl(ui: React.ReactElement) {
@@ -103,35 +112,45 @@ function renderWithIntl(ui: React.ReactElement) {
   return render(ui, { wrapper })
 }
 
+const ggalHolding = {
+  id: 7,
+  userId: 1,
+  bankNumber: '072',
+  ticker: 'GGAL',
+  name: 'Grupo Financiero Galicia',
+  assetType: 'STOCK' as const,
+  quantity: 100,
+  avgPurchasePrice: 4850,
+  currency: 'ARS',
+  notifyGainThresholdPct: 20,
+  notifyLossThresholdPct: null,
+  createdAt: '2026-08-01T00:00:00Z',
+  updatedAt: '2026-08-01T00:00:00Z',
+}
+
+function renderDialog(draft: HoldingDraft | null, onClose = vi.fn()) {
+  renderWithIntl(<RecordHoldingDialog draft={draft} onClose={onClose} />)
+  return { onClose }
+}
+
 describe('RecordHoldingDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    holdings.data = [ggalHolding]
   })
 
   it('renders form elements and submits valid holding data', async () => {
     const user = userEvent.setup()
-    const onOpenChange = vi.fn()
-
-    renderWithIntl(
-      <RecordHoldingDialog
-        open={true}
-        onOpenChange={onOpenChange}
-        initialTicker="GGAL"
-        initialName="Grupo Financiero Galicia"
-        initialPrice={4850}
-      />
-    )
+    const { onClose } = renderDialog({
+      mode: 'create',
+      prefill: { ticker: 'GGAL', name: 'Grupo Financiero Galicia', price: 4850 },
+    })
 
     expect(screen.getByRole('heading', { name: 'Registrar inversión' })).toBeInTheDocument()
     expect(screen.getByDisplayValue('GGAL')).toBeInTheDocument()
 
-    // Quantity field
-    const qtyInput = screen.getByPlaceholderText('100')
-    await user.type(qtyInput, '50')
-
-    // Submit form
-    const submitBtn = screen.getByRole('button', { name: /^Registrar inversión$/i })
-    await user.click(submitBtn)
+    await user.type(screen.getByPlaceholderText('100'), '50')
+    await user.click(screen.getByRole('button', { name: /^Registrar inversión$/i }))
 
     await waitFor(() => {
       expect(createMutateAsync).toHaveBeenCalledWith(
@@ -142,28 +161,91 @@ describe('RecordHoldingDialog', () => {
           quantity: 50,
           avgPurchasePrice: 4850,
           currency: 'ARS',
-        })
+        }),
       )
-      expect(onOpenChange).toHaveBeenCalledWith(false)
+      expect(onClose).toHaveBeenCalled()
     })
   })
 
   it('keeps typed quantity when the banks query returns a new array', async () => {
     const user = userEvent.setup()
-    renderWithIntl(
-      <RecordHoldingDialog
-        open
-        onOpenChange={() => {}}
-        initialTicker="GGAL"
-        initialName="Grupo Financiero Galicia"
-        initialPrice={4850}
-      />
-    )
+    renderDialog({ mode: 'create', prefill: { ticker: 'GGAL', price: 4850 } })
 
     const qtyInput = screen.getByPlaceholderText('100')
     await user.type(qtyInput, '50')
 
     expect(qtyInput).toHaveValue(50)
+  })
+
+  it('stacks the form into one column on a phone', () => {
+    renderDialog({ mode: 'create', prefill: {} })
+    for (const label of ['Ticker', 'Cantidad', 'Avisarme si sube más de (%)']) {
+      expect(screen.getByLabelText(label).closest('.grid')).toHaveClass('max-md:grid-cols-1')
+    }
+  })
+
+  it('renders nothing without a draft', () => {
+    renderDialog(null)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('explains bond nominal value when the type is a bond', () => {
+    renderDialog({ mode: 'create', prefill: { ticker: 'GD30', assetType: 'BOND' } })
+    expect(screen.getByTestId('bond-note')).toHaveTextContent('valor nominal (VN)')
+  })
+
+  it('edits the native holding without moving money', async () => {
+    const user = userEvent.setup()
+    const { onClose } = renderDialog({ mode: 'edit', holdingId: 7 })
+
+    expect(screen.getByRole('heading', { name: 'Editar inversión' })).toBeInTheDocument()
+    expect(screen.getByDisplayValue('4850')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('100')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('20')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Cuenta de débito (CBU)')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Banco / Broker')).toBeDisabled()
+
+    await user.click(screen.getByLabelText('Tipo de activo'))
+    await user.click(await screen.findByRole('option', { name: 'Bono' }))
+    expect(screen.getByTestId('bond-note')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 7,
+        body: {
+          bankNumber: '072',
+          fundingCbu: null,
+          ticker: 'GGAL',
+          name: 'Grupo Financiero Galicia',
+          assetType: 'BOND',
+          currency: 'ARS',
+          quantity: 100,
+          avgPurchasePrice: 4850,
+          notifyGainThresholdPct: 20,
+          notifyLossThresholdPct: null,
+        },
+      }),
+    )
+    expect(createMutateAsync).not.toHaveBeenCalled()
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('warns that a renamed ticker shows at average cost', async () => {
+    const user = userEvent.setup()
+    renderDialog({ mode: 'edit', holdingId: 7 })
+
+    const ticker = screen.getByLabelText('Ticker')
+    await user.clear(ticker)
+    await user.type(ticker, 'AL30')
+    expect(screen.getByTestId('ticker-change-note')).toHaveTextContent('AL30 se muestra a su costo promedio')
+  })
+
+  it('says so when the holding to edit is not in the list', () => {
+    renderDialog({ mode: 'edit', holdingId: 999 })
+    expect(screen.getByText('No encontramos esa tenencia.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Guardar cambios' })).not.toBeInTheDocument()
   })
 })
 
@@ -661,16 +743,21 @@ describe('TickerSearchBox & MarketsTab', () => {
     expect(onSelect).toHaveBeenCalledWith('GGAL', expect.anything())
   })
 
-  it('renders MarketsTab with search, chart panel and discovery cards', () => {
-    renderWithIntl(<MarketsTab initialTicker="GGAL" />)
+  it('renders MarketsTab and hands a buy to its caller with the full prefill', async () => {
+    const user = userEvent.setup()
+    const onBuy = vi.fn()
+    renderWithIntl(<MarketsTab onBuy={onBuy} />)
 
     expect(screen.getByRole('heading', { name: 'GGAL' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Registrar compra de GGAL/i })).toBeInTheDocument()
     expect(screen.getByText('SPY')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Registrar compra de GGAL/i }))
+
+    expect(onBuy).toHaveBeenCalledWith({ ticker: 'GGAL', name: undefined, price: 4850, currency: 'ARS' })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('labels the chart ranges and formats the variations as shared percents', () => {
-    renderWithIntl(<MarketsTab initialTicker="GGAL" />)
+    renderWithIntl(<MarketsTab onBuy={vi.fn()} />)
 
     for (const label of ['30D', '90D', '1A', 'TODO']) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()

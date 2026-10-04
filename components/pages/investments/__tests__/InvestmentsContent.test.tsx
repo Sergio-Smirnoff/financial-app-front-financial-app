@@ -10,7 +10,12 @@ import { InvestmentsContent } from '../InvestmentsContent'
 import fixture from '@/lib/api/bff/__fixtures__/investments.json'
 import type { InvestmentsBff } from '@/lib/api/bff/types'
 import { useCarteraViewStore } from '@/lib/store/carteraView.store'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { Holding } from '@/types/investments'
+
+if (!Element.prototype.hasPointerCapture) Element.prototype.hasPointerCapture = () => false
+if (!Element.prototype.setPointerCapture) Element.prototype.setPointerCapture = () => {}
+if (!Element.prototype.releasePointerCapture) Element.prototype.releasePointerCapture = () => {}
 
 const { holdingsMock, createMutateAsync, updateMutateAsync, sellMutateAsync } = vi.hoisted(() => ({
   holdingsMock: { data: [] as Holding[], isError: false, refetch: vi.fn() },
@@ -69,7 +74,7 @@ function renderInvestments(
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   const ui = () => (
     <NextIntlClientProvider locale="es-AR" messages={esAR}>
-      <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory>
+      <NuqsTestingAdapter searchParams={searchParams} onUrlUpdate={onUrlUpdate} hasMemory resetUrlUpdateQueueOnMount={false}>
         <QueryClientProvider client={queryClient}>
           <InvestmentsContent />
         </QueryClientProvider>
@@ -90,6 +95,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   holdingsMock.data = []
   holdingsMock.isError = false
+  useHoldingDraftStore.setState({ draft: null })
 })
 
 describe('InvestmentsContent renders the real contract', () => {
@@ -382,16 +388,19 @@ describe('Cartera', () => {
     expect(within(dialog).queryByTestId('sell-estimate')).not.toBeInTheDocument()
   })
 
-  it('explains why Vender is disabled when the holdings fail to load and retries them', async () => {
+  it('explains why Editar and Vender are disabled when the holdings fail to load and retries them', async () => {
     const user = userEvent.setup()
     holdingsMock.isError = true
     renderInvestments(cartera, { searchParams: '?tab=cartera' })
 
-    const notice = 'No pudimos cargar tus tenencias, así que todavía no podés vender.'
-    const sell = within(within(groupOf('STOCK')).getByTestId('position-row')).getByRole('button', { name: 'Vender' })
-    expect(sell).toBeDisabled()
-    expect(sell).toHaveAttribute('title', notice)
-    expect(sell).toHaveAccessibleDescription(notice)
+    const notice = esAR.investments.cartera.holdingsUnavailable
+    const row = within(within(groupOf('STOCK')).getByTestId('position-row'))
+    for (const name of ['Editar', 'Vender']) {
+      const action = row.getByRole('button', { name })
+      expect(action).toBeDisabled()
+      expect(action).toHaveAttribute('title', notice)
+      expect(action).toHaveAccessibleDescription(notice)
+    }
 
     await user.click(screen.getByRole('button', { name: 'Reintentar' }))
     expect(holdingsMock.refetch).toHaveBeenCalled()
@@ -498,6 +507,8 @@ describe('Cartera view options', () => {
     expect(cells[1]).toHaveClass('max-w-0', 'truncate')
     expect(cells[1]).toHaveAttribute('title')
     expect(cells.at(-1)).toHaveClass('md:sticky', 'md:right-0', 'bg-card')
+    expect(within(cells.at(-1) as HTMLElement).getAllByRole('button').map((b) => b.textContent)).toEqual(['Editar', 'Vender'])
+    expect(cells.at(-1)!.querySelector('svg')).toBeNull()
   })
 
   it('keeps every money cell on one line, group subtotals and P&L included', () => {
@@ -532,6 +543,9 @@ describe('Cartera view options', () => {
     const sell = screen.getByRole('button', { name: 'Vender GGAL' })
     expect(sell).toHaveClass('h-7', 'w-7')
     expect(sell.closest('td')).not.toHaveClass('sticky')
+    const edit = screen.getByRole('button', { name: 'Editar GGAL' })
+    expect(edit).toHaveClass('h-7', 'w-7')
+    expect(edit.compareDocumentPosition(sell) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     const header = groupOf('BOND').querySelector('tr')!
     expect(header.children).toHaveLength(1)
     expect(header.children[0]).toHaveAttribute('colspan', '2')
@@ -543,7 +557,7 @@ describe('Cartera view options', () => {
     expect(screen.getByRole('menuitemcheckbox', { name: esAR.investments.cartera.groupByType })).toBeInTheDocument()
   })
 
-  it('explains a disabled phone Vender like the desktop one', () => {
+  it('explains a disabled phone Editar and Vender like the desktop ones', () => {
     vi.stubGlobal('matchMedia', (query: string) => ({
       matches: query === '(max-width: 767px)',
       media: query,
@@ -553,10 +567,140 @@ describe('Cartera view options', () => {
     holdingsMock.isError = true
     renderInvestments(cartera, { searchParams: '?tab=cartera' })
 
-    const notice = 'No pudimos cargar tus tenencias, así que todavía no podés vender.'
-    const sell = screen.getByRole('button', { name: 'Vender GGAL' })
-    expect(sell).toBeDisabled()
-    expect(sell).toHaveAttribute('title', notice)
-    expect(sell).toHaveAccessibleDescription(notice)
+    const notice = esAR.investments.cartera.holdingsUnavailable
+    for (const name of ['Editar GGAL', 'Vender GGAL']) {
+      const action = screen.getByRole('button', { name })
+      expect(action).toBeDisabled()
+      expect(action).toHaveAttribute('title', notice)
+      expect(action).toHaveAccessibleDescription(notice)
+    }
+  })
+})
+
+const nativeGgal = {
+  id: 1, userId: 1, bankNumber: '017', ticker: 'GGAL', name: 'GGAL S.A.', assetType: 'STOCK' as const,
+  quantity: 100, avgPurchasePrice: 12000, currency: 'ARS',
+  notifyGainThresholdPct: null, notifyLossThresholdPct: null, createdAt: '', updatedAt: '',
+}
+
+const rowOf = (ticker: string) =>
+  screen.getAllByTestId('position-row').find((r) => within(r).getByRole('link').textContent === ticker)!
+
+describe('one create entry point', () => {
+  it.each([
+    ['resumen', 0],
+    ['cartera', 1],
+    ['mercados', 0],
+    ['operaciones', 0],
+  ] as const)('renders %s with %i register triggers', (tab, count) => {
+    renderInvestments(cartera, { searchParams: `?tab=${tab}` })
+    expect(screen.queryAllByTestId('register-holding-trigger')).toHaveLength(count)
+  })
+
+  it('opens the one dialog from the empty state', async () => {
+    const user = userEvent.setup()
+    renderInvestments({ ...cartera, positions: { status: 'OK', observedAt, data: [] } } as InvestmentsBff, {
+      searchParams: '?tab=cartera',
+    })
+    expect(screen.getAllByTestId('register-holding-trigger')).toHaveLength(1)
+
+    await user.click(screen.getByTestId('positions-empty-register'))
+
+    expect(await screen.findByRole('heading', { name: 'Registrar inversión' })).toBeInTheDocument()
+    expect(screen.getAllByRole('dialog')).toHaveLength(1)
+  })
+
+  it('opens the dialog once from ?add and drops the param', async () => {
+    const user = userEvent.setup()
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>()
+    const view = renderInvestments(cartera, { searchParams: '?add=ggal', onUrlUpdate })
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('GGAL')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Cartera', hidden: true })).toHaveAttribute('aria-selected', 'true')
+    await waitFor(() => {
+      const url = onUrlUpdate.mock.calls.at(-1)![0].searchParams
+      expect(url.get('add')).toBeNull()
+      expect(url.get('tab')).toBe('cartera')
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    view.rerenderWith(cartera)
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('routes a Mercados buy to Cartera with the full prefill', async () => {
+    const user = userEvent.setup()
+    renderInvestments(cartera, { searchParams: '?tab=mercados' })
+
+    await user.click(screen.getByRole('button', { name: /Registrar compra de GGAL/ }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Cartera', hidden: true })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByDisplayValue('GGAL')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('4850')).toBeInTheDocument()
+  })
+})
+
+describe('Editar', () => {
+  it('edits a holding type, keeps its bank and currency, moves no money and regroups the row', async () => {
+    const user = userEvent.setup()
+    holdingsMock.data = [nativeGgal]
+    const view = renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    await user.click(within(rowOf('GGAL')).getByRole('button', { name: 'Editar' }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByRole('heading', { name: 'Editar inversión' })).toBeInTheDocument()
+    await user.click(within(dialog).getByLabelText('Tipo de activo'))
+    await user.click(await screen.findByRole('option', { name: 'Bono' }))
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 1,
+        body: expect.objectContaining({ bankNumber: '017', currency: 'ARS', fundingCbu: null, assetType: 'BOND' }),
+      }),
+    )
+    expect(createMutateAsync).not.toHaveBeenCalled()
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+
+    view.rerenderWith({
+      ...cartera,
+      positions: {
+        ...cartera.positions!,
+        data: cartera.positions!.data!.map((p) => (p.holdingId === 1 ? { ...p, assetType: 'BOND' } : p)),
+      },
+    } as InvestmentsBff)
+
+    expect(screen.getAllByTestId('position-group').map((g) => g.getAttribute('data-asset-type'))).toEqual(['BOND', 'CEDEAR'])
+    expect(within(groupOf('BOND')).getAllByTestId('position-row').map((r) => within(r).getByRole('link').textContent)).toEqual([
+      'AL30',
+      'GD30',
+      'GGAL',
+    ])
+  })
+
+  it('edits from the native holding even when the view currency is USD', async () => {
+    const user = userEvent.setup()
+    holdingsMock.data = [nativeGgal]
+    const usdView = {
+      ...cartera,
+      positions: { status: 'OK', observedAt, data: [position(1, 'GGAL', 'STOCK', '1000', 'USD')] },
+    } as InvestmentsBff
+    renderInvestments(usdView, { searchParams: '?tab=cartera&currency=USD_MEP' })
+
+    await user.click(within(rowOf('GGAL')).getByRole('button', { name: 'Editar' }))
+    const dialog = await screen.findByRole('dialog')
+    expect(within(dialog).getByDisplayValue('12000')).toBeInTheDocument()
+    await user.click(within(dialog).getByRole('button', { name: 'Guardar cambios' }))
+
+    await waitFor(() =>
+      expect(updateMutateAsync).toHaveBeenCalledWith({
+        id: 1,
+        body: expect.objectContaining({ currency: 'ARS', avgPurchasePrice: 12000, quantity: 100, fundingCbu: null }),
+      }),
+    )
   })
 })

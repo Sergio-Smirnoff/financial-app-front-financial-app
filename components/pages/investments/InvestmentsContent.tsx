@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
 import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useTranslations } from 'next-intl'
 import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
@@ -16,8 +16,8 @@ import { PortfolioTab } from './PortfolioTab'
 import { OperationsTab } from './OperationsTab'
 import { MarketsTab } from './MarketsTab'
 import { ResumenTab } from './ResumenTab'
-import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { resolveInvestmentsTab } from './tabs'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { BffQuery, InvestmentsBff } from '@/lib/api/bff/types'
 import type { components } from '@/lib/api/bff/schema'
 
@@ -36,8 +36,15 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
   const [rawTab, setTab] = useQueryState('tab')
   const [range, setRange] = useQueryState('range', parseAsStringLiteral(EVOLUTION_RANGES).withDefault('1M'))
   const [addTicker, setAddTicker] = useQueryState('add')
-  const [createOpen, setCreateOpen] = useState(false)
   const tab = resolveInvestmentsTab(rawTab)
+  const openCreate = useHoldingDraftStore((s) => s.openCreate)
+
+  useEffect(() => {
+    if (!addTicker) return
+    openCreate({ ticker: addTicker.toUpperCase() })
+    void setTab('cartera')
+    void setAddTicker(null)
+  }, [addTicker, openCreate, setTab, setAddTicker])
 
   const { data, isLoading, refetch } = useInvestmentsPage({ ...query, range })
 
@@ -48,8 +55,6 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
   const composition = data?.composition
   const recentOperations = data?.recentOperations
   const alerts = data?.alerts
-
-  const isCreateDialogOpen = createOpen || !!addTicker
 
   return (
     <>
@@ -147,12 +152,16 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
               kpis={kpis?.data}
               isLoading={isLoading}
               onRetry={refetch}
-              onOpenCreate={() => setCreateOpen(true)}
             />
           </TabsContent>
 
           <TabsContent value="mercados" className={PANEL}>
-            <MarketsTab initialTicker={addTicker ?? undefined} />
+            <MarketsTab
+              onBuy={(prefill) => {
+                openCreate(prefill)
+                void setTab('cartera')
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="operaciones" className={PANEL}>
@@ -160,15 +169,6 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
           </TabsContent>
         </Tabs>
       </PageFrameFill>
-
-      <RecordHoldingDialog
-        open={isCreateDialogOpen}
-        onOpenChange={(open) => {
-          setCreateOpen(open)
-          if (!open) void setAddTicker(null)
-        }}
-        initialTicker={addTicker ?? undefined}
-      />
     </>
   )
 }

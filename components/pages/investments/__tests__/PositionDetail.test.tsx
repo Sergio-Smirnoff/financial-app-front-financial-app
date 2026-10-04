@@ -1,14 +1,18 @@
 import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
 import { stubChartSize } from '@/test/chartSize'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import esAR from '@/messages/es-AR.json'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
+
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push }),
 }))
 
 vi.mock('@/lib/hooks/useBanks', () => ({
@@ -16,7 +20,6 @@ vi.mock('@/lib/hooks/useBanks', () => ({
 }))
 
 vi.mock('@/lib/hooks/useInvestments', () => ({
-  useCreateHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useSellHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
   useHoldings: () => ({ data: [], isLoading: false }),
   useTickerResearch: () => ({ data: null, isLoading: false }),
@@ -74,5 +77,20 @@ describe('PositionDetail', () => {
   it('shows the quantity with es-AR separators', () => {
     renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 1500.5 }} />)
     expect(screen.getByText('1.500,5')).toBeInTheDocument()
+  })
+
+  it('routes "Comprar más" to Cartera with the holding prefilled', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, assetType: 'STOCK' }} />)
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: 'STOCK', price: 15000, currency: 'ARS' },
+    })
+    expect(push).toHaveBeenCalledWith('/investments?tab=cartera')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 })

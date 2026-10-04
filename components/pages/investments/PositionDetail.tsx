@@ -10,8 +10,8 @@ import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
 import { KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
 import { Button } from '@/components/ui/button'
 import { SellHoldingDialog } from './SellHoldingDialog'
-import { RecordHoldingDialog } from './RecordHoldingDialog'
 import { formatQuantity, type MoneyView } from '@/lib/format'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
 import type { AssetType } from '@/types/investments'
 
 export interface PositionDetailData {
@@ -28,6 +28,9 @@ export interface PositionDetailData {
   prices: { date: string; value: number }[]
 }
 
+const ASSET_TYPES: readonly AssetType[] = ['STOCK', 'BOND', 'CEDEAR', 'FCI']
+const isAssetType = (value: string): value is AssetType => (ASSET_TYPES as readonly string[]).includes(value)
+
 export interface PositionDetailProps {
   holding: PositionDetailData
   onSold?: () => void
@@ -36,20 +39,25 @@ export interface PositionDetailProps {
 export function PositionDetail({ holding, onSold }: PositionDetailProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
-  let router: any = null
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    router = useRouter()
-  } catch {
-    // In unit test environments without Next.js App Router context
-  }
+  const router = useRouter()
+  const openCreate = useHoldingDraftStore((s) => s.openCreate)
 
   const [sellOpen, setSellOpen] = useState(false)
-  const [buyOpen, setBuyOpen] = useState(false)
 
   const parseNum = (val: MoneyView): number => {
     if (typeof val.amount === 'string') return parseFloat(val.amount) || 0
     return (val.amount as unknown as number) || 0
+  }
+
+  const buyMore = () => {
+    openCreate({
+      ticker: holding.ticker,
+      name: holding.name,
+      assetType: isAssetType(holding.assetType) ? holding.assetType : undefined,
+      price: parseNum(holding.currentPrice),
+      currency: holding.currentPrice.currency === 'USD' ? 'USD' : 'ARS',
+    })
+    router.push('/investments?tab=cartera')
   }
 
   return (
@@ -78,7 +86,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           <Button
             size="sm"
             className="font-bold"
-            onClick={() => setBuyOpen(true)}
+            onClick={buyMore}
           >
             {t('holdings.buyMore')}
           </Button>
@@ -119,19 +127,9 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           if (onSold) {
             onSold()
           } else {
-            router?.push('/investments')
+            router.push('/investments')
           }
         }}
-      />
-
-      <RecordHoldingDialog
-        open={buyOpen}
-        onOpenChange={setBuyOpen}
-        initialTicker={holding.ticker}
-        initialName={holding.name}
-        initialAssetType={(holding.assetType as AssetType) || 'STOCK'}
-        initialPrice={parseNum(holding.currentPrice)}
-        initialCurrency={(holding.currentPrice.currency as 'ARS' | 'USD') || 'ARS'}
       />
     </div>
   )

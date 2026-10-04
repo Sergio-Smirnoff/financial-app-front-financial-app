@@ -4,32 +4,29 @@ import React, { useState } from 'react'
 import { TickerSearchBox } from './TickerSearchBox'
 import { TickerChartPanel } from './TickerChartPanel'
 import { MarketDiscoveryCard } from './MarketDiscoveryCard'
-import { RecordHoldingDialog } from './RecordHoldingDialog'
+import type { HoldingPrefill } from '@/lib/store/holdingDraft.store'
 import type { TickerSearchResult } from '@/types/investments'
 
 export interface MarketsTabProps {
-  initialTicker?: string
+  onBuy: (prefill: HoldingPrefill) => void
 }
 
-export function MarketsTab({ initialTicker }: MarketsTabProps) {
-  const [selectedTicker, setSelectedTicker] = useState<string>(initialTicker || 'GGAL')
+export function MarketsTab({ onBuy }: MarketsTabProps) {
+  const [selectedTicker, setSelectedTicker] = useState<string>('GGAL')
   const [selectedName, setSelectedName] = useState<string>('')
-  const [buyDialogOpen, setBuyDialogOpen] = useState(false)
-  const [buyPrice, setBuyPrice] = useState<number | undefined>(undefined)
-  const [buyCurrency, setBuyCurrency] = useState<'ARS' | 'USD'>('ARS')
 
   const handleSelect = (ticker: string, item?: TickerSearchResult) => {
     setSelectedTicker(ticker)
-    if (item?.name) {
-      setSelectedName(item.name)
-    }
+    setSelectedName(item?.name ?? '')
   }
 
-  const handleOpenBuy = (ticker: string, price?: number | null, currency?: string) => {
-    setSelectedTicker(ticker)
-    setBuyPrice(price ?? undefined)
-    setBuyCurrency((currency as 'ARS' | 'USD') ?? 'ARS')
-    setBuyDialogOpen(true)
+  const handleBuy = (ticker: string, price?: number | null, currency?: string) => {
+    onBuy({
+      ticker,
+      name: selectedName || undefined,
+      price: price ?? undefined,
+      currency: currency === 'USD' ? 'USD' : 'ARS',
+    })
   }
 
   return (
@@ -41,21 +38,12 @@ export function MarketsTab({ initialTicker }: MarketsTabProps) {
           <TickerChartPanel
             ticker={selectedTicker}
             name={selectedName}
-            onBuy={handleOpenBuy}
+            onBuy={handleBuy}
             className="frame:min-h-0"
           />
         )}
         <MarketDiscoveryCard onSelectTicker={handleSelect} className="frame:min-h-0" />
       </div>
-
-      <RecordHoldingDialog
-        open={buyDialogOpen}
-        onOpenChange={setBuyDialogOpen}
-        initialTicker={selectedTicker}
-        initialName={selectedName}
-        initialPrice={buyPrice}
-        initialCurrency={buyCurrency}
-      />
     </div>
   )
 }
