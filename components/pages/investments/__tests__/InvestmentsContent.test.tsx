@@ -682,6 +682,18 @@ describe('Editar', () => {
     ])
   })
 
+  it('opens exactly one edit dialog for a draft set before Cartera mounts, as the position page does', async () => {
+    holdingsMock.data = [nativeGgal]
+    useHoldingDraftStore.getState().openEdit(1)
+    renderInvestments(cartera, { searchParams: '?tab=cartera' })
+
+    const dialog = await screen.findByRole('dialog')
+    expect(screen.getAllByRole('dialog')).toHaveLength(1)
+    expect(within(dialog).getByRole('heading', { name: 'Editar inversión' })).toBeInTheDocument()
+    expect(within(dialog).getByDisplayValue('GGAL')).toBeInTheDocument()
+    expect(within(dialog).getByDisplayValue('12000')).toBeInTheDocument()
+  })
+
   it('edits from the native holding even when the view currency is USD', async () => {
     const user = userEvent.setup()
     holdingsMock.data = [nativeGgal]

@@ -74,6 +74,30 @@ describe('PositionDetail', () => {
     expect(screen.getByRole('button', { name: /Comprar más/i })).toBeInTheDocument()
   })
 
+  it('offers Vender, Editar and Comprar más in that order, wrapping on a phone', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    const actions = screen.getByTestId('position-actions')
+    expect(Array.from(actions.querySelectorAll('button')).map((b) => b.textContent)).toEqual(['Vender', 'Editar', 'Comprar más'])
+    expect(actions).toHaveClass('flex-wrap')
+  })
+
+  it('routes Editar to Cartera with the edit dialog for this holding', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+
+    await user.click(screen.getByRole('button', { name: 'Editar' }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({ mode: 'edit', holdingId: 42 })
+    expect(push).toHaveBeenCalledWith('/investments?tab=cartera')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('links back to Cartera', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    expect(screen.getByRole('link', { name: /Volver a Inversiones/ })).toHaveAttribute('href', '/investments?tab=cartera')
+  })
+
   it('shows the quantity with es-AR separators', () => {
     renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 1500.5 }} />)
     expect(screen.getByText('1.500,5')).toBeInTheDocument()

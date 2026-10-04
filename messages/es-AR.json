@@ -447,6 +447,7 @@
       "tickerChangeNote": "Hasta la próxima actualización de precios, {ticker} se muestra a su costo promedio.",
       "loadingHolding": "Cargando la tenencia...",
       "notFound": "No encontramos esa tenencia.",
+      "loadFailed": "No pudimos cargar tus tenencias.",
       "sellAction": "Vender",
       "buyMore": "Comprar más",
       "sellTitle": "Vender posición de {ticker}",

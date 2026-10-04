@@ -447,6 +447,7 @@
       "tickerChangeNote": "Until the next price refresh, {ticker} is shown at its average cost.",
       "loadingHolding": "Loading the holding...",
       "notFound": "We couldn't find that holding.",
+      "loadFailed": "We couldn't load your holdings.",
       "sellAction": "Sell",
       "buyMore": "Buy more",
       "sellTitle": "Sell position: {ticker}",

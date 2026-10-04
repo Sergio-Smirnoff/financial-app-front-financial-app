@@ -61,7 +61,7 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
   const t = useTranslations('investments')
   const tc = useTranslations('common')
   const { banks } = useBanks()
-  const { data: holdings, isLoading: holdingsLoading } = useHoldings()
+  const { data: holdings, isLoading: holdingsLoading, isError: holdingsFailed } = useHoldings()
   const createMutation = useCreateHolding()
   const updateMutation = useUpdateHolding()
 
@@ -229,7 +229,9 @@ export function RecordHoldingDialog({ draft, onClose }: RecordHoldingDialogProps
 
         {isEdit && !editing ? (
           <p className="text-sm text-muted-foreground">
-            {holdingsLoading ? t('holdings.loadingHolding') : t('holdings.notFound')}
+            {holdingsLoading
+              ? t('holdings.loadingHolding')
+              : holdingsFailed ? t('holdings.loadFailed') : t('holdings.notFound')}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">

@@ -24,7 +24,7 @@ const { createMutateAsync, updateMutateAsync, sellMutateAsync, holdings, sellSta
     holdingId: 10, soldQuantity: '100', remainingQuantity: '0', proceeds: '80000',
     bookedAmount: '79600', currency: 'ARS', closed: true,
   })),
-  holdings: { data: [] as Holding[] },
+  holdings: { data: [] as Holding[], isLoading: false, isError: false },
   sellState: { isPending: false },
   banksState: { withAccounts: true, secondArsAccount: false },
   toastSuccess: vi.fn(),
@@ -95,7 +95,7 @@ vi.mock('@/lib/hooks/useInvestments', () => ({
     },
     isLoading: false,
   }),
-  useHoldings: () => ({ data: holdings.data, isLoading: false }),
+  useHoldings: () => ({ data: holdings.data, isLoading: holdings.isLoading, isError: holdings.isError }),
 }))
 
 function renderWithIntl(ui: React.ReactElement) {
@@ -137,6 +137,8 @@ describe('RecordHoldingDialog', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     holdings.data = [ggalHolding]
+    holdings.isLoading = false
+    holdings.isError = false
   })
 
   it('renders form elements and submits valid holding data', async () => {
@@ -364,6 +366,15 @@ describe('RecordHoldingDialog', () => {
   it('says so when the holding to edit is not in the list', () => {
     renderDialog({ mode: 'edit', holdingId: 999 })
     expect(screen.getByText('No encontramos esa tenencia.')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Guardar cambios' })).not.toBeInTheDocument()
+  })
+
+  it('says the holdings failed to load instead of not found when the list errors', () => {
+    holdings.data = []
+    holdings.isError = true
+    renderDialog({ mode: 'edit', holdingId: 7 })
+    expect(screen.getByText(esAR.investments.holdings.loadFailed)).toBeInTheDocument()
+    expect(screen.queryByText('No encontramos esa tenencia.')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Guardar cambios' })).not.toBeInTheDocument()
   })
 })

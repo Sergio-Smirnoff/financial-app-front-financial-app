@@ -41,6 +41,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
   const tc = useTranslations('common')
   const router = useRouter()
   const openCreate = useHoldingDraftStore((s) => s.openCreate)
+  const openEdit = useHoldingDraftStore((s) => s.openEdit)
 
   const [sellOpen, setSellOpen] = useState(false)
 
@@ -61,11 +62,16 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
     router.push('/investments?tab=cartera')
   }
 
+  const edit = () => {
+    openEdit(holding.id)
+    router.push('/investments?tab=cartera')
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <Link href="/investments" className="text-xs text-primary hover:underline font-medium mb-1 inline-block">
+          <Link href="/investments?tab=cartera" className="text-xs text-primary hover:underline font-medium mb-1 inline-block">
             ← {t('holdings.backToInvestments')}
           </Link>
           <div className="flex items-center gap-3">
@@ -74,7 +80,7 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div data-testid="position-actions" className="flex flex-wrap items-center gap-3">
           <DeltaBadge pct={holding.pnl.pct} absolute={holding.pnl.amount} />
           <Button
             variant="outline"
@@ -83,6 +89,9 @@ export function PositionDetail({ holding, onSold }: PositionDetailProps) {
             onClick={() => setSellOpen(true)}
           >
             {t('holdings.sellAction')}
+          </Button>
+          <Button variant="outline" size="sm" className="font-bold" onClick={edit}>
+            {t('holdings.editAction')}
           </Button>
           <Button
             size="sm"
