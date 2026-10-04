@@ -9,6 +9,7 @@ import { formatMoney } from '@/lib/format'
 import { useFitCount } from '@/lib/hooks/useFitCount'
 import { cn } from '@/lib/utils'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
+import { CardHeader } from '@/components/ui-kit/layout/CardHeader'
 
 export type SpendCategoryItem = NonNullable<
   NonNullable<OverviewBff['spendByCategory']>['data']
@@ -35,14 +36,17 @@ function SpendList({ items }: { items: SpendCategoryItem[] }) {
 
   return (
     <>
-      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
-        <h3 className={cn('section-head', none && 'sr-only')}>{t('spendTitle')}</h3>
-        {hidesSome && (
-          <Link href="/categories" data-testid="spend-more" className="text-xs font-medium text-primary hover:underline">
-            {t('spendMore')}
-          </Link>
-        )}
-      </div>
+      <CardHeader
+        title={t('spendTitle')}
+        titleHidden={none}
+        action={
+          hidesSome && (
+            <Link href="/categories" data-testid="spend-more" className="text-xs font-medium text-primary hover:underline">
+              {t('spendMore')}
+            </Link>
+          )
+        }
+      />
       <ul
         ref={ref}
         data-testid="spend-list"

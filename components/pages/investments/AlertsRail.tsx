@@ -7,6 +7,7 @@ import { useFitCount } from '@/lib/hooks/useFitCount'
 import { formatDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Section } from '@/lib/api/bff/types'
+import { CardHeader } from '@/components/ui-kit/layout/CardHeader'
 
 export interface AlertRow {
   id?: number
@@ -32,14 +33,17 @@ export function AlertsRail({ section, isLoading, onRetry, className }: AlertsRai
 
   return (
     <div data-testid="alerts-card" className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 max-md:p-3.5 short:p-4', className)}>
-      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
-        <h3 className={cn('section-head', none && 'sr-only')}>{t('alerts.title')}</h3>
-        {unreadCount > 0 && (
-          <span className="whitespace-nowrap rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
-            {t('alerts.unreadCount', { count: unreadCount })}
-          </span>
-        )}
-      </div>
+      <CardHeader
+        title={t('alerts.title')}
+        titleHidden={none}
+        action={
+          unreadCount > 0 && (
+            <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+              {t('alerts.unreadCount', { count: unreadCount })}
+            </span>
+          )
+        }
+      />
       <SectionState
         section={section}
         isLoading={isLoading}

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { useFitCount } from '@/lib/hooks/useFitCount'
 import { cn } from '@/lib/utils'
 import type { Section, TransactionRow } from '@/lib/api/bff/types'
+import { CardHeader } from '@/components/ui-kit/layout/CardHeader'
 
 export interface LatestMovementsCardProps {
   section?: Section<TransactionRow[]>
@@ -24,12 +25,15 @@ function LatestList({ rows }: { rows: TransactionRow[] }) {
 
   return (
     <>
-      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
-        <h3 className={cn('section-head', none && 'sr-only')}>{t('latestTitle')}</h3>
-        <Link href="/transactions" data-testid="latest-more" className="text-xs font-medium text-primary hover:underline">
-          {none ? t('latest.more') : t('latest.seeAll')}
-        </Link>
-      </div>
+      <CardHeader
+        title={t('latestTitle')}
+        titleHidden={none}
+        action={
+          <Link href="/transactions" data-testid="latest-more" className="text-xs font-medium text-primary hover:underline">
+            {none ? t('latest.more') : t('latest.seeAll')}
+          </Link>
+        }
+      />
       <ul ref={ref} data-testid="latest-list" aria-label={t('latest.caption')} className="relative min-h-0 overflow-hidden frame:flex-1">
         {rows.map((row, index) => (
           <li

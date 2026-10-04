@@ -8,6 +8,7 @@ import { DueRow } from '@/components/ui-kit/row/ListRow'
 import { useFitCount } from '@/lib/hooks/useFitCount'
 import { cn } from '@/lib/utils'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
+import { CardHeader } from '@/components/ui-kit/layout/CardHeader'
 
 export type UpcomingPaymentItem = NonNullable<
   NonNullable<OverviewBff['upcomingPayments']>['data']
@@ -27,14 +28,16 @@ function UpcomingList({ items }: { items: UpcomingPaymentItem[] }) {
 
   return (
     <>
-      <div className="flex h-5 shrink-0 items-center justify-between gap-4">
-        <h3 className="section-head">{t('upcomingTitle')}</h3>
-        {hidesSome && (
-          <Link href="/banks" data-testid="upcoming-more" className="shrink-0 whitespace-nowrap text-xs font-medium text-primary hover:underline">
-            {t('upcomingMore')}
-          </Link>
-        )}
-      </div>
+      <CardHeader
+        title={t('upcomingTitle')}
+        action={
+          hidesSome && (
+            <Link href="/banks" data-testid="upcoming-more" className="text-xs font-medium text-primary hover:underline">
+              {t('upcomingMore')}
+            </Link>
+          )
+        }
+      />
       <ul
         ref={ref}
         data-testid="upcoming-list"

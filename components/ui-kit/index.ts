@@ -32,6 +32,8 @@ export { NotificationList } from './notifications/NotificationList'
 
 // layout
 export { KpiTile, KpiStrip, RailSection, SplitLayout } from './layout/KpiStrip'
+export { CardHeader } from './layout/CardHeader'
+export type { CardHeaderProps } from './layout/CardHeader'
 export type { KpiTileProps, KpiStripProps, RailSectionProps, SplitLayoutProps } from './layout/KpiStrip'
 
 // controls
