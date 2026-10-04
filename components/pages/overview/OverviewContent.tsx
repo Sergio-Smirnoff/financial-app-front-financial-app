@@ -79,7 +79,7 @@ export function OverviewContent({ query = { currency: 'ARS', secondary: 'none' }
                   section={data?.upcomingPayments}
                   isLoading={isLoading}
                   onRetry={refetch}
-                  className="frame:shrink-0"
+                  className="frame:max-h-1/2 short:max-h-none"
                 />
                 <Link
                   href="/transactions"

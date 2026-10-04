@@ -196,7 +196,7 @@ describe('OverviewContent', () => {
     expect(screen.getByTestId('latest-more')).toHaveTextContent(esAR.overview.latest.seeAll)
   })
 
-  it('splits the rail space left under the upcoming payments between spend and latest', () => {
+  it('caps the upcoming payments at half the rail and splits the rest between spend and latest', () => {
     renderOverview(fixture)
     for (const id of ['overview-rail-spend', 'overview-rail-latest']) {
       const wrapper = screen.getByTestId(id)
@@ -207,7 +207,8 @@ describe('OverviewContent', () => {
       expect(list).toHaveClass('min-h-0', 'overflow-hidden')
       expect(list.parentElement).toHaveClass('min-h-0', 'frame:flex-1', 'frame:basis-0', 'frame:min-h-16')
     }
-    expect(screen.getByRole('link', { name: /Visa Galicia/ }).closest('.frame\\:shrink-0')).not.toBeNull()
+    const upcoming = screen.getByRole('link', { name: /Visa Galicia/ }).closest('.elev-sm')
+    expect(upcoming).toHaveClass('min-h-0', 'frame:min-h-16', 'frame:max-h-1/2', 'short:max-h-none')
   })
 
   it('bounds both rail lists to their share while loading', () => {
