@@ -24,8 +24,8 @@ export function SideNavItem({ href, label, icon: Icon, pathname, collapsed = fal
       aria-label={collapsed ? label : undefined}
       title={collapsed ? label : undefined}
       className={cn(
-        'flex min-w-0 items-center gap-3 rounded-md py-2 text-sm font-medium transition-colors',
-        collapsed ? 'justify-center px-0' : 'px-3',
+        'flex min-w-0 items-center gap-2.5 rounded-md py-2 text-[13.5px] font-medium transition-colors',
+        collapsed ? 'justify-center px-0' : 'px-2.5',
         isActive
           ? 'bg-sidebar-primary text-sidebar-primary-foreground'
           : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
