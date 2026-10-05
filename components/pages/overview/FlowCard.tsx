@@ -22,7 +22,7 @@ export function FlowCard({ section, isLoading, onRetry }: FlowCardProps) {
       section={section}
       isLoading={isLoading}
       onRetry={onRetry}
-      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
+      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-full" />}
     >
       {(data) => {
         const months = data.map((item) => ({
@@ -34,9 +34,11 @@ export function FlowCard({ section, isLoading, onRetry }: FlowCardProps) {
         const currency = data[0]?.income?.currency || 'ARS'
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+          <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-5">
             <h3 className="section-head">{t('flowTitle')}</h3>
-            <BarPairChart months={months} currency={currency} ariaLabel={t('flowAria')} />
+            <div className="h-56 min-h-0 frame:h-auto frame:flex-1">
+              <BarPairChart months={months} currency={currency} ariaLabel={t('flowAria')} minHeight={96} />
+            </div>
           </div>
         )
       }}

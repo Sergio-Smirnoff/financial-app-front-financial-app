@@ -1,6 +1,7 @@
+import { useTranslations } from 'next-intl'
 import { Money } from '@/components/ui-kit/money/Money'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
-import type { MoneyView } from '@/lib/format'
+import { formatQuantity, type MoneyView } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface StockBarProps {
@@ -14,6 +15,7 @@ export interface StockBarProps {
 }
 
 export function StockBar({ ticker, name, quantity, avgPrice, currentValue, pnlPct, className }: StockBarProps) {
+  const t = useTranslations('investments')
   return (
     <div className={cn('flex items-center justify-between gap-4 py-3 border-b last:border-b-0', className)}>
       <div className="flex flex-col gap-0.5 min-w-0">
@@ -21,8 +23,11 @@ export function StockBar({ ticker, name, quantity, avgPrice, currentValue, pnlPc
           <span className="font-mono text-sm font-semibold">{ticker}</span>
           <span className="truncate text-sm text-muted-foreground hidden sm:inline">{name}</span>
         </div>
-        <span className="n text-xs text-muted-foreground">
-          {quantity} unidades · Costo: <Money value={avgPrice} className="text-xs" />
+        <span data-testid="stock-bar-summary" className="n text-xs text-muted-foreground">
+          {t.rich('stockBar.summary', {
+            quantity: formatQuantity(quantity),
+            cost: () => <Money value={avgPrice} className="text-xs" />,
+          })}
         </span>
       </div>
       <div className="flex flex-col items-end gap-0.5 shrink-0">

@@ -1,22 +1,33 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, it, expect, vi } from 'vitest'
+import { stubChartSize } from '@/test/chartSize'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { PositionDetail } from '../PositionDetail'
 import React from 'react'
 import { NextIntlClientProvider } from 'next-intl'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import esAR from '@/messages/es-AR.json'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
+
+const { push } = vi.hoisted(() => ({ push: vi.fn() }))
 
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push }),
 }))
 
 vi.mock('@/lib/hooks/useBanks', () => ({
   useBanks: () => ({ banks: [], isLoading: false }),
 }))
 
+const { sellMutateAsync } = vi.hoisted(() => ({
+  sellMutateAsync: vi.fn(async () => ({
+    holdingId: 42, soldQuantity: '100', remainingQuantity: '0', proceeds: '1500000',
+    bookedAmount: '0', currency: 'ARS', closed: true,
+  })),
+}))
+
 vi.mock('@/lib/hooks/useInvestments', () => ({
-  useCreateHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
-  useDeleteHolding: () => ({ mutateAsync: vi.fn(), isPending: false }),
+  useSellHolding: () => ({ mutateAsync: sellMutateAsync, isPending: false }),
   useHoldings: () => ({ data: [], isLoading: false }),
   useTickerResearch: () => ({ data: null, isLoading: false }),
 }))
@@ -37,11 +48,16 @@ const holdingFixture = {
   ticker: 'YPFD',
   name: 'YPF S.A.',
   assetType: 'Acción',
+  currency: 'ARS',
   quantity: 100,
-  avgPrice: { amount: '12000', currency: 'ARS', secondary: null },
-  currentPrice: { amount: '15000', currency: 'ARS', secondary: null },
-  totalValue: { amount: '1500000', currency: 'ARS', secondary: null },
-  pnl: { amount: { amount: '300000', currency: 'ARS', secondary: null }, pct: 25 },
+  avgPurchasePrice: 12000,
+  figures: {
+    avgCost: { amount: '12000', currency: 'ARS', secondary: null },
+    price: { amount: '15000', currency: 'ARS', secondary: null },
+    marketValue: { amount: '1500000', currency: 'ARS', secondary: null },
+    pnl: { amount: '300000', currency: 'ARS', secondary: null },
+    pnlPct: 25,
+  },
   prices: [
     { date: '2026-08-01', value: 12000 },
     { date: '2026-08-02', value: 13500 },
@@ -50,6 +66,9 @@ const holdingFixture = {
 }
 
 describe('PositionDetail', () => {
+  beforeEach(() => stubChartSize(640, 240))
+  afterEach(() => vi.unstubAllGlobals())
+
   it('renders the price chart with axes', () => {
     renderWithIntl(<PositionDetail holding={holdingFixture} />)
     expect(screen.getAllByTestId('tick-y').length).toBeGreaterThan(2)
@@ -65,5 +84,102 @@ describe('PositionDetail', () => {
     renderWithIntl(<PositionDetail holding={holdingFixture} />)
     expect(screen.getByRole('button', { name: /Vender/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Comprar más/i })).toBeInTheDocument()
+  })
+
+  it('offers Vender, Editar and Comprar más in that order, wrapping on a phone', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    const actions = screen.getByTestId('position-actions')
+    expect(Array.from(actions.querySelectorAll('button')).map((b) => b.textContent)).toEqual(['Vender', 'Editar', 'Comprar más'])
+    expect(actions).toHaveClass('flex-wrap')
+  })
+
+  it('routes Editar to Cartera with the edit dialog for this holding', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+
+    await user.click(screen.getByRole('button', { name: 'Editar' }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({ mode: 'edit', holdingId: 42 })
+    expect(push).toHaveBeenCalledWith('/investments?tab=cartera')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('links back to Cartera', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    expect(screen.getByRole('link', { name: /Volver a Inversiones/ })).toHaveAttribute('href', '/investments?tab=cartera')
+  })
+
+  it('shows the quantity with es-AR separators', () => {
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 1500.5 }} />)
+    expect(screen.getByText('1.500,5')).toBeInTheDocument()
+  })
+
+  it('routes "Comprar más" to Cartera with the holding prefilled', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, assetType: 'STOCK' }} />)
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: 'STOCK', price: 15000, currency: 'ARS' },
+    })
+    expect(push).toHaveBeenCalledWith('/investments?tab=cartera')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('leaves the price blank when there is no current price', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(
+      <PositionDetail holding={{ ...holdingFixture, figures: { ...holdingFixture.figures, price: null } }} />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: undefined, price: undefined, currency: 'ARS' },
+    })
+  })
+
+  it('leaves the price blank when buying more of a bond, whose quote is per 100 VN', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(
+      <PositionDetail
+        holding={{ ...holdingFixture, ticker: 'AL30', assetType: 'BOND', figures: { ...holdingFixture.figures, price: { amount: '80216', currency: 'ARS', secondary: null } } }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'AL30', name: 'YPF S.A.', assetType: 'BOND', price: undefined, currency: 'ARS' },
+    })
+  })
+
+  it('returns to Cartera after selling', async () => {
+    const user = userEvent.setup()
+    push.mockClear()
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+
+    await user.click(screen.getByRole('button', { name: 'Vender' }))
+    await user.click(await screen.findByRole('button', { name: /Confirmar venta y liquidar/i }))
+
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/investments?tab=cartera'))
+  })
+
+  it('shows the exact stored quantity', () => {
+    renderWithIntl(<PositionDetail holding={{ ...holdingFixture, quantity: 123456789012.12346, exactQuantity: '123456789012.123456' }} />)
+    expect(screen.getByText('123.456.789.012,123456')).toBeInTheDocument()
+  })
+
+  it('fits the headline amounts like the other KPI strips', () => {
+    renderWithIntl(<PositionDetail holding={holdingFixture} />)
+    expect(screen.getAllByTestId('position-kpi').map((tile) => tile.querySelector('[data-amount]') != null)).toEqual([true, true, true])
   })
 })

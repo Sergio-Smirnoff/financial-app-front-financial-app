@@ -126,6 +126,12 @@ The refresh mutex is a module-level `Promise<boolean> | null`. Concurrent 401s a
 
 ---
 
+## Recent UX Fixes (2026-10-02, one-screen layout)
+
+| Area | Fix |
+|---|---|
+| `SellHoldingDialog` | A holdings, quote or banks refetch while the dialog is open no longer resets the typed quantity, the market-price switch, the manual price or the chosen account; the form resets only when it opens or switches holding. Selling everything sends the exact decimal quantity the API returned. |
+
 ## Run
 
 ```bash

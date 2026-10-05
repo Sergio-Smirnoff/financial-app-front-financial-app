@@ -42,7 +42,7 @@ export function CategoryTrendCard({ categoryName, points = [] }: CategoryTrendCa
         <p className="text-sm text-muted-foreground">{t('trend.noData')}</p>
       ) : (
         <div className="py-2" role="img" aria-label={t('trend.titleFor', { name: categoryName })}>
-          <Sparkline series={series} ariaLabel={t('trend.titleFor', { name: categoryName })} height={60} />
+          <Sparkline series={series} ariaLabel={t('trend.titleFor', { name: categoryName })} minHeight={60} />
         </div>
       )}
     </div>

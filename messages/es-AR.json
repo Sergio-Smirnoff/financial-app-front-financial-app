@@ -73,6 +73,8 @@
     "mainNavigation": "Navegación principal",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "collapseMenu": "Contraer menú",
+    "expandMenu": "Expandir menú",
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones",
     "unreadNotifications": "{count, plural, one {# notificación sin leer} other {# notificaciones sin leer}}",
@@ -80,7 +82,14 @@
     "noNotifications": "No hay notificaciones",
     "unread": "Sin leer",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "chart": {
+      "label": "Etiqueta / Fecha",
+      "value": "Valor",
+      "notEnoughData": "Sin datos suficientes",
+      "composition": "Composición"
+    },
+    "points": "{value} pts"
   },
   "sections": {
     "unavailable": "No pudimos cargar esta sección",
@@ -121,17 +130,16 @@
     "railTitle": "Actividad y Alertas",
     "upcomingTitle": "Próximos Vencimientos",
     "upcomingEmpty": "Sin vencimientos próximos.",
+    "upcomingMore": "Ver todos →",
     "spendTitle": "Gastos por Categoría",
     "spendEmpty": "Sin gastos registrados este mes.",
+    "spendMore": "Ver categorías →",
     "latestTitle": "Últimos Movimientos",
     "latest": {
       "caption": "Últimos movimientos",
       "seeAll": "Ver todos →",
-      "date": "Fecha",
-      "description": "Descripción",
-      "category": "Categoría",
+      "more": "Ver últimos movimientos →",
       "uncategorised": "Sin categoría",
-      "amount": "Monto",
       "emptyAction": "Registrar movimiento"
     }
   },
@@ -331,9 +339,49 @@
     "shared": {
       "totalValue": "Valor total"
     },
+    "groups": {
+      "BOND": "Bonos",
+      "CEDEAR": "CEDEARs",
+      "STOCK": "Acciones",
+      "FCI": "Fondos (FCI)",
+      "OTHER": "Otros"
+    },
+    "cartera": {
+      "filterPlaceholder": "Filtrar por ticker o nombre",
+      "filterLabel": "Filtrar posiciones",
+      "view": "Vista",
+      "groupByType": "Agrupar por tipo",
+      "columns": "Columnas",
+      "reset": "Restablecer vista",
+      "colType": "Tipo",
+      "colBank": "Banco",
+      "typeFilter": "Filtrar por tipo",
+      "showing": "Mostrando {shown} de {total} posiciones",
+      "subtotalsNote": "Los subtotales de cada grupo son del tipo completo",
+      "noMatch": "Ninguna posición coincide con el filtro.",
+      "phoneColumnsNote": "En el teléfono la tabla muestra solo el ticker; tocalo para ver el detalle.",
+      "sellAria": "Vender {ticker}",
+      "editAria": "Editar {ticker}",
+      "holdingsUnavailable": "No pudimos cargar tus tenencias, así que todavía no podés editarlas ni venderlas."
+    },
+    "composition": {
+      "heading": "Composición",
+      "positionsCount": "{count, plural, one {# posición} other {# posiciones}}",
+      "donutAria": "Composición de la cartera por tipo de activo",
+      "centerLabel": "TOTAL",
+      "colType": "Tipo",
+      "colCount": "#",
+      "colShare": "%",
+      "colAmount": "Monto",
+      "colPnl": "P&L $",
+      "colPnlPct": "P&L %",
+      "total": "Total",
+      "empty": "Sin posiciones para mostrar la composición."
+    },
     "tabs": {
       "markets": "Mercados",
       "operations": "Operaciones",
+      "summary": "Resumen",
       "kpiMarketValue": "Valor de mercado",
       "kpiPerformance": "Rendimiento",
       "positionsHeading": "Posiciones en Cartera",
@@ -343,22 +391,32 @@
       "colName": "Nombre",
       "colAvgCost": "Costo prom.",
       "colPrice": "Precio",
-      "compositionHeading": "Distribución por Tipo de Activo"
+      "colShare": "% cartera",
+      "colPnlAmount": "P&L $",
+      "colPnlPct": "P&L %"
     },
     "market": {
       "evolutionHeading": "Evolución de Cartera",
       "evolutionEmpty": "Sin datos de evolución disponibles.",
       "evolutionAria": "Evolución del valor de cartera y costo acumulado",
-      "alertsTitle": "Alertas de Mercado",
       "discoveryTitle": "Tendencias del Mercado",
       "searchPlaceholder": "Buscá un ticker para investigar (ej: GGAL, AL30, AAPL)...",
       "noSearchResults": "No se encontraron tickers que coincidan.",
       "addHoldingFor": "Registrar compra de {ticker}",
+      "buyShort": "Comprar {ticker}",
       "seriesError": "No se pudieron cargar los datos de cotización.",
       "priceChartAria": "Gráfico de cotización de {ticker}",
       "ranges": {
-        "all": "TODO"
-      }
+        "all": "TODO",
+        "D30": "30D",
+        "D90": "90D",
+        "Y1": "1A",
+        "1M": "1M",
+        "3M": "3M",
+        "1A": "1A"
+      },
+      "rangeAria": "Período de la evolución",
+      "priceRangeAria": "Período de la cotización"
     },
     "operations": {
       "heading": "Últimas Operaciones",
@@ -370,8 +428,10 @@
       "colAmount": "Monto"
     },
     "alerts": {
+      "title": "Notificaciones",
       "unreadCount": "{count} sin leer",
-      "empty": "Sin alertas activas."
+      "empty": "Sin notificaciones.",
+      "hiddenCount": "{count, plural, one {# notificación más en la campana} other {# notificaciones más en la campana}}"
     },
     "holdings": {
       "new": "Registrar inversión",
@@ -380,16 +440,59 @@
       "creating": "Registrando...",
       "toastCreated": "Inversión registrada con éxito",
       "toastCreateFailed": "No se pudo registrar la inversión",
+      "editAction": "Editar",
+      "editTitle": "Editar inversión",
+      "editDescription": "Corregí los datos de la tenencia. Guardar no mueve dinero entre tus cuentas.",
+      "saveChanges": "Guardar cambios",
+      "saving": "Guardando...",
+      "toastUpdated": "Inversión actualizada",
+      "toastUpdateFailed": "No se pudo actualizar la inversión",
+      "bondNote": "Bonos: la cantidad es en valor nominal (VN) y el precio es por 1 VN. El mercado cotiza cada 100 VN (80.216 por 100 VN = 802,16 por VN).",
+      "tickerChangeNote": "Hasta la próxima actualización de precios, {ticker} se muestra a su costo promedio.",
+      "loadingHolding": "Cargando la tenencia...",
+      "notFound": "No encontramos esa tenencia.",
+      "loadFailed": "No pudimos cargar tus tenencias.",
       "sellAction": "Vender",
       "buyMore": "Comprar más",
       "sellTitle": "Vender posición de {ticker}",
       "sellDescription": "Liquidación y acreditación en tu cuenta bancaria.",
       "confirmSell": "Confirmar venta y liquidar",
       "selling": "Vendiendo...",
-      "toastSold": "Se vendió la tenencia de {ticker} por {amount}",
-      "toastSellFailed": "No se pudo liquidar la posición",
+      "sell": {
+        "quantityLabel": "Cantidad a vender",
+        "all": "Todo",
+        "avgCost": "Costo promedio",
+        "lastQuote": "Última cotización",
+        "lastQuotePerHundred": "Última cotización (cada 100 VN)",
+        "marketPrice": "Precio de mercado",
+        "marketPriceHint": "Se usa la última cotización guardada al confirmar.",
+        "marketLocked": "Mercado",
+        "marketLockedHint": "Desactivá «Precio de mercado» para escribir otro precio.",
+        "manualPrice": "Precio de venta",
+        "manualPricePerHundred": "Precio de venta (cada 100 VN)",
+        "bondNote": "Bonos: el precio se indica cada 100 VN, como cotiza el mercado. El monto exacto se calcula al confirmar.",
+        "estimate": "Total estimado (antes de comisiones)",
+        "quantityPositive": "La cantidad debe ser mayor a cero",
+        "quantityExceeds": "No podés vender más de {max}",
+        "quantityDecimals": "La cantidad admite hasta {max} decimales",
+        "pricePositive": "El precio debe ser mayor a cero",
+        "priceDecimals": "El precio admite hasta {max} decimales",
+        "confirmPartial": "Vender {quantity} y liquidar",
+        "toastSold": "Vendiste {quantity} de {ticker}",
+        "toastSoldAll": "Vendiste toda tu posición de {ticker}",
+        "toastCredited": "Se acreditaron {amount}.",
+        "toastFeesTookAll": "No se acreditó dinero: las comisiones cubren todo el monto de la venta.",
+        "toastNoAccount": "No se acreditó dinero en ninguna cuenta.",
+        "toastFailed": "No pudimos vender {ticker}",
+        "errors": {
+          "exceedsQuantity": "Ya no tenés esa cantidad de {ticker}. Actualizá la página y probá de nuevo.",
+          "notFound": "Esta posición de {ticker} ya no existe. Puede que ya la hayas vendido.",
+          "invalid": "Revisá la cantidad, el precio y la cuenta, y probá de nuevo.",
+          "financesUnavailable": "El servicio de finanzas no respondió y la venta no se completó. Probá de nuevo en un momento.",
+          "unknown": "Probá de nuevo en un momento."
+        }
+      },
       "availableQuantity": "Tenencia disponible",
-      "liquidationTotal": "Valor bruto de liquidación",
       "destinationAccountLabel": "Cuenta destino donde acreditar los fondos",
       "destinationAccountHint": "Se creará automáticamente el movimiento de ingreso correspondiente en la cuenta bancaria.",
       "selectDestinationAccount": "Seleccioná una cuenta",
@@ -406,7 +509,9 @@
       "notificationsSection": "Alertas de variación (opcional)",
       "gainAlertPct": "Avisarme si sube más de (%)",
       "lossAlertPct": "Stop-loss si cae más de (%)",
-      "noAccountInBank": "No tenés cuentas en {currency} en este banco",
+      "gainAlertPlaceholder": "ej: 20",
+      "lossAlertPlaceholder": "ej: 10",
+      "noAccountInCurrency": "No tenés cuentas en {currency}",
       "assetType": {
         "STOCK": "Acción",
         "CEDEAR": "CEDEAR",
@@ -417,13 +522,30 @@
         "bankRequired": "Debés seleccionar un banco",
         "tickerRequired": "El ticker es obligatorio",
         "mustBePositive": "La cantidad debe ser mayor a cero",
-        "mustBeZeroOrPositive": "El precio debe ser cero o mayor"
+        "mustBeZeroOrPositive": "El precio debe ser cero o mayor",
+        "invalidNumber": "Ingresá un número válido (ej: 1,5).",
+        "maxDecimals": "Admite hasta {max} decimales",
+        "maxIntegerDigits": "Admite hasta {max} dígitos enteros"
       },
       "avgPrice": "Precio promedio",
       "currentPrice": "Precio actual",
       "priceHistoryHeading": "Histórico de Precios",
       "priceHistoryAria": "Histórico de precios de {ticker}",
-      "backToInvestments": "Volver a Inversiones"
+      "backToInvestments": "Volver a Inversiones",
+      "errors": {
+        "alreadyExists": "Ya tenés esa inversión registrada en este banco. Editá la existente.",
+        "notFound": "Esta inversión ya no existe. Puede que la hayas vendido.",
+        "invalid": "Revisá los datos ingresados y probá de nuevo.",
+        "quantityInvalid": "La cantidad tiene que ser mayor que cero.",
+        "currencyMismatch": "La moneda no coincide con la de esta inversión.",
+        "unsupportedCurrency": "Esa moneda no está disponible para inversiones.",
+        "banksUnavailable": "El servicio de bancos no respondió. Probá de nuevo en un momento.",
+        "unknown": "Probá de nuevo en un momento."
+      },
+      "figuresUnavailable": "No pudimos obtener la valuación de esta posición. Probá de nuevo en un momento."
+    },
+    "stockBar": {
+      "summary": "{quantity} unidades · Costo: <cost></cost>"
     }
   },
   "imports": {

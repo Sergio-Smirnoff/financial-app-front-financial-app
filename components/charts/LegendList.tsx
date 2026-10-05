@@ -1,4 +1,5 @@
 import React from 'react'
+import { currencySymbol } from '@/lib/format'
 
 export interface CompositionSlice {
   label: string
@@ -27,7 +28,7 @@ export function formatSliceAmount(amt: CompositionSlice['amount']): string {
   if (typeof amt === 'number') return `$ ${amt.toLocaleString('es-AR')}`
   if (amt && typeof amt === 'object') {
     const num = Number(amt.amount)
-    const sym = amt.currency === 'USD' ? 'US$' : '$'
+    const sym = currencySymbol(amt.currency ?? 'ARS')
     return `${sym} ${isNaN(num) ? amt.amount : num.toLocaleString('es-AR')}`
   }
   return String(amt)

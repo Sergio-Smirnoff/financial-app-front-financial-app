@@ -4,7 +4,7 @@ import { AppShell } from '../AppShell'
 
 // Mock sub-components to isolate AppShell
 vi.mock('../SideNav', () => ({
-  SideNav: () => <aside data-slot="rail" className="md:w-60" />,
+  SideNav: () => <aside data-slot="rail" className="md:w-[clamp(176px,11vw,240px)]" />,
   MobileSideNav: () => null,
 }))
 
@@ -21,13 +21,13 @@ vi.mock('@/components/ui-kit/notifications/NotificationBell', () => ({
 }))
 
 describe('AppShell', () => {
-  it('renders a 240px rail above the md breakpoint and a drawer below it', () => {
+  it('renders a proportional rail above the md breakpoint and a drawer below it', () => {
     const { container } = render(
       <AppShell>
         <p>x</p>
       </AppShell>
     )
-    expect(container.querySelector('[data-slot="rail"]')).toHaveClass('md:w-60')
+    expect(container.querySelector('[data-slot="rail"]')).toHaveClass('md:w-[clamp(176px,11vw,240px)]')
   })
 
   it('renders children inside the main content area', () => {

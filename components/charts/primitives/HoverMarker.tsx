@@ -4,6 +4,7 @@ export interface HoverMarkerProps {
   x: number
   y: number
   height: number
+  width: number
   paddingY?: number
   dateText: string
   valueText: string
@@ -15,18 +16,17 @@ export function HoverMarker({
   x,
   y,
   height,
+  width,
   paddingY = 32,
   dateText,
   valueText,
   deltaText,
   isPositiveDelta = true
 }: HoverMarkerProps) {
-  const deltaSymbol = deltaText ? (isPositiveDelta ? '+' : '−') : ''
-  const displayDelta = deltaText ? (deltaText.startsWith('+') || deltaText.startsWith('-') || deltaText.startsWith('−') ? deltaText : `${deltaSymbol}${deltaText}`) : ''
+  const displayDelta = deltaText ?? ''
 
   return (
     <g className="hover-marker pointer-events-none">
-      {/* Vertical guideline */}
       <line
         x1={x}
         y1={paddingY}
@@ -37,12 +37,10 @@ export function HoverMarker({
         strokeDasharray="3 3"
       />
 
-      {/* Target point indicator */}
       <circle cx={x} cy={y} r={5} fill="currentColor" className="text-primary" />
       <circle cx={x} cy={y} r={3} fill="white" />
 
-      {/* Tooltip */}
-      <g role="tooltip" transform={`translate(${x > 400 ? x - 140 : x + 10}, ${Math.max(paddingY, y - 40)})`}>
+      <g role="tooltip" transform={`translate(${x + 150 > width ? Math.max(0, x - 140) : x + 10}, ${Math.max(paddingY, y - 40)})`}>
         <rect
           width={130}
           height={42}

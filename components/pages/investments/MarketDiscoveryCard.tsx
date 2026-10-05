@@ -2,16 +2,56 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { useMarketDiscovery } from '@/lib/hooks/useInvestments'
-import { formatCurrency } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import { TrendingUp } from 'lucide-react'
+import { useMarketDiscovery } from '@/lib/hooks/useInvestments'
+import { useFitCount } from '@/lib/hooks/useFitCount'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
+import { cn } from '@/lib/utils'
+import type { MarketQuote } from '@/types/investments'
 
 export interface MarketDiscoveryCardProps {
   onSelectTicker?: (ticker: string) => void
+  className?: string
 }
 
-export function MarketDiscoveryCard({ onSelectTicker }: MarketDiscoveryCardProps) {
+function DiscoveryList({ items, onSelectTicker }: { items: MarketQuote[]; onSelectTicker?: (ticker: string) => void }) {
+  const { ref, count } = useFitCount<HTMLUListElement>(items.length)
+  return (
+    <ul ref={ref} data-testid="discovery-list" className="relative min-h-0 overflow-hidden frame:flex-1">
+      {items.map((item, index) => {
+        const isPos = item.variation >= 0
+        return (
+          <li
+            key={item.ticker}
+            data-testid="discovery-row"
+            hidden={index >= count}
+            className="flex items-baseline justify-between gap-3 border-b py-2 text-sm last:border-0"
+          >
+            <span className="min-w-0 truncate">
+              <button
+                type="button"
+                onClick={() => onSelectTicker?.(item.ticker)}
+                className="mr-1.5 font-mono font-bold text-primary hover:underline"
+              >
+                {item.ticker}
+              </button>
+              {item.name && <span className="text-xs text-muted-foreground">{item.name}</span>}
+            </span>
+            <span className="shrink-0 whitespace-nowrap font-mono text-xs">
+              {moneyText({ value: { amount: String(item.price), currency: item.currency ?? 'ARS' } })}{' '}
+              <span className={cn('font-bold', isPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400')}>
+                {formatPercent(item.variation)}
+              </span>
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
+export function MarketDiscoveryCard({ onSelectTicker, className }: MarketDiscoveryCardProps) {
   const t = useTranslations('investments')
   const { data, isLoading } = useMarketDiscovery(6)
 
@@ -25,47 +65,12 @@ export function MarketDiscoveryCard({ onSelectTicker }: MarketDiscoveryCardProps
   }
 
   return (
-    <div className="bg-card border border-border rounded-xl p-5 space-y-3 shadow-sm">
+    <div className={cn('flex flex-col gap-3 rounded-xl border border-border bg-card p-5 shadow-sm short:p-4', className)}>
       <div className="flex items-center gap-2">
         <TrendingUp className="w-4 h-4 text-primary" />
         <h3 className="font-bold text-sm text-foreground">{t('market.discoveryTitle')}</h3>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {opportunities.map((item) => {
-          const isPos = item.variation >= 0
-          return (
-            <button
-              type="button"
-              key={item.ticker}
-              onClick={() => onSelectTicker?.(item.ticker)}
-              className="p-3.5 rounded-xl border border-border bg-muted/30 hover:border-primary/60 hover:bg-muted/60 transition text-left flex items-center justify-between"
-            >
-              <div>
-                <span className="font-mono font-bold text-foreground text-sm">{item.ticker}</span>
-                {item.name && (
-                  <p className="text-[11px] text-muted-foreground line-clamp-1">{item.name}</p>
-                )}
-              </div>
-
-              <div className="text-right">
-                <span className="font-mono font-bold text-foreground text-xs">
-                  {formatCurrency(item.price, item.currency ?? 'ARS')}
-                </span>
-                <p
-                  className={cn(
-                    'text-[11px] font-mono font-bold mt-0.5',
-                    isPos ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                  )}
-                >
-                  {isPos ? '+' : ''}
-                  {item.variation.toFixed(2)}%
-                </p>
-              </div>
-            </button>
-          )
-        })}
-      </div>
+      <DiscoveryList items={opportunities} onSelectTicker={onSelectTicker} />
     </div>
   )
 }

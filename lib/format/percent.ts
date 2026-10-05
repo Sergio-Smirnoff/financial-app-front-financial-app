@@ -1,9 +1,13 @@
-export function formatPercent(value: number, opts?: { decimals?: number }): string {
+import { withTrueMinus } from './sign'
+
+export const roundsToZero = (value: number, decimals: number) => Math.round(Math.abs(value) * 10 ** decimals) === 0
+
+export function formatPercent(value: number, opts?: { decimals?: number; signed?: boolean }): string {
   const decimals = opts?.decimals ?? 2
   const formatted = new Intl.NumberFormat('es-AR', {
-    signDisplay: 'always',
+    signDisplay: opts?.signed === false ? 'auto' : 'exceptZero',
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
-  }).format(value)
-  return `${formatted} %`
+  }).format(roundsToZero(value, decimals) ? 0 : value)
+  return `${withTrueMinus(formatted)} %`
 }

@@ -32,9 +32,11 @@ export function CommittedCard({ section, isLoading, onRetry }: CommittedCardProp
         const currency = data[0]?.amount?.currency ?? 'ARS'
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+          <div className="elev-sm flex flex-col gap-4 rounded-xl border bg-card p-5">
             <h3 className="section-head">{t('committedTitle')}</h3>
-            <HorizonBars months={months} currency={currency} ariaLabel={t('committedAria')} />
+            <div className="h-40 frame:h-28">
+              <HorizonBars months={months} currency={currency} ariaLabel={t('committedAria')} minHeight={96} />
+            </div>
           </div>
         )
       }}

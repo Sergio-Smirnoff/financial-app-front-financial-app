@@ -3,7 +3,11 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
+import { useFitCount } from '@/lib/hooks/useFitCount'
+import { formatDate } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import type { Section } from '@/lib/api/bff/types'
+import { CardHeader } from '@/components/ui-kit/layout/CardHeader'
 
 export interface AlertRow {
   id?: number
@@ -17,55 +21,63 @@ export interface AlertsRailProps {
   section?: Section<AlertRow[]>
   isLoading: boolean
   onRetry?: () => void
+  className?: string
 }
 
-export function AlertsRail({ section, isLoading, onRetry }: AlertsRailProps) {
+export function AlertsRail({ section, isLoading, onRetry, className }: AlertsRailProps) {
   const t = useTranslations('investments')
+  const alerts = section?.data ?? []
+  const { ref, count, framed } = useFitCount<HTMLUListElement>(alerts.length)
+  const none = framed && count === 0 && alerts.length > 0
+  const unreadCount = alerts.filter((a) => !a.read).length
 
   return (
-    <SectionState
-      section={section}
-      isLoading={isLoading}
-      onRetry={onRetry}
-      skeleton={<div className="h-32 rounded-xl bg-muted animate-pulse" />}
-    >
-      {(alerts) => {
-        const unreadCount = alerts.filter((a) => !a.read).length
-
-        return (
-          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="section-head">{t('market.alertsTitle')}</h3>
-              {unreadCount > 0 && (
-                <span className="text-xs font-semibold bg-destructive/10 text-destructive px-2 py-0.5 rounded-full">
-                  {t('alerts.unreadCount', { count: unreadCount })}
-                </span>
-              )}
-            </div>
-            {alerts.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t('alerts.empty')}</p>
-            ) : (
-              <div className="space-y-3">
-                {alerts.map((a) => (
-                  <div
-                    key={a.id}
-                    className={`p-2.5 rounded-lg border space-y-1 ${a.read ? 'bg-muted/20' : 'bg-muted/40 border-primary/20'}`}
-                    data-testid="alert-row"
-                  >
-                    <span className="font-semibold text-xs">{a.title}</span>
-                    <p className="text-xs text-muted-foreground">{a.message}</p>
-                    {a.createdAt && (
-                      <p className="text-[10px] text-muted-foreground/60">
-                        {new Date(a.createdAt).toLocaleDateString('es-AR')}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
+    <div data-testid="alerts-card" className={cn('elev-sm flex min-h-0 flex-col gap-3 rounded-xl border bg-card p-5 max-md:p-3.5 short:p-4', className)}>
+      <CardHeader
+        title={t('alerts.title')}
+        titleHidden={none}
+        action={
+          unreadCount > 0 && (
+            <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">
+              {t('alerts.unreadCount', { count: unreadCount })}
+            </span>
+          )
+        }
+      />
+      <SectionState
+        section={section}
+        isLoading={isLoading}
+        onRetry={onRetry}
+        emptyTitle={t('alerts.empty')}
+        boxClassName="border-0 bg-transparent p-4"
+        skeleton={<div className="h-32 rounded-lg bg-muted animate-pulse" />}
+      >
+        {(rows) => (
+          <>
+            <ul ref={ref} data-testid="alerts-list" className="relative min-h-0 space-y-2 overflow-hidden frame:flex-1">
+              {rows.map((a, index) => (
+                <li
+                  key={a.id ?? index}
+                  hidden={index >= count}
+                  data-testid="alert-row"
+                  className={cn('space-y-1 rounded-lg border p-2.5', a.read ? 'bg-muted/20' : 'border-primary/20 bg-muted/40')}
+                >
+                  <span className="text-xs font-semibold">{a.title}</span>
+                  <p className="text-xs text-muted-foreground">{a.message}</p>
+                  {a.createdAt && (
+                    <p className="text-[10px] text-muted-foreground/60">{formatDate(a.createdAt)}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+            {none && (
+              <p data-testid="alerts-hidden" className="text-xs text-muted-foreground">
+                {t('alerts.hiddenCount', { count: rows.length })}
+              </p>
             )}
-          </div>
-        )
-      }}
-    </SectionState>
+          </>
+        )}
+      </SectionState>
+    </div>
   )
 }

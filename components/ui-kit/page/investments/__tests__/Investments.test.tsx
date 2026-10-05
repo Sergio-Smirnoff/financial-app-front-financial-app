@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QuotePill } from '../QuotePill'
 import { MarketStrip } from '../MarketStrip'
+import { StockBar } from '../StockBar'
 import { PositionForm } from '../PositionForm'
 import { Dropzone } from '../../imports/Dropzone'
 import { NextIntlClientProvider } from 'next-intl'
@@ -36,6 +37,15 @@ describe('QuotePill', () => {
     expect(screen.getByText('−12 pts')).toBeInTheDocument()
   })
 
+  it('formats a fractional point delta with es-AR separators', () => {
+    renderWithIntl(
+      <QuotePill
+        quote={{ code: 'RIESGO_PAIS', label: 'Riesgo país', value: '742', variation: 12.5, unit: 'POINTS', observedAt: NOW }}
+      />
+    )
+    expect(screen.getByText('+12,5 pts')).toBeInTheDocument()
+  })
+
   it('formats percent variation for regular tickers', () => {
     renderWithIntl(
       <QuotePill
@@ -49,7 +59,7 @@ describe('QuotePill', () => {
         }}
       />
     )
-    expect(screen.getByText(/2,5 %/)).toBeInTheDocument()
+    expect(screen.getByText('+2,50 %')).toBeInTheDocument()
   })
 })
 
@@ -73,6 +83,22 @@ describe('MarketStrip', () => {
   })
 })
 
+describe('StockBar', () => {
+  it('reads the quantity and cost line from the catalogue', () => {
+    renderWithIntl(
+      <StockBar
+        ticker="GGAL"
+        name="Grupo Financiero Galicia"
+        quantity={1500}
+        avgPrice={{ amount: '4200', currency: 'ARS', secondary: null }}
+        currentValue={{ amount: '4850', currency: 'ARS', secondary: null }}
+        pnlPct={15.48}
+      />
+    )
+    expect(screen.getByTestId('stock-bar-summary')).toHaveTextContent(/^1\.500 unidades · Costo: \$\s4\.200,00$/)
+  })
+})
+
 describe('PositionForm', () => {
   it('labels every field and the add-mode form', () => {
     renderWithIntl(<PositionForm mode="add" onCancel={vi.fn()} />)
@@ -88,5 +114,34 @@ describe('PositionForm', () => {
     renderWithIntl(<PositionForm mode="edit" />)
     expect(screen.getByRole('form', { name: 'Editar posición' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Guardar' })).toBeInTheDocument()
+  })
+
+  it('submits the decimals normalised as exact strings', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderWithIntl(<PositionForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText('Ticker'), 'ggal')
+    await user.type(screen.getByLabelText('Cantidad'), '1,50')
+    await user.type(screen.getByLabelText('Precio de compra'), '4850')
+    await user.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    expect(onSubmit).toHaveBeenCalledWith({ ticker: 'GGAL', quantity: '1.5', purchasePrice: '4850', currency: 'ARS' })
+  })
+
+  it('flags an exponent quantity on the field and submits nothing', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    renderWithIntl(<PositionForm onSubmit={onSubmit} />)
+
+    await user.type(screen.getByLabelText('Ticker'), 'GGAL')
+    await user.type(screen.getByLabelText('Cantidad'), '1e-7')
+    await user.type(screen.getByLabelText('Precio de compra'), '4850')
+    await user.click(screen.getByRole('button', { name: 'Agregar' }))
+
+    const quantity = screen.getByLabelText('Cantidad')
+    expect(quantity).toHaveAttribute('aria-invalid', 'true')
+    expect(quantity).toHaveAccessibleDescription('Ingresá un número válido (ej: 1,5).')
+    expect(onSubmit).not.toHaveBeenCalled()
   })
 })

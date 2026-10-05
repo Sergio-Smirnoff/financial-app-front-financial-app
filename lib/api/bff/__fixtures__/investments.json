@@ -49,6 +49,7 @@
           "currency": "ARS",
           "secondary": null
         },
+        "assetType": "CEDEAR",
         "bankNumber": "017",
         "holdingId": 2,
         "marketValue": {
@@ -77,6 +78,7 @@
           "currency": "ARS",
           "secondary": null
         },
+        "assetType": "STOCK",
         "bankNumber": "017",
         "holdingId": 1,
         "marketValue": {

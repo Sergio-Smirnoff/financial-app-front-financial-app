@@ -1,51 +1,59 @@
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
+import { cn } from '@/lib/utils'
+import { useElementSize } from './useElementSize'
 
-export interface ChartFrameProps {
-  width?: number
-  height?: number
-  ariaLabel: string
-  dataTable?: Array<{ label: string; value: string | number }>
-  children: ReactNode
-  className?: string
+export interface ChartSize {
+  width: number
+  height: number
 }
 
-export function ChartFrame({
-  width = 640,
-  height = 240,
-  ariaLabel,
-  dataTable,
-  children,
-  className = ''
-}: ChartFrameProps) {
+export interface ChartFrameProps {
+  ariaLabel: string
+  dataTable?: Array<{ label: string; value: string | number }>
+  className?: string
+  minHeight?: number
+  children: (size: ChartSize) => ReactNode
+}
+
+export function ChartFrame({ ariaLabel, dataTable, className, minHeight = 160, children }: ChartFrameProps) {
+  const t = useTranslations('common.chart')
+  const [ref, measured] = useElementSize<HTMLDivElement>()
+  const size: ChartSize = { width: measured.width, height: Math.max(measured.height, minHeight) }
+  const ready = size.width > 0
+
   return (
-    <div className={`relative w-full ${className}`}>
+    <div ref={ref} data-chart-frame className={cn('relative h-full w-full', className)} style={{ minHeight }}>
       <svg
         role="img"
         aria-label={ariaLabel}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
-        className="w-full h-auto overflow-visible select-none"
+        width={size.width}
+        height={size.height}
+        viewBox={ready ? `0 0 ${size.width} ${size.height}` : undefined}
+        className="absolute left-0 top-0 overflow-visible select-none"
       >
-        {children}
+        {ready && children(size)}
       </svg>
       {dataTable && dataTable.length > 0 && (
-        <table className="sr-only">
-          <caption>{ariaLabel}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Etiqueta / Fecha</th>
-              <th scope="col">Valor</th>
-            </tr>
-          </thead>
-          <tbody>
-            {dataTable.map((item, idx) => (
-              <tr key={idx}>
-                <td>{item.label}</td>
-                <td>{item.value}</td>
+        <div className="sr-only">
+          <table>
+            <caption>{ariaLabel}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t('label')}</th>
+                <th scope="col">{t('value')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {dataTable.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.label}</td>
+                  <td>{item.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )

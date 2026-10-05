@@ -3,7 +3,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import { Money } from '@/components/ui-kit/money/Money'
+import { FitAmount } from '@/components/ui-kit/money/FitAmount'
 import { DeltaBadge } from '@/components/ui-kit/money/DeltaBadge'
 import { AreaChart } from '@/components/charts/AreaChart'
 import type { OverviewBff, Section } from '@/lib/api/bff/types'
@@ -24,7 +24,7 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
       section={section}
       isLoading={isLoading}
       onRetry={onRetry}
-      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
+      skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse frame:h-full" />}
     >
       {(data) => {
         const series = data.series ?? []
@@ -35,14 +35,16 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
         }))
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-6 space-y-4">
+          <div className="elev-sm flex h-full min-h-0 flex-col gap-4 rounded-xl border bg-card p-6 short:gap-2 short:p-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="kicker">{t('netWorthKicker')}</span>
-                <div className="flex items-baseline gap-3 mt-1">
-                  {latestPoint && <Money value={latestPoint.value} className="text-3xl font-bold" />}
+                <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  {latestPoint && <FitAmount value={latestPoint.value} className="min-w-0 flex-[1_1_12rem] text-3xl font-bold short:text-2xl" />}
                   {data.delta?.pct != null && (
-                    <DeltaBadge pct={data.delta.pct} absolute={data.delta.amount} />
+                    <span className="shrink-0">
+                      <DeltaBadge pct={data.delta.pct} absolute={data.delta.amount} />
+                    </span>
                   )}
                 </div>
               </div>
@@ -54,11 +56,12 @@ export function NetWorthHero({ section, isLoading, onRetry }: NetWorthHeroProps)
             </div>
 
             {chartPoints.length > 0 && (
-              <div className="pt-2">
+              <div className="h-56 min-h-0 frame:h-auto frame:flex-1">
                 <AreaChart
                   series={chartPoints}
                   currency={latestPoint?.value?.currency || 'ARS'}
                   ariaLabel={t('netWorthAria')}
+                  minHeight={96}
                 />
               </div>
             )}

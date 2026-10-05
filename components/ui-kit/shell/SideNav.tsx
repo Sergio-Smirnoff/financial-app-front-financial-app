@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -10,9 +11,12 @@ import {
   Upload,
   Settings,
   X,
+  ChevronLeft,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
+import { BRAND_NAME } from '@/lib/brand'
+import { cn } from '@/lib/utils'
 import { useUiStore } from '@/lib/store/ui.store'
 import { SideNavItem } from './SideNavItem'
 
@@ -36,16 +40,36 @@ export function SideNav({ pathname: pathnameProp }: SideNavProps) {
   const tCommon = useTranslations('common')
   const routePathname = usePathname()
   const pathname = pathnameProp ?? routePathname
+  const collapsed = useUiStore((s) => s.sidebarCollapsed)
+  const toggleCollapsed = useUiStore((s) => s.toggleSidebarCollapsed)
+
+  useEffect(() => {
+    void useUiStore.persist.rehydrate()
+  }, [])
+
+  const toggleLabel = collapsed ? tCommon('expandMenu') : tCommon('collapseMenu')
 
   return (
     <aside
       data-slot="rail"
-      className="hidden md:flex md:w-60 shrink-0 flex-col border-r bg-sidebar"
+      data-collapsed={collapsed}
+      className={cn(
+        'hidden shrink-0 flex-col border-r bg-sidebar transition-[width] duration-180 ease-out motion-reduce:transition-none md:flex',
+        collapsed ? 'md:w-16' : 'md:w-[clamp(176px,11vw,240px)]',
+      )}
     >
-      <div className="flex h-14 items-center border-b px-4">
-        <span className="font-semibold text-sidebar-foreground">FinanceApp</span>
+      <div className={cn('flex h-14 items-center border-b', collapsed ? 'justify-center px-2' : 'px-4')}>
+        <span className="flex min-w-0 items-center gap-2 font-semibold text-sidebar-foreground" title={BRAND_NAME}>
+          <span
+            aria-hidden="true"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-md bg-sidebar-primary text-sm text-sidebar-primary-foreground"
+          >
+            $
+          </span>
+          <span className={cn('truncate', collapsed && 'sr-only')}>{BRAND_NAME}</span>
+        </span>
       </div>
-      <nav className="flex-1 space-y-1 p-3" aria-label={tCommon('mainNavigation')}>
+      <nav className={cn('flex-1 space-y-1', collapsed ? 'p-2' : 'p-3')} aria-label={tCommon('mainNavigation')}>
         {NAV_ROUTES.map((item) => (
           <SideNavItem
             key={item.href}
@@ -53,9 +77,30 @@ export function SideNav({ pathname: pathnameProp }: SideNavProps) {
             label={t(item.key)}
             icon={item.icon}
             pathname={pathname}
+            collapsed={collapsed}
           />
         ))}
       </nav>
+      <div className={cn('border-t', collapsed ? 'p-2' : 'p-3')}>
+        <button
+          type="button"
+          data-testid="rail-toggle"
+          onClick={toggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={toggleLabel}
+          title={toggleLabel}
+          className={cn(
+            'flex w-full items-center gap-3 rounded-md py-2 text-xs text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+            collapsed ? 'justify-center px-0' : 'px-3',
+          )}
+        >
+          <ChevronLeft
+            aria-hidden="true"
+            className={cn('h-4 w-4 shrink-0 transition-transform duration-180 motion-reduce:transition-none', collapsed && 'rotate-180')}
+          />
+          {!collapsed && <span className="min-w-0 truncate">{toggleLabel}</span>}
+        </button>
+      </div>
     </aside>
   )
 }
@@ -65,7 +110,8 @@ export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
   const tCommon = useTranslations('common')
   const routePathname = usePathname()
   const pathname = pathnameProp ?? routePathname
-  const { sidebarOpen, setSidebarOpen } = useUiStore()
+  const sidebarOpen = useUiStore((s) => s.sidebarOpen)
+  const setSidebarOpen = useUiStore((s) => s.setSidebarOpen)
 
   if (!sidebarOpen) return null
 
@@ -78,7 +124,7 @@ export function MobileSideNav({ pathname: pathnameProp }: SideNavProps) {
       />
       <aside className="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r bg-sidebar md:hidden">
         <div className="flex h-14 items-center justify-between border-b px-4">
-          <span className="font-semibold text-sidebar-foreground">FinanceApp</span>
+          <span className="font-semibold text-sidebar-foreground">{BRAND_NAME}</span>
           <Button
             variant="ghost"
             size="icon"

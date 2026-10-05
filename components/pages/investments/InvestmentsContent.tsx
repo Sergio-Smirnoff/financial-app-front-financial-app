@@ -1,27 +1,32 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useQueryState } from 'nuqs'
+import React, { useEffect } from 'react'
+import { parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useTranslations } from 'next-intl'
 import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
-import { KpiStrip, KpiTile, SplitLayout, RailSection } from '@/components/ui-kit/layout/KpiStrip'
+import { EVOLUTION_RANGES } from '@/lib/api/bff/investments'
+import { KpiStrip, KpiTile } from '@/components/ui-kit/layout/KpiStrip'
+import { PageFrameFill } from '@/components/ui-kit/layout/PageFrame'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { MarketStrip } from '@/components/ui-kit/page/investments/MarketStrip'
-import { Money } from '@/components/ui-kit/money/Money'
-import { Button } from '@/components/ui/button'
+import { FitAmount, FitText } from '@/components/ui-kit/money/FitAmount'
+import { formatPercent } from '@/lib/format'
+import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
 import { PortfolioTab } from './PortfolioTab'
 import { OperationsTab } from './OperationsTab'
 import { MarketsTab } from './MarketsTab'
-import { EvolutionCard } from './EvolutionCard'
-import { AlertsRail } from './AlertsRail'
-import { RecordHoldingDialog } from './RecordHoldingDialog'
-import { FreshnessStamp } from '@/components/ui-kit/data/FreshnessStamp'
-import type { BffQuery, InvestmentsBff, Section } from '@/lib/api/bff/types'
+import { ResumenTab } from './ResumenTab'
+import { resolveInvestmentsTab } from './tabs'
+import { TONE_TEXT, toneOf } from './portfolioView'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
+import type { BffQuery, InvestmentsBff } from '@/lib/api/bff/types'
 import type { components } from '@/lib/api/bff/schema'
-import { Plus } from 'lucide-react'
 
 type MarketQuote = components['schemas']['MarketQuoteResponse']
+
+const PANEL = 'm-0 min-h-0 focus-visible:outline-none'
+const TAB = 'max-md:min-w-0 max-md:px-1 max-md:text-xs'
 
 export interface InvestmentsContentProps {
   query?: BffQuery
@@ -30,41 +35,37 @@ export interface InvestmentsContentProps {
 
 export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none' } }: InvestmentsContentProps) {
   const t = useTranslations('investments')
-  const tc = useTranslations('common')
-  const [tab, setTab] = useQueryState('tab', { defaultValue: 'portfolio' })
+  const [rawTab, setTab] = useQueryState('tab')
+  const [range, setRange] = useQueryState('range', parseAsStringLiteral(EVOLUTION_RANGES).withDefault('1M'))
   const [addTicker, setAddTicker] = useQueryState('add')
-  const [createOpen, setCreateOpen] = useState(false)
+  const tab = resolveInvestmentsTab(rawTab)
+  const openCreate = useHoldingDraftStore((s) => s.openCreate)
 
-  const { data, isLoading, refetch } = useInvestmentsPage(query)
+  useEffect(() => {
+    if (!addTicker) return
+    openCreate({ ticker: addTicker.toUpperCase() })
+    void setTab('cartera')
+    void setAddTicker(null)
+  }, [addTicker, openCreate, setTab, setAddTicker])
 
-  const marketStrip = data?.marketStrip as Section<any[]> | undefined
-  const kpis = data?.kpis as Section<any> | undefined
-  const evolution = data?.evolution as Section<any[]> | undefined
-  const positions = data?.positions as Section<any[]> | undefined
-  const composition = data?.composition as Section<any[]> | undefined
-  const recentOperations = data?.recentOperations as Section<any[]> | undefined
-  const alerts = data?.alerts as Section<any[]> | undefined
+  const { data, isLoading, refetch } = useInvestmentsPage({ ...query, range })
 
-  const isCreateDialogOpen = createOpen || !!addTicker
+  const marketStrip = data?.marketStrip
+  const kpis = data?.kpis
+  const evolution = data?.evolution
+  const positions = data?.positions
+  const composition = data?.composition
+  const recentOperations = data?.recentOperations
+  const alerts = data?.alerts
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+    <>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 short:gap-2">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight short:text-xl">{t('title')}</h1>
+          <p className="text-sm text-muted-foreground short:hidden">{t('subtitle')}</p>
         </div>
-        <div className="flex items-center gap-3">
-          {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
-          <Button
-            size="sm"
-            onClick={() => setCreateOpen(true)}
-            className="font-bold flex items-center gap-1.5 shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            {t('holdings.new')}
-          </Button>
-        </div>
+        {kpis?.observedAt && <FreshnessStamp observedAt={kpis.observedAt} />}
       </div>
 
       {marketStrip?.status !== 'UNAVAILABLE' && (
@@ -102,88 +103,77 @@ export function InvestmentsContent({ query = { currency: 'ARS', secondary: 'none
           <KpiStrip>
             <KpiTile
               label={t('tabs.kpiMarketValue')}
-              value={<span data-testid="inv-kpi-market-value">{kpisData?.marketValue && <Money value={kpisData.marketValue} />}</span>}
+              value={<div data-testid="inv-kpi-market-value"><FitAmount value={kpisData?.marketValue} /></div>}
             />
             <KpiTile
               label={t('totalInvested')}
-              value={<span data-testid="inv-kpi-cost">{kpisData?.cost && <Money value={kpisData.cost} />}</span>}
+              value={<div data-testid="inv-kpi-cost"><FitAmount value={kpisData?.cost} /></div>}
             />
             <KpiTile
               label={t('totalPnl')}
-              value={<span data-testid="inv-kpi-pnl">{kpisData?.pnl && <Money value={kpisData.pnl} />}</span>}
+              value={<div data-testid="inv-kpi-pnl"><FitAmount value={kpisData?.pnl} /></div>}
             />
             <KpiTile
               label={t('tabs.kpiPerformance')}
               value={
-                <span data-testid="inv-kpi-pnl-pct" className={kpisData?.pnlPct != null && kpisData.pnlPct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
-                  {kpisData?.pnlPct != null ? `${kpisData.pnlPct >= 0 ? '+' : ''}${kpisData.pnlPct.toFixed(2)}%` : '—'}
-                </span>
+                <div data-testid="inv-kpi-pnl-pct">
+                  <FitText
+                    text={kpisData?.pnlPct != null ? formatPercent(kpisData.pnlPct) : '—'}
+                    className={TONE_TEXT[toneOf(kpisData?.pnlPct)]}
+                  />
+                </div>
               }
             />
           </KpiStrip>
         )}
       </SectionState>
 
-      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="portfolio">{t('portfolio')}</TabsTrigger>
-          <TabsTrigger value="markets">{t('tabs.markets')}</TabsTrigger>
-          <TabsTrigger value="operations">{t('tabs.operations')}</TabsTrigger>
-        </TabsList>
+      <PageFrameFill className="flex flex-col">
+        <Tabs value={tab} onValueChange={(value) => void setTab(value)} className="flex-1 min-h-0 gap-3">
+          <TabsList className="max-md:w-full">
+            <TabsTrigger value="resumen" className={TAB}>{t('tabs.summary')}</TabsTrigger>
+            <TabsTrigger value="cartera" className={TAB}>{t('portfolio')}</TabsTrigger>
+            <TabsTrigger value="mercados" className={TAB}>{t('tabs.markets')}</TabsTrigger>
+            <TabsTrigger value="operaciones" className={TAB}>{t('tabs.operations')}</TabsTrigger>
+          </TabsList>
 
-        <SplitLayout
-          main={
-            <div className="space-y-6">
-              <TabsContent value="portfolio" className="m-0 focus-visible:outline-none space-y-6">
-                <PortfolioTab
-                  positionsSection={positions}
-                  compositionSection={composition}
-                  isLoading={isLoading}
-                  onRetry={refetch}
-                  onOpenCreate={() => setCreateOpen(true)}
-                />
-                <EvolutionCard
-                  section={evolution}
-                  isLoading={isLoading}
-                  onRetry={refetch}
-                />
-              </TabsContent>
+          <TabsContent value="resumen" className={PANEL}>
+            <ResumenTab
+              composition={composition}
+              kpis={kpis?.data}
+              evolution={evolution}
+              alerts={alerts}
+              range={range}
+              onRangeChange={(next) => void setRange(next)}
+              isLoading={isLoading}
+              onRetry={refetch}
+            />
+          </TabsContent>
 
-              <TabsContent value="markets" className="m-0 focus-visible:outline-none space-y-6">
-                <MarketsTab initialTicker={addTicker ?? undefined} />
-              </TabsContent>
+          <TabsContent value="cartera" className={PANEL}>
+            <PortfolioTab
+              positionsSection={positions}
+              compositionSection={composition}
+              kpis={kpis?.data}
+              isLoading={isLoading}
+              onRetry={refetch}
+            />
+          </TabsContent>
 
-              <TabsContent value="operations" className="m-0 focus-visible:outline-none">
-                <OperationsTab
-                  section={recentOperations}
-                  isLoading={isLoading}
-                  onRetry={refetch}
-                />
-              </TabsContent>
-            </div>
-          }
-          rail={
-            <div className="space-y-6">
-              <RailSection title={tc('notifications')}>
-                <AlertsRail
-                  section={alerts}
-                  isLoading={isLoading}
-                  onRetry={refetch}
-                />
-              </RailSection>
-            </div>
-          }
-        />
-      </Tabs>
+          <TabsContent value="mercados" className={PANEL}>
+            <MarketsTab
+              onBuy={(prefill) => {
+                openCreate(prefill)
+                void setTab('cartera')
+              }}
+            />
+          </TabsContent>
 
-      <RecordHoldingDialog
-        open={isCreateDialogOpen}
-        onOpenChange={(open) => {
-          setCreateOpen(open)
-          if (!open) setAddTicker(null)
-        }}
-        initialTicker={addTicker ?? undefined}
-      />
-    </div>
+          <TabsContent value="operaciones" className={PANEL}>
+            <OperationsTab section={recentOperations} isLoading={isLoading} onRetry={refetch} />
+          </TabsContent>
+        </Tabs>
+      </PageFrameFill>
+    </>
   )
 }
