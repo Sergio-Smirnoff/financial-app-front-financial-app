@@ -1,4 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page, type Response } from '@playwright/test'
+import esAR from '../messages/es-AR.json'
 import { loginAsDemo } from './fixtures/live'
 
 interface View {
@@ -222,6 +223,7 @@ for (const size of CARTERA_SIZES) {
         await openView(page, view('cartera'))
         await expect(page.locator('[data-slot="rail"]')).toHaveAttribute('data-collapsed', String(collapsed))
         await expect(page.getByTestId('cartera-table').locator('thead th')).toHaveCount(grouped ? 11 : 12)
+        await expect(page.getByTestId('position-row').first(), `${combo}: no positions to measure`).toBeVisible()
         const [scrollWidth, clientWidth] = await page.getByTestId('positions-scroll').evaluate((el) => [el.scrollWidth, el.clientWidth])
         expect(scrollWidth, `${combo}: Cartera scrolls sideways`).toBeLessThanOrEqual(clientWidth)
         const m = await measure(page)
@@ -231,17 +233,75 @@ for (const size of CARTERA_SIZES) {
   })
 }
 
+const isShort = (size: Viewport) => size.height < 760
+
+interface FitList {
+  view: string
+  list: string
+  hiddenAt?: (size: Viewport) => boolean
+  reason?: string
+  isEmpty?: (seen: { page: Page; discovery: Promise<Response> | null }) => Promise<boolean>
+}
+
+const FIT_LISTS: readonly FitList[] = [
+  {
+    view: 'overview',
+    list: 'latest-list',
+    hiddenAt: isShort,
+    reason: 'the short layout drops the rail latest card by design (mockup v10 .short .rail-full); overview-latest-link stands in',
+  },
+  { view: 'overview', list: 'upcoming-list' },
+  {
+    view: 'overview',
+    list: 'spend-list',
+    hiddenAt: isShort,
+    reason: 'the short layout drops the rail spend card by design (mockup v10 .short .rail-full)',
+  },
+  {
+    view: 'resumen',
+    list: 'alerts-list',
+    reason: 'no list when the user has no threshold alerts; the card shows its empty state instead',
+    isEmpty: ({ page }) => page.getByTestId('alerts-card').getByText(esAR.investments.alerts.empty).isVisible(),
+  },
+  {
+    view: 'mercados',
+    list: 'discovery-list',
+    reason: 'the discovery card renders nothing when the market feed returns no opportunities',
+    isEmpty: async ({ discovery }) => ((await (await discovery!).json()).data?.opportunities ?? []).length === 0,
+  },
+]
+
+const FIT_LIST_VIEWS = [...new Set(FIT_LISTS.map((rule) => rule.view))]
+
 test('fit lists render only whole rows on every framed size', async ({ page }) => {
   for (const size of FRAMED) {
     await page.setViewportSize({ width: size.width, height: size.height })
-    for (const [name, list] of [['overview', 'latest-list'], ['resumen', 'alerts-list'], ['mercados', 'discovery-list']] as const) {
+    const at = `${size.width}×${size.height}`
+    const missing: string[] = []
+    for (const name of FIT_LIST_VIEWS) {
+      const discovery = name === 'mercados' ? page.waitForResponse((r) => r.url().includes('/market/discovery')) : null
       await openView(page, view(name))
-      const locator = page.getByTestId(list)
-      if ((await locator.count()) === 0 || !(await locator.isVisible())) continue
-      expect(await rowsOutside(page, list), `${list} at ${size.width}×${size.height}: a row is cut`).toBe(0)
-      const [scrollHeight, clientHeight] = await locator.evaluate((el) => [el.scrollHeight, el.clientHeight])
-      expect(scrollHeight, `${list} at ${size.width}×${size.height}: scrolls`).toBeLessThanOrEqual(clientHeight)
+      for (const rule of FIT_LISTS.filter((r) => r.view === name)) {
+        const locator = page.getByTestId(rule.list)
+        if (rule.hiddenAt?.(size)) {
+          await expect(locator, `${rule.list} at ${at} should be hidden: ${rule.reason}`).toBeHidden()
+          continue
+        }
+        if (rule.isEmpty && (await rule.isEmpty({ page, discovery }))) {
+          expect(await locator.count(), `${rule.list} at ${at} renders despite no data`).toBe(0)
+          continue
+        }
+        const shown = await locator.waitFor({ state: 'visible', timeout: 5000 }).then(() => true, () => false)
+        if (!shown) {
+          missing.push(rule.list)
+          continue
+        }
+        expect(await rowsOutside(page, rule.list), `${rule.list} at ${at}: a row is cut`).toBe(0)
+        const [scrollHeight, clientHeight] = await locator.evaluate((el) => [el.scrollHeight, el.clientHeight])
+        expect(scrollHeight, `${rule.list} at ${at}: scrolls`).toBeLessThanOrEqual(clientHeight)
+      }
     }
+    expect(missing, `fit lists missing at ${at}: ${missing.join(', ')}`).toEqual([])
   }
 })
 
