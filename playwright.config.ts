@@ -10,12 +10,12 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      testIgnore: /live-smoke\.spec\.ts/,
+      testIgnore: /(live-smoke|one-screen)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {
       name: 'live',
-      testMatch: /live-smoke\.spec\.ts/,
+      testMatch: /(live-smoke|one-screen)\.spec\.ts/,
       use: { baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000' },
     },
   ],

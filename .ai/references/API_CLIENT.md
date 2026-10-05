@@ -84,7 +84,7 @@ BFF types in `lib/api/bff/schema.d.ts` are generated mechanically from `ms-gatew
 | `transactions.ts` | Transaction history, summary, record/update/delete |
 | `categories.ts` | Category & subcategory CRUD, archive/restore |
 | `loans.ts` | Loans list, originate, pay installment |
-| `investments.ts` | Holdings, portfolio summary/evolution, prices |
+| `investments.ts` | Holdings (each keeps the API's decimal string as `exactQuantity` next to the numeric `quantity`), sell (`quantity` is a decimal string; a full sale sends `exactQuantity` untouched), portfolio summary/evolution, prices |
 | `notifications.ts` | Notifications list, unread count, mark read, preferences |
 | `import.ts` | Statement upload preview, confirm, history, undo |
 | `cards.ts` | Cards list, issue, billing cycle, pay installment |

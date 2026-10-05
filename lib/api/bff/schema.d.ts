@@ -340,6 +340,17 @@ export interface components {
             status?: number;
             title?: string;
         };
+        AssetTypeSliceResponse: {
+            amount?: components["schemas"]["MoneyView"];
+            assetType?: string;
+            cost?: components["schemas"]["MoneyView"];
+            /** Format: int32 */
+            count?: number;
+            label?: string;
+            pct?: number;
+            pnl?: components["schemas"]["MoneyView"];
+            pnlPct?: number;
+        };
         AvailableCurrenciesResponse: {
             available?: string[];
             default?: string;
@@ -512,7 +523,7 @@ export interface components {
         };
         InvestmentsBffResponse: {
             alerts?: components["schemas"]["SectionResponseListAlertRowResponse"];
-            composition?: components["schemas"]["SectionResponseListCompositionSliceResponse"];
+            composition?: components["schemas"]["SectionResponseListAssetTypeSliceResponse"];
             evolution?: components["schemas"]["SectionResponseListEvolutionPointResponse"];
             kpis?: components["schemas"]["SectionResponseInvestmentsKpisResponse"];
             marketStrip?: components["schemas"]["SectionResponseListMarketQuoteResponse"];
@@ -630,6 +641,7 @@ export interface components {
             income: components["schemas"]["MoneyView"];
         };
         PositionRowResponse: {
+            assetType?: string;
             avgCost?: components["schemas"]["MoneyView"];
             bankNumber?: string;
             /** Format: int64 */
@@ -732,6 +744,12 @@ export interface components {
         };
         SectionResponseListAlertRowResponse: {
             data?: components["schemas"]["AlertRowResponse"][];
+            /** Format: date-time */
+            observedAt: string;
+            status: string;
+        };
+        SectionResponseListAssetTypeSliceResponse: {
+            data?: components["schemas"]["AssetTypeSliceResponse"][];
             /** Format: date-time */
             observedAt: string;
             status: string;
@@ -1131,6 +1149,7 @@ export interface operations {
             query?: {
                 currency?: string;
                 secondary?: string;
+                range?: string;
             };
             header: {
                 "X-User-Id": number;

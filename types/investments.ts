@@ -9,10 +9,14 @@ export interface Holding {
   name: string
   assetType: AssetType
   quantity: number
+  exactQuantity?: string
   avgPurchasePrice: number
+  exactAvgPurchasePrice?: string
   currency: string
   notifyGainThresholdPct: number | null
   notifyLossThresholdPct: number | null
+  exactNotifyGainThresholdPct?: string | null
+  exactNotifyLossThresholdPct?: string | null
   createdAt: string
   updatedAt: string
 }
@@ -81,14 +85,30 @@ export interface CreateHoldingRequest {
   ticker: string
   name: string
   assetType: AssetType
-  quantity: number
-  avgPurchasePrice: number
+  quantity: string
+  avgPurchasePrice: string
   currency: string
-  notifyGainThresholdPct?: number | null
-  notifyLossThresholdPct?: number | null
+  notifyGainThresholdPct?: string | null
+  notifyLossThresholdPct?: string | null
 }
 
 export type UpdateHoldingRequest = CreateHoldingRequest
+
+export interface SellHoldingRequest {
+  quantity: string
+  price: string | null
+  destinationCbu: string | null
+}
+
+export interface HoldingSale {
+  holdingId: number
+  soldQuantity: string
+  remainingQuantity: string
+  proceeds: string
+  bookedAmount: string
+  currency: string
+  closed: boolean
+}
 
 export interface TickerSearchResult {
   ticker: string

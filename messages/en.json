@@ -73,6 +73,8 @@
     "mainNavigation": "Main navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
+    "collapseMenu": "Collapse menu",
+    "expandMenu": "Expand menu",
     "logout": "Log out",
     "notifications": "Notifications",
     "unreadNotifications": "{count, plural, one {# unread notification} other {# unread notifications}}",
@@ -80,7 +82,14 @@
     "noNotifications": "No notifications",
     "unread": "Unread",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "chart": {
+      "label": "Label / Date",
+      "value": "Value",
+      "notEnoughData": "Not enough data",
+      "composition": "Composition"
+    },
+    "points": "{value} pts"
   },
   "sections": {
     "unavailable": "We couldn't load this section",
@@ -121,17 +130,16 @@
     "railTitle": "Activity & Alerts",
     "upcomingTitle": "Upcoming Payments",
     "upcomingEmpty": "No upcoming payments.",
+    "upcomingMore": "See all →",
     "spendTitle": "Spending by Category",
     "spendEmpty": "No expenses recorded this month.",
+    "spendMore": "See categories →",
     "latestTitle": "Latest Transactions",
     "latest": {
       "caption": "Latest transactions",
       "seeAll": "See all →",
-      "date": "Date",
-      "description": "Description",
-      "category": "Category",
+      "more": "See latest transactions →",
       "uncategorised": "Uncategorized",
-      "amount": "Amount",
       "emptyAction": "Record transaction"
     }
   },
@@ -331,9 +339,49 @@
     "shared": {
       "totalValue": "Total value"
     },
+    "groups": {
+      "BOND": "Bonds",
+      "CEDEAR": "CEDEARs",
+      "STOCK": "Stocks",
+      "FCI": "Mutual Funds (FCI)",
+      "OTHER": "Other"
+    },
+    "cartera": {
+      "filterPlaceholder": "Filter by ticker or name",
+      "filterLabel": "Filter holdings",
+      "view": "View",
+      "groupByType": "Group by type",
+      "columns": "Columns",
+      "reset": "Reset view",
+      "colType": "Type",
+      "colBank": "Bank",
+      "typeFilter": "Filter by type",
+      "showing": "Showing {shown} of {total} holdings",
+      "subtotalsNote": "Group subtotals cover the whole type",
+      "noMatch": "No holding matches the filter.",
+      "phoneColumnsNote": "On a phone the table shows only the ticker; tap it to see the details.",
+      "sellAria": "Sell {ticker}",
+      "editAria": "Edit {ticker}",
+      "holdingsUnavailable": "We couldn't load your holdings, so you can't edit or sell them yet."
+    },
+    "composition": {
+      "heading": "Composition",
+      "positionsCount": "{count, plural, one {# position} other {# positions}}",
+      "donutAria": "Portfolio composition by asset type",
+      "centerLabel": "TOTAL",
+      "colType": "Type",
+      "colCount": "#",
+      "colShare": "%",
+      "colAmount": "Amount",
+      "colPnl": "P&L $",
+      "colPnlPct": "P&L %",
+      "total": "Total",
+      "empty": "No positions to compose yet."
+    },
     "tabs": {
       "markets": "Markets",
       "operations": "Operations",
+      "summary": "Summary",
       "kpiMarketValue": "Market value",
       "kpiPerformance": "Return",
       "positionsHeading": "Portfolio positions",
@@ -343,22 +391,32 @@
       "colName": "Name",
       "colAvgCost": "Avg. cost",
       "colPrice": "Price",
-      "compositionHeading": "Breakdown by asset type"
+      "colShare": "% of portfolio",
+      "colPnlAmount": "P&L $",
+      "colPnlPct": "P&L %"
     },
     "market": {
       "evolutionHeading": "Portfolio evolution",
       "evolutionEmpty": "No evolution data available.",
       "evolutionAria": "Portfolio value and accumulated cost evolution",
-      "alertsTitle": "Market alerts",
       "discoveryTitle": "Market Trends",
       "searchPlaceholder": "Search a ticker to research (e.g. GGAL, AL30, AAPL)...",
       "noSearchResults": "No matching tickers found.",
       "addHoldingFor": "Buy {ticker}",
+      "buyShort": "Buy {ticker}",
       "seriesError": "Could not load quote data.",
       "priceChartAria": "Price chart for {ticker}",
       "ranges": {
-        "all": "ALL"
-      }
+        "all": "ALL",
+        "D30": "30D",
+        "D90": "90D",
+        "Y1": "1Y",
+        "1M": "1M",
+        "3M": "3M",
+        "1A": "1Y"
+      },
+      "rangeAria": "Evolution period",
+      "priceRangeAria": "Price period"
     },
     "operations": {
       "heading": "Latest operations",
@@ -370,8 +428,10 @@
       "colAmount": "Amount"
     },
     "alerts": {
+      "title": "Notifications",
       "unreadCount": "{count} unread",
-      "empty": "No active alerts."
+      "empty": "No notifications.",
+      "hiddenCount": "{count, plural, one {# more notification in the bell} other {# more notifications in the bell}}"
     },
     "holdings": {
       "new": "Record investment",
@@ -380,16 +440,59 @@
       "creating": "Recording...",
       "toastCreated": "Investment recorded successfully",
       "toastCreateFailed": "Failed to record investment",
+      "editAction": "Edit",
+      "editTitle": "Edit investment",
+      "editDescription": "Correct the holding's details. Saving moves no money between your accounts.",
+      "saveChanges": "Save changes",
+      "saving": "Saving...",
+      "toastUpdated": "Investment updated",
+      "toastUpdateFailed": "Failed to update investment",
+      "bondNote": "Bonds: quantity is in nominal value (VN) and the price is per 1 VN. The market quotes per 100 VN (80,216 per 100 VN = 802.16 per VN).",
+      "tickerChangeNote": "Until the next price refresh, {ticker} is shown at its average cost.",
+      "loadingHolding": "Loading the holding...",
+      "notFound": "We couldn't find that holding.",
+      "loadFailed": "We couldn't load your holdings.",
       "sellAction": "Sell",
       "buyMore": "Buy more",
       "sellTitle": "Sell position: {ticker}",
       "sellDescription": "Liquidation and crediting to your bank account.",
       "confirmSell": "Confirm sell and liquidate",
       "selling": "Selling...",
-      "toastSold": "Sold {ticker} holding for {amount}",
-      "toastSellFailed": "Failed to liquidate position",
+      "sell": {
+        "quantityLabel": "Quantity to sell",
+        "all": "All",
+        "avgCost": "Average cost",
+        "lastQuote": "Last quote",
+        "lastQuotePerHundred": "Last quote (per 100 VN)",
+        "marketPrice": "Market price",
+        "marketPriceHint": "The last stored quote is used when you confirm.",
+        "marketLocked": "Market",
+        "marketLockedHint": "Turn off “Market price” to enter a different price.",
+        "manualPrice": "Sale price",
+        "manualPricePerHundred": "Sale price (per 100 VN)",
+        "bondNote": "Bonds: the price is per 100 VN, as the market quotes it. The exact amount is calculated when you confirm.",
+        "estimate": "Estimated total (before fees)",
+        "quantityPositive": "Quantity must be greater than zero",
+        "quantityExceeds": "You can't sell more than {max}",
+        "quantityDecimals": "Quantity allows up to {max} decimal places",
+        "pricePositive": "Price must be greater than zero",
+        "priceDecimals": "Price allows up to {max} decimal places",
+        "confirmPartial": "Sell {quantity} and settle",
+        "toastSold": "You sold {quantity} of {ticker}",
+        "toastSoldAll": "You sold your whole {ticker} position",
+        "toastCredited": "{amount} was credited.",
+        "toastFeesTookAll": "No money was credited: broker fees took the whole sale amount.",
+        "toastNoAccount": "No money was credited to any account.",
+        "toastFailed": "We couldn't sell {ticker}",
+        "errors": {
+          "exceedsQuantity": "You no longer hold that much {ticker}. Refresh the page and try again.",
+          "notFound": "This {ticker} position no longer exists. You may have sold it already.",
+          "invalid": "Check the quantity, price and account, then try again.",
+          "financesUnavailable": "The finances service didn't respond and the sale was not completed. Try again in a moment.",
+          "unknown": "Try again in a moment."
+        }
+      },
       "availableQuantity": "Available holding",
-      "liquidationTotal": "Gross liquidation total",
       "destinationAccountLabel": "Destination account to credit funds",
       "destinationAccountHint": "An income transaction will automatically be recorded in your bank account.",
       "selectDestinationAccount": "Select an account",
@@ -406,7 +509,9 @@
       "notificationsSection": "Variation alerts (optional)",
       "gainAlertPct": "Notify if gains exceed (%)",
       "lossAlertPct": "Stop-loss if drops exceed (%)",
-      "noAccountInBank": "You have no {currency} accounts in this bank",
+      "gainAlertPlaceholder": "e.g. 20",
+      "lossAlertPlaceholder": "e.g. 10",
+      "noAccountInCurrency": "You have no {currency} accounts",
       "assetType": {
         "STOCK": "Stock",
         "CEDEAR": "CEDEAR",
@@ -417,13 +522,30 @@
         "bankRequired": "You must select a bank",
         "tickerRequired": "Ticker is required",
         "mustBePositive": "Quantity must be greater than zero",
-        "mustBeZeroOrPositive": "Price must be zero or positive"
+        "mustBeZeroOrPositive": "Price must be zero or positive",
+        "invalidNumber": "Enter a valid number (e.g. 1.5).",
+        "maxDecimals": "Allows up to {max} decimal places",
+        "maxIntegerDigits": "Allows up to {max} whole-number digits"
       },
       "avgPrice": "Average price",
       "currentPrice": "Current price",
       "priceHistoryHeading": "Price history",
       "priceHistoryAria": "Price history for {ticker}",
-      "backToInvestments": "Back to Investments"
+      "backToInvestments": "Back to Investments",
+      "errors": {
+        "alreadyExists": "You already have this investment at this bank. Edit the existing one instead.",
+        "notFound": "This investment no longer exists. You may have sold it already.",
+        "invalid": "Check the details you entered and try again.",
+        "quantityInvalid": "The quantity must be greater than zero.",
+        "currencyMismatch": "The currency doesn't match this investment's currency.",
+        "unsupportedCurrency": "That currency isn't available for investments.",
+        "banksUnavailable": "The banks service didn't respond. Try again in a moment.",
+        "unknown": "Try again in a moment."
+      },
+      "figuresUnavailable": "We couldn't get this position's valuation. Try again in a moment."
+    },
+    "stockBar": {
+      "summary": "{quantity} units · Cost: <cost></cost>"
     }
   },
   "imports": {

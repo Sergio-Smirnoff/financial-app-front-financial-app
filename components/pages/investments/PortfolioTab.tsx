@@ -1,191 +1,319 @@
 'use client'
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { DollarSign, Pencil, Plus, SlidersHorizontal } from 'lucide-react'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
-import { Money } from '@/components/ui-kit/money/Money'
-import { CompositionBar } from '@/components/charts/CompositionBar'
-import { LegendList } from '@/components/charts/LegendList'
 import { Button } from '@/components/ui/button'
-import { formatMoney } from '@/lib/format'
+import { Input } from '@/components/ui/input'
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { useBanks } from '@/lib/hooks/useBanks'
+import { useHoldings } from '@/lib/hooks/useInvestments'
+import { useMediaQuery } from '@/lib/hooks/useMediaQuery'
+import { amountOf } from '@/lib/format'
+import { PHONE_QUERY } from '@/lib/layout/frame'
+import { CARTERA_COLUMNS, PHONE_COLUMNS, useCarteraViewStore } from '@/lib/store/carteraView.store'
+import { useHoldingDraftStore } from '@/lib/store/holdingDraft.store'
+import type { AssetTypeSlice, InvestmentsKpis, PositionRow, Section } from '@/lib/api/bff/types'
+import type { Holding } from '@/types/investments'
 import { SellHoldingDialog, type SellHoldingTarget } from './SellHoldingDialog'
-import type { Section } from '@/lib/api/bff/types'
-import { Plus } from 'lucide-react'
-
-interface PositionRow {
-  holdingId?: number
-  ticker?: string
-  name?: string
-  quantity?: number
-  avgCost?: any
-  price?: any
-  marketValue?: any
-  pnl?: any
-  pnlPct?: number
-  bankNumber?: string
-}
-
-interface CompositionSlice {
-  label?: string
-  amount?: any
-  pct?: number
-}
+import { RecordHoldingDialog } from './RecordHoldingDialog'
+import { CarteraTable, useColumnLabels } from './CarteraTable'
+import { matchesQuery, visibleColumns } from './carteraView'
+import { GROUP_LABEL_KEYS, GROUP_ORDER, groupKeyOf, toggled, type GroupKey } from './portfolioView'
 
 export interface PortfolioTabProps {
   positionsSection?: Section<PositionRow[]>
-  compositionSection?: Section<CompositionSlice[]>
+  compositionSection?: Section<AssetTypeSlice[]>
+  kpis?: InvestmentsKpis | null
   isLoading: boolean
   onRetry?: () => void
-  onOpenCreate?: () => void
+}
+
+function sellTargetFor(row: PositionRow, holding: Holding): SellHoldingTarget {
+  return {
+    id: holding.id,
+    ticker: holding.ticker,
+    name: holding.name,
+    assetType: holding.assetType,
+    quantity: holding.quantity,
+    exactQuantity: holding.exactQuantity,
+    currency: holding.currency,
+    currentPrice: row.price?.currency === holding.currency ? amountOf(row.price) : null,
+    avgPurchasePrice: holding.avgPurchasePrice,
+  }
 }
 
 export function PortfolioTab({
   positionsSection,
   compositionSection,
+  kpis,
   isLoading,
   onRetry,
-  onOpenCreate,
 }: PortfolioTabProps) {
   const t = useTranslations('investments')
   const tc = useTranslations('common')
-  const [sellingHolding, setSellingHolding] = useState<SellHoldingTarget | null>(null)
+  const { data: holdings, isError: holdingsFailed, refetch: refetchHoldings } = useHoldings()
+  const { banks } = useBanks()
+  const columnLabels = useColumnLabels()
+  const isPhone = useMediaQuery(PHONE_QUERY)
+  const [selling, setSelling] = useState<SellHoldingTarget | null>(null)
+  const [query, setQuery] = useState('')
+  const [types, setTypes] = useState<ReadonlySet<GroupKey>>(new Set())
 
-  const slices = compositionSection?.data?.map((a) => ({
-    label: a.label ?? '',
-    amount: a.amount ? formatMoney(a.amount) : '0',
-    pct: a.pct ?? 0,
-  })) ?? []
+  const grouped = useCarteraViewStore((s) => s.grouped)
+  const columns = useCarteraViewStore((s) => s.columns)
+  const sort = useCarteraViewStore((s) => s.sort)
+  const setGrouped = useCarteraViewStore((s) => s.setGrouped)
+  const toggleColumn = useCarteraViewStore((s) => s.toggleColumn)
+  const sortBy = useCarteraViewStore((s) => s.sortBy)
+  const resetView = useCarteraViewStore((s) => s.reset)
+  const draft = useHoldingDraftStore((s) => s.draft)
+  const openCreate = useHoldingDraftStore((s) => s.openCreate)
+  const openEdit = useHoldingDraftStore((s) => s.openEdit)
+  const clearDraft = useHoldingDraftStore((s) => s.clear)
 
-  const parseNum = (val: any): number => {
-    if (val == null) return 0
-    if (typeof val === 'number') return val
-    if (typeof val?.amount === 'string') return parseFloat(val.amount) || 0
-    if (typeof val?.amount === 'number') return val.amount
-    return 0
+  useEffect(() => {
+    void useCarteraViewStore.persist.rehydrate()
+  }, [])
+
+  const shownColumns = visibleColumns(isPhone ? PHONE_COLUMNS : columns, grouped)
+  const holdingsById = useMemo(() => new Map((holdings ?? []).map((h) => [h.id, h])), [holdings])
+  const exactQuantities = useMemo(
+    () => new Map((holdings ?? []).flatMap((h) => (h.exactQuantity ? [[h.id, h.exactQuantity] as const] : []))),
+    [holdings],
+  )
+  const bankNames = useMemo(() => new Map(banks.map((b) => [b.bankNumber, b.name])), [banks])
+  const slices = compositionSection?.status === 'OK' ? compositionSection.data ?? [] : null
+  const actionsUnavailable = holdingsFailed ? t('cartera.holdingsUnavailable') : undefined
+  const actionsDescribedBy = holdingsFailed ? 'holdings-unavailable' : undefined
+
+  const toggleType = (key: GroupKey) => setTypes((prev) => toggled(prev, key))
+
+  const renderActions = (row: PositionRow) => {
+    const holding = row.holdingId != null ? holdingsById.get(row.holdingId) : undefined
+    const edit = () => holding && openEdit(holding.id)
+    const sell = () => holding && setSelling(sellTargetFor(row, holding))
+    if (isPhone) {
+      return (
+        <>
+          <Button
+            size="icon"
+            variant="ghost"
+            disabled={!holding}
+            aria-label={t('cartera.editAria', { ticker: row.ticker ?? '' })}
+            title={actionsUnavailable ?? t('holdings.editAction')}
+            aria-describedby={actionsDescribedBy}
+            className="h-7 w-7"
+            onClick={edit}
+          >
+            <Pencil aria-hidden className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            disabled={!holding}
+            aria-label={t('cartera.sellAria', { ticker: row.ticker ?? '' })}
+            title={actionsUnavailable ?? t('holdings.sellAction')}
+            aria-describedby={actionsDescribedBy}
+            className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={sell}
+          >
+            <DollarSign aria-hidden className="h-4 w-4" />
+          </Button>
+        </>
+      )
+    }
+    return (
+      <>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!holding}
+          title={actionsUnavailable}
+          aria-describedby={actionsDescribedBy}
+          className="h-7 px-1.5 text-xs font-bold"
+          onClick={edit}
+        >
+          {t('holdings.editAction')}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!holding}
+          title={actionsUnavailable}
+          aria-describedby={actionsDescribedBy}
+          className="h-7 px-1.5 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
+          onClick={sell}
+        >
+          {t('holdings.sellAction')}
+        </Button>
+      </>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <SectionState
-        section={positionsSection}
-        isLoading={isLoading}
-        onRetry={onRetry}
-        emptyTitle={t('tabs.positionsEmptyTitle')}
-        emptyDescription={t('tabs.positionsEmptyDescription')}
-        emptyTestId="positions-empty"
-        skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
-      >
-        {(positions) => (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="section-head">{t('tabs.positionsHeading')}</h3>
-              {positions.length > 0 && onOpenCreate && (
-                <Button size="sm" variant="outline" onClick={onOpenCreate} className="h-8 text-xs font-semibold gap-1.5">
-                  <Plus className="w-3.5 h-3.5" />
-                  {t('holdings.new')}
-                </Button>
-              )}
-            </div>
-
-            {positions.length === 0 ? (
-              <div data-testid="positions-empty" className="p-8 text-center border rounded-xl bg-card space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  {t('tabs.positionsEmptyDescription')}
+    <div className="elev-sm rounded-xl border bg-card flex h-full min-h-0 flex-col">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-5 pt-4 pb-3">
+        <h3 className="section-head">{t('tabs.positionsHeading')}</h3>
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+          <Input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('cartera.filterPlaceholder')}
+            aria-label={t('cartera.filterLabel')}
+            className="h-8 min-w-0 flex-1 text-xs max-sm:basis-full sm:w-56 sm:flex-none"
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="h-8 gap-1.5 text-xs">
+                <SlidersHorizontal aria-hidden className="h-3.5 w-3.5" />
+                {t('cartera.view')}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-60">
+              <DropdownMenuCheckboxItem
+                checked={grouped}
+                onCheckedChange={(checked) => {
+                  setGrouped(checked === true)
+                  setTypes(new Set())
+                }}
+                onSelect={(e) => e.preventDefault()}
+              >
+                {t('cartera.groupByType')}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              {isPhone ? (
+                <p data-testid="cartera-phone-note" className="px-2 py-1.5 text-xs text-muted-foreground">
+                  {t('cartera.phoneColumnsNote')}
                 </p>
-                {onOpenCreate && (
-                  <Button size="sm" onClick={onOpenCreate} className="font-bold gap-1.5">
-                    <Plus className="w-4 h-4" />
-                    {t('holdings.new')}
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <caption className="sr-only">{t('tabs.positionsCaption')}</caption>
-                  <thead>
-                    <tr className="border-b text-left text-muted-foreground">
-                      <th className="py-2 px-2">{tc('ticker')}</th>
-                      <th className="py-2 px-2">{t('tabs.colName')}</th>
-                      <th className="py-2 px-2 text-right">{tc('quantity')}</th>
-                      <th className="py-2 px-2 text-right">{t('tabs.colAvgCost')}</th>
-                      <th className="py-2 px-2 text-right">{t('tabs.colPrice')}</th>
-                      <th className="py-2 px-2 text-right">{t('shared.totalValue')}</th>
-                      <th className="py-2 px-2 text-right">P&amp;L</th>
-                      <th className="py-2 px-2 text-center">{tc('actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {positions.map((p: PositionRow) => (
-                      <tr key={p.holdingId} data-testid="position-row" className="border-b last:border-0 hover:bg-muted/30 transition">
-                        <td className="py-2 px-2">
-                          <Link href={`/investments/holdings/${p.holdingId}`} className="font-mono font-semibold text-primary hover:underline">
-                            {p.ticker}
-                          </Link>
-                        </td>
-                        <td className="py-2 px-2">{p.name}</td>
-                        <td className="py-2 px-2 text-right font-mono">{p.quantity}</td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.avgCost} /></td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.price} /></td>
-                        <td className="py-2 px-2 text-right font-mono"><Money value={p.marketValue} /></td>
-                        <td className="py-2 px-2 text-right font-mono">
-                          <span className={p.pnlPct != null && p.pnlPct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-destructive'}>
-                            <Money value={p.pnl} /> ({p.pnlPct != null ? `${p.pnlPct >= 0 ? '+' : ''}${p.pnlPct.toFixed(2)}%` : '—'})
-                          </span>
-                        </td>
-                        <td className="py-2 px-2 text-center">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 font-bold"
-                            onClick={() =>
-                              setSellingHolding({
-                                id: p.holdingId!,
-                                ticker: p.ticker!,
-                                name: p.name,
-                                quantity: p.quantity ?? 0,
-                                currency: p.marketValue?.currency ?? 'ARS',
-                                currentPrice: parseNum(p.price),
-                                avgPurchasePrice: parseNum(p.avgCost),
-                              })
-                            }
-                          >
-                            {t('holdings.sellAction')}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+              ) : (
+                <>
+                  <DropdownMenuLabel>{t('cartera.columns')}</DropdownMenuLabel>
+                  <DropdownMenuCheckboxItem checked disabled>
+                    {tc('ticker')}
+                  </DropdownMenuCheckboxItem>
+                  {CARTERA_COLUMNS.map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column}
+                      checked={columns[column] && !(grouped && column === 'assetType')}
+                      disabled={grouped && column === 'assetType'}
+                      onCheckedChange={() => toggleColumn(column)}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      {columnLabels[column]}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => {
+                  resetView()
+                  setTypes(new Set())
+                }}
+              >
+                {t('cartera.reset')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button size="sm" data-testid="register-holding-trigger" onClick={() => openCreate()} className="h-8 gap-1.5 text-xs font-semibold">
+            <Plus className="h-3.5 w-3.5" />
+            {t('holdings.new')}
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col gap-2 px-5 pb-4">
+        {holdingsFailed && (
+          <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/60 px-3 py-1.5 text-xs">
+            <span id="holdings-unavailable" className="text-muted-foreground">{t('cartera.holdingsUnavailable')}</span>
+            <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => refetchHoldings()}>
+              {tc('retry')}
+            </Button>
           </div>
         )}
-      </SectionState>
-
-      {slices.length > 0 && (
         <SectionState
-          section={compositionSection}
+          section={positionsSection}
           isLoading={isLoading}
           onRetry={onRetry}
-          skeleton={<div className="h-32 rounded-xl bg-muted animate-pulse" />}
+          emptyTitle={t('tabs.positionsEmptyTitle')}
+          emptyDescription={t('tabs.positionsEmptyDescription')}
+          emptyTestId="positions-empty"
+          emptyAction={
+            <Button size="sm" data-testid="positions-empty-register" onClick={() => openCreate()} className="gap-1.5 font-bold">
+              <Plus className="h-4 w-4" />
+              {t('holdings.new')}
+            </Button>
+          }
+          skeleton={<div className="h-64 rounded-xl bg-muted animate-pulse" />}
         >
-          {() => (
-            <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
-              <h3 className="section-head">{t('tabs.compositionHeading')}</h3>
-              <CompositionBar slices={slices} />
-              <LegendList slices={slices} />
-            </div>
-          )}
+          {(positions) => {
+            const shown = positions.filter(
+              (row) =>
+                matchesQuery(row, query) && (grouped || types.size === 0 || types.has(groupKeyOf(row.assetType))),
+            )
+            const presentTypes = GROUP_ORDER.filter((key) => positions.some((row) => groupKeyOf(row.assetType) === key))
+            return (
+              <>
+                {!grouped && (
+                  <div role="group" aria-label={t('cartera.typeFilter')} className="flex flex-wrap items-center gap-1.5">
+                    {presentTypes.map((key) => (
+                      <Button
+                        key={key}
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        aria-pressed={types.has(key)}
+                        onClick={() => toggleType(key)}
+                        className="h-7 rounded-full px-3 text-xs aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+                      >
+                        {t(GROUP_LABEL_KEYS[key])}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+                {shown.length < positions.length && (
+                  <p data-testid="cartera-filter-summary" className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
+                    <span>{t('cartera.showing', { shown: shown.length, total: positions.length })}</span>
+                    {grouped && <span>{t('cartera.subtotalsNote')}</span>}
+                  </p>
+                )}
+                <div
+                  data-testid="positions-scroll"
+                  className="relative min-h-0 flex-1 overflow-auto md:max-h-[70vh] frame:max-h-none max-md:overflow-visible"
+                >
+                  <CarteraTable
+                    rows={shown}
+                    slices={slices}
+                    grouped={grouped}
+                    columns={shownColumns}
+                    sort={sort}
+                    onSort={sortBy}
+                    totalMarketValue={kpis?.marketValue}
+                    bankNames={bankNames}
+                    exactQuantities={exactQuantities}
+                    renderActions={renderActions}
+                    phone={isPhone}
+                  />
+                </div>
+              </>
+            )
+          }}
         </SectionState>
-      )}
+      </div>
 
-      <SellHoldingDialog
-        holding={sellingHolding}
-        open={!!sellingHolding}
-        onOpenChange={(open) => !open && setSellingHolding(null)}
-      />
+      <SellHoldingDialog holding={selling} open={!!selling} onOpenChange={(open) => !open && setSelling(null)} />
+      <RecordHoldingDialog draft={draft} onClose={clearDraft} />
     </div>
   )
 }

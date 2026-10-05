@@ -6,12 +6,13 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from '@/components/ui/sonner'
 import { QueryProvider } from '@/providers/QueryProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
+import { BRAND_NAME } from '@/lib/brand'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'FinanceApp',
+  title: BRAND_NAME,
   description: 'Personal finance tracker',
 }
 

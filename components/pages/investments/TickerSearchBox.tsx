@@ -1,13 +1,26 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Search, Loader2 } from 'lucide-react'
 import { useTickerSearch } from '@/lib/hooks/useInvestments'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { TickerSearchResult } from '@/types/investments'
-import { formatCurrency } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
+import { formatPercent } from '@/lib/format'
+
+const RESULTS_MAX_HEIGHT = 320
+const RESULTS_MIN_HEIGHT = 96
+const RESULTS_OFFSET = 6
+const RESULTS_EDGE = 8
+
+function resultsRoom(field: HTMLElement): number {
+  const frame = field.closest('[data-page-frame]')
+  const floor = Math.min(window.innerHeight, frame?.getBoundingClientRect().bottom ?? window.innerHeight)
+  const room = floor - field.getBoundingClientRect().bottom - RESULTS_OFFSET - RESULTS_EDGE
+  return Math.max(RESULTS_MIN_HEIGHT, Math.min(RESULTS_MAX_HEIGHT, Math.floor(room)))
+}
 
 export interface TickerSearchBoxProps {
   onSelect: (ticker: string, item?: TickerSearchResult) => void
@@ -18,7 +31,9 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
   const t = useTranslations('investments')
   const [query, setQuery] = useState('')
   const [isOpen, setIsOpen] = useState(false)
+  const [resultsHeight, setResultsHeight] = useState(RESULTS_MAX_HEIGHT)
   const containerRef = useRef<HTMLDivElement>(null)
+  const fieldRef = useRef<HTMLDivElement>(null)
 
   const { data: results = [], isLoading } = useTickerSearch(query)
 
@@ -32,11 +47,26 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const showResults = isOpen && query.trim().length >= 1
+
+  useLayoutEffect(() => {
+    const field = fieldRef.current
+    if (!showResults || !field) return
+    const measure = () => setResultsHeight(resultsRoom(field))
+    measure()
+    window.addEventListener('resize', measure)
+    window.addEventListener('scroll', measure, true)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.removeEventListener('scroll', measure, true)
+    }
+  }, [showResults])
+
   const visible = results.slice(0, 8)
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <div className="relative flex items-center">
+      <div ref={fieldRef} className="relative flex items-center">
         <Search className="absolute left-3.5 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
           value={query}
@@ -53,8 +83,12 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
         )}
       </div>
 
-      {isOpen && query.trim().length >= 1 && (
-        <div className="absolute z-30 mt-1.5 w-full rounded-xl border border-border bg-card shadow-xl overflow-hidden divide-y divide-border/60">
+      {showResults && (
+        <div
+          data-testid="ticker-search-results"
+          style={{ maxHeight: resultsHeight }}
+          className="absolute z-30 mt-1.5 w-full overflow-y-auto rounded-xl border border-border bg-card shadow-xl divide-y divide-border/60"
+        >
           {visible.length > 0 ? (
             visible.map((item) => {
               const isPos = item.variation >= 0
@@ -77,7 +111,7 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
                       )}
                     </div>
                     <span className="text-[11px] font-mono text-muted-foreground mt-0.5">
-                      {formatCurrency(item.price, item.currency)}
+                      {moneyText({ value: { amount: String(item.price), currency: item.currency } })}
                     </span>
                   </div>
 
@@ -89,8 +123,7 @@ export function TickerSearchBox({ onSelect, placeholder }: TickerSearchBoxProps)
                         : 'text-rose-600 bg-rose-500/10 dark:text-rose-400'
                     )}
                   >
-                    {isPos ? '+' : ''}
-                    {item.variation.toFixed(2)}%
+                    {formatPercent(item.variation)}
                   </span>
                 </button>
               )

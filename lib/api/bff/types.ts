@@ -32,6 +32,9 @@ export type CardRow = Normalised<Schemas['CardRowResponse']>
 export type TransactionRow = Normalised<Schemas['TransactionRowResponse']>
 export type PositionRow = Normalised<Schemas['PositionRowResponse']>
 export type SearchHit = Normalised<Schemas['SearchHitResponse']>
+export type AssetTypeSlice = Normalised<Schemas['AssetTypeSliceResponse']>
+export type InvestmentsKpis = NonNullable<NonNullable<InvestmentsBff['kpis']>['data']>
+export type EvolutionPoint = Normalised<Schemas['EvolutionPointResponse']>
 
 export type LoansKpis = NonNullable<NonNullable<LoansBff['kpis']>['data']>
 export type LoanDetailRow = NonNullable<NonNullable<LoansBff['loans']>['data']>[number]

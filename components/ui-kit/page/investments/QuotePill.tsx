@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl'
+import { formatPercent, formatSignedNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export interface Quote {
@@ -15,21 +17,10 @@ export interface QuotePillProps {
 }
 
 export function QuotePill({ quote, className }: QuotePillProps) {
+  const t = useTranslations('common')
   const { variation, unit } = quote
-  const isNegative = variation < 0
-  const abs = Math.abs(variation)
-
-  // RIESGO_PAIS and any POINTS unit: display as absolute point delta (e.g. "−12 pts")
-  // All other tickers: display as percent (e.g. "+2,5 %")
-  const absFormatted = new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 2,
-  }).format(abs)
-
   const variationLabel =
-    unit === 'POINTS'
-      ? `${isNegative ? '−' : '+'}${abs} pts`
-      : `${isNegative ? '−' : '+'}${absFormatted} %`
+    unit === 'POINTS' ? t('points', { value: formatSignedNumber(variation) }) : formatPercent(variation)
 
   return (
     <div
@@ -43,7 +34,7 @@ export function QuotePill({ quote, className }: QuotePillProps) {
       <span
         className={cn(
           'n text-xs tabular-nums font-medium',
-          isNegative ? 'text-loss' : 'text-gain'
+          variation < 0 ? 'text-loss' : 'text-gain'
         )}
       >
         {variationLabel}

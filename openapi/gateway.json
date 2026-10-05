@@ -333,6 +333,36 @@
         },
         "type": "object"
       },
+      "AssetTypeSliceResponse": {
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "assetType": {
+            "type": "string"
+          },
+          "cost": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "count": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          },
+          "pct": {
+            "type": "number"
+          },
+          "pnl": {
+            "$ref": "#/components/schemas/MoneyView"
+          },
+          "pnlPct": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
       "AvailableCurrenciesResponse": {
         "properties": {
           "available": {
@@ -811,7 +841,7 @@
             "$ref": "#/components/schemas/SectionResponseListAlertRowResponse"
           },
           "composition": {
-            "$ref": "#/components/schemas/SectionResponseListCompositionSliceResponse"
+            "$ref": "#/components/schemas/SectionResponseListAssetTypeSliceResponse"
           },
           "evolution": {
             "$ref": "#/components/schemas/SectionResponseListEvolutionPointResponse"
@@ -1136,6 +1166,9 @@
       },
       "PositionRowResponse": {
         "properties": {
+          "assetType": {
+            "type": "string"
+          },
           "avgCost": {
             "$ref": "#/components/schemas/MoneyView"
           },
@@ -1443,6 +1476,28 @@
           "data": {
             "items": {
               "$ref": "#/components/schemas/AlertRowResponse"
+            },
+            "type": "array"
+          },
+          "observedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "observedAt",
+          "status"
+        ],
+        "type": "object"
+      },
+      "SectionResponseListAssetTypeSliceResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AssetTypeSliceResponse"
             },
             "type": "array"
           },
@@ -2582,6 +2637,15 @@
             "required": false,
             "schema": {
               "default": "none",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "range",
+            "required": false,
+            "schema": {
+              "default": "1M",
               "type": "string"
             }
           }

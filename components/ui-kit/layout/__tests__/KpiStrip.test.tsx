@@ -43,3 +43,18 @@ describe('SplitLayout', () => {
     expect(buttons[1]).toHaveTextContent('Rail action')
   })
 })
+
+describe('KpiStrip', () => {
+  it('drops to two columns when the page content is under 1024px', () => {
+    render(
+      <KpiStrip>
+        <KpiTile label="Saldo" value="$1.000" />
+      </KpiStrip>
+    )
+    expect(screen.getByText('Saldo').closest('.grid')).toHaveClass(
+      'grid-cols-2',
+      'sm:grid-cols-4',
+      '@max-[976px]/page:grid-cols-2',
+    )
+  })
+})

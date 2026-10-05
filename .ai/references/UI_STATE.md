@@ -50,6 +50,34 @@ Confirmation dialogs are local component state over the ui-kit `Dialog` (see
 
 `useTransactionsPage` uses `placeholderData: keepPreviousData` so filter options survive a filter change; during a refetch sections show the previous data, not the skeleton.
 
+## Holding draft store (`lib/store/holdingDraft.store.ts`)
+
+`useHoldingDraftStore` carries the one investments dialog's input across tabs and routes:
+`draft` is `{ mode: 'create', prefill }` or `{ mode: 'edit', holdingId }`; `openCreate(prefill?)`,
+`openEdit(id)`, `clear()`. Cartera renders the only `RecordHoldingDialog` and opens it whenever a
+draft is set; Mercados and the position page set a draft and switch to `?tab=cartera`. Edit mode
+reads the holding's native values from the cached `useHoldings()` list, never from a BFF row.
+`HoldingDraftReset` (rendered by the dashboard layout) clears the draft when the pathname leaves
+`/investments` and `/investments/*`.
+
+## Cartera view store (`lib/store/carteraView.store.ts`)
+
+`useCarteraViewStore` keeps how the user likes to see Cartera, per browser: `grouped` (group by asset
+type, default on), `columns` (visibility of Nombre, Tipo, Banco, Cantidad, Costo prom., Precio,
+Valor total, % cartera, P&L $, P&L %) and `sort`. Zustand `persist`, key
+`investments.cartera.view.v1`, `version: 1`, storage `safeJsonStorage` (`lib/store/safeStorage.ts`: every
+`localStorage` call in `try/catch`); `merge` keeps only well-typed fields, so a missing, blocked or corrupt
+value means the defaults. `skipHydration: true`: `PortfolioTab` calls `persist.rehydrate()` on mount, so
+server and first client render agree. The text filter and the type chips are component state and are never
+stored. On a phone (`useMediaQuery('(max-width: 767px)')`) the table shows only Ticker and the actions
+(`PHONE_COLUMNS`), whatever is stored, and the column picker is hidden.
+
+## UI store sidebar (`lib/store/ui.store.ts`)
+
+`sidebarCollapsed` (desktop rail: `clamp(176px, 11vw, 240px)` expanded, 64px collapsed) persists under
+`ui.sidebar.collapsed.v1` (`partialize` to that field only, `skipHydration`, `SideNav` rehydrates on
+mount). The mobile drawer's `sidebarOpen` lives in the same store and is never persisted.
+
 ## ui-kit controls
 
 `FilterSearchField` (controlled search input, no state) and `MultiSelectFilter` (checkbox dropdown; listed values in option order, unlisted selected values kept; trigger named `label: summary`) in `components/ui-kit/controls/`.

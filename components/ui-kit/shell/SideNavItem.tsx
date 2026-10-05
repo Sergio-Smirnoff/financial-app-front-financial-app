@@ -9,10 +9,11 @@ export interface SideNavItemProps {
   label: string
   icon: LucideIcon
   pathname: string
+  collapsed?: boolean
   onClick?: () => void
 }
 
-export function SideNavItem({ href, label, icon: Icon, pathname, onClick }: SideNavItemProps) {
+export function SideNavItem({ href, label, icon: Icon, pathname, collapsed = false, onClick }: SideNavItemProps) {
   const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href)
 
   return (
@@ -20,15 +21,22 @@ export function SideNavItem({ href, label, icon: Icon, pathname, onClick }: Side
       href={href}
       onClick={onClick}
       aria-current={isActive ? 'page' : undefined}
+      aria-label={collapsed ? label : undefined}
+      title={collapsed ? label : undefined}
       className={cn(
-        'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+        'flex min-w-0 items-center gap-2.5 rounded-md py-2 text-[13.5px] font-medium transition-colors',
+        collapsed ? 'justify-center px-0' : 'px-2.5',
         isActive
           ? 'bg-sidebar-primary text-sidebar-primary-foreground'
           : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
       )}
     >
       <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-      {label}
+      {!collapsed && (
+        <span data-nav-label className="min-w-0 truncate">
+          {label}
+        </span>
+      )}
     </Link>
   )
 }

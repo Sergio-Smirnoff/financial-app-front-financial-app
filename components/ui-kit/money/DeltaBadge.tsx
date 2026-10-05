@@ -1,5 +1,5 @@
 import type { MoneyView } from '@/lib/format'
-import { formatPercent } from '@/lib/format'
+import { formatPercent, roundsToZero } from '@/lib/format'
 import { Money } from './Money'
 import { cn } from '@/lib/utils'
 
@@ -10,8 +10,9 @@ export interface DeltaBadgeProps {
 }
 
 export function DeltaBadge({ pct, absolute, className }: DeltaBadgeProps) {
-  const isGain = pct > 0
-  const isLoss = pct < 0
+  const isZero = roundsToZero(pct, 2)
+  const isGain = !isZero && pct > 0
+  const isLoss = !isZero && pct < 0
 
   const glyph = isGain ? '↑' : isLoss ? '↓' : '→'
   const toneClass = isGain

@@ -4,9 +4,9 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { SectionState } from '@/components/ui-kit/feedback/SectionState'
 import { CompositionBar } from '@/components/charts/CompositionBar'
-import { formatMoney } from '@/lib/format'
+import { moneyText } from '@/components/ui-kit/money/Money'
 import type { Section } from '@/lib/api/bff/types'
-import type { MoneyView } from '@/lib/format'
+import { amountOf, type MoneyView } from '@/lib/format'
 
 export interface BreakdownData {
   investments: MoneyView
@@ -32,12 +32,11 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
       skeleton={<div className="h-48 rounded-xl bg-muted animate-pulse" />}
     >
       {(data) => {
-        const parseAmt = (m: MoneyView | null | undefined) => Math.max(0, parseFloat(m?.amount || '0'))
-        const fmt = (m: MoneyView | null | undefined) => (m ? formatMoney(m) : '—')
-        const invAmt = parseAmt(data.investments)
-        const cashAmt = parseAmt(data.cash)
-        const debtAmt = parseAmt(data.debt)
-        const savAmt = parseAmt(data.savings)
+        const fmt = (m: MoneyView | null | undefined) => moneyText({ value: m })
+        const invAmt = Math.max(0, amountOf(data.investments))
+        const cashAmt = Math.max(0, amountOf(data.cash))
+        const debtAmt = Math.max(0, amountOf(data.debt))
+        const savAmt = Math.max(0, amountOf(data.savings))
         const total = invAmt + cashAmt + debtAmt + savAmt || 1
 
         const slices = [
@@ -48,7 +47,7 @@ export function BreakdownCard({ section, isLoading, onRetry }: BreakdownCardProp
         ].filter((s) => s.pct > 0)
 
         return (
-          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4">
+          <div className="elev-sm rounded-xl border bg-card p-5 space-y-4 short:space-y-2 short:p-4">
             <h3 className="section-head">{t('breakdownTitle')}</h3>
             <CompositionBar slices={slices} />
           </div>

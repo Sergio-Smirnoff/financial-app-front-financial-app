@@ -5,6 +5,7 @@ import type {
   Holding,
   CreateHoldingRequest,
   UpdateHoldingRequest,
+  SellHoldingRequest,
   TickerSearchResult,
   TickerResearch,
   MarketDiscovery,
@@ -45,11 +46,11 @@ export function useUpdateHolding() {
   })
 }
 
-export function useDeleteHolding() {
+export function useSellHolding() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, destinationCbu }: { id: number; destinationCbu?: string }) =>
-      investmentsApi.deleteHolding(id, destinationCbu),
+    mutationFn: ({ id, body }: { id: number; body: SellHoldingRequest }) =>
+      investmentsApi.sellHolding(id, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['holdings'] })
       queryClient.invalidateQueries({ queryKey: ['bff', 'investments'] })

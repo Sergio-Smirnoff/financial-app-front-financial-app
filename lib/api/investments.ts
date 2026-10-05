@@ -3,6 +3,8 @@ import type {
   Holding,
   CreateHoldingRequest,
   UpdateHoldingRequest,
+  SellHoldingRequest,
+  HoldingSale,
   TickerSearchResult,
   TickerResearch,
   MarketDiscovery,
@@ -21,11 +23,11 @@ interface RawHoldingResponse {
   ticker: string
   name: string
   assetType: string
-  quantity: string | number
-  avgPurchasePrice: string | number
+  quantity: string
+  avgPurchasePrice: string
   currency: string
-  notifyGainThresholdPct: string | number | null
-  notifyLossThresholdPct: string | number | null
+  notifyGainThresholdPct: string | null
+  notifyLossThresholdPct: string | null
   createdAt: string
   updatedAt: string
 }
@@ -62,15 +64,19 @@ const BASE = '/api/v1/investments'
 
 export const investmentsApi = {
   getHoldings: async (): Promise<Holding[]> => {
-    const raw = await api.get<{ content?: RawHoldingResponse[] } | RawHoldingResponse[]>(`${BASE}/holdings`)
+    const raw = await api.get<{ content?: RawHoldingResponse[] } | RawHoldingResponse[]>(`${BASE}/holdings?size=500`)
     const list = Array.isArray(raw) ? raw : (raw?.content ?? [])
     return list.map((h) => ({
       ...h,
       assetType: h.assetType as Holding['assetType'],
       quantity: toNum(h.quantity),
+      exactQuantity: h.quantity,
       avgPurchasePrice: toNum(h.avgPurchasePrice),
+      exactAvgPurchasePrice: h.avgPurchasePrice,
       notifyGainThresholdPct: toNumOrNull(h.notifyGainThresholdPct),
       notifyLossThresholdPct: toNumOrNull(h.notifyLossThresholdPct),
+      exactNotifyGainThresholdPct: h.notifyGainThresholdPct ?? null,
+      exactNotifyLossThresholdPct: h.notifyLossThresholdPct ?? null,
     }))
   },
 
@@ -80,8 +86,8 @@ export const investmentsApi = {
   updateHolding: (id: number, data: UpdateHoldingRequest) =>
     api.put<Holding>(`${BASE}/holdings/${id}`, data),
 
-  deleteHolding: (id: number, destinationCbu?: string) =>
-    api.delete<void>(`${BASE}/holdings/${id}${destinationCbu ? `?destinationCbu=${encodeURIComponent(destinationCbu)}` : ''}`),
+  sellHolding: (id: number, body: SellHoldingRequest) =>
+    api.post<HoldingSale>(`${BASE}/holdings/${id}/sell`, body),
 
   getMarketDiscovery: async (limit: number = 5): Promise<MarketDiscovery> => {
     const raw = await api.get<RawMarketDiscovery>(`${BASE}/market/discovery?limit=${limit}`)

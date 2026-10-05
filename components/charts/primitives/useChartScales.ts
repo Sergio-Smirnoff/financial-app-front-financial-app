@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { scaleUtc, scaleLinear, ScaleTime, ScaleLinear } from 'd3-scale'
+import { plotRange, plotRangeDown } from './plotRange'
 
 export interface SeriesPoint {
   date: string | Date
@@ -49,8 +50,8 @@ export function useChartScales({
 
     if (points.length === 0) {
       const now = new Date()
-      const x = scaleUtc().domain([now, now]).range([pl, width - pr])
-      const y = scaleLinear().domain([0, 100]).range([height - pb, pt]).nice()
+      const x = scaleUtc().domain([now, now]).range(plotRange(pl, width - pr))
+      const y = scaleLinear().domain([0, 100]).range(plotRangeDown(pt, height - pb)).nice()
       return { x, y, ticksX: x.ticks(5), ticksY: y.ticks(5) }
     }
 
@@ -78,11 +79,11 @@ export function useChartScales({
 
     const x = scaleUtc()
       .domain([minDate, maxDate])
-      .range([pl, width - pr])
+      .range(plotRange(pl, width - pr))
 
     const y = scaleLinear()
       .domain([finalMin, finalMax])
-      .range([height - pb, pt])
+      .range(plotRangeDown(pt, height - pb))
       .nice()
 
     return {
