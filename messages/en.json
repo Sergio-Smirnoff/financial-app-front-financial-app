@@ -541,7 +541,8 @@
         "unsupportedCurrency": "That currency isn't available for investments.",
         "banksUnavailable": "The banks service didn't respond. Try again in a moment.",
         "unknown": "Try again in a moment."
-      }
+      },
+      "figuresUnavailable": "We couldn't get this position's valuation. Try again in a moment."
     },
     "stockBar": {
       "summary": "{quantity} units · Cost: <cost></cost>"

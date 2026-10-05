@@ -7,6 +7,8 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { PositionDetail, type PositionDetailData } from '@/components/pages/investments/PositionDetail'
 import { useHoldings, useTickerResearch } from '@/lib/hooks/useInvestments'
+import { useInvestmentsPage } from '@/lib/hooks/useInvestmentsPage'
+import { useBffQuery } from '@/lib/hooks/useBffQuery'
 
 export default function HoldingDetailPage() {
   const t = useTranslations('investments')
@@ -19,41 +21,27 @@ export default function HoldingDetailPage() {
   const holding = validId ? holdings.find((h) => h.id === holdingId) : undefined
 
   const { data: research } = useTickerResearch(holding?.ticker ?? null, 'D90')
+  const query = useBffQuery()
+  const { data: bff, isPending: bffPending } = useInvestmentsPage(query)
+
+  const positions = bff?.positions
+  const row = positions?.status === 'OK' ? positions.data?.find((r) => r.holdingId === holdingId) : undefined
 
   const detailData: PositionDetailData | null = useMemo(() => {
     if (!holding) return null
-
-    const curPrice = research?.currentPrice ?? holding.avgPurchasePrice
-    const totalVal = holding.quantity * curPrice
-    const totalCost = holding.quantity * holding.avgPurchasePrice
-    const pnlVal = totalVal - totalCost
-    const pnlPct = totalCost > 0 ? (pnlVal / totalCost) * 100 : 0
-
-    const prices = (research?.series ?? []).map((pt) => ({
-      date: pt.date,
-      value: pt.price,
-    }))
-
     return {
       id: holding.id,
       ticker: holding.ticker,
       name: holding.name,
       assetType: holding.assetType,
+      currency: holding.currency,
       quantity: holding.quantity,
       exactQuantity: holding.exactQuantity,
-      avgPrice: { amount: String(holding.avgPurchasePrice), currency: holding.currency, secondary: null },
-      currentPrice: { amount: String(curPrice), currency: holding.currency, secondary: null },
-      totalValue: { amount: String(totalVal), currency: holding.currency, secondary: null },
-      pnl: {
-        amount: { amount: String(pnlVal), currency: holding.currency, secondary: null },
-        pct: pnlPct,
-      },
-      prices: prices.length > 0 ? prices : [
-        { date: holding.createdAt.split('T')[0], value: holding.avgPurchasePrice },
-        { date: new Date().toISOString().split('T')[0], value: curPrice },
-      ],
+      avgPurchasePrice: holding.avgPurchasePrice,
+      figures: row ? { avgCost: row.avgCost, price: row.price, marketValue: row.marketValue, pnl: row.pnl, pnlPct: row.pnlPct } : null,
+      prices: (research?.series ?? []).map((pt) => ({ date: pt.date, value: pt.price })),
     }
-  }, [holding, research])
+  }, [holding, row, research])
 
   if (validId && isPending && !holding) {
     return (
@@ -89,7 +77,7 @@ export default function HoldingDetailPage() {
 
   return (
     <main className="flex-1 overflow-auto p-6">
-      <PositionDetail holding={detailData} />
+      <PositionDetail holding={detailData} figuresPending={bffPending} />
     </main>
   )
 }

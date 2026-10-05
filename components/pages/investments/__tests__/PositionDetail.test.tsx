@@ -48,11 +48,16 @@ const holdingFixture = {
   ticker: 'YPFD',
   name: 'YPF S.A.',
   assetType: 'Acción',
+  currency: 'ARS',
   quantity: 100,
-  avgPrice: { amount: '12000', currency: 'ARS', secondary: null },
-  currentPrice: { amount: '15000', currency: 'ARS', secondary: null },
-  totalValue: { amount: '1500000', currency: 'ARS', secondary: null },
-  pnl: { amount: { amount: '300000', currency: 'ARS', secondary: null }, pct: 25 },
+  avgPurchasePrice: 12000,
+  figures: {
+    avgCost: { amount: '12000', currency: 'ARS', secondary: null },
+    price: { amount: '15000', currency: 'ARS', secondary: null },
+    marketValue: { amount: '1500000', currency: 'ARS', secondary: null },
+    pnl: { amount: '300000', currency: 'ARS', secondary: null },
+    pnlPct: 25,
+  },
   prices: [
     { date: '2026-08-01', value: 12000 },
     { date: '2026-08-02', value: 13500 },
@@ -129,7 +134,7 @@ describe('PositionDetail', () => {
     const user = userEvent.setup()
     useHoldingDraftStore.setState({ draft: null })
     renderWithIntl(
-      <PositionDetail holding={{ ...holdingFixture, currentPrice: { amount: '', currency: 'ARS', secondary: null } }} />,
+      <PositionDetail holding={{ ...holdingFixture, figures: { ...holdingFixture.figures, price: null } }} />,
     )
 
     await user.click(screen.getByRole('button', { name: /Comprar más/i }))
@@ -137,6 +142,23 @@ describe('PositionDetail', () => {
     expect(useHoldingDraftStore.getState().draft).toEqual({
       mode: 'create',
       prefill: { ticker: 'YPFD', name: 'YPF S.A.', assetType: undefined, price: undefined, currency: 'ARS' },
+    })
+  })
+
+  it('leaves the price blank when buying more of a bond, whose quote is per 100 VN', async () => {
+    const user = userEvent.setup()
+    useHoldingDraftStore.setState({ draft: null })
+    renderWithIntl(
+      <PositionDetail
+        holding={{ ...holdingFixture, ticker: 'AL30', assetType: 'BOND', figures: { ...holdingFixture.figures, price: { amount: '80216', currency: 'ARS', secondary: null } } }}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Comprar más/i }))
+
+    expect(useHoldingDraftStore.getState().draft).toEqual({
+      mode: 'create',
+      prefill: { ticker: 'AL30', name: 'YPF S.A.', assetType: 'BOND', price: undefined, currency: 'ARS' },
     })
   })
 

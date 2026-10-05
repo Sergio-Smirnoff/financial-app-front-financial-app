@@ -541,7 +541,8 @@
         "unsupportedCurrency": "Esa moneda no está disponible para inversiones.",
         "banksUnavailable": "El servicio de bancos no respondió. Probá de nuevo en un momento.",
         "unknown": "Probá de nuevo en un momento."
-      }
+      },
+      "figuresUnavailable": "No pudimos obtener la valuación de esta posición. Probá de nuevo en un momento."
     },
     "stockBar": {
       "summary": "{quantity} unidades · Costo: <cost></cost>"
